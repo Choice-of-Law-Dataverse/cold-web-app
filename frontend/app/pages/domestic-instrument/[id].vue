@@ -103,7 +103,7 @@
               :provision-id="provisionId"
               :text-type="textType"
               :instrument-title="
-                legalInstrument?.Abbreviation ||
+                legalInstrument?.abbreviation ||
                 legalInstrument?.titleInEnglish ||
                 ''
               "
@@ -114,9 +114,11 @@
       </template>
 
       <template #footer>
-        <LastModified :date="legalInstrument?.lastModified" />
+        <LastModified :date="legalInstrument?.lastModified ?? undefined" />
         <LazyJurisdictionReportBanner
-          :jurisdiction-code="legalInstrument?.jurisdictionsAlpha3Code"
+          :jurisdiction-code="
+            legalInstrument?.jurisdictionsAlpha3Code ?? undefined
+          "
         />
       </template>
     </BaseDetailLayout>
@@ -178,7 +180,7 @@ const isCompatible = (
 ): boolean => {
   if (!legalInstrument.value) return false;
   const value = legalInstrument.value[field];
-  return value === true || value === "true";
+  return value === true;
 };
 
 const getSortedProvisionIdsForInstrument = (rawValue: string): string[] => {

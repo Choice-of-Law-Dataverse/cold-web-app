@@ -4,15 +4,15 @@ import type { LiteratureResponse } from "@/types/entities/literature";
  * Generate BibTeX citation from literature record data
  */
 export function generateBibTeX(data: LiteratureResponse): string {
-  const authors = data.Author || "";
-  const title = data.Title || "";
+  const authors = data.author || "";
+  const title = data.title || "";
   const year = data.publicationYear || "";
   const journal = data.publicationTitle || "";
-  const publisher = data.Publisher || "";
-  const url = data.Url || "";
-  const volume = data.Volume || "";
-  const pages = data.Pages || "";
-  const doi = data.DOI || "";
+  const publisher = data.publisher || "";
+  const url = data.url || "";
+  const volume = data.volume || "";
+  const pages = data.pages || "";
+  const doi = data.doi || "";
 
   // Generate citation key from first author's last name and year
   let citationKey = "cold_literature";

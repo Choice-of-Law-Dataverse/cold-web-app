@@ -99,7 +99,7 @@ const decisionsById = computed(() => {
   const map = new Map<string, CourtDecision>();
   if (!decisions.value) return map;
   for (const rec of decisions.value) {
-    if (rec) map.set(rec.id, rec);
+    if (rec) map.set(String(rec.id || ""), rec);
   }
   return map;
 });

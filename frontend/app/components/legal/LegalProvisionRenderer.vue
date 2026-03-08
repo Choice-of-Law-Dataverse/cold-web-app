@@ -45,7 +45,7 @@ const instrumentsById = computed(() => {
   const map = new Map<string, DomesticInstrument>();
   if (!instruments.value) return map;
   for (const rec of instruments.value) {
-    if (rec) map.set(rec.id, rec);
+    if (rec) map.set(String(rec.id ?? ""), rec);
   }
   return map;
 });

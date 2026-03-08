@@ -48,7 +48,7 @@ export const courtDecisionLabels = {
   textOfTheRelevantLegalProvisions: "Text of the Relevant Legal Provisions",
   choiceOfLawIssue: "Choice of Law Issue",
   courtSPosition: "Court's Position",
-  Quote: "Quote",
+  quote: "Quote",
   originalText: "Full Text",
   relatedQuestions: "Related Questions",
   relatedLiterature: "Related Literature",
@@ -82,20 +82,20 @@ export const domesticInstrumentLabels = {
 } as const satisfies Partial<Record<keyof DomesticInstrument, string>>;
 
 export const regionalInstrumentLabels = {
-  Abbreviation: "Abbreviation",
-  Title: "Title",
-  Date: "Date",
-  Specialists: "Specialists",
-  Literature: "Related Literature",
+  abbreviation: "Abbreviation",
+  title: "Title",
+  date: "Date",
+  specialists: "Specialists",
+  literature: "Related Literature",
   oupChapter: "OUP Chapter",
   regionalLegalProvisions: "Selected Provisions",
 } as const satisfies Partial<Record<keyof RegionalInstrument, string>>;
 
 export const internationalInstrumentLabels = {
-  Name: "Title",
-  Date: "Date",
-  Specialists: "Specialists",
-  Literature: "Related Literature",
+  name: "Title",
+  date: "Date",
+  specialists: "Specialists",
+  literature: "Related Literature",
   oupChapter: "OUP Chapter",
   selectedProvisions: "Selected Provisions",
 } as const satisfies Partial<Record<keyof InternationalInstrument, string>>;

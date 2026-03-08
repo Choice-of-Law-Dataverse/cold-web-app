@@ -1,11 +1,7 @@
 import { computed, type Ref } from "vue";
 import { useInfiniteQuery } from "@tanstack/vue-query";
 import { useApiClient } from "@/composables/useApiClient";
-import type {
-  EnhancedSearchRequest,
-  SearchParams,
-  SearchResponse,
-} from "@/types/api";
+import type { SearchParams, SearchResponse } from "@/types/api";
 
 const fetchSearchResults = async ({
   query,
@@ -13,30 +9,19 @@ const fetchSearchResults = async ({
   page = 1,
   pageSize = 10,
 }: SearchParams): Promise<SearchResponse> => {
-  const { apiClient } = useApiClient();
+  const { client } = useApiClient();
 
-  const body: EnhancedSearchRequest = {
-    search_string: query || "",
-    page,
-    page_size: pageSize,
-    filters: [],
-  };
-
-  if (filters.sortBy === "date") {
-    body.sort_by_date = true;
-  } else {
-    body.sort_by_date = false;
-  }
+  const searchFilters: { column: string; values: string[] }[] = [];
 
   if (filters.jurisdiction) {
-    body.filters.push({
+    searchFilters.push({
       column: "jurisdictions",
       values: filters.jurisdiction.split(","),
     });
   }
 
   if (filters.theme) {
-    body.filters.push({
+    searchFilters.push({
       column: "themes",
       values: filters.theme.split(","),
     });
@@ -53,7 +38,7 @@ const fetchSearchResults = async ({
   };
 
   if (filters.type) {
-    body.filters.push({
+    searchFilters.push({
       column: "tables",
       values: filters.type
         .split(",")
@@ -61,14 +46,22 @@ const fetchSearchResults = async ({
     });
   }
 
-  const data = await apiClient<{
-    results: Record<string, unknown>[];
-    total_matches?: number;
-  }>("/search/", { body });
+  const { data, error } = await client.POST("/search/", {
+    body: {
+      search_string: query || "",
+      page,
+      page_size: pageSize,
+      filters: searchFilters,
+      sort_by_date: filters.sortBy === "date",
+      response_type: null,
+    },
+  });
+
+  if (error) throw error;
 
   return {
-    results: Object.values(data.results),
-    totalMatches: data.total_matches || 0,
+    results: data.results as unknown as Record<string, unknown>[],
+    totalMatches: data.totalMatches || 0,
   };
 };
 

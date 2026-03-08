@@ -7,14 +7,14 @@
   >
     <FlagTitleYearItem
       v-for="instrument in domesticInstruments?.slice(0, 9)"
-      :key="instrument.ID"
-      :to="`/domestic-instrument/${instrument.ID}`"
+      :key="String(instrument.id || '')"
+      :to="`/domestic-instrument/${instrument.id}`"
       :iso3="instrument.jurisdictionsAlpha3Code || ''"
       :title="instrument.titleInEnglish || ''"
       :year="
         instrument.entryIntoForce
           ? String(formatYear(instrument.entryIntoForce))
-          : instrument['Date'] || ''
+          : instrument.date || ''
       "
       type-class="type-instrument"
     />

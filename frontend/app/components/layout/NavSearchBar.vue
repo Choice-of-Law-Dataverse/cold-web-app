@@ -181,7 +181,7 @@ function handleSuggestionClick(selected: string): void {
   const record = jurisdictionLookup.findJurisdictionByName?.(selected);
   const keywords = record
     ? [
-        record.Name?.toLowerCase().trim(),
+        record.name?.toLowerCase().trim(),
         ...(record.alpha3Code ? [record.alpha3Code.toLowerCase().trim()] : []),
       ].filter(Boolean)
     : [selected?.toLowerCase().trim()].filter(Boolean);

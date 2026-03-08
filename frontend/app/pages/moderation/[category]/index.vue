@@ -65,10 +65,10 @@
                 Edit
               </UBadge>
               <UBadge
-                :color="getStatusBadgeColor(suggestion.moderation_status)"
+                :color="getStatusBadgeColor(suggestion.moderationStatus)"
                 variant="subtle"
               >
-                {{ getStatusLabel(suggestion.moderation_status) }}
+                {{ getStatusLabel(suggestion.moderationStatus) }}
               </UBadge>
             </div>
           </div>
@@ -94,16 +94,16 @@
           </DetailRow>
 
           <DetailRow
-            v-if="suggestion.username || suggestion.user_email"
+            v-if="suggestion.username || suggestion.userEmail"
             label="Submitted by"
           >
             <p class="result-value-small text-sm">
-              {{ suggestion.username || suggestion.user_email || "Unknown" }}
+              {{ suggestion.username || suggestion.userEmail || "Unknown" }}
             </p>
           </DetailRow>
-          <DetailRow v-if="suggestion.created_at" label="Created">
+          <DetailRow v-if="suggestion.createdAt" label="Created">
             <p class="result-value-small text-sm">
-              {{ formatDateLong(suggestion.created_at) }}
+              {{ formatDateLong(suggestion.createdAt) }}
             </p>
           </DetailRow>
 
@@ -213,7 +213,7 @@ const getPreciseJurisdiction = (suggestion: PendingSuggestion): string => {
 const isClickable = (suggestion: PendingSuggestion): boolean => {
   // For case-analyzer, approved and rejected items are not clickable
   if (isCaseAnalyzer.value) {
-    const status = suggestion.moderation_status;
+    const status = suggestion.moderationStatus;
     return status !== "approved" && status !== "rejected";
   }
   // For other categories, all items are clickable

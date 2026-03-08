@@ -19,11 +19,8 @@ export interface ProcessedJurisdiction extends JurisdictionWithAnswerCoverage {
 interface JurisdictionsData {
   jurisdictions: ProcessedJurisdiction[];
   knownJurisdictionTerms: Set<string>;
-  /** Map from lowercase name to jurisdiction */
   byName: Map<string, ProcessedJurisdiction>;
-  /** Map from lowercase alpha-3 code to jurisdiction */
   byAlpha3: Map<string, ProcessedJurisdiction>;
-  /** Set of lowercase alpha-3 codes for jurisdictions with coverage > 0 */
   coveredCountries: Set<string>;
 }
 
@@ -32,30 +29,26 @@ function processJurisdiction(
 ): ProcessedJurisdiction {
   return {
     ...record,
-    Name: record?.Name || "N/A",
+    name: record?.name || "N/A",
     jurisdictionSummary: record?.jurisdictionSummary || "N/A",
     jurisdictionalDifferentiator: record?.jurisdictionalDifferentiator || "N/A",
     legalFamily: record?.legalFamily || "N/A",
-    Specialists: record?.Specialists || "",
-    Literature: record?.Literature,
-    label: record.Name as string,
+    label: record.name,
     alpha3Code: record.alpha3Code,
-    avatar: record.alpha3Code
-      ? flagUrl(String(record.alpha3Code))
-      : undefined,
+    avatar: record.alpha3Code ? flagUrl(String(record.alpha3Code)) : undefined,
     answerCoverage: record.answerCoverage,
   };
 }
 
 async function fetchAndProcessJurisdictions(): Promise<JurisdictionsData> {
-  const { apiClient } = useApiClient();
+  const { client } = useApiClient();
 
-  const rawData = await apiClient<JurisdictionWithAnswerCoverage[]>(
+  const { data, error } = await client.GET(
     "/statistics/jurisdictions-with-answer-percentage",
-    { method: "GET" },
   );
+  if (error) throw error;
 
-  const jurisdictions = rawData
+  const jurisdictions = (data as JurisdictionWithAnswerCoverage[])
     .filter((record) => record.irrelevant === false)
     .map(processJurisdiction);
 
@@ -65,7 +58,7 @@ async function fetchAndProcessJurisdictions(): Promise<JurisdictionsData> {
   const coveredCountries = new Set<string>();
 
   for (const j of jurisdictions) {
-    const nameLower = j.Name.toLowerCase();
+    const nameLower = j.name.toLowerCase();
     knownJurisdictionTerms.add(nameLower);
     byName.set(nameLower, j);
 
@@ -94,9 +87,8 @@ export function useJurisdictions(enabled?: MaybeRefOrGetter<boolean>) {
     queryKey: ["jurisdictions-with-answer-percentage"],
     queryFn: fetchAndProcessJurisdictions,
     enabled,
-    // Jurisdiction data changes infrequently - cache aggressively
-    staleTime: 1000 * 60 * 30, // 30 minutes
-    gcTime: 1000 * 60 * 60 * 2, // 2 hours (garbage collection)
+    staleTime: 1000 * 60 * 30,
+    gcTime: 1000 * 60 * 60 * 2,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
   });
@@ -131,10 +123,6 @@ export function useJurisdiction(iso3: Ref<string>) {
   };
 }
 
-/**
- * Provides lookup utilities for jurisdictions using the API data.
- * Leverages TanStack Query cache from useJurisdictions for efficient data access.
- */
 export function useJurisdictionLookup(enabled?: MaybeRefOrGetter<boolean>) {
   const {
     data: jurisdictions,
@@ -144,52 +132,36 @@ export function useJurisdictionLookup(enabled?: MaybeRefOrGetter<boolean>) {
     ...rest
   } = useJurisdictions(enabled);
 
-  /**
-   * Finds the ISO-3 code for a given jurisdiction name. O(1) lookup.
-   */
   const getJurisdictionISO = (name: string): string => {
     if (!name) return "default";
     const jurisdiction = byName.value.get(name.toLowerCase());
     return jurisdiction?.alpha3Code?.toLowerCase() || "default";
   };
 
-  /**
-   * Finds jurisdictions that match the given search words.
-   * Note: This still requires iteration since it does partial matching.
-   */
   const findMatchingJurisdictions = (words: string[]): string[] => {
     if (!jurisdictions.value || words.length === 0) return [];
 
     return jurisdictions.value
       .filter((j) =>
         words.some((word) => {
-          const nameLower = j.Name.toLowerCase();
+          const nameLower = j.name.toLowerCase();
           const codeLower = j.alpha3Code?.toLowerCase() || "";
           return nameLower.includes(word) || codeLower.includes(word);
         }),
       )
-      .map((j) => j.Name);
+      .map((j) => j.name);
   };
 
-  /**
-   * Finds a jurisdiction by its exact name. O(1) lookup.
-   */
   const findJurisdictionByName = (name: string) => {
     if (!name) return undefined;
     return byName.value.get(name.toLowerCase());
   };
 
-  /**
-   * Finds a jurisdiction by its alpha-3 code. O(1) lookup.
-   */
   const findJurisdictionByCode = (code: string) => {
     if (!code) return undefined;
     return byAlpha3.value.get(code.toLowerCase());
   };
 
-  /**
-   * Checks if a word matches any jurisdiction term. O(1) lookup.
-   */
   const isJurisdictionTerm = (word: string): boolean => {
     return knownJurisdictionTerms.value.has(word.toLowerCase());
   };
@@ -206,9 +178,6 @@ export function useJurisdictionLookup(enabled?: MaybeRefOrGetter<boolean>) {
   };
 }
 
-/**
- * Returns a Set of lowercase alpha-3 codes for jurisdictions with answer coverage > 0.
- */
 export function useCoveredCountries() {
   const { coveredCountries, isLoading, error, isError, isFetching } =
     useJurisdictions();
@@ -222,18 +191,18 @@ export function useCoveredCountries() {
   };
 }
 
-// --- Count by jurisdiction (different endpoint) ---
-
 async function fetchCountByJurisdiction(tableName: TableName, limit?: number) {
-  const { apiClient } = useApiClient();
-  const params = new URLSearchParams({ table: tableName });
-  if (limit) {
-    params.append("limit", limit.toString());
-  }
-  return await apiClient<JurisdictionCount[]>(
-    `/statistics/count-by-jurisdiction?${params.toString()}`,
-    { method: "GET" },
+  const { client } = useApiClient();
+  const { data, error } = await client.GET(
+    "/statistics/count-by-jurisdiction",
+    {
+      params: {
+        query: { table: tableName, limit: limit ?? undefined },
+      },
+    },
   );
+  if (error) throw error;
+  return data as unknown as JurisdictionCount[];
 }
 
 function useCountByJurisdiction(
@@ -251,9 +220,6 @@ function useCountByJurisdiction(
   });
 }
 
-/**
- * Returns chart data for court decisions by jurisdiction.
- */
 export function useJurisdictionChart() {
   const tableName = ref("Court Decisions" as TableName);
   const limit = ref(6);

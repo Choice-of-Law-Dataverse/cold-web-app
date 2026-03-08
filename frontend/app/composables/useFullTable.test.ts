@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-// Mock dependencies
 vi.mock("@tanstack/vue-query", () => ({
   useQuery: vi.fn((options) => ({
     data: { value: [] },
@@ -13,7 +12,9 @@ vi.mock("@tanstack/vue-query", () => ({
 
 vi.mock("./useApiClient", () => ({
   useApiClient: vi.fn(() => ({
-    apiClient: vi.fn().mockResolvedValue([]),
+    client: {
+      POST: vi.fn().mockResolvedValue({ data: [], error: null }),
+    },
   })),
 }));
 

@@ -10,15 +10,15 @@
       :data="arbitralAward || {}"
       :labels="arbitralAwardLabels"
       :formatted-jurisdiction="
-        arbitralAward?.formattedJurisdictions?.map((j) => j.Name) || []
+        arbitralAward?.formattedJurisdictions?.map((j) => j.name) || []
       "
       :formatted-theme="
-        arbitralAward?.formattedThemes?.map((t) => t.Theme) || []
+        arbitralAward?.formattedThemes?.map((t) => t.theme) || []
       "
       :show-suggest-edit="true"
     >
       <template #footer>
-        <LastModified :date="arbitralAward?.lastModified" />
+        <LastModified :date="arbitralAward?.lastModified ?? undefined" />
       </template>
     </BaseDetailLayout>
 

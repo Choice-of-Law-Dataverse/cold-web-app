@@ -7,14 +7,14 @@
   >
     <FlagTitleYearItem
       v-for="decision in leadingCases?.slice(0, 3)"
-      :key="decision.ID"
-      :to="`/court-decision/${decision.ID}`"
+      :key="String(decision.id || '')"
+      :to="`/court-decision/${decision.id}`"
       :iso3="decision.jurisdictionsAlpha3Code || ''"
       :title="decision.caseTitle || ''"
       :year="
         decision.publicationDateIso
           ? String(formatYear(decision.publicationDateIso))
-          : decision['Date'] || ''
+          : decision.date || ''
       "
       type-class="type-court-decision"
     />

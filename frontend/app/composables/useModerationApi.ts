@@ -1,166 +1,97 @@
-/**
- * Composable for moderation API calls
- * Provides functions to interact with the moderation endpoints
- */
+import { useApiClient } from "@/composables/useApiClient";
+import type { components } from "@/types/api-schema";
 
-export interface PendingSuggestion {
-  id: number;
-  created_at: string;
-  payload: Record<string, unknown>;
-  source?: string;
-  token_sub?: string;
-  username?: string;
-  user_email?: string;
-  model?: string;
-  case_citation?: string;
-  moderation_status?: string;
-}
+type StatusMessage = components["schemas"]["StatusMessage"];
+type PendingSuggestionItem = components["schemas"]["PendingSuggestionItem"];
+type SuggestionDetailItem = components["schemas"]["SuggestionDetailItem"];
 
-export interface ModerationResponse {
-  status: string;
-  message: string;
-}
+export type PendingSuggestion = PendingSuggestionItem | SuggestionDetailItem;
+
+export type { StatusMessage as ModerationResponse };
 
 export const useModerationApi = () => {
-  /**
-   * List suggestions for a category
-   * @param category - The category to list suggestions for
-   * @param showAll - If true, returns all suggestions regardless of status (case-analyzer only)
-   */
+  const { client } = useApiClient();
+
   const listPendingSuggestions = async (
     category: string,
     showAll = false,
-  ): Promise<PendingSuggestion[]> => {
-    try {
-      const url = showAll
-        ? `/api/proxy/suggestions/pending/${category}?show_all=true`
-        : `/api/proxy/suggestions/pending/${category}`;
-
-      const { data, error } = await useFetch<PendingSuggestion[]>(url, {
-        method: "GET",
-      });
-
-      if (error.value) {
-        throw new Error(error.value.message || "Failed to fetch suggestions");
-      }
-
-      return data.value || [];
-    } catch (err) {
-      console.error("Error fetching pending suggestions:", err);
-      throw err;
-    }
+  ): Promise<PendingSuggestionItem[]> => {
+    const { data, error } = await client.GET(
+      "/suggestions/pending/{category}",
+      {
+        params: {
+          path: { category },
+          query: showAll ? { show_all: true } : {},
+        },
+      },
+    );
+    if (error || !data) throw error ?? new Error("Failed to fetch suggestions");
+    return data;
   };
 
-  /**
-   * Get details for a specific suggestion
-   */
   const getSuggestionDetail = async (
     category: string,
     id: number,
-  ): Promise<PendingSuggestion> => {
-    try {
-      const { data, error } = await useFetch<PendingSuggestion>(
-        `/api/proxy/suggestions/${category}/${id}`,
-        {
-          method: "GET",
+  ): Promise<SuggestionDetailItem> => {
+    const { data, error } = await client.GET(
+      "/suggestions/{category}/{suggestion_id}",
+      {
+        params: {
+          path: { category, suggestion_id: id },
         },
-      );
-
-      if (error.value) {
-        throw new Error(error.value.message || "Failed to fetch suggestion");
-      }
-
-      if (!data.value) {
-        throw new Error("Suggestion not found");
-      }
-
-      return data.value;
-    } catch (err) {
-      console.error("Error fetching suggestion detail:", err);
-      throw err;
-    }
+      },
+    );
+    if (error || !data) throw error ?? new Error("Failed to fetch suggestion");
+    return data;
   };
 
-  /**
-   * Approve a suggestion
-   */
   const approveSuggestion = async (
     category: string,
     id: number,
-  ): Promise<ModerationResponse> => {
-    try {
-      const { data, error } = await useFetch<ModerationResponse>(
-        `/api/proxy/suggestions/${category}/${id}/approve`,
-        {
-          method: "POST",
+  ): Promise<StatusMessage> => {
+    const { data, error } = await client.POST(
+      "/suggestions/{category}/{suggestion_id}/approve",
+      {
+        params: {
+          path: { category, suggestion_id: id },
         },
-      );
-
-      if (error.value) {
-        throw new Error(error.value.message || "Failed to approve suggestion");
-      }
-
-      return (
-        data.value || { status: "success", message: "Suggestion approved" }
-      );
-    } catch (err) {
-      console.error("Error approving suggestion:", err);
-      throw err;
-    }
+      },
+    );
+    if (error || !data)
+      throw error ?? new Error("Failed to approve suggestion");
+    return data;
   };
 
-  /**
-   * Reject a suggestion
-   */
   const rejectSuggestion = async (
     category: string,
     id: number,
-  ): Promise<ModerationResponse> => {
-    try {
-      const { data, error } = await useFetch<ModerationResponse>(
-        `/api/proxy/suggestions/${category}/${id}/reject`,
-        {
-          method: "POST",
+  ): Promise<StatusMessage> => {
+    const { data, error } = await client.POST(
+      "/suggestions/{category}/{suggestion_id}/reject",
+      {
+        params: {
+          path: { category, suggestion_id: id },
         },
-      );
-
-      if (error.value) {
-        throw new Error(error.value.message || "Failed to reject suggestion");
-      }
-
-      return (
-        data.value || { status: "success", message: "Suggestion rejected" }
-      );
-    } catch (err) {
-      console.error("Error rejecting suggestion:", err);
-      throw err;
-    }
+      },
+    );
+    if (error || !data) throw error ?? new Error("Failed to reject suggestion");
+    return data;
   };
 
-  /**
-   * Delete a suggestion (case-analyzer only)
-   */
   const deleteSuggestion = async (
     category: string,
     id: number,
-  ): Promise<ModerationResponse> => {
-    try {
-      const { data, error } = await useFetch<ModerationResponse>(
-        `/api/proxy/suggestions/${category}/${id}`,
-        {
-          method: "DELETE",
+  ): Promise<StatusMessage> => {
+    const { data, error } = await client.DELETE(
+      "/suggestions/{category}/{suggestion_id}",
+      {
+        params: {
+          path: { category, suggestion_id: id },
         },
-      );
-
-      if (error.value) {
-        throw new Error(error.value.message || "Failed to delete suggestion");
-      }
-
-      return data.value || { status: "success", message: "Suggestion deleted" };
-    } catch (err) {
-      console.error("Error deleting suggestion:", err);
-      throw err;
-    }
+      },
+    );
+    if (error || !data) throw error ?? new Error("Failed to delete suggestion");
+    return data;
   };
 
   return {

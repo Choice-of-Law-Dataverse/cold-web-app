@@ -74,7 +74,7 @@ const jurisdictionCodeRef = toRef(() => props.jurisdictionCode || "");
 const { data: jurisdiction } = useJurisdiction(jurisdictionCodeRef);
 
 const jurisdictionName = computed(() => {
-  return jurisdiction.value?.Name || "this jurisdiction";
+  return jurisdiction.value?.name || "this jurisdiction";
 });
 
 const questionId = computed(() => {

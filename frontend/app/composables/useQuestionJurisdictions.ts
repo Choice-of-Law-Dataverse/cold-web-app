@@ -35,7 +35,7 @@ function processAnswers(
     (item) =>
       typeof item.ID === "string" &&
       item.ID.endsWith(suffix) &&
-      item.jurisdictionsIrrelevant !== "Yes",
+      item.jurisdictionsIrrelevant !== true,
   );
 
   if (relevantRecords.length === 0) {

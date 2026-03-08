@@ -71,9 +71,10 @@ const mergedLiterature = computed<Literature[]>(() => {
   const merged: Literature[] = [];
 
   const addIfNew = (item: Literature | undefined) => {
-    if (item?.id && item.displayTitle && !idSet.has(item.id)) {
+    const itemId = String(item?.id || "");
+    if (itemId && item?.displayTitle && !idSet.has(itemId)) {
       merged.push(item);
-      idSet.add(item.id);
+      idSet.add(itemId);
     }
   };
 
@@ -116,7 +117,10 @@ const fullLiteratureList = computed<RelatedItem[]>(() => {
     .filter((item) =>
       oupFilter.value === "onlyOup" ? item.isOupChapter : !item.isOupChapter,
     )
-    .map(({ id, displayTitle }) => ({ id, title: displayTitle }));
+    .map(({ id, displayTitle }) => ({
+      id: String(id || ""),
+      title: displayTitle,
+    }));
 });
 
 const isLoading = computed(() => {

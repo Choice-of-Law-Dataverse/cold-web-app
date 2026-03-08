@@ -1,5 +1,3 @@
-// API Request Body Types for useApiClient composables
-// Entity response type imports for TableResponseMap
 import type { AnswerResponse } from "./entities/answer";
 import type {
   ArbitralAward,
@@ -36,9 +34,6 @@ import type {
 
 export { ApiError } from "./errors";
 
-/**
- * Question item data structure as returned from API
- */
 export interface QuestionItem {
   coldId?: string;
   ID?: string;
@@ -47,16 +42,10 @@ export interface QuestionItem {
   [key: string]: unknown;
 }
 
-/**
- * Answer item data structure as returned from API
- */
 export interface AnswerItem {
   [key: string]: string | unknown;
 }
 
-/**
- * Processed question with answer data
- */
 export interface QuestionWithAnswer {
   id: string;
   question: string;
@@ -69,57 +58,6 @@ export interface QuestionWithAnswer {
   parentId: string | null;
 }
 
-/**
- * Base interface for table-based requests
- */
-export interface BaseTableRequest {
-  table: TableName;
-}
-
-/**
- * Request body for fetching details by ID
- */
-export interface DetailsByIdRequest extends BaseTableRequest {
-  id: string | number;
-}
-
-/**
- * Filter for full table queries
- */
-export interface FullTableFilter {
-  column: string;
-  value: string | number | boolean;
-}
-
-/**
- * Request body for full table queries
- */
-export interface FullTableRequest extends BaseTableRequest {
-  filters?: FullTableFilter[];
-}
-
-/**
- * Filter object for search requests
- */
-export interface SearchFilter {
-  column: string;
-  values: string[];
-}
-
-/**
- * Browser info interface
- */
-export interface BrowserInfo {
-  userAgent: string;
-  platform: string;
-  language: string;
-  screenWidth: number;
-  screenHeight: number;
-}
-
-/**
- * Search filters interface for the useSearch hook
- */
 export interface SearchFilters {
   jurisdiction?: string;
   theme?: string;
@@ -134,68 +72,14 @@ export interface FilterObjectOption {
 
 export type FilterOption = FilterObjectOption | string;
 
-/**
- * Search parameters interface for the useSearch hook
- */
 export interface SearchParams {
   query: string;
   filters: SearchFilters;
   page?: number;
   pageSize?: number;
-  /**
-   * Optional override to control query enablement.
-   * When defined, useSearch will use this value for the `enabled` flag
-   * instead of inferring from query/filters.
-   */
   enabledOverride?: boolean;
 }
 
-/**
- * Enhanced search request body with all fields
- */
-export interface EnhancedSearchRequest {
-  search_string: string;
-  filters: SearchFilter[];
-  page: number;
-  page_size: number;
-  sort_by_date?: boolean;
-  ip_address?: string;
-  browser_info_navigator?: BrowserInfo;
-  browser_info_hint?: Record<string, unknown>;
-  hostname?: string;
-}
-
-/**
- * Request body for search queries
- */
-export interface SearchRequest {
-  search_string: string;
-  filters: SearchFilter[];
-  page?: number;
-  page_size?: number;
-  sort_by_date?: boolean;
-}
-
-/**
- * Request body for jurisdiction count queries
- */
-export interface JurisdictionCountRequest extends SearchRequest {
-  table?: TableName;
-}
-
-/**
- * Union type of all possible API request body types
- */
-export type ApiRequestBody =
-  | DetailsByIdRequest
-  | FullTableRequest
-  | SearchRequest
-  | EnhancedSearchRequest
-  | JurisdictionCountRequest;
-
-/**
- * Table names used in the API
- */
 export type TableName =
   | "Answers"
   | "Arbitral Awards"
@@ -213,10 +97,6 @@ export type TableName =
   | "Regional Legal Provisions"
   | "Specialists";
 
-/**
- * Maps table names to their corresponding response types (raw API data).
- * Used to provide type safety for filters and query results.
- */
 export type TableResponseMap = {
   Answers: AnswerResponse;
   "Arbitral Awards": ArbitralAwardResponse;
@@ -227,49 +107,37 @@ export type TableResponseMap = {
   "International Instruments": InternationalInstrumentResponse;
   "International Legal Provisions": InternationalLegalProvisionResponse;
   Jurisdictions: JurisdictionResponse;
-  "Leading Cases": CourtDecisionResponse; // Alias: Leading Cases = Court Decisions with Case Rank filter
+  "Leading Cases": CourtDecisionResponse;
   Literature: LiteratureResponse;
   Questions: QuestionResponse;
   "Regional Instruments": RegionalInstrumentResponse;
   "Regional Legal Provisions": RegionalLegalProvisionResponse;
-  Specialists: Record<string, unknown>; // Not used with full_table endpoint
+  Specialists: Record<string, unknown>;
 };
 
-/**
- * Maps table names to their processed types (used in detail pages).
- * Processed types extend response types with computed fields.
- * Used for typing labels/tooltips in BaseDetailLayout.
- */
 export type TableProcessedMap = {
-  Answers: AnswerResponse; // No separate processed type
+  Answers: AnswerResponse;
   "Arbitral Awards": ArbitralAward;
   "Arbitral Rules": ArbitralRule;
   "Court Decisions": CourtDecision;
   "Domestic Instruments": DomesticInstrument;
-  "Domestic Legal Provisions": DomesticLegalProvisionResponse; // No separate processed type
+  "Domestic Legal Provisions": DomesticLegalProvisionResponse;
   "International Instruments": InternationalInstrument;
-  "International Legal Provisions": InternationalLegalProvisionResponse; // No separate processed type
-  Jurisdictions: JurisdictionResponse; // No separate processed type
-  "Leading Cases": CourtDecision; // Alias for Court Decisions
-  Literature: LiteratureResponse; // No separate processed type
+  "International Legal Provisions": InternationalLegalProvisionResponse;
+  Jurisdictions: JurisdictionResponse;
+  "Leading Cases": CourtDecision;
+  Literature: LiteratureResponse;
   Questions: Question;
   "Regional Instruments": RegionalInstrument;
-  "Regional Legal Provisions": RegionalLegalProvisionResponse; // No separate processed type
-  Specialists: Record<string, unknown>; // Not used with full_table endpoint
+  "Regional Legal Provisions": RegionalLegalProvisionResponse;
+  Specialists: Record<string, unknown>;
 };
 
-/**
- * Type-safe filter for a specific table.
- * The column must be a key from the table's response type.
- */
 export type TypedFilter<T extends TableName> = {
   column: keyof TableResponseMap[T] & string;
   value: string | number | boolean;
 };
 
-/**
- * Search filter column names
- */
 export type FilterColumn =
   | "jurisdictions"
   | "themes"
@@ -277,40 +145,20 @@ export type FilterColumn =
   | "type"
   | string;
 
-/**
- * Search response interface
- */
 export interface SearchResponse {
   results: Record<string, unknown>[];
   totalMatches: number;
 }
 
-/**
- * Jurisdiction with answer coverage statistics
- */
 export interface JurisdictionWithAnswerCoverage {
   id: number;
-  Name: string;
+  name: string;
   alpha3Code: string;
   answerCoverage: number;
   [key: string]: unknown;
 }
 
-/**
- * Jurisdiction count statistics
- */
 export interface JurisdictionCount {
   jurisdiction: string;
   n: number;
-}
-
-/**
- * API response wrapper (generic)
- */
-export interface ApiResponse<T = unknown> {
-  data?: T;
-  error?: string;
-  total_matches?: number;
-  results?: Record<string, unknown>;
-  [key: string]: unknown;
 }

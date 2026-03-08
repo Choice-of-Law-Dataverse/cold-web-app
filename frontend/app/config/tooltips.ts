@@ -56,7 +56,7 @@ export const courtDecisionTooltips = {
     "Describes the choice of law issue addressed by the court in the relevant area of private international law.",
   courtSPosition:
     "Court's analysis and conclusion as to the relevant choice of law issue.",
-  Quote:
+  quote:
     "Direct quote from the decision related to the choice of law issue. Translations of a quote are provided in square brackets.",
   relatedQuestions:
     "Questions in our database that the court decision addresses.",
@@ -84,20 +84,20 @@ export const domesticInstrumentTooltips = {
 } as const satisfies Partial<Record<keyof DomesticInstrument, string>>;
 
 export const regionalInstrumentTooltips = {
-  Date: "Date when the instrument was enacted or came into force.",
-  Specialists:
+  date: "Date when the instrument was enacted or came into force.",
+  specialists:
     "Academics who have published on or are otherwise associated with this instrument.",
-  Literature:
+  literature:
     "This button will open the CoLD search and return all literature pieces that are relevant for this instrument.",
   regionalLegalProvisions:
     "Key provisions within the instrument, selected for their relevance to choice of law.",
 } as const satisfies Partial<Record<keyof RegionalInstrument, string>>;
 
 export const internationalInstrumentTooltips = {
-  Date: "Date when the instrument was enacted or came into force.",
-  Specialists:
+  date: "Date when the instrument was enacted or came into force.",
+  specialists:
     "Academics who have published on or are otherwise associated with this instrument.",
-  Literature:
+  literature:
     "This button will open the CoLD search and return all literature pieces that are relevant for this instrument.",
   selectedProvisions:
     "Key provisions within the instrument, selected for their relevance to choice of law.",

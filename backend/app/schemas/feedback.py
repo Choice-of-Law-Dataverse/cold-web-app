@@ -1,7 +1,8 @@
 from datetime import datetime
 from enum import StrEnum
 
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, ConfigDict, EmailStr, Field
+from pydantic.alias_generators import to_camel
 
 
 class EntityType(StrEnum):
@@ -31,6 +32,8 @@ class FeedbackModerationStatus(StrEnum):
 
 
 class FeedbackSubmit(BaseModel):
+    model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
+
     entity_type: EntityType
     entity_id: str = Field(..., max_length=256)
     entity_title: str | None = Field(None, max_length=512)
@@ -40,10 +43,14 @@ class FeedbackSubmit(BaseModel):
 
 
 class FeedbackResponse(BaseModel):
+    model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
+
     id: int
 
 
 class FeedbackDetail(BaseModel):
+    model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
+
     id: int
     created_at: datetime
     entity_type: str
@@ -57,6 +64,8 @@ class FeedbackDetail(BaseModel):
 
 
 class FeedbackPendingItem(BaseModel):
+    model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
+
     id: int
     created_at: datetime
     entity_type: str
@@ -69,4 +78,6 @@ class FeedbackPendingItem(BaseModel):
 
 
 class FeedbackUpdate(BaseModel):
+    model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
+
     moderation_status: FeedbackModerationStatus

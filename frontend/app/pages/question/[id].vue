@@ -38,9 +38,9 @@
       <template #oupchapter>
         <DetailRow :label="questionLabels.oupChapter" variant="oup">
           <LazyRelatedLiterature
-            :themes="answerData?.themes"
-            :literature-id="answerData?.jurisdictionsLiteratureId"
-            :jurisdiction="answerData?.jurisdictions"
+            :themes="answerData?.themes || ''"
+            :literature-id="String(answerData?.jurisdictionsLiteratureId ?? '')"
+            :jurisdiction="answerData?.jurisdictions || ''"
             :mode="'both'"
             :oup-filter="'onlyOup'"
           />
@@ -53,9 +53,9 @@
           variant="literature"
         >
           <LazyRelatedLiterature
-            :themes="answerData?.themes"
-            :literature-id="answerData?.jurisdictionsLiteratureId"
-            :jurisdiction="answerData?.jurisdictions"
+            :themes="answerData?.themes || ''"
+            :literature-id="String(answerData?.jurisdictionsLiteratureId ?? '')"
+            :jurisdiction="answerData?.jurisdictions || ''"
             :mode="'both'"
             :oup-filter="'noOup'"
           />
@@ -63,9 +63,9 @@
       </template>
 
       <template #footer>
-        <LastModified :date="answerData?.lastModified" />
+        <LastModified :date="answerData?.lastModified ?? undefined" />
         <LazyJurisdictionReportBanner
-          :jurisdiction-code="answerData?.JurisdictionCode"
+          :jurisdiction-code="answerData?.jurisdictionCode"
         />
       </template>
     </BaseDetailLayout>

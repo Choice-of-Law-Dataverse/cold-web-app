@@ -1,9 +1,13 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import { useFeedback } from "@/composables/useFeedback";
+import type { components } from "@/types/api-schema";
+
+type EntityType = components["schemas"]["EntityType"];
+type FeedbackType = components["schemas"]["FeedbackType"];
 
 const props = defineProps<{
-  entityType: string;
+  entityType: EntityType;
   entityId: string;
   entityTitle?: string;
 }>();
@@ -11,7 +15,7 @@ const props = defineProps<{
 const user = useUser();
 const { isSubmitting, submitFeedback } = useFeedback();
 
-const feedbackType = ref("");
+const feedbackType = ref<FeedbackType | "">("");
 const message = ref("");
 const email = ref("");
 const popoverOpen = ref(false);
@@ -52,13 +56,14 @@ function resetForm() {
 }
 
 async function handleSubmit() {
+  if (!feedbackType.value) return;
   const success = await submitFeedback({
-    entity_type: props.entityType,
-    entity_id: props.entityId,
-    entity_title: props.entityTitle,
-    feedback_type: feedbackType.value,
+    entityType: props.entityType,
+    entityId: props.entityId,
+    entityTitle: props.entityTitle,
+    feedbackType: feedbackType.value,
     message: message.value,
-    submitter_email: email.value,
+    submitterEmail: email.value,
   });
   if (success) {
     resetForm();

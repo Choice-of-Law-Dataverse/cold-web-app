@@ -93,7 +93,7 @@ import CancelModal from "@/components/ui/CancelModal.vue";
 import { format } from "date-fns";
 import { internationalInstrumentTooltips } from "@/config/tooltips";
 
-const tooltipInternationalInstrumentDate = internationalInstrumentTooltips.Date;
+const tooltipInternationalInstrumentDate = internationalInstrumentTooltips.date;
 const tooltipInternationalInstrumentLink =
   "Link to the official source or full text of the instrument.";
 
@@ -172,22 +172,19 @@ function handleNewSave() {
   const payload = {
     name: name.value,
     url: link.value,
-    attachment: "",
-    instrument_date:
-      date.value && date.value ? format(date.value, "yyyy-MM-dd") : undefined,
+    instrument_date: date.value ? format(date.value, "yyyy-MM-dd") : "",
     submitter_comments: comments.value || undefined,
   };
 
   (async () => {
     try {
       const { useApiClient } = await import("@/composables/useApiClient");
-      const { apiClient } = useApiClient();
-      await apiClient("/suggestions/international-instruments", {
-        body: payload as unknown as import("~/types/api").ApiRequestBody,
-        headers: {
-          source: "cold.global",
-        },
-      });
+      const { client } = useApiClient();
+      const { error } = await client.POST(
+        "/suggestions/international-instruments",
+        { body: payload },
+      );
+      if (error) throw error;
 
       showSaveModal.value = false;
       router.push({

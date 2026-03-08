@@ -18,7 +18,7 @@ export type BadgeColor =
   | "primary"
   | "secondary";
 
-export function getStatusBadgeColor(status?: string): BadgeColor {
+export function getStatusBadgeColor(status?: string | null): BadgeColor {
   switch (status) {
     case "pending":
       return "info";
@@ -46,7 +46,7 @@ export function getStatusBadgeColor(status?: string): BadgeColor {
 /**
  * Get status label for moderation/admin views (shorter labels)
  */
-export function getStatusLabel(status?: string): string {
+export function getStatusLabel(status?: string | null): string {
   switch (status) {
     case "pending":
       return "Pending";

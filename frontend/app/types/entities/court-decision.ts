@@ -1,57 +1,17 @@
+import type { components } from "@/types/api-schema";
 import { formatDate } from "@/utils/format";
 
-export interface CourtDecisionResponse {
-  id: string;
-  sourceTable?: string;
-  rank?: number;
-  ID?: string;
-  caseCitation?: string;
-  caseTitle?: string;
-  Instance?: string;
-  Date?: string;
-  Abstract?: string;
-  Created?: string;
-  recordId?: string;
-  idNumber?: string;
-  lastModified?: string;
-  answersLink?: string;
-  answersQuestion?: string;
-  textOfTheRelevantLegalProvisions?: string;
-  Quote?: string;
-  caseRank?: string;
-  englishTranslation?: string;
-  choiceOfLawIssue?: string;
-  courtSPosition?: string;
-  translatedExcerpt?: string;
-  relevantFacts?: string;
-  dateOfJudgment?: string;
-  pilProvisions?: string;
-  originalText?: string;
-  sortDate?: string;
-  publicationDateIso?: string;
-  officialSourceUrl?: string;
-  officialSourcePdf?: string;
-  questions?: string;
-  jurisdictionsLink?: string;
-  jurisdictionsAlpha3Code?: string;
-  jurisdictions?: string;
-  regionFromJurisdictions?: string;
-  themes?: string;
-  domesticLegalProvisions?: string;
-  relatedQuestions?: string;
-  relatedLiterature?: string;
-  oupChapter?: string;
-  countryReport?: string;
-}
+export type CourtDecisionResponse =
+  components["schemas"]["CourtDecisionRecord"];
 
-export interface CourtDecision extends CourtDecisionResponse {
+export type CourtDecision = CourtDecisionResponse & {
   hasEnglishQuoteTranslation: boolean;
   displayTitle: string;
-}
+};
 
 const EXCLUDED_TITLES = new Set(["na", "not found", "n/a"]);
 
-function isValidTitle(title: string | undefined): title is string {
+function isValidTitle(title: string | undefined | null): title is string {
   if (!title) return false;
   return !EXCLUDED_TITLES.has(title.toLowerCase());
 }
@@ -65,13 +25,13 @@ export function processCourtDecision(
     ? caseTitle
     : isValidTitle(raw.caseCitation)
       ? raw.caseCitation
-      : raw.id;
+      : String(raw.id || "");
 
   return {
     ...raw,
     caseTitle,
-    Date: formatDate(raw.Date),
-    lastModified: formatDate(raw.lastModified || raw.Created),
+    date: formatDate(raw.date),
+    lastModified: formatDate(raw.lastModified || raw.created),
     publicationDateIso: formatDate(raw.publicationDateIso),
     dateOfJudgment: formatDate(raw.dateOfJudgment),
     hasEnglishQuoteTranslation: Boolean(

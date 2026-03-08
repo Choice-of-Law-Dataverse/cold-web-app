@@ -1,52 +1,15 @@
+import type { components } from "@/types/api-schema";
 import { formatDate } from "@/utils/format";
 
-interface BaseLegalProvisionResponse {
-  id: string;
-  sourceTable?: string;
-  rank?: number;
-  ID?: string;
-  recordId?: string;
-  Created?: string;
-  lastModified?: string;
-}
-
-export interface DomesticLegalProvisionResponse extends BaseLegalProvisionResponse {
-  Name?: string;
-  Article?: string;
-  fullTextOfTheProvisionOriginalLanguage?: string;
-  fullTextOfTheProvisionEnglishTranslation?: string;
-  rankingDisplayOrder?: string;
-  domesticInstrumentsLink?: string;
-  legislationTitle?: string;
-  Answers?: string;
-  Questions?: string;
-  themesLink?: string;
-  jurisdictionsLink?: string;
-  Jurisdictions?: string;
-}
-
-export interface RegionalLegalProvisionResponse extends BaseLegalProvisionResponse {
-  titleOfTheProvision?: string;
-  fullText?: string;
-  Provision?: string;
-  sortDate?: string;
-  Instrument?: string;
-  instrumentLink?: string;
-  Questions?: string;
-}
-
-export interface InternationalLegalProvisionResponse extends BaseLegalProvisionResponse {
-  titleOfTheProvision?: string;
-  fullText?: string;
-  Provision?: string;
-  sortDate?: string;
-  Instrument?: string;
-  rankingDisplayOrder?: string;
-  instrumentLink?: string;
-}
+export type DomesticLegalProvisionResponse =
+  components["schemas"]["DomesticLegalProvisionRecord"];
+export type RegionalLegalProvisionResponse =
+  components["schemas"]["RegionalLegalProvisionRecord"];
+export type InternationalLegalProvisionResponse =
+  components["schemas"]["InternationalLegalProvisionRecord"];
 
 export interface LegalProvision {
-  id: string;
+  id: string | number | null | undefined;
   title: string;
   originalText: string;
   englishText?: string;
@@ -60,12 +23,12 @@ export function processDomesticLegalProvision(
   const englishText = raw.fullTextOfTheProvisionEnglishTranslation;
   return {
     id: raw.id,
-    title: raw.Article || "Unknown Article",
+    title: raw.article || "Unknown Article",
     originalText:
       raw.fullTextOfTheProvisionOriginalLanguage || "No content available",
     englishText: englishText || undefined,
     hasEnglishTranslation: Boolean(englishText),
-    lastModified: formatDate(raw.lastModified || raw.Created),
+    lastModified: formatDate(raw.lastModified || raw.created),
   };
 }
 
@@ -78,6 +41,6 @@ export function processRegionalLegalProvision(
     originalText: raw.fullText || "No content available",
     englishText: undefined,
     hasEnglishTranslation: false,
-    lastModified: formatDate(raw.lastModified || raw.Created),
+    lastModified: formatDate(raw.lastModified || raw.created),
   };
 }

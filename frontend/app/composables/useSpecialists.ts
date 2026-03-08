@@ -1,30 +1,24 @@
 import type { Ref } from "vue";
 import { useQuery } from "@tanstack/vue-query";
 import { useApiClient } from "@/composables/useApiClient";
+import type { components } from "@/types/api-schema";
 
-export interface Specialist {
-  id: number;
-  created_at: string | null;
-  updated_at: string | null;
-  created_by: string | null;
-  updated_by: string | null;
-  nc_order: number | null;
-  ncRecordId: string | null;
-  ncRecordHash: string | null;
-  Specialist: string | null;
-  Created: string | null;
-}
+export type Specialist = components["schemas"]["SpecialistResponse"];
 
 async function fetchSpecialists(
   jurisdictionAlphaCode: string,
 ): Promise<Specialist[]> {
-  const { apiClient } = useApiClient();
-  return await apiClient<Specialist[]>(
-    `/search/specialists/${encodeURIComponent(jurisdictionAlphaCode)}`,
+  const { client } = useApiClient();
+  const { data, error } = await client.GET(
+    "/search/specialists/{jurisdiction_alpha_code}",
     {
-      method: "GET",
+      params: {
+        path: { jurisdiction_alpha_code: jurisdictionAlphaCode },
+      },
     },
   );
+  if (error || !data) throw error ?? new Error("No data returned");
+  return data;
 }
 
 export function useSpecialists(jurisdictionAlphaCode: Ref<string>) {

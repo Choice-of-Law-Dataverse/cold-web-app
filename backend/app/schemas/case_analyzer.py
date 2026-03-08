@@ -1,17 +1,18 @@
 from typing import Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
+from pydantic.alias_generators import to_camel
 
 
 class UploadDocumentRequest(BaseModel):
-    """Request to upload and process a court decision document."""
+    model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
 
     file_name: str = Field(..., description="Original filename of the uploaded document")
     blob_url: str = Field(..., description="Azure Blob Storage URL of the uploaded PDF")
 
 
 class JurisdictionInfo(BaseModel):
-    """Detected jurisdiction information."""
+    model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
 
     legal_system_type: str = Field(..., description="Type of legal system (Civil-law, Common-law, or No court decision)")
     precise_jurisdiction: str = Field(..., description="Specific jurisdiction (e.g., 'Switzerland')")
@@ -21,7 +22,7 @@ class JurisdictionInfo(BaseModel):
 
 
 class UploadDocumentResponse(BaseModel):
-    """Response from document upload containing initial analysis."""
+    model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
 
     draft_id: int = Field(..., description="Database ID of the draft suggestion")
     extracted_text: str = Field(..., description="Extracted text from the document")
@@ -29,7 +30,7 @@ class UploadDocumentResponse(BaseModel):
 
 
 class ConfirmAnalysisRequest(BaseModel):
-    """Request to confirm jurisdiction and continue analysis."""
+    model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
 
     draft_id: int = Field(..., description="Draft ID from upload response")
     jurisdiction: JurisdictionInfo = Field(..., description="Confirmed or corrected jurisdiction information")
@@ -37,7 +38,7 @@ class ConfirmAnalysisRequest(BaseModel):
 
 
 class AnalysisStep(BaseModel):
-    """Intermediate step in the analysis workflow."""
+    model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
 
     step_name: str = Field(..., description="Name of the analysis step")
     status: Literal["in_progress", "completed", "error"] = Field(..., description="Status of this step")
@@ -46,7 +47,7 @@ class AnalysisStep(BaseModel):
 
 
 class AnalysisResult(BaseModel):
-    """Complete analysis result for court decision."""
+    model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
 
     draft_id: int
     case_citation: str | None = None
@@ -60,7 +61,7 @@ class AnalysisResult(BaseModel):
 
 
 class SubmitForApprovalRequest(BaseModel):
-    """Request to submit user-edited data for moderation approval."""
+    model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
 
     draft_id: int = Field(..., description="Database ID of the case analyzer draft")
     submitted_data: dict = Field(
@@ -80,12 +81,16 @@ class SubmitForApprovalRequest(BaseModel):
 
 
 class SubmitForApprovalResponse(BaseModel):
+    model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
+
     draft_id: int = Field(..., description="Database ID of the submitted draft")
     status: str = Field("pending", description="New moderation status")
     message: str = Field(..., description="Success message")
 
 
 class UserAnalysisSummary(BaseModel):
+    model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
+
     id: int
     created_at: str | None = None
     case_citation: str | None = None
@@ -94,6 +99,8 @@ class UserAnalysisSummary(BaseModel):
 
 
 class DraftRecoveryResponse(BaseModel):
+    model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
+
     draft_id: int
     status: str
     file_name: str | None = None

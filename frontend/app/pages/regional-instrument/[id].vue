@@ -1,7 +1,7 @@
 <template>
   <div>
-    <h1 v-if="regionalInstrument?.Abbreviation" class="sr-only">
-      {{ regionalInstrument.Abbreviation }}
+    <h1 v-if="regionalInstrument?.abbreviation" class="sr-only">
+      {{ regionalInstrument.abbreviation }}
     </h1>
     <BaseDetailLayout
       table="Regional Instruments"
@@ -14,16 +14,16 @@
     >
       <!-- Abbreviation with PDF and Source Link -->
       <template #abbreviation="{ value }">
-        <DetailRow :label="regionalInstrumentLabels.Abbreviation">
+        <DetailRow :label="regionalInstrumentLabels.abbreviation">
           <TitleWithActions>
             {{ value }}
             <template #actions>
               <PdfLink
-                :pdf-field="regionalInstrument?.Attachment"
+                :pdf-field="regionalInstrument?.attachment"
                 :record-id="route.params.id as string"
                 folder-name="regional-instruments"
               />
-              <SourceExternalLink :source-url="regionalInstrument?.URL" />
+              <SourceExternalLink :source-url="regionalInstrument?.url" />
             </template>
           </TitleWithActions>
         </DetailRow>
@@ -31,11 +31,11 @@
 
       <template #literature>
         <DetailRow
-          :label="regionalInstrumentLabels.Literature"
-          :tooltip="regionalInstrumentTooltips.Literature"
+          :label="regionalInstrumentLabels.literature"
+          :tooltip="regionalInstrumentTooltips.literature"
         >
           <LazyRelatedLiterature
-            :literature-id="regionalInstrument?.Literature || ''"
+            :literature-id="String(regionalInstrument?.literature || '')"
             mode="id"
             :oup-filter="'noOup'"
           />
@@ -60,8 +60,8 @@
               :key="index"
               :provision-id="provisionId"
               :instrument-title="
-                regionalInstrument?.Abbreviation ||
-                regionalInstrument?.Title ||
+                regionalInstrument?.abbreviation ||
+                regionalInstrument?.title ||
                 ''
               "
               table="Regional Legal Provisions"
@@ -71,20 +71,20 @@
       </template>
 
       <template #footer>
-        <LastModified :date="regionalInstrument?.lastModified" />
+        <LastModified :date="regionalInstrument?.lastModified ?? undefined" />
       </template>
     </BaseDetailLayout>
 
     <!-- Handle SEO meta tags -->
     <PageSeoMeta
-      :title-candidates="[regionalInstrument?.Abbreviation]"
+      :title-candidates="[regionalInstrument?.abbreviation]"
       fallback="Regional Instrument"
     />
 
     <EntityFeedback
       entity-type="regional_instrument"
       :entity-id="instrumentId"
-      :entity-title="regionalInstrument?.Abbreviation as string"
+      :entity-title="(regionalInstrument?.abbreviation as string) || undefined"
     />
   </div>
 </template>

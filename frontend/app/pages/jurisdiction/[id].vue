@@ -7,12 +7,12 @@
       :data="jurisdictionData || {}"
       :labels="jurisdictionLabels"
       :tooltips="jurisdictionTooltips"
-      :formatted-jurisdiction="[jurisdictionData?.Name as string]"
+      :formatted-jurisdiction="[jurisdictionData?.name as string]"
       :show-suggest-edit="true"
     >
       <DetailRow label="">
         <h1 class="mb-4 text-3xl font-semibold md:text-4xl">
-          Country Report for {{ jurisdictionData?.Name || "N/A" }}
+          Country Report for {{ jurisdictionData?.name || "N/A" }}
         </h1>
       </DetailRow>
 
@@ -28,7 +28,7 @@
                 :key="i"
                 class="link-chip--static"
               >
-                {{ specialist.Specialist }}
+                {{ specialist.specialist }}
               </span>
             </div>
           </div>
@@ -36,12 +36,12 @@
         </DetailRow>
         <DetailRow label="Domestic Instruments" variant="instrument">
           <RelatedDomesticInstruments
-            :jurisdiction="jurisdictionData?.Name as string"
+            :jurisdiction="jurisdictionData?.name as string"
           />
         </DetailRow>
         <DetailRow label="Court Decisions" variant="court-decision">
           <RelatedCourtDecisions
-            :jurisdiction="jurisdictionData?.Name as string"
+            :jurisdiction="jurisdictionData?.name as string"
           />
         </DetailRow>
 
@@ -50,7 +50,7 @@
             :literature-id="(jurisdictionData?.Literature as string) || ''"
             :mode="'both'"
             :oup-filter="'onlyOup'"
-            :jurisdiction="jurisdictionData?.Name as string"
+            :jurisdiction="jurisdictionData?.name as string"
           />
         </DetailRow>
 
@@ -61,7 +61,7 @@
         >
           <LazyRelatedLiterature
             :literature-id="(jurisdictionData?.Literature as string) || ''"
-            :jurisdiction="jurisdictionData?.Name as string"
+            :jurisdiction="jurisdictionData?.name as string"
             :mode="'both'"
             :oup-filter="'noOup'"
           />
@@ -128,14 +128,14 @@
     </ClientOnly>
 
     <PageSeoMeta
-      :title-candidates="[jurisdictionData?.Name as string]"
+      :title-candidates="[jurisdictionData?.name as string]"
       fallback="Country Report"
     />
 
     <EntityFeedback
       entity-type="jurisdiction"
       :entity-id="jurisdictionId"
-      :entity-title="jurisdictionData?.Name as string"
+      :entity-title="jurisdictionData?.name as string"
     />
   </div>
 </template>

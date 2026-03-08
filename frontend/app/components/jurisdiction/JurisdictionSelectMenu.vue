@@ -91,7 +91,7 @@ const availableJurisdictions = computed(() => {
 const selectItems = computed<SelectItem[]>(() => {
   return availableJurisdictions.value.map((jurisdiction) => ({
     label: jurisdiction.label,
-    value: jurisdiction.alpha3Code || jurisdiction.Name,
+    value: jurisdiction.alpha3Code || jurisdiction.name,
     avatar: jurisdiction.avatar ? { src: jurisdiction.avatar } : undefined,
     hasCoverage: hasCoverage(jurisdiction.answerCoverage),
     original: jurisdiction,
@@ -115,7 +115,7 @@ watch(
       const found = selectItems.value.find(
         (item) =>
           item.original.alpha3Code === newVal.alpha3Code ||
-          item.original.Name === newVal.Name,
+          item.original.name === newVal.name,
       );
       internalSelected.value = found;
     } else {

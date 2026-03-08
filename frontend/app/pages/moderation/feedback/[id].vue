@@ -17,11 +17,11 @@
       <div class="mb-8 flex items-center justify-between">
         <h1 class="text-3xl font-bold">Feedback #{{ feedbackId }}</h1>
         <UBadge
-          :color="getStatusBadgeColor(feedback.moderation_status)"
+          :color="getStatusBadgeColor(feedback.moderationStatus)"
           variant="subtle"
           size="lg"
         >
-          {{ getStatusLabel(feedback.moderation_status) }}
+          {{ getStatusLabel(feedback.moderationStatus) }}
         </UBadge>
       </div>
 
@@ -32,15 +32,15 @@
         <div class="flex flex-col gap-4 px-6 py-8">
           <DetailRow label="Type">
             <p class="result-value-small">
-              {{ entityTypeLabel(feedback.entity_type) }}
+              {{ entityTypeLabel(feedback.entityType) }}
             </p>
           </DetailRow>
           <DetailRow label="Title">
             <NuxtLink
-              :to="`/${feedback.entity_type.replace(/_/g, '-')}/${feedback.entity_id}`"
+              :to="`/${feedback.entityType.replace(/_/g, '-')}/${feedback.entityId}`"
               class="text-cold-purple hover:underline"
             >
-              {{ feedback.entity_title || feedback.entity_id }}
+              {{ feedback.entityTitle || feedback.entityId }}
             </NuxtLink>
           </DetailRow>
         </div>
@@ -53,7 +53,7 @@
         <div class="flex flex-col gap-4 px-6 py-8">
           <DetailRow label="Type">
             <UBadge color="info" variant="subtle">
-              {{ feedbackTypeLabel(feedback.feedback_type) }}
+              {{ feedbackTypeLabel(feedback.feedbackType) }}
             </UBadge>
           </DetailRow>
           <DetailRow label="Message">
@@ -62,18 +62,18 @@
             </p>
           </DetailRow>
           <DetailRow label="Submitter">
-            <p class="result-value-small">{{ feedback.submitter_email }}</p>
+            <p class="result-value-small">{{ feedback.submitterEmail }}</p>
           </DetailRow>
-          <DetailRow v-if="feedback.created_at" label="Submitted">
+          <DetailRow v-if="feedback.createdAt" label="Submitted">
             <p class="result-value-small">
-              {{ formatDateLong(feedback.created_at) }}
+              {{ formatDateLong(feedback.createdAt) }}
             </p>
           </DetailRow>
         </div>
       </UCard>
 
       <div
-        v-if="feedback.moderation_status === 'pending'"
+        v-if="feedback.moderationStatus === 'pending'"
         class="flex items-center gap-4"
       >
         <UButton
@@ -104,6 +104,7 @@ import { getStatusBadgeColor, getStatusLabel } from "@/utils/moderationStatus";
 import { formatDateLong } from "@/utils/format";
 import DetailRow from "@/components/ui/DetailRow.vue";
 import { entityTypeLabel, feedbackTypeLabel } from "@/config/feedback";
+import { useFeedbackModeration } from "@/composables/useFeedbackModeration";
 
 definePageMeta({
   middleware: ["moderation"],
@@ -113,36 +114,22 @@ const route = useRoute();
 const toast = useToast();
 const feedbackId = computed(() => Number(route.params.id));
 
-interface FeedbackDetail {
-  id: number;
-  created_at: string;
-  entity_type: string;
-  entity_id: string;
-  entity_title: string | null;
-  feedback_type: string;
-  message: string;
-  submitter_email: string;
-  token_sub: string | null;
-  moderation_status: string;
-}
+const { getDetail, updateStatus } = useFeedbackModeration();
 
 const {
   data: feedback,
   pending,
   error,
-} = await useFetch<FeedbackDetail>(`/api/proxy/feedback/${feedbackId.value}`, {
-  method: "GET",
-});
+} = await useAsyncData(`feedback-${feedbackId.value}`, () =>
+  getDetail(feedbackId.value),
+);
 
 const updating = ref(false);
 
 async function handleStatus(status: "reviewed" | "dismissed") {
   updating.value = true;
   try {
-    await $fetch(`/api/proxy/feedback/${feedbackId.value}`, {
-      method: "PATCH",
-      body: { moderation_status: status },
-    });
+    await updateStatus(feedbackId.value, status);
     toast.add({
       title: "Updated",
       description: `Feedback marked as ${status}.`,

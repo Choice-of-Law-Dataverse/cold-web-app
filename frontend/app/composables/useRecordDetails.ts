@@ -19,10 +19,12 @@ async function fetchRecordDetails<
   id: string | number,
   process?: (raw: TableResponseMap[T]) => TProcessed,
 ) {
-  const { apiClient } = useApiClient();
-  const raw = await apiClient<TableResponseMap[T]>("/search/details", {
-    body: { table, id },
+  const { client } = useApiClient();
+  const { data, error } = await client.POST("/search/details", {
+    body: { table, id: String(id), response_type: null },
   });
+  if (error) throw error;
+  const raw = data as unknown as TableResponseMap[T];
   return process ? process(raw) : (raw as unknown as TProcessed);
 }
 
@@ -75,8 +77,6 @@ export function useRecordDetailsList<
   return { data, isLoading, hasError, error };
 }
 
-// Entity-specific composables
-
 export function useDomesticInstrument(id: Ref<string | number>) {
   return useRecordDetails(
     "Domestic Instruments",
@@ -120,8 +120,6 @@ export function useArbitralAward(id: Ref<string | number>) {
 export function useArbitralRule(id: Ref<string | number>) {
   return useRecordDetails("Arbitral Rules", id, processArbitralRule);
 }
-
-// List-based composables
 
 export function useCourtDecisionsList(ids: Ref<(string | number)[]>) {
   return useRecordDetailsList("Court Decisions", ids, processCourtDecision);

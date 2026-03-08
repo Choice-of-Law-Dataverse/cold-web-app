@@ -36,18 +36,18 @@
           <div class="flex items-start justify-between px-6 py-4">
             <div class="flex-1">
               <h3 class="text-lg font-semibold">
-                {{ item.entity_title || `Entity #${item.entity_id}` }}
+                {{ item.entityTitle || `Entity #${item.entityId}` }}
               </h3>
               <p class="mt-1 text-sm text-gray-600">
-                {{ item.submitter_email }}
+                {{ item.submitterEmail }}
               </p>
             </div>
             <div class="flex items-center gap-2">
               <UBadge color="primary" variant="subtle">
-                {{ entityTypeLabel(item.entity_type) }}
+                {{ entityTypeLabel(item.entityType) }}
               </UBadge>
               <UBadge color="info" variant="subtle">
-                {{ feedbackTypeLabel(item.feedback_type) }}
+                {{ feedbackTypeLabel(item.feedbackType) }}
               </UBadge>
             </div>
           </div>
@@ -57,8 +57,8 @@
           <p class="text-sm text-gray-700">
             {{ truncate(item.message, 200) }}
           </p>
-          <p v-if="item.created_at" class="text-xs text-gray-500">
-            {{ formatDateLong(item.created_at) }}
+          <p v-if="item.createdAt" class="text-xs text-gray-500">
+            {{ formatDateLong(item.createdAt) }}
           </p>
         </div>
       </UCard>
@@ -69,33 +69,22 @@
 <script setup lang="ts">
 import { formatDateLong } from "@/utils/format";
 import { entityTypeLabel, feedbackTypeLabel } from "@/config/feedback";
+import { useFeedbackModeration } from "@/composables/useFeedbackModeration";
 
 definePageMeta({
   middleware: ["moderation"],
 });
-
-interface FeedbackItem {
-  id: number;
-  created_at: string;
-  entity_type: string;
-  entity_id: string;
-  entity_title: string | null;
-  feedback_type: string;
-  message: string;
-  submitter_email: string;
-  moderation_status: string;
-}
 
 function truncate(text: string, length: number): string {
   if (text.length <= length) return text;
   return text.slice(0, length) + "...";
 }
 
+const { listPending } = useFeedbackModeration();
+
 const {
   data: feedbackItems,
   pending,
   error,
-} = await useFetch<FeedbackItem[]>("/api/proxy/feedback/pending", {
-  method: "GET",
-});
+} = await useAsyncData("feedback-pending", () => listPending());
 </script>

@@ -1,7 +1,7 @@
 <template>
   <div>
-    <h1 v-if="internationalInstrument?.Name" class="sr-only">
-      {{ internationalInstrument.Name }}
+    <h1 v-if="internationalInstrument?.name" class="sr-only">
+      {{ internationalInstrument.name }}
     </h1>
     <BaseDetailLayout
       table="International Instruments"
@@ -14,16 +14,18 @@
     >
       <!-- Name (Title) with PDF and Source Link -->
       <template #name="{ value }">
-        <DetailRow :label="internationalInstrumentLabels.Name">
+        <DetailRow :label="internationalInstrumentLabels.name">
           <TitleWithActions>
             {{ value }}
             <template #actions>
               <PdfLink
-                :pdf-field="internationalInstrument?.Attachment"
+                :pdf-field="internationalInstrument?.attachment"
                 :record-id="instrumentId"
                 folder-name="international-instruments"
               />
-              <SourceExternalLink :source-url="internationalInstrument?.URL" />
+              <SourceExternalLink
+                :source-url="internationalInstrument?.displayUrl"
+              />
             </template>
           </TitleWithActions>
         </DetailRow>
@@ -31,11 +33,11 @@
 
       <template #literature>
         <DetailRow
-          :label="internationalInstrumentLabels.Literature"
-          :tooltip="internationalInstrumentTooltips.Literature"
+          :label="internationalInstrumentLabels.literature"
+          :tooltip="internationalInstrumentTooltips.literature"
         >
           <LazyRelatedLiterature
-            :literature-id="internationalInstrument?.Literature || ''"
+            :literature-id="internationalInstrument?.literature || ''"
             mode="id"
             :oup-filter="'noOup'"
           />
@@ -60,7 +62,7 @@
                   provision.titleOfTheProvision +
                   (internationalInstrument
                     ? ', ' +
-                      (internationalInstrument.Abbreviation ||
+                      (internationalInstrument.abbreviation ||
                         internationalInstrument.titleInEnglish)
                     : '')
                 "
@@ -79,20 +81,22 @@
       </template>
 
       <template #footer>
-        <LastModified :date="internationalInstrument?.lastModified" />
+        <LastModified
+          :date="internationalInstrument?.lastModified ?? undefined"
+        />
       </template>
     </BaseDetailLayout>
 
     <!-- Handle SEO meta tags -->
     <PageSeoMeta
-      :title-candidates="[internationalInstrument?.Name]"
+      :title-candidates="[internationalInstrument?.name]"
       fallback="International Instrument"
     />
 
     <EntityFeedback
       entity-type="international_instrument"
       :entity-id="instrumentId"
-      :entity-title="internationalInstrument?.Name as string"
+      :entity-title="(internationalInstrument?.name as string) || undefined"
     />
   </div>
 </template>

@@ -12,7 +12,7 @@
       :show-suggest-edit="true"
     >
       <template #footer>
-        <LastModified :date="arbitralRule?.lastModified" />
+        <LastModified :date="arbitralRule?.lastModified ?? undefined" />
       </template>
     </BaseDetailLayout>
 

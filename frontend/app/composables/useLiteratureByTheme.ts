@@ -1,24 +1,11 @@
 import { computed, type Ref } from "vue";
 import { useSearch } from "@/composables/useSearch";
 import type { SearchParams, SearchResponse } from "@/types/api";
-import type { Literature } from "@/types/entities/literature";
-
-interface LiteratureSearchResult {
-  id: string;
-  Title?: string;
-  title?: string;
-  oupJdChapter?: boolean;
-}
-
-function processToLiterature(item: LiteratureSearchResult): Literature {
-  const displayTitle = item.Title || item.title || "Untitled";
-  return {
-    id: item.id,
-    Title: item.Title,
-    displayTitle,
-    isOupChapter: Boolean(item.oupJdChapter),
-  } as Literature;
-}
+import {
+  type Literature,
+  type LiteratureResponse,
+  processLiterature,
+} from "@/types/entities/literature";
 
 export function useLiteratureByTheme(themes: Ref<string | undefined>) {
   const searchParams: Ref<SearchParams> = computed(() => ({
@@ -37,9 +24,7 @@ export function useLiteratureByTheme(themes: Ref<string | undefined>) {
     if (!searchResults.value?.pages) return [];
     return searchResults.value.pages
       .flatMap((page: SearchResponse) => page.results)
-      .map((item) =>
-        processToLiterature(item as unknown as LiteratureSearchResult),
-      );
+      .map((item) => processLiterature(item as LiteratureResponse));
   });
 
   return {

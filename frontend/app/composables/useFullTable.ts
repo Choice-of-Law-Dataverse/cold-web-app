@@ -14,16 +14,25 @@ import {
 } from "@/types/entities/literature";
 import { formatYear } from "@/utils/format";
 
-/**
- * Fetch full table data directly (for use with useQueries or custom patterns).
- * Filters are type-safe - column names are validated against the table's response type.
- */
 export async function fetchFullTableData<T extends TableName>(
   table: T,
   filters: TypedFilter<T>[] = [],
 ): Promise<TableResponseMap[T][]> {
-  const { apiClient } = useApiClient();
-  return await apiClient("/search/full_table", { body: { table, filters } });
+  const { client } = useApiClient();
+  const { data, error } = await client.POST("/search/full_table", {
+    body: {
+      table,
+      filters: filters.length
+        ? filters.map((f) => ({
+            column: String(f.column),
+            value: String(f.value),
+          }))
+        : null,
+      response_type: null,
+    },
+  });
+  if (error) throw error;
+  return data as unknown as TableResponseMap[T][];
 }
 
 interface UseFullTableOptions<
@@ -31,35 +40,12 @@ interface UseFullTableOptions<
   TProcessed,
   TSelected = TProcessed[],
 > {
-  /** Type-safe filters - column names are validated against the table's response type */
   filters?: TypedFilter<T>[];
-  /** Transform each item from raw response to processed type (applied during fetch) */
   process?: (raw: TableResponseMap[T]) => TProcessed;
-  /** Post-process the entire result array (applied by TanStack Query's select) */
   select?: (data: TProcessed[]) => TSelected;
-  /** Whether the query is enabled */
   enabled?: MaybeRefOrGetter<boolean>;
 }
 
-/**
- * Fetch full table data with type-safe filters and optional processing.
- *
- * @example
- * // Basic usage - returns raw response type
- * const { data } = useFullTable("Court Decisions");
- *
- * @example
- * // With processing - transforms each item
- * const { data } = useFullTable("Court Decisions", {
- *   process: processCourtDecision,
- * });
- *
- * @example
- * // With type-safe filters
- * const { data } = useFullTable("Court Decisions", {
- *   filters: [{ column: "caseRank", value: 10 }],
- * });
- */
 export function useFullTable<
   T extends TableName,
   TProcessed = TableResponseMap[T],
@@ -85,10 +71,6 @@ export function useFullTable<
   });
 }
 
-/**
- * Fetch full table data with reactive filters.
- * Use this when filters depend on reactive state.
- */
 export function useFullTableWithFilters<
   T extends TableName,
   TProcessed = TableResponseMap[T],
@@ -117,8 +99,6 @@ export function useFullTableWithFilters<
       enabled !== undefined ? computed(() => toValue(enabled)) : undefined,
   });
 }
-
-// Entity-specific composables
 
 export function useQuestions() {
   return useFullTable("Questions");

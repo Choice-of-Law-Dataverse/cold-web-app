@@ -35,6 +35,14 @@ class AnswerRecord(RecordBase):
     jurisdictions_region: str | None = None
     jurisdictions_irrelevant: bool | None = None
     themes: str | None = None
+    court_decisions_id: str | None = None
+    court_decisions: str | None = None
+    court_decisions_link: str | None = None
+    domestic_instruments: str | None = None
+    domestic_instruments_id: str | None = None
+    domestic_instruments_link: str | None = None
+    domestic_legal_provisions: str | None = None
+    domestic_legal_provisions_link: str | None = None
 
 
 class CourtDecisionRecord(RecordBase):
@@ -267,6 +275,9 @@ class ArbitralAwardRecord(RecordBase):
     jurisdictions_alpha_3_code: str | None = None
     jurisdictions_link: str | None = None
     themes: str | None = None
+    related_arbitral_institutions: list[dict[str, str | None]] | None = None
+    related_jurisdictions: list[dict[str, str | None]] | None = None
+    related_themes: list[dict[str, str | None]] | None = None
 
 
 class ArbitralInstitutionRecord(RecordBase):
@@ -328,6 +339,7 @@ class ArbitralRuleRecord(RecordBase):
     jurisdictions: str | None = None
     jurisdictions_alpha_3_code: str | None = None
     jurisdictions_link: str | None = None
+    related_arbitral_institutions: list[dict[str, str | None]] | None = None
 
 
 class DomesticLegalProvisionRecord(RecordBase):
@@ -448,3 +460,28 @@ TABLE_RECORD_MODELS: dict[str, type[RecordBase]] = {
     "Jurisdictions": JurisdictionRecord,
     "Questions": QuestionRecord,
 }
+
+AnyRecord = (
+    AnswerRecord
+    | CourtDecisionRecord
+    | DomesticInstrumentRecord
+    | InternationalInstrumentRecord
+    | RegionalInstrumentRecord
+    | LiteratureRecord
+    | ArbitralAwardRecord
+    | ArbitralInstitutionRecord
+    | ArbitralProvisionRecord
+    | ArbitralRuleRecord
+    | DomesticLegalProvisionRecord
+    | InternationalLegalProvisionRecord
+    | RegionalLegalProvisionRecord
+    | JurisdictionRecord
+    | QuestionRecord
+    | RecordBase
+)
+
+
+def validate_record(data: dict) -> AnyRecord:
+    source_table = data.get("source_table", "")
+    model = TABLE_RECORD_MODELS.get(source_table, RecordBase)
+    return model(**data)  # type: ignore[return-value]

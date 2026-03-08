@@ -48,17 +48,17 @@
         <DetailRow
           v-if="
             courtDecision &&
-            (courtDecision['Quote'] || courtDecision.translatedExcerpt)
+            (courtDecision.quote || courtDecision.translatedExcerpt)
           "
-          :label="courtDecisionLabels.Quote"
-          :tooltip="courtDecisionTooltips.Quote"
+          :label="courtDecisionLabels.quote"
+          :tooltip="courtDecisionTooltips.quote"
         >
           <div>
             <div
               v-if="
                 courtDecision?.hasEnglishQuoteTranslation &&
-                courtDecision?.Quote &&
-                courtDecision.Quote.trim() !== ''
+                courtDecision?.quote &&
+                courtDecision.quote.trim() !== ''
               "
               class="mb-2 flex items-center gap-1"
             >
@@ -91,10 +91,10 @@
                 {{
                   showEnglishQuote &&
                   courtDecision?.hasEnglishQuoteTranslation &&
-                  courtDecision?.Quote &&
-                  courtDecision.Quote.trim() !== ""
+                  courtDecision?.quote &&
+                  courtDecision.quote.trim() !== ""
                     ? courtDecision.translatedExcerpt
-                    : courtDecision?.Quote || courtDecision?.translatedExcerpt
+                    : courtDecision?.quote || courtDecision?.translatedExcerpt
                 }}
               </p>
             </div>
@@ -155,9 +155,11 @@
       </template>
 
       <template #footer>
-        <LastModified :date="courtDecision?.lastModified" />
+        <LastModified :date="courtDecision?.lastModified ?? undefined" />
         <LazyJurisdictionReportBanner
-          :jurisdiction-code="courtDecision?.jurisdictionsAlpha3Code"
+          :jurisdiction-code="
+            courtDecision?.jurisdictionsAlpha3Code ?? undefined
+          "
         />
       </template>
 

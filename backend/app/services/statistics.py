@@ -17,19 +17,29 @@ class StatisticsService:
         """
         query = f"""
         SELECT
-            j.*,
+            j.id,
+            j."Name" AS name,
+            j."Alpha_3_Code" AS alpha_3_code,
+            j."Type" AS type,
+            j."Region" AS region,
+            j."North_South_Divide" AS north_south_divide,
+            j."Jurisdictional_Differentiator" AS jurisdictional_differentiator,
+            j."Jurisdiction_Summary" AS jurisdiction_summary,
+            j."Legal_Families" AS legal_family,
+            j."Irrelevant" AS irrelevant,
+            j."Done" AS done,
             COALESCE(
                 ROUND(
                     (COUNT(a.id) FILTER (WHERE LOWER(a."Answer") != 'no data') * 100.0) / NULLIF(COUNT(a.id), 0),
                     2
                 ),
                 0
-            ) AS "Answer_Coverage"
+            ) AS answer_coverage
         FROM "{self.schema}"."Jurisdictions" j
         LEFT JOIN "{self.schema}"."_nc_m2m_Jurisdictions_Answers" m ON j.id = m."Jurisdictions_id"
         LEFT JOIN "{self.schema}"."Answers" a ON a.id = m."Answers_id"
         GROUP BY j.id
-        ORDER BY j."Name"
+        ORDER BY name
         """
         results = self.db.execute_query(query)
 

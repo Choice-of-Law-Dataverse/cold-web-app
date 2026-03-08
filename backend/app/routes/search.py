@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 
 from app.auth import verify_frontend_request
-from app.schemas.records import RecordBase
+from app.schemas.records import AnyRecord, validate_record
 from app.schemas.requests import (
     CuratedDetailsRequest,
     FullTableRequest,
@@ -70,7 +70,7 @@ def handle_full_text_search(
     sort_by_date = getattr(body, "sort_by_date", False)
     response_type = getattr(body, "response_type", "parsed")
 
-    results = search_service.full_text_search(
+    raw = search_service.full_text_search(
         search_string,
         filters,
         page,
@@ -78,7 +78,8 @@ def handle_full_text_search(
         sort_by_date,
         response_type=response_type,
     )
-    return FullTextSearchResponse(**results)
+    validated_results = [validate_record(r) for r in raw.pop("results", [])]
+    return FullTextSearchResponse(results=validated_results, **raw)
 
 
 @router.post(
@@ -143,7 +144,7 @@ def handle_curated_details_search(
 def return_full_table(
     body: FullTableRequest,
     search_service: SearchService = Depends(get_search_service),
-) -> list[RecordBase]:
+) -> list[AnyRecord]:
     table = body.table
     filters = body.filters or []
     response_type = getattr(body, "response_type", "parsed")
@@ -159,7 +160,7 @@ def return_full_table(
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e)) from e
 
-    return [RecordBase(**r) for r in results]
+    return [validate_record(r) for r in results]
 
 
 @router.get(

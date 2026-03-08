@@ -138,8 +138,8 @@ import { format, parseISO } from "date-fns";
 import { internationalInstrumentTooltips } from "@/config/tooltips";
 
 const tooltipInternationalInstrumentSpecialist =
-  internationalInstrumentTooltips.Specialists;
-const tooltipInternationalInstrumentDate = internationalInstrumentTooltips.Date;
+  internationalInstrumentTooltips.specialists;
+const tooltipInternationalInstrumentDate = internationalInstrumentTooltips.date;
 const tooltipInternationalInstrumentLink =
   "Link to the official source or full text of the instrument.";
 

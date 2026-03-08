@@ -125,7 +125,7 @@
           <div class="mb-6 flex flex-wrap gap-2 md:hidden">
             <UBadge
               v-for="(jurisdiction, index) in jurisdictions"
-              :key="jurisdiction.alpha3Code || jurisdiction.Name"
+              :key="jurisdiction.alpha3Code || jurisdiction.name"
               color="neutral"
               variant="soft"
               :class="
@@ -133,7 +133,7 @@
                   ? 'text-md cursor-pointer hover:bg-gray-200'
                   : 'text-md'
               "
-              :title="jurisdiction.Name"
+              :title="jurisdiction.name"
               @click="
                 index > 0 ? removeJurisdiction(jurisdiction.alpha3Code) : null
               "
@@ -142,7 +142,7 @@
                 <img
                   v-if="jurisdiction.avatar"
                   :src="jurisdiction.avatar"
-                  :alt="`${jurisdiction.Name} flag`"
+                  :alt="`${jurisdiction.name} flag`"
                   class="h-3.5 w-5 rounded-sm object-cover"
                 />
                 <span>{{ jurisdictionLabel(jurisdiction) }}</span>
@@ -168,7 +168,7 @@
               </div>
               <div
                 v-for="(jurisdiction, index) in jurisdictions"
-                :key="'h-' + (jurisdiction.alpha3Code || jurisdiction.Name)"
+                :key="'h-' + (jurisdiction.alpha3Code || jurisdiction.name)"
                 class="comparison-header-cell sticky top-0 bg-white py-3 text-center"
                 :class="index === 0 && isScrollable ? 'sticky-col-2' : ''"
                 :style="
@@ -179,7 +179,7 @@
                   type="button"
                   class="jurisdiction-action-button"
                   :class="{ removable: index > 0 }"
-                  :title="jurisdiction.Name"
+                  :title="jurisdiction.name"
                   :disabled="index === 0"
                   @click="
                     index > 0
@@ -190,7 +190,7 @@
                   <img
                     v-if="jurisdiction.avatar"
                     :src="jurisdiction.avatar"
-                    :alt="`${jurisdiction.Name} flag`"
+                    :alt="`${jurisdiction.name} flag`"
                     class="h-3.5 w-5 flex-shrink-0 rounded-sm object-cover"
                   />
                   <span class="min-w-0 truncate">{{
@@ -219,7 +219,7 @@
 
                 <div
                   v-for="(jurisdiction, jIndex) in jurisdictions"
-                  :key="jurisdiction.alpha3Code || jurisdiction.Name"
+                  :key="jurisdiction.alpha3Code || jurisdiction.name"
                   class="comparison-cell comparison-cell--answer"
                   :class="{ 'sticky-col-2': jIndex === 0 && isScrollable }"
                   :style="
@@ -285,7 +285,7 @@
               <div class="flex flex-wrap gap-4">
                 <div
                   v-for="jurisdiction in jurisdictions"
-                  :key="jurisdiction.alpha3Code || jurisdiction.Name"
+                  :key="jurisdiction.alpha3Code || jurisdiction.name"
                   class="flex items-center gap-2"
                 >
                   <div
@@ -298,7 +298,7 @@
                     <img
                       v-if="jurisdiction.avatar"
                       :src="jurisdiction.avatar"
-                      :alt="`${jurisdiction.Name} flag`"
+                      :alt="`${jurisdiction.name} flag`"
                       class="h-2 w-3 object-cover"
                     />
                     <USkeleton class="h-4 w-16" />
@@ -314,7 +314,7 @@
                     <img
                       v-if="jurisdiction.avatar"
                       :src="jurisdiction.avatar"
-                      :alt="`${jurisdiction.Name} flag`"
+                      :alt="`${jurisdiction.name} flag`"
                       class="h-2 w-3 flex-shrink-0 object-cover"
                     />
                     <template
@@ -523,7 +523,7 @@ const stickyColLeft = computed(() => {
 });
 
 const jurisdictionLabel = (j: JurisdictionOption) =>
-  useShortLabels.value && j.alpha3Code ? j.alpha3Code : j.Name;
+  useShortLabels.value && j.alpha3Code ? j.alpha3Code : j.name;
 
 const getAnswerLink = (alpha3Code: string, questionId: string) => {
   return `/question/${alpha3Code}_${questionId}`;
@@ -546,13 +546,13 @@ const rows = computed(() => {
   }
 
   const sorted = questionsData.value.slice().sort((a, b) => {
-    const aId = a.ID ?? "";
-    const bId = b.ID ?? "";
+    const aId = String(a.ID ?? "");
+    const bId = String(b.ID ?? "");
     return aId.localeCompare(bId);
   });
 
   return sorted.map((item) => {
-    const id = item.ID ?? "";
+    const id = String(item.ID ?? "");
     const level = typeof id === "string" ? id.match(/\./g)?.length || 0 : 0;
 
     // Backward compatible format for single jurisdiction
