@@ -89,6 +89,14 @@ export const arbitralRuleLabels = {
   inForceFrom: "In Force From",
 } as const;
 
+export const specialistLabels = {
+  specialist: "Name",
+  affiliation: "Affiliation",
+  contact: "Contact",
+  bio: "Biography",
+  website: "Website",
+} as const;
+
 export const arbitralAwardLabels = {
   caseNumber: "Case Number",
   arbitralInstitution: "Arbitral Institutions",
@@ -108,5 +116,6 @@ export type DomesticInstrumentField = keyof typeof domesticInstrumentLabels;
 export type RegionalInstrumentField = keyof typeof regionalInstrumentLabels;
 export type InternationalInstrumentField =
   keyof typeof internationalInstrumentLabels;
+export type SpecialistField = keyof typeof specialistLabels;
 export type ArbitralRuleField = keyof typeof arbitralRuleLabels;
 export type ArbitralAwardField = keyof typeof arbitralAwardLabels;
