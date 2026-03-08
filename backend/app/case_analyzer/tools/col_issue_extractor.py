@@ -7,7 +7,7 @@ from agents.models.openai_responses import OpenAIResponsesModel
 from ..config import get_model, get_openai_client
 from ..prompts import get_prompt_module
 from ..utils import filter_themes_by_list, generate_system_prompt
-from .models import ColIssueOutput, ColSectionOutput, ThemeClassificationOutput
+from .models import ColIssueOutput, ColSectionOutput, StepResult, ThemeClassificationOutput
 
 logger = logging.getLogger(__name__)
 
@@ -18,20 +18,8 @@ async def extract_col_issue(
     legal_system: str,
     jurisdiction: str | None,
     themes_output: ThemeClassificationOutput,
-):
-    """
-    Extract Choice of Law issue from court decision.
-
-    Args:
-        text: Full court decision text
-        col_section_output: Extracted Choice of Law sections
-        legal_system: Legal system type (e.g., "Civil-law jurisdiction")
-        jurisdiction: Precise jurisdiction (e.g., "Switzerland")
-        themes_output: Classified themes output
-
-    Returns:
-        ColIssueOutput: Extracted issue with confidence and reasoning
-    """
+    previous_response_id: str | None = None,
+) -> StepResult[ColIssueOutput]:
     with logfire.span("col_issue"):
         COL_ISSUE_PROMPT = get_prompt_module(legal_system, "analysis", jurisdiction).COL_ISSUE_PROMPT
 
@@ -52,7 +40,7 @@ async def extract_col_issue(
                 openai_client=get_openai_client(),
             ),
         )
-        run_result = await Runner.run(agent, prompt)
+        run_result = await Runner.run(agent, prompt, previous_response_id=previous_response_id)
         result = run_result.final_output_as(ColIssueOutput)
 
-        return result
+        return StepResult(output=result, response_id=run_result.last_response_id)

@@ -11,6 +11,7 @@ from .models import (
     ColIssueOutput,
     ColSectionOutput,
     CourtsPositionOutput,
+    StepResult,
     ThemeClassificationOutput,
 )
 
@@ -24,21 +25,8 @@ async def extract_courts_position(
     jurisdiction: str | None,
     themes_output: ThemeClassificationOutput,
     col_issue_output: ColIssueOutput,
-):
-    """
-    Extract court's position from court decision.
-
-    Args:
-        text: Full court decision text
-        col_section_output: Extracted Choice of Law sections
-        legal_system: Legal system type (e.g., "Civil-law jurisdiction")
-        jurisdiction: Precise jurisdiction (e.g., "Switzerland")
-        themes_output: Classified themes output
-        col_issue_output: Extracted Choice of Law issue
-
-    Returns:
-        CourtsPositionOutput: Extracted position with confidence and reasoning
-    """
+    previous_response_id: str | None = None,
+) -> StepResult[CourtsPositionOutput]:
     with logfire.span("courts_position"):
         COURTS_POSITION_PROMPT = get_prompt_module(legal_system, "analysis", jurisdiction).COURTS_POSITION_PROMPT
 
@@ -59,7 +47,7 @@ async def extract_courts_position(
                 openai_client=get_openai_client(),
             ),
         )
-        run_result = await Runner.run(agent, prompt)
+        run_result = await Runner.run(agent, prompt, previous_response_id=previous_response_id)
         result = run_result.final_output_as(CourtsPositionOutput)
 
-        return result
+        return StepResult(output=result, response_id=run_result.last_response_id)

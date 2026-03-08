@@ -7,7 +7,7 @@ from agents.models.openai_responses import OpenAIResponsesModel
 from ..config import get_model, get_openai_client
 from ..prompts import get_prompt_module
 from ..utils import generate_system_prompt
-from .models import ColSectionOutput
+from .models import ColSectionOutput, StepResult
 
 logger = logging.getLogger(__name__)
 
@@ -16,19 +16,8 @@ async def extract_col_section(
     text: str,
     legal_system: str,
     jurisdiction: str | None,
-):
-    """
-    Extract Choice of Law section from court decision text.
-
-    Args:
-        text: Full court decision text
-        legal_system: Legal system type (e.g., "Civil-law jurisdiction")
-        jurisdiction: Precise jurisdiction (e.g., "Switzerland")
-
-
-    Returns:
-        ColSectionOutput: Extracted sections with confidence and reasoning
-    """
+    previous_response_id: str | None = None,
+) -> StepResult[ColSectionOutput]:
     with logfire.span("col_section"):
         COL_SECTION_PROMPT = get_prompt_module(legal_system, "col_section", jurisdiction).COL_SECTION_PROMPT
 
@@ -47,9 +36,9 @@ async def extract_col_section(
         )
 
         try:
-            run_result = await Runner.run(agent, prompt)
+            run_result = await Runner.run(agent, prompt, previous_response_id=previous_response_id)
             result = run_result.final_output_as(ColSectionOutput)
-            return result
+            return StepResult(output=result, response_id=run_result.last_response_id)
         except Exception as e:
             logger.error("Error in extract_col_section: %s", e)
             raise

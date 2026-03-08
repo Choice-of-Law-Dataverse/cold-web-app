@@ -7,7 +7,7 @@ from agents.models.openai_responses import OpenAIResponsesModel
 from ..config import get_model, get_openai_client
 from ..prompts import get_prompt_module
 from ..utils import generate_system_prompt
-from .models import ColSectionOutput, PILProvisionsOutput
+from .models import ColSectionOutput, PILProvisionsOutput, StepResult
 
 logger = logging.getLogger(__name__)
 
@@ -17,19 +17,8 @@ async def extract_pil_provisions(
     col_section_output: ColSectionOutput,
     legal_system: str,
     jurisdiction: str | None,
-):
-    """
-    Extract PIL provisions from court decision.
-
-    Args:
-        text: Full court decision text
-        col_section: Choice of Law section text
-        legal_system: Legal system type (e.g., "Civil-law jurisdiction")
-        jurisdiction: Precise jurisdiction (e.g., "Switzerland")
-
-    Returns:
-        PILProvisionsOutput: Extracted provisions with confidence and reasoning
-    """
+    previous_response_id: str | None = None,
+) -> StepResult[PILProvisionsOutput]:
     with logfire.span("pil_provisions"):
         PIL_PROVISIONS_PROMPT = get_prompt_module(legal_system, "analysis", jurisdiction).PIL_PROVISIONS_PROMPT
 
@@ -45,7 +34,7 @@ async def extract_pil_provisions(
                 openai_client=get_openai_client(),
             ),
         )
-        run_result = await Runner.run(agent, prompt)
+        run_result = await Runner.run(agent, prompt, previous_response_id=previous_response_id)
         result = run_result.final_output_as(PILProvisionsOutput)
 
-        return result
+        return StepResult(output=result, response_id=run_result.last_response_id)

@@ -11,6 +11,7 @@ from .models import (
     ColIssueOutput,
     ColSectionOutput,
     ObiterDictaOutput,
+    StepResult,
     ThemeClassificationOutput,
 )
 
@@ -24,8 +25,8 @@ async def extract_obiter_dicta(
     jurisdiction: str | None,
     themes_output: ThemeClassificationOutput,
     col_issue_output: ColIssueOutput,
-) -> ObiterDictaOutput:
-    """Extract obiter dicta commentary for Common Law or India workflows."""
+    previous_response_id: str | None = None,
+) -> StepResult[ObiterDictaOutput]:
     with logfire.span("obiter_dicta"):
         prompt_module = get_prompt_module(legal_system, "analysis", jurisdiction)
         prompt_template = prompt_module.COURTS_POSITION_OBITER_DICTA_PROMPT
@@ -50,5 +51,5 @@ async def extract_obiter_dicta(
                 openai_client=get_openai_client(),
             ),
         )
-        run_result = await Runner.run(agent, prompt)
-        return run_result.final_output_as(ObiterDictaOutput)
+        run_result = await Runner.run(agent, prompt, previous_response_id=previous_response_id)
+        return StepResult(output=run_result.final_output_as(ObiterDictaOutput), response_id=run_result.last_response_id)

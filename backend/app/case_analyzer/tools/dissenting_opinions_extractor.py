@@ -11,6 +11,7 @@ from .models import (
     ColIssueOutput,
     ColSectionOutput,
     DissentingOpinionsOutput,
+    StepResult,
     ThemeClassificationOutput,
 )
 
@@ -24,8 +25,8 @@ async def extract_dissenting_opinions(
     jurisdiction: str | None,
     themes_output: ThemeClassificationOutput,
     col_issue_output: ColIssueOutput,
-) -> DissentingOpinionsOutput:
-    """Extract dissenting or minority opinions for supported jurisdictions."""
+    previous_response_id: str | None = None,
+) -> StepResult[DissentingOpinionsOutput]:
     with logfire.span("dissenting_opinions"):
         prompt_module = get_prompt_module(legal_system, "analysis", jurisdiction)
         prompt_template = prompt_module.COURTS_POSITION_DISSENTING_OPINIONS_PROMPT
@@ -50,5 +51,5 @@ async def extract_dissenting_opinions(
                 openai_client=get_openai_client(),
             ),
         )
-        run_result = await Runner.run(agent, prompt)
-        return run_result.final_output_as(DissentingOpinionsOutput)
+        run_result = await Runner.run(agent, prompt, previous_response_id=previous_response_id)
+        return StepResult(output=run_result.final_output_as(DissentingOpinionsOutput), response_id=run_result.last_response_id)

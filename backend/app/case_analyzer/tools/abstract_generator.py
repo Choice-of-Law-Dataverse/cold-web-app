@@ -15,6 +15,7 @@ from .models import (
     ObiterDictaOutput,
     PILProvisionsOutput,
     RelevantFactsOutput,
+    StepResult,
     ThemeClassificationOutput,
 )
 
@@ -32,25 +33,8 @@ async def extract_abstract(
     court_position_output: CourtsPositionOutput,
     obiter_dicta_output: ObiterDictaOutput | None = None,
     dissenting_opinions_output: DissentingOpinionsOutput | None = None,
-):
-    """
-    Generate abstract from court decision analysis.
-
-    Args:
-        text: Full court decision text
-        legal_system: Legal system type (e.g., "Civil-law jurisdiction")
-        jurisdiction: Precise jurisdiction (e.g., "Switzerland")
-        themes_output: Classified themes output
-        facts_output: Relevant facts output
-        pil_provisions_output: PIL provisions output
-        col_issue_output: Choice of Law issue output
-        court_position_output: Court's position output
-        obiter_dicta_output: Obiter dicta output (for Common Law jurisdictions)
-        dissenting_opinions_output: Dissenting opinions output (for Common Law jurisdictions)
-
-    Returns:
-        AbstractOutput: Generated abstract with confidence and reasoning
-    """
+    previous_response_id: str | None = None,
+) -> StepResult[AbstractOutput]:
     with logfire.span("abstract"):
         ABSTRACT_PROMPT = get_prompt_module(legal_system, "analysis", jurisdiction).ABSTRACT_PROMPT
 
@@ -86,7 +70,7 @@ async def extract_abstract(
                 openai_client=get_openai_client(),
             ),
         )
-        run_result = await Runner.run(agent, prompt)
+        run_result = await Runner.run(agent, prompt, previous_response_id=previous_response_id)
         result = run_result.final_output_as(AbstractOutput)
 
-        return result
+        return StepResult(output=result, response_id=run_result.last_response_id)

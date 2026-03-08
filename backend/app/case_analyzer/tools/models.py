@@ -1,8 +1,15 @@
 """Pydantic models for case analyzer outputs and classification."""
 
+from dataclasses import dataclass
 from typing import Literal
 
 from pydantic import BaseModel, Field
+
+
+@dataclass
+class StepResult[T]:
+    output: T
+    response_id: str | None = None
 
 
 class ConfidenceReasoningModel(BaseModel):
