@@ -6,25 +6,14 @@
     <InlineError v-else-if="error" :error="error" />
     <div v-else-if="displayedItems.length" class="result-value-small">
       <div class="mb-2 flex flex-row flex-wrap gap-x-6 gap-y-2">
-        <a
+        <EntityLink
           v-for="item in displayedItems"
           :key="item.id"
-          class="link-chip--neutral"
-          :href="itemPath(item)"
-          @click="handleItemClick($event, item)"
-        >
-          {{ item.title }}
-          <span
-            v-if="item.badge"
-            class="related-item-badge"
-            :style="{
-              backgroundColor: `color-mix(in srgb, ${item.badge.color} 14%, white)`,
-              color: item.badge.color,
-            }"
-          >
-            {{ item.badge.label }}
-          </span>
-        </a>
+          :id="item.id"
+          :title="item.title"
+          :base-path="basePath"
+          :badge="item.badge"
+        />
       </div>
       <ShowMoreLess
         v-if="items.length > 10"
@@ -46,8 +35,7 @@ import { ref, computed } from "vue";
 import LoadingBar from "@/components/layout/LoadingBar.vue";
 import InlineError from "@/components/ui/InlineError.vue";
 import ShowMoreLess from "@/components/ui/ShowMoreLess.vue";
-import { useEntityDrawer } from "@/composables/useEntityDrawer";
-import { getEntityConfig } from "@/config/entityRegistry";
+import EntityLink from "@/components/ui/EntityLink.vue";
 import type { RelatedItem, EmptyValueBehavior } from "@/types/ui";
 
 const props = withDefaults(
@@ -68,8 +56,6 @@ const props = withDefaults(
   },
 );
 
-const { openDrawer } = useEntityDrawer();
-
 const showAll = ref(false);
 
 const hasItems = computed(() => props.items.length > 0);
@@ -86,35 +72,4 @@ const displayedItems = computed(() => {
     ? props.items.slice(0, 10)
     : props.items;
 });
-
-function itemPath(item: RelatedItem): string {
-  return item.id.startsWith("/") ? item.id : `${props.basePath}/${item.id}`;
-}
-
-function handleItemClick(event: MouseEvent, item: RelatedItem) {
-  if (event.metaKey || event.ctrlKey) return;
-
-  const config = getEntityConfig(props.basePath);
-  if (!config) return;
-
-  event.preventDefault();
-  const forceDrawer = config.hasDetailPage === false;
-  openDrawer(item.id, config.table, props.basePath, forceDrawer);
-}
 </script>
-
-<style scoped>
-.related-item-badge {
-  display: inline-flex;
-  align-items: center;
-  border-radius: 9999px;
-  padding: 0.0625rem 0.4rem;
-  font-size: 0.625rem;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  line-height: 1.125rem;
-  white-space: nowrap;
-  margin-left: 0.25rem;
-  vertical-align: middle;
-}
-</style>

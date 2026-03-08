@@ -13,11 +13,13 @@
     <template #content>
       <div class="flex h-full flex-col">
         <div class="flex items-center justify-between px-6 py-5">
-          <a
+          <EntityLink
             v-if="headerJurisdiction"
-            class="label-jurisdiction mr-2 truncate"
-            :href="`/jurisdiction/${headerJurisdictionCode}`"
-            @click="handleJurisdictionClick"
+            :id="headerJurisdictionCode"
+            :title="headerJurisdiction"
+            base-path="/jurisdiction"
+            variant="jurisdiction"
+            class="mr-2 truncate"
           >
             <div class="flag-wrapper">
               <JurisdictionFlag
@@ -27,7 +29,7 @@
               />
             </div>
             <span>{{ headerJurisdiction }}</span>
-          </a>
+          </EntityLink>
           <span v-else />
           <div class="flex shrink-0 items-center gap-1">
             <UButton
@@ -123,6 +125,7 @@ import { useApiClient } from "@/composables/useApiClient";
 import type { RelatedItem } from "@/types/ui";
 import DetailRow from "@/components/ui/DetailRow.vue";
 import RelatedItemsList from "@/components/ui/RelatedItemsList.vue";
+import EntityLink from "@/components/ui/EntityLink.vue";
 import LoadingBar from "@/components/layout/LoadingBar.vue";
 import InlineError from "@/components/ui/InlineError.vue";
 import JurisdictionDrawerQA from "@/components/jurisdiction/JurisdictionDrawerQA.vue";
@@ -130,7 +133,7 @@ import DrawerAnswerMap from "@/components/jurisdiction/DrawerAnswerMap.vue";
 import JurisdictionFlag from "@/components/ui/JurisdictionFlag.vue";
 
 const route = useRoute();
-const { isOpen, entity, closeDrawer, openDrawer } = useEntityDrawer();
+const { isOpen, entity, closeDrawer } = useEntityDrawer();
 
 const config = computed(() =>
   entity.value ? getEntityConfig(entity.value.basePath) : undefined,
@@ -265,14 +268,6 @@ const headerJurisdiction = computed(() => firstJurisdiction.value?.name);
 const headerJurisdictionCode = computed(
   () => firstJurisdiction.value?.code || "",
 );
-
-function handleJurisdictionClick(event: MouseEvent) {
-  if (event.metaKey || event.ctrlKey) return;
-  event.preventDefault();
-  if (headerJurisdictionCode.value) {
-    openDrawer(headerJurisdictionCode.value, "Jurisdictions", "/jurisdiction");
-  }
-}
 
 const isJurisdiction = computed(
   () => entity.value?.basePath === "/jurisdiction",

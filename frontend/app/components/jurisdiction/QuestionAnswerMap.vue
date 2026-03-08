@@ -58,12 +58,13 @@
           :label="answer"
         >
           <div class="flex flex-wrap items-center gap-4">
-            <a
+            <EntityLink
               v-for="jurisdiction in filteredAnswerGroups.get(answer)"
               :key="jurisdiction.code"
-              class="label-jurisdiction"
-              :href="`/question/${jurisdiction.code}${questionSuffix}`"
-              @click="handleJurisdictionClick($event, jurisdiction.code)"
+              :id="`${jurisdiction.code}${questionSuffix}`"
+              :title="jurisdiction.code"
+              base-path="/question"
+              variant="jurisdiction"
             >
               <div class="flag-wrapper">
                 <JurisdictionFlag
@@ -72,9 +73,8 @@
                   :alt="jurisdiction.code + ' flag'"
                 />
               </div>
-
               {{ jurisdiction.code }}
-            </a>
+            </EntityLink>
           </div>
         </DetailRow>
       </div>
@@ -86,8 +86,8 @@
 import { ref, computed } from "vue";
 import type { Jurisdiction } from "@/composables/useQuestionJurisdictions";
 import { useQuestionJurisdictions } from "@/composables/useQuestionJurisdictions";
-import { useEntityDrawer } from "@/composables/useEntityDrawer";
 import DetailRow from "@/components/ui/DetailRow.vue";
+import EntityLink from "@/components/ui/EntityLink.vue";
 import JurisdictionFlag from "@/components/ui/JurisdictionFlag.vue";
 
 const regions = [
@@ -105,7 +105,6 @@ const props = defineProps<{
   questionSuffix: string;
 }>();
 
-const { openDrawer } = useEntityDrawer();
 const selectedRegion = ref("All");
 
 const {
@@ -133,16 +132,6 @@ const answersWithJurisdictions = computed(() => [
 
 function selectRegion(region: string) {
   selectedRegion.value = region;
-}
-
-function handleJurisdictionClick(event: MouseEvent, jurisdictionCode: string) {
-  if (event.metaKey || event.ctrlKey) return;
-  event.preventDefault();
-  openDrawer(
-    `${jurisdictionCode}${props.questionSuffix}`,
-    "Answers",
-    "/question",
-  );
 }
 </script>
 
