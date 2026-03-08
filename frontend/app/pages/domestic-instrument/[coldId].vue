@@ -10,9 +10,9 @@
       :data="legalInstrument || {}"
       :labels="domesticInstrumentLabels"
       :tooltips="domesticInstrumentTooltips"
+      :relations="legalInstrument?.relations"
       :show-suggest-edit="true"
     >
-      <!-- Title with PDF and Source Link -->
       <template #titleinenglish="{ value }">
         <DetailRow
           :label="domesticInstrumentLabels.titleInEnglish"
@@ -32,31 +32,26 @@
         </DetailRow>
       </template>
 
-      <!-- Slot for Amended by -->
       <template #amendedby="{ value }">
         <DetailRow v-if="value" :label="domesticInstrumentLabels.amendedBy">
           <InstrumentLink :id="value as string" table="Domestic Instruments" />
         </DetailRow>
       </template>
-      <!-- Slot for Amends -->
       <template #amends="{ value }">
         <DetailRow v-if="value" :label="domesticInstrumentLabels.amends">
           <InstrumentLink :id="value as string" table="Domestic Instruments" />
         </DetailRow>
       </template>
-      <!-- Slot for Replaced by -->
       <template #replacedby="{ value }">
         <DetailRow v-if="value" :label="domesticInstrumentLabels.replacedBy">
           <InstrumentLink :id="value as string" table="Domestic Instruments" />
         </DetailRow>
       </template>
-      <!-- Slot for Replaces -->
       <template #replaces="{ value }">
         <DetailRow v-if="value" :label="domesticInstrumentLabels.replaces">
           <InstrumentLink :id="value as string" table="Domestic Instruments" />
         </DetailRow>
       </template>
-      <!-- Slot for Compatibility section -->
       <template #compatibility="{ value }">
         <DetailRow
           v-if="
@@ -77,19 +72,6 @@
               label="HCCH Principles"
             />
           </div>
-        </DetailRow>
-      </template>
-      <!-- Slot for Legal provisions -->
-      <template #domesticlegalprovisions>
-        <DetailRow
-          v-if="provisionItems.length"
-          :label="domesticInstrumentLabels.domesticLegalProvisions"
-          :tooltip="domesticInstrumentTooltips.domesticLegalProvisions"
-        >
-          <RelatedItemsList
-            :items="provisionItems"
-            base-path="/domestic-legal-provision"
-          />
         </DetailRow>
       </template>
 
@@ -124,7 +106,6 @@ import DetailRow from "@/components/ui/DetailRow.vue";
 import PdfLink from "@/components/ui/PdfLink.vue";
 import TitleWithActions from "@/components/ui/TitleWithActions.vue";
 import SourceExternalLink from "@/components/sources/SourceExternalLink.vue";
-import RelatedItemsList from "@/components/ui/RelatedItemsList.vue";
 import InstrumentLink from "@/components/legal/InstrumentLink.vue";
 import CompatibleLabel from "@/components/ui/CompatibleLabel.vue";
 import JurisdictionReportBanner from "@/components/jurisdiction/JurisdictionReportBanner.vue";
@@ -135,7 +116,6 @@ import { useDomesticInstrument } from "@/composables/useRecordDetails";
 import { isTruthy } from "@/types/entities/domestic-instrument";
 import { domesticInstrumentLabels } from "@/config/labels";
 import { domesticInstrumentTooltips } from "@/config/tooltips";
-import type { RelatedItem } from "@/types/ui";
 
 const route = useRoute();
 
@@ -159,28 +139,4 @@ const isCompatible = (
   if (!legalInstrument.value) return false;
   return isTruthy(legalInstrument.value[field]);
 };
-
-const instrumentTitle = computed(
-  () =>
-    legalInstrument.value?.abbreviation ||
-    legalInstrument.value?.titleInEnglish ||
-    "",
-);
-
-const provisionItems = computed<RelatedItem[]>(() => {
-  const provisions = [
-    ...(legalInstrument.value?.relations.domesticLegalProvisions ?? []),
-  ]
-    .filter((p) => p.coldId)
-    .sort(
-      (a, b) =>
-        (Number(a.rankingDisplayOrder) || 0) -
-        (Number(b.rankingDisplayOrder) || 0),
-    );
-  const suffix = instrumentTitle.value ? `, ${instrumentTitle.value}` : "";
-  return provisions.map((p) => ({
-    id: p.coldId || String(p.id),
-    title: (p.article || p.coldId || String(p.id)) + suffix,
-  }));
-});
 </script>

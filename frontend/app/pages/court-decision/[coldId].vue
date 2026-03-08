@@ -10,9 +10,9 @@
       :data="courtDecision || {}"
       :labels="courtDecisionLabels"
       :tooltips="courtDecisionTooltips"
+      :relations="courtDecision?.relations"
       :show-suggest-edit="true"
     >
-      <!-- Case Title with PDF and Source Link -->
       <template #casetitle="{ value }">
         <DetailRow
           :label="courtDecisionLabels.caseTitle"
@@ -31,19 +31,6 @@
               />
             </template>
           </TitleWithActions>
-        </DetailRow>
-      </template>
-
-      <template #domesticlegalprovisions>
-        <DetailRow
-          v-if="domesticInstrumentItems.length"
-          :label="courtDecisionLabels.domesticLegalProvisions"
-          :tooltip="courtDecisionTooltips.domesticLegalProvisions"
-        >
-          <RelatedItemsList
-            :items="domesticInstrumentItems"
-            base-path="/domestic-instrument"
-          />
         </DetailRow>
       </template>
 
@@ -104,30 +91,6 @@
           </div>
         </DetailRow>
       </template>
-      <!-- Custom rendering for Related Questions section -->
-      <template #relatedquestions>
-        <DetailRow
-          v-if="relatedQuestions.length"
-          :label="courtDecisionLabels.relatedQuestions"
-          :tooltip="courtDecisionTooltips.relatedQuestions"
-          variant="question"
-        >
-          <RelatedItemsList :items="relatedQuestions" base-path="/question" />
-        </DetailRow>
-      </template>
-      <template #relatedliterature>
-        <DetailRow
-          v-if="relatedLiterature.length"
-          :label="courtDecisionLabels.relatedLiterature"
-          :tooltip="courtDecisionTooltips.relatedLiterature"
-          variant="literature"
-        >
-          <RelatedItemsList
-            :items="relatedLiterature"
-            base-path="/literature"
-          />
-        </DetailRow>
-      </template>
 
       <template #originaltext="{ value }">
         <DetailRow
@@ -157,8 +120,6 @@
         />
         <LastModified :date="courtDecision?.updatedAt" />
       </template>
-
-      <template #search-links />
     </BaseDetailLayout>
 
     <UAlert v-if="error" type="error" class="max-w-container mx-auto mt-4">
@@ -191,7 +152,6 @@ import DetailRow from "@/components/ui/DetailRow.vue";
 import PdfLink from "@/components/ui/PdfLink.vue";
 import TitleWithActions from "@/components/ui/TitleWithActions.vue";
 import SourceExternalLink from "@/components/sources/SourceExternalLink.vue";
-import RelatedItemsList from "@/components/ui/RelatedItemsList.vue";
 import JurisdictionReportBanner from "@/components/jurisdiction/JurisdictionReportBanner.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
 import ShowMoreLess from "@/components/ui/ShowMoreLess.vue";
@@ -200,7 +160,6 @@ import EntityFeedback from "@/components/ui/EntityFeedback.vue";
 import { useCourtDecision } from "@/composables/useRecordDetails";
 import { courtDecisionLabels } from "@/config/labels";
 import { courtDecisionTooltips } from "@/config/tooltips";
-import type { RelatedItem } from "@/types/ui";
 
 defineProps({
   iconClass: {
@@ -223,30 +182,5 @@ const showFullText = ref(false);
 
 const primaryJurisdiction = computed(
   () => courtDecision.value?.relations.jurisdictions[0] ?? null,
-);
-
-const domesticInstrumentItems = computed<RelatedItem[]>(() =>
-  (courtDecision.value?.relations.domesticInstruments ?? []).map((di) => ({
-    id: di.coldId || String(di.id),
-    title:
-      di.abbreviation || di.titleInEnglish || di.officialTitle || String(di.id),
-  })),
-);
-
-const relatedQuestions = computed<RelatedItem[]>(() =>
-  (courtDecision.value?.relations.questions ?? []).map((q) => ({
-    id: q.coldId || String(q.id),
-    title: q.question || q.coldId || String(q.id),
-  })),
-);
-
-const relatedLiterature = computed<RelatedItem[]>(() =>
-  (courtDecision.value?.relations.literature ?? []).map((lit) => ({
-    id: lit.coldId || String(lit.id),
-    title: lit.title || String(lit.id),
-    ...(lit.oupJdChapter
-      ? { badge: { label: "OUP", color: "var(--color-label-oup)" } }
-      : {}),
-  })),
 );
 </script>

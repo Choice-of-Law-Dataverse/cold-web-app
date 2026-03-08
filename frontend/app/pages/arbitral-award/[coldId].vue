@@ -15,6 +15,7 @@
       :formatted-theme="
         arbitralAward?.formattedThemes?.map((t) => t.theme) || []
       "
+      :relations="arbitralAward?.relations"
       :show-suggest-edit="true"
     >
       <template #footer>

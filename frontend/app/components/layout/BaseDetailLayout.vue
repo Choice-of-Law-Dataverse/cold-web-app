@@ -15,6 +15,8 @@
     :show-notification-banner="props.showNotificationBanner"
     :notification-banner-message="props.notificationBannerMessage"
     :icon="props.icon"
+    :relations="props.relations"
+    :exclude-relations="props.excludeRelations"
     @save="emit('save')"
     @open-save-modal="emit('open-save-modal')"
     @open-cancel-modal="emit('open-cancel-modal')"
@@ -47,6 +49,8 @@ const props = withDefaults(
     notificationBannerMessage?: string;
     icon?: string;
     showSuggestEdit?: boolean;
+    relations?: Record<string, Record<string, unknown>[]>;
+    excludeRelations?: Set<string>;
   }>(),
   {
     error: undefined,
@@ -60,6 +64,8 @@ const props = withDefaults(
     notificationBannerMessage: "",
     icon: "",
     showSuggestEdit: false,
+    relations: undefined,
+    excludeRelations: undefined,
   },
 );
 

@@ -9,6 +9,7 @@
       :error="error"
       :data="arbitralRule || {}"
       :labels="arbitralRuleLabels"
+      :relations="arbitralRule?.relations"
       :show-suggest-edit="true"
     >
       <template #footer>
