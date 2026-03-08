@@ -8,7 +8,7 @@ Repository for building and deploying the CoLD web app on [www.cold.global](http
 
 ### Prerequisites
 
-- **Node.js v20+** with npm 10+
+- **Node.js v20+** with pnpm 10+
 - **Python 3.12** (managed by uv)
 - **uv** (Python package manager): `brew install uv` (macOS) or see [uv docs](https://docs.astral.sh/uv/)
 
@@ -17,8 +17,8 @@ Repository for building and deploying the CoLD web app on [www.cold.global](http
 ```bash
 # Frontend (in one terminal)
 cd frontend
-npm install
-npm run dev
+pnpm install
+pnpm run dev
 # Open http://localhost:3000/
 
 # Backend (in another terminal)
@@ -36,7 +36,7 @@ Always run validation checks before committing:
 
 ```bash
 # Frontend validation
-cd frontend && npm run check
+cd frontend && pnpm run check
 
 # Backend validation
 cd backend && make check
@@ -85,5 +85,5 @@ Legal Terminology
 
 - Open Terminal
 - Navigate to `cold-web-app/frontend`: Type in `cd` and drag-and-drop the `frontend` folder into terminal, then hit `Enter`
-- Run `npm run dev`
+- Run `pnpm run dev`
 - Open http://localhost:3000/ in a browser

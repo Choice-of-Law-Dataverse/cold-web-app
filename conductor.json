@@ -1,7 +1,7 @@
 {
   "scripts": {
-    "setup": "cp \"$CONDUCTOR_ROOT_PATH/frontend/.env\" frontend/.env && cp \"$CONDUCTOR_ROOT_PATH/backend/.env\" backend/.env && cd frontend && npm install && cd ../backend && uv sync --all-extras --all-packages --group dev",
-    "run": "(cd frontend && npm run dev -- --port $CONDUCTOR_PORT) & (cd backend && uv run uvicorn app.main:app --host 0.0.0.0 --port $((CONDUCTOR_PORT + 1)) --reload) & wait"
+    "setup": "cp \"$CONDUCTOR_ROOT_PATH/frontend/.env\" frontend/.env && cp \"$CONDUCTOR_ROOT_PATH/backend/.env\" backend/.env && cd frontend && pnpm install && cd ../backend && uv sync --all-extras --all-packages --group dev",
+    "run": "(cd frontend && NUXT_API_BASE_URL=http://localhost:$((CONDUCTOR_PORT + 1))/api/v1 pnpm run dev -- --port $CONDUCTOR_PORT) & (cd backend && uv run uvicorn app.main:app --host 0.0.0.0 --port $((CONDUCTOR_PORT + 1)) --reload) & wait"
   },
   "runScriptMode": "nonconcurrent"
 }

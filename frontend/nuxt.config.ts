@@ -37,7 +37,8 @@ export default defineNuxtConfig({
     typeCheck: false,
   },
   vite: {
-    plugins: [tailwindcss()],
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    plugins: [tailwindcss() as any],
     // Suppress OpenTelemetry 'this' keyword warnings (ESM compatibility)
     optimizeDeps: {
       exclude: ["@opentelemetry/api"],

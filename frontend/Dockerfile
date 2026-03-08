@@ -13,11 +13,14 @@ ARG NUXT_SITE_URL
 # Set working directory
 WORKDIR /app
 
-# Copy the package.json and package-lock.json
-COPY package*.json ./
+# Install pnpm
+RUN npm install -g pnpm
+
+# Copy package manifest and lockfile
+COPY package.json pnpm-lock.yaml ./
 
 # Install dependencies
-RUN npm ci --legacy-peer-deps --prefer-offline --no-audit
+RUN pnpm install --frozen-lockfile
 
 # Copy project files
 COPY . .
@@ -30,7 +33,7 @@ ENV AUTH0_AUDIENCE=$AUTH0_AUDIENCE \
     NUXT_SITE_URL=$NUXT_SITE_URL
 
 # Build the Nuxt app with increased memory limit
-RUN NODE_OPTIONS="--max_old_space_size=4096" npm run build
+RUN NODE_OPTIONS="--max_old_space_size=4096" pnpm run build
 
 # ============================================
 # Production Stage - No secrets, only output
@@ -40,11 +43,14 @@ FROM node:22.18-alpine
 # Set working directory
 WORKDIR /app
 
-# Copy only production dependencies manifest
-COPY package*.json ./
+# Install pnpm
+RUN npm install -g pnpm
+
+# Copy package manifest and lockfile
+COPY package.json pnpm-lock.yaml ./
 
 # Install only production dependencies
-RUN npm ci --omit=dev --legacy-peer-deps --prefer-offline --no-audit
+RUN pnpm install --frozen-lockfile --prod
 
 # Copy built application from builder stage
 # This excludes all build-time secrets and source code

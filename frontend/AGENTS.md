@@ -22,15 +22,15 @@ Nuxt 4 frontend application for CoLD. This file provides essential context for A
   - Vue/Nuxt built-ins (ref, computed, useRoute, etc.) are auto-imported
   - Custom components, composables, utils, and third-party libraries require explicit imports
 - **Color mode**: Light mode only (no dark mode)
-- **Type checking**: Disabled in nuxt.config (typeCheck: false) - run `npm run check` separately
+- **Type checking**: Disabled in nuxt.config (typeCheck: false) - run `pnpm run check` separately
 - **Runtime config**: Uses environment variables for API, Auth0, R2 storage, and Logfire
 
 ## Environment Setup
 
 ```bash
 cd frontend
-npm install      # ~55 seconds (font warnings normal)
-npm run dev      # http://localhost:3000
+pnpm install      # ~55 seconds (font warnings normal)
+pnpm run dev      # http://localhost:3000
 ```
 
 **Note**: Docker NOT needed for development (production only).
@@ -122,7 +122,7 @@ See [root AGENTS.md](../AGENTS.md) for monorepo-wide standards (commits, barrel 
 Types flow from backend to frontend without manual duplication:
 
 1. Backend Pydantic models define the API schema
-2. `npm run generate:api` exports the OpenAPI schema and generates `types/api-schema.d.ts`
+2. `pnpm run generate:api` exports the OpenAPI schema and generates `types/api-schema.d.ts`
 3. `openapi-fetch` creates a typed API client (`composables/useApiClient.ts`)
 4. Entity types in `types/entities/` define per-entity response types and processor functions
 5. Type maps in `types/api.ts` (`TableResponseMap`, `TableDetailMap`, `TableProcessedMap`) power generic composables
@@ -165,7 +165,7 @@ All detail pages use `[coldId]` as the route parameter (e.g., `/court-decision/C
 **ALWAYS run validation:**
 
 ```bash
-npm run check
+pnpm run check
 ```
 
 This runs:
@@ -180,7 +180,7 @@ This runs:
 - All checks must pass
 - No TypeScript errors
 - No console.log statements in production code
-- Build must succeed: `npm run build`
+- Build must succeed: `pnpm run build`
 
 ## Component Map
 
@@ -213,7 +213,7 @@ The frontend uses `openapi-fetch` with generated TypeScript types from the backe
 
 ```bash
 cd frontend
-npm run generate:api
+pnpm run generate:api
 ```
 
 This requires the backend Python environment to be set up locally. The script imports the FastAPI app, extracts the OpenAPI schema, filters to `/api/v1` paths, and generates TypeScript types.
@@ -227,6 +227,6 @@ This requires the backend Python environment to be set up locally. The script im
 - **New composable**: Add to `composables/` as `useFeatureName.ts`
 - **New entity type**: Add to `types/entities/`, export response/detail types and processor function, register in `types/api.ts` type maps
 - **Add field labels/tooltips**: Update `config/labels.ts` and optionally `config/tooltips.ts`
-- **Backend schema changed**: Run `npm run generate:api` to regenerate types
+- **Backend schema changed**: Run `pnpm run generate:api` to regenerate types
 
 See [README.md](README.md) for full documentation.
