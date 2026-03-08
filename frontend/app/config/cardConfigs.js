@@ -292,6 +292,44 @@ export const internationalInstrumentCardConfig = {
   },
 };
 
+export const arbitralAwardCardConfig = {
+  keyLabelPairs: [
+    {
+      key: "arbitralInstitutions",
+      label: "Arbitral Institutions",
+      emptyValueBehavior: {
+        action: "hide",
+      },
+    },
+    {
+      key: "awardSummary",
+      label: "Award Summary",
+      emptyValueBehavior: {
+        action: "hide",
+      },
+    },
+  ],
+  valueClassMap: {
+    arbitralInstitutions: "result-value-medium",
+    awardSummary: "result-value-small",
+  },
+};
+
+export const arbitralRuleCardConfig = {
+  keyLabelPairs: [
+    {
+      key: "arbitralInstitutions",
+      label: "Arbitral Institutions",
+      emptyValueBehavior: {
+        action: "hide",
+      },
+    },
+  ],
+  valueClassMap: {
+    arbitralInstitutions: "result-value-medium",
+  },
+};
+
 export const literatureCardConfig = {
   keyLabelPairs: [
     {
