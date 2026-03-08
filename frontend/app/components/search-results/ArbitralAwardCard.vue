@@ -1,21 +1,6 @@
 <template>
   <ResultCard :result-data="resultData" card-type="Arbitral Awards">
     <div class="flex w-full flex-col gap-0">
-      <DetailRow :label="getLabel('caseNumber')">
-        <div :class="fieldClasses('caseNumber')">
-          {{ getValue("caseNumber") }}
-        </div>
-      </DetailRow>
-
-      <DetailRow
-        v-if="resultData.year && resultData.year !== 'NA'"
-        :label="getLabel('year')"
-      >
-        <div :class="fieldClasses('year')">
-          {{ getValue("year") }}
-        </div>
-      </DetailRow>
-
       <DetailRow
         v-if="
           resultData.arbitralInstitutions &&
@@ -29,13 +14,11 @@
       </DetailRow>
 
       <DetailRow
-        v-if="
-          resultData.natureOfTheAward && resultData.natureOfTheAward !== 'NA'
-        "
-        :label="getLabel('natureOfTheAward')"
+        v-if="resultData.awardSummary && resultData.awardSummary !== 'NA'"
+        :label="getLabel('awardSummary')"
       >
-        <div :class="fieldClasses('natureOfTheAward')">
-          {{ getValue("natureOfTheAward") }}
+        <div :class="fieldClasses('awardSummary')">
+          {{ getValue("awardSummary") }}
         </div>
       </DetailRow>
     </div>

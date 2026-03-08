@@ -1,21 +1,6 @@
 <template>
   <ResultCard :result-data="resultData" card-type="Arbitral Rules">
     <div class="flex w-full flex-col gap-0">
-      <DetailRow :label="getLabel('setOfRules')">
-        <div :class="fieldClasses('setOfRules')">
-          {{ getValue("setOfRules") }}
-        </div>
-      </DetailRow>
-
-      <DetailRow
-        v-if="resultData.inForceFrom && resultData.inForceFrom !== 'NA'"
-        :label="getLabel('inForceFrom')"
-      >
-        <div :class="fieldClasses('inForceFrom')">
-          {{ getValue("inForceFrom") }}
-        </div>
-      </DetailRow>
-
       <DetailRow
         v-if="
           resultData.arbitralInstitutions &&

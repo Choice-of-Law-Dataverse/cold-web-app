@@ -295,72 +295,38 @@ export const internationalInstrumentCardConfig = {
 export const arbitralAwardCardConfig = {
   keyLabelPairs: [
     {
-      key: "caseNumber",
-      label: "Case Number",
-      emptyValueBehavior: {
-        action: "display",
-        fallback: "No case number available",
-      },
-    },
-    {
-      key: "year",
-      label: "Year",
-      emptyValueBehavior: {
-        action: "hide",
-      },
-    },
-    {
       key: "arbitralInstitutions",
-      label: "Institution",
+      label: "Arbitral Institutions",
       emptyValueBehavior: {
         action: "hide",
       },
     },
     {
-      key: "natureOfTheAward",
-      label: "Nature",
+      key: "awardSummary",
+      label: "Award Summary",
       emptyValueBehavior: {
         action: "hide",
       },
     },
   ],
   valueClassMap: {
-    caseNumber: "result-value-medium",
-    year: "result-value-small",
-    arbitralInstitutions: "result-value-small",
-    natureOfTheAward: "result-value-small",
+    arbitralInstitutions: "result-value-medium",
+    awardSummary: "result-value-small",
   },
 };
 
 export const arbitralRuleCardConfig = {
   keyLabelPairs: [
     {
-      key: "setOfRules",
-      label: "Set of Rules",
-      emptyValueBehavior: {
-        action: "display",
-        fallback: "No title available",
-      },
-    },
-    {
-      key: "inForceFrom",
-      label: "In Force From",
-      emptyValueBehavior: {
-        action: "hide",
-      },
-    },
-    {
       key: "arbitralInstitutions",
-      label: "Institution",
+      label: "Arbitral Institutions",
       emptyValueBehavior: {
         action: "hide",
       },
     },
   ],
   valueClassMap: {
-    setOfRules: "result-value-medium",
-    inForceFrom: "result-value-small",
-    arbitralInstitutions: "result-value-small",
+    arbitralInstitutions: "result-value-medium",
   },
 };
 
