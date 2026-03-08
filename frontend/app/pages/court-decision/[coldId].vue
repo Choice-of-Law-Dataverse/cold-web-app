@@ -234,11 +234,12 @@ const relatedQuestions = computed<RelatedItem[]>(() =>
 );
 
 const relatedLiterature = computed<RelatedItem[]>(() =>
-  (courtDecision.value?.relations.literature ?? [])
-    .filter((lit) => !lit.oupJdChapter)
-    .map((lit) => ({
-      id: lit.coldId || String(lit.id),
-      title: lit.title || String(lit.id),
-    })),
+  (courtDecision.value?.relations.literature ?? []).map((lit) => ({
+    id: lit.coldId || String(lit.id),
+    title: lit.title || String(lit.id),
+    ...(lit.oupJdChapter
+      ? { badge: { label: "OUP", color: "var(--color-label-oup)" } }
+      : {}),
+  })),
 );
 </script>

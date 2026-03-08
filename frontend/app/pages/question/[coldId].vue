@@ -46,6 +46,7 @@
           <RelatedItemsList
             :items="relatedLiterature"
             base-path="/literature"
+            :empty-value-behavior="{ action: 'hide' }"
           />
         </DetailRow>
       </template>
@@ -113,12 +114,13 @@ const relatedCourtDecisions = computed<RelatedItem[]>(() =>
 );
 
 const relatedLiterature = computed<RelatedItem[]>(() =>
-  (answerData.value?.relations.literature ?? [])
-    .filter((lit) => !lit.oupJdChapter)
-    .map((lit) => ({
-      id: lit.coldId || String(lit.id),
-      title: lit.title || String(lit.id),
-    })),
+  (answerData.value?.relations.literature ?? []).map((lit) => ({
+    id: lit.coldId || String(lit.id),
+    title: lit.title || String(lit.id),
+    ...(lit.oupJdChapter
+      ? { badge: { label: "OUP", color: "var(--color-label-oup)" } }
+      : {}),
+  })),
 );
 
 const questionSuffix = computed(() => {
