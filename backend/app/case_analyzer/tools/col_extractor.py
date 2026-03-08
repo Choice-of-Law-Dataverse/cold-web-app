@@ -2,7 +2,7 @@ import logging
 
 import logfire
 from agents import Agent, Runner
-from agents.models.openai_chatcompletions import OpenAIChatCompletionsModel
+from agents.models.openai_responses import OpenAIResponsesModel
 
 from ..config import get_model, get_openai_client
 from ..prompts import get_prompt_module
@@ -40,7 +40,7 @@ async def extract_col_section(
             name="ColSectionExtractor",
             instructions=system_prompt,
             output_type=ColSectionOutput,
-            model=OpenAIChatCompletionsModel(
+            model=OpenAIResponsesModel(
                 model=get_model("col_section"),
                 openai_client=get_openai_client(),
             ),

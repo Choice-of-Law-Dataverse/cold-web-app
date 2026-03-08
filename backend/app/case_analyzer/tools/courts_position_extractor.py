@@ -2,7 +2,7 @@ import logging
 
 import logfire
 from agents import Agent, Runner
-from agents.models.openai_chatcompletions import OpenAIChatCompletionsModel
+from agents.models.openai_responses import OpenAIResponsesModel
 
 from ..config import get_model, get_openai_client
 from ..prompts import get_prompt_module
@@ -54,7 +54,7 @@ async def extract_courts_position(
             name="CourtsPositionExtractor",
             instructions=system_prompt,
             output_type=CourtsPositionOutput,
-            model=OpenAIChatCompletionsModel(
+            model=OpenAIResponsesModel(
                 model=get_model("courts_position"),
                 openai_client=get_openai_client(),
             ),

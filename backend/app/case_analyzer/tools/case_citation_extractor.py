@@ -2,7 +2,7 @@ import logging
 
 import logfire
 from agents import Agent, Runner, TResponseInputItem
-from agents.models.openai_chatcompletions import OpenAIChatCompletionsModel
+from agents.models.openai_responses import OpenAIResponsesModel
 
 from ..config import get_model, get_openai_client
 from .models import CaseCitationOutput
@@ -45,7 +45,7 @@ async def extract_case_citation(
             name="CaseCitationExtractor",
             instructions=instructions,
             output_type=CaseCitationOutput,
-            model=OpenAIChatCompletionsModel(
+            model=OpenAIResponsesModel(
                 model=get_model("case_citation"),
                 openai_client=get_openai_client(),
             ),

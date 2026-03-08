@@ -9,7 +9,7 @@ from pathlib import Path
 
 import logfire
 from agents import Agent, Runner
-from agents.models.openai_chatcompletions import OpenAIChatCompletionsModel
+from agents.models.openai_responses import OpenAIResponsesModel
 
 from ..config import get_model, get_openai_client
 from ..prompts import PRECISE_JURISDICTION_DETECTION_PROMPT
@@ -91,7 +91,7 @@ async def detect_precise_jurisdiction_with_confidence(text: str) -> Jurisdiction
                 name="JurisdictionDetector",
                 instructions=system_prompt,
                 output_type=JurisdictionOutput,
-                model=OpenAIChatCompletionsModel(
+                model=OpenAIResponsesModel(
                     model=get_model("jurisdiction_classification"),
                     openai_client=get_openai_client(),
                 ),

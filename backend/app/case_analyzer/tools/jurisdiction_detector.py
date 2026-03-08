@@ -7,7 +7,7 @@ import logging
 
 import logfire
 from agents import Agent, Runner
-from agents.models.openai_chatcompletions import OpenAIChatCompletionsModel
+from agents.models.openai_responses import OpenAIResponsesModel
 
 from ..config import get_model, get_openai_client
 from ..prompts import LEGAL_SYSTEM_TYPE_DETECTION_PROMPT
@@ -219,7 +219,7 @@ async def detect_legal_system_type(jurisdiction_name: str, text: str) -> str:
         agent = Agent(
             name="LegalSystemDetector",
             instructions=system_prompt,
-            model=OpenAIChatCompletionsModel(
+            model=OpenAIResponsesModel(
                 model=get_model("legal_system"),
                 openai_client=get_openai_client(),
             ),

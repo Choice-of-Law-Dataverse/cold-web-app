@@ -2,7 +2,7 @@ import logging
 
 import logfire
 from agents import Agent, Runner
-from agents.models.openai_chatcompletions import OpenAIChatCompletionsModel
+from agents.models.openai_responses import OpenAIResponsesModel
 
 from ..config import get_model, get_openai_client
 from ..prompts import get_prompt_module
@@ -40,7 +40,7 @@ async def extract_relevant_facts(
             name="RelevantFactsExtractor",
             instructions=system_prompt,
             output_type=RelevantFactsOutput,
-            model=OpenAIChatCompletionsModel(
+            model=OpenAIResponsesModel(
                 model=get_model("relevant_facts"),
                 openai_client=get_openai_client(),
             ),
