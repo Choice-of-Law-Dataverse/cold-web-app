@@ -6,11 +6,12 @@
     <InlineError v-else-if="error" :error="error" />
     <div v-else-if="displayedItems.length" class="result-value-small">
       <div class="mb-2 flex flex-row flex-wrap gap-x-6 gap-y-2">
-        <NuxtLink
+        <a
           v-for="item in displayedItems"
           :key="item.id"
           class="link-chip--neutral"
-          :to="item.id.startsWith('/') ? item.id : `${basePath}/${item.id}`"
+          :href="itemPath(item)"
+          @click="handleItemClick($event, item)"
         >
           {{ item.title }}
           <span
@@ -23,7 +24,7 @@
           >
             {{ item.badge.label }}
           </span>
-        </NuxtLink>
+        </a>
       </div>
       <ShowMoreLess
         v-if="items.length > 10"
@@ -35,7 +36,7 @@
       v-else-if="emptyValueBehavior.action === 'display'"
       class="result-value-small"
     >
-      —
+      &mdash;
     </p>
   </div>
 </template>
@@ -45,6 +46,8 @@ import { ref, computed } from "vue";
 import LoadingBar from "@/components/layout/LoadingBar.vue";
 import InlineError from "@/components/ui/InlineError.vue";
 import ShowMoreLess from "@/components/ui/ShowMoreLess.vue";
+import { useEntityDrawer } from "@/composables/useEntityDrawer";
+import { getEntityConfig } from "@/config/entityRegistry";
 import type { RelatedItem, EmptyValueBehavior } from "@/types/ui";
 
 const props = withDefaults(
@@ -66,6 +69,8 @@ const props = withDefaults(
   },
 );
 
+const { openDrawer } = useEntityDrawer();
+
 const showAll = ref(false);
 
 const hasItems = computed(() => props.items.length > 0);
@@ -82,6 +87,20 @@ const displayedItems = computed(() => {
     ? props.items.slice(0, 10)
     : props.items;
 });
+
+function itemPath(item: RelatedItem): string {
+  return item.id.startsWith("/") ? item.id : `${props.basePath}/${item.id}`;
+}
+
+function handleItemClick(event: MouseEvent, item: RelatedItem) {
+  if (event.metaKey || event.ctrlKey) return;
+
+  const config = getEntityConfig(props.basePath);
+  if (!config) return;
+
+  event.preventDefault();
+  openDrawer(item.id, config.table, props.basePath);
+}
 </script>
 
 <style scoped>

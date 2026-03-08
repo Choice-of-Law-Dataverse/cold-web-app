@@ -5,7 +5,8 @@
 
     <main
       id="main-content"
-      class="main-content isolate flex-1 px-3 py-6 sm:px-6 sm:py-12"
+      class="main-content isolate flex-1 px-3 py-6 transition-[margin] duration-200 ease-in-out sm:px-6 sm:py-12"
+      :class="{ 'sm:mr-[24rem]': isDrawerOpen }"
     >
       <div class="max-w-container mx-auto w-full">
         <div class="flex flex-col gap-4 sm:gap-6">
@@ -22,6 +23,8 @@
     <div aria-live="polite" aria-atomic="true" class="sr-only">
       {{ announcement }}
     </div>
+
+    <EntityDrawer />
   </div>
 </template>
 
@@ -29,9 +32,12 @@
 import Nav from "@/components/layout/Nav.vue";
 import Footer from "@/components/layout/Footer.vue";
 import ErrorBoundary from "@/components/ui/ErrorBoundary.vue";
+import EntityDrawer from "@/components/entity/EntityDrawer.vue";
 import { useAnnouncer } from "@/composables/useAnnouncer";
+import { useEntityDrawer } from "@/composables/useEntityDrawer";
 
 const { announcement } = useAnnouncer();
+const { isOpen: isDrawerOpen } = useEntityDrawer();
 // import { useNavigationDirection } from "@/composables/useNavigationDirection";
 
 // const { direction } = useNavigationDirection();
