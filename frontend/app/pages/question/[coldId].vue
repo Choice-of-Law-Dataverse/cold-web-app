@@ -141,7 +141,7 @@ const questionSuffix = computed(() => {
   if (parts.length > 1) {
     return "_" + parts.slice(1).join("_");
   }
-  return null;
+  return "_" + id;
 });
 
 onMounted(async () => {
