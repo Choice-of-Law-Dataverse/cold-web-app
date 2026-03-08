@@ -2,12 +2,13 @@
   "name": "nuxt-app",
   "private": true,
   "type": "module",
+  "packageManager": "pnpm@10.30.3",
   "engines": {
     "node": "^22.18"
   },
   "scripts": {
     "build": "nuxt build --log-level silent",
-    "check": "npm run format && npm run lint:fix && npm run typecheck && npm run test:run",
+    "check": "pnpm run format && pnpm run lint:fix && pnpm run typecheck && pnpm run test:run",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
@@ -23,7 +24,7 @@
     "test:ui": "vitest --ui",
     "test:run": "vitest run --reporter=dot",
     "test:coverage": "vitest run --reporter=dot --coverage",
-    "generate:api": "cd ../backend && LOGFIRE_SEND_TO_LOGFIRE=false uv run python scripts/export_openapi.py && cd ../frontend && npx openapi-typescript app/types/openapi.json -o app/types/api-schema.d.ts"
+    "generate:api": "cd ../backend && LOGFIRE_SEND_TO_LOGFIRE=false uv run python scripts/export_openapi.py && cd ../frontend && pnpm dlx openapi-typescript app/types/openapi.json -o app/types/api-schema.d.ts"
   },
   "dependencies": {
     "@auth0/auth0-nuxt": "^1.0.0",
@@ -53,6 +54,14 @@
     "v-calendar": "^3.1.2",
     "vue": "^3.5.21",
     "zod": "^3.25.76"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@parcel/watcher",
+      "better-sqlite3",
+      "esbuild",
+      "unrs-resolver"
+    ]
   },
   "devDependencies": {
     "@iconify-json/bi": "^1.2.7",

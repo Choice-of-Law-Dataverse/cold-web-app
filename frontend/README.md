@@ -7,25 +7,25 @@ Nuxt 4 frontend for the Choice of Law Dataverse (CoLD), built with Vue.js, TypeS
 ## Prerequisites
 
 - **Node.js v20+** (tested with v20.19.5)
-- **npm 10+** (tested with v10.8.2)
+- **pnpm 10+**
 
 ## Setup
 
 ```bash
-npm install
+pnpm install
 ```
 
 ## Development
 
 ```bash
-npm run dev      # http://localhost:3000
+pnpm run dev      # http://localhost:3000
 ```
 
 ## Production
 
 ```bash
-npm run build    # Build for production
-npm run preview  # Preview production build
+pnpm run build    # Build for production
+pnpm run preview  # Preview production build
 ```
 
 ## Before Committing
@@ -33,7 +33,7 @@ npm run preview  # Preview production build
 **Always run the validation checks:**
 
 ```bash
-npm run check
+pnpm run check
 ```
 
 This runs (in order): Prettier format, ESLint fix, vue-tsc type check, Vitest tests.
@@ -41,11 +41,11 @@ This runs (in order): Prettier format, ESLint fix, vue-tsc type check, Vitest te
 Individual commands:
 
 ```bash
-npm run format        # Fix formatting
-npm run lint:fix      # Fix lint issues
-npm run typecheck     # Type check only
-npm run test:run      # Run tests only
-npm run build         # Verify build works
+pnpm run format        # Fix formatting
+pnpm run lint:fix      # Fix lint issues
+pnpm run typecheck     # Type check only
+pnpm run test:run      # Run tests only
+pnpm run build         # Verify build works
 ```
 
 ## API Type Generation
@@ -53,7 +53,7 @@ npm run build         # Verify build works
 Types are generated from the backend's OpenAPI schema for end-to-end type safety:
 
 ```bash
-npm run generate:api
+pnpm run generate:api
 ```
 
 This exports the backend's OpenAPI schema and generates `app/types/api-schema.d.ts`. Requires the backend Python environment. See [AGENTS.md](AGENTS.md) for details.
@@ -89,7 +89,7 @@ See [AGENTS.md](AGENTS.md) for detailed coding conventions.
 
 ## Docker (Production Only)
 
-Docker is only used for production deployment. Local development should use npm directly.
+Docker is only used for production deployment. Local development should use pnpm directly.
 
 ```bash
 docker build -t cold-nuxt-frontend .

@@ -56,7 +56,7 @@ jobs:
           }' /tmp/openapi-raw.json > /tmp/openapi-transformed.json
           npx openapi-typescript@7.13.0 /tmp/openapi-transformed.json -o /tmp/api-schema-check.d.ts
           diff frontend/app/types/api-schema.d.ts /tmp/api-schema-check.d.ts || {
-            echo "::error::API types are out of sync with production. Run 'npm run generate:api' locally and commit the result."
+            echo "::error::API types are out of sync with production. Run 'pnpm run generate:api' locally and commit the result."
             exit 1
           }
 

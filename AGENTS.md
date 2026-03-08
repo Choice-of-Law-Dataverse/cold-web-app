@@ -15,7 +15,7 @@ This file provides essential context for AI agents working on this codebase. Hum
 
 ### Prerequisites
 
-- **Node.js v20+** with npm 10+ (frontend)
+- **Node.js v20+** with pnpm 10+ (frontend)
 - **Python 3.12** (backend, managed by uv)
 - **uv** (backend package manager): `brew install uv` or see https://docs.astral.sh/uv/
 
@@ -23,7 +23,7 @@ This file provides essential context for AI agents working on this codebase. Hum
 
 ```bash
 # Frontend
-cd frontend && npm install
+cd frontend && pnpm install
 
 # Backend
 cd backend && brew install uv && uv sync --all-extras --all-packages --group dev
@@ -74,7 +74,7 @@ import { functionB } from "./module2";
 
 ```bash
 # Frontend validation
-cd frontend && npm run check
+cd frontend && pnpm run check
 
 # Backend validation
 cd backend && make check
