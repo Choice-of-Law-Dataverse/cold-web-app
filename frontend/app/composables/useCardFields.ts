@@ -85,11 +85,7 @@ export function useCardFields(config: CardConfig, resultData: ResultData) {
       isEmpty && pair?.emptyValueBehavior?.action === "display"
         ? "text-gray-400"
         : "";
-    return [
-      baseClass,
-      "text-sm leading-relaxed whitespace-pre-line",
-      emptyClass,
-    ];
+    return [baseClass, "text-sm leading-relaxed whitespace-normal", emptyClass];
   }
 
   function fieldClasses(key: string): string[] {
