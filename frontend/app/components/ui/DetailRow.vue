@@ -1,20 +1,19 @@
 <template>
-  <div
-    class="detail-row flex flex-col gap-3 md:flex-row md:items-start md:gap-10"
-    :class="variant ? `type-${variant}` : ''"
-  >
-    <div class="label-key md:w-48 md:flex-shrink-0">
-      <span class="flex items-center gap-1.5">
-        <span class="mono-font">
-          {{ label }}
+  <div class="detail-row @container" :class="variant ? `type-${variant}` : ''">
+    <div class="flex flex-col gap-3 @md:flex-row @md:items-start @md:gap-10">
+      <div class="label-key @md:w-48 @md:shrink-0">
+        <span class="flex items-center gap-1.5">
+          <span class="mono-font">
+            {{ label }}
+          </span>
+          <slot name="label-actions" />
+          <InfoPopover v-if="tooltip" :text="tooltip" />
         </span>
-        <slot name="label-actions" />
-        <InfoPopover v-if="tooltip" :text="tooltip" />
-      </span>
-    </div>
+      </div>
 
-    <div class="detail-value w-full md:flex-1">
-      <slot />
+      <div class="detail-value w-full @md:flex-1">
+        <slot />
+      </div>
     </div>
   </div>
 </template>
@@ -100,7 +99,6 @@ defineProps({
   letter-spacing: 0.025em;
 }
 
-/* InfoPopover icon styling */
 .label-key :deep(svg) {
   color: var(--color-cold-night-alpha-25);
   transition: color 0.2s ease;

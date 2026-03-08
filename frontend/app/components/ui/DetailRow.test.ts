@@ -55,14 +55,16 @@ describe("DetailRow", () => {
     expect(wrapper.html()).toContain("<button>Action</button>");
   });
 
-  it("has correct flex layout structure", () => {
+  it("has correct container query and flex layout structure", () => {
     const wrapper = mount(DetailRow, {
       props: {
         label: "Label",
       },
     });
-    const container = wrapper.find("div");
-    expect(container.classes()).toContain("flex");
-    expect(container.classes()).toContain("flex-col");
+    const root = wrapper.find("div");
+    expect(root.classes()).toContain("@container");
+    const inner = root.find("div");
+    expect(inner.classes()).toContain("flex");
+    expect(inner.classes()).toContain("flex-col");
   });
 });

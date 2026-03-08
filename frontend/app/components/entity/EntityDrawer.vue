@@ -1,0 +1,203 @@
+<template>
+  <USlideover
+    v-model:open="isOpen"
+    side="right"
+    :overlay="false"
+    :modal="false"
+    :dismissible="false"
+    :ui="{
+      content:
+        'sm:max-w-sm max-w-full shadow-2xl !top-[calc(var(--nav-height)+3rem)] !h-auto !bottom-0 rounded-tl-xl',
+    }"
+  >
+    <template #content>
+      <div class="flex h-full flex-col">
+        <div
+          class="flex items-center justify-end border-b border-gray-200 px-4 py-2"
+        >
+          <div class="flex items-center gap-1">
+            <UButton
+              :to="fullPagePath"
+              leading-icon="i-lucide-external-link"
+              trailing-icon="i-lucide-external-link"
+              variant="outline"
+              color="neutral"
+              size="xs"
+              @click="closeDrawer"
+            >
+              Open
+            </UButton>
+            <UButton
+              icon="i-lucide-x"
+              variant="ghost"
+              color="neutral"
+              size="sm"
+              @click="closeDrawer"
+            />
+          </div>
+        </div>
+
+        <div class="flex-1 overflow-y-auto">
+          <div v-if="isLoading" class="p-6">
+            <LoadingBar />
+          </div>
+          <InlineError v-else-if="queryError" :error="queryError" class="p-6" />
+          <div v-else-if="entityData" class="flex flex-col gap-2 px-4 py-4">
+            <template v-for="pair in scalarLabelPairs" :key="pair.key">
+              <section v-if="shouldDisplayValue(entityData[pair.key])">
+                <DetailRow
+                  :label="pair.label"
+                  :tooltip="pair.tooltip"
+                  :variant="drawerVariant"
+                >
+                  <p class="result-value-small whitespace-pre-line">
+                    {{ formatValue(entityData[pair.key]) }}
+                  </p>
+                </DetailRow>
+              </section>
+            </template>
+
+            <template v-for="rel in relationSections" :key="rel.relationKey">
+              <section v-if="rel.items.length > 0">
+                <DetailRow :label="rel.label" :variant="rel.variant">
+                  <RelatedItemsList
+                    :items="rel.items"
+                    :base-path="rel.basePath"
+                  />
+                </DetailRow>
+              </section>
+            </template>
+          </div>
+        </div>
+      </div>
+    </template>
+  </USlideover>
+</template>
+
+<script setup lang="ts">
+import { computed } from "vue";
+import { useQuery } from "@tanstack/vue-query";
+import { useEntityDrawer } from "@/composables/useEntityDrawer";
+import { getEntityConfig, mapRelationToItem } from "@/config/entityRegistry";
+import type { RelationConfig } from "@/config/entityRegistry";
+import { useApiClient } from "@/composables/useApiClient";
+import type { RelatedItem } from "@/types/ui";
+import DetailRow from "@/components/ui/DetailRow.vue";
+import RelatedItemsList from "@/components/ui/RelatedItemsList.vue";
+import LoadingBar from "@/components/layout/LoadingBar.vue";
+import InlineError from "@/components/ui/InlineError.vue";
+
+const { isOpen, entity, closeDrawer } = useEntityDrawer();
+
+const config = computed(() =>
+  entity.value ? getEntityConfig(entity.value.basePath) : undefined,
+);
+
+const { client } = useApiClient();
+
+const {
+  data: rawData,
+  isLoading,
+  error: queryError,
+} = useQuery({
+  queryKey: computed(() => [
+    "entity-drawer",
+    entity.value?.table,
+    entity.value?.coldId,
+  ]),
+  queryFn: async () => {
+    if (!entity.value || !config.value) return null;
+    const { data, error } = await client.POST("/search/details", {
+      body: { table: entity.value.table, id: entity.value.coldId },
+    });
+    if (error) throw error;
+    return config.value.process(data);
+  },
+  enabled: computed(() => Boolean(entity.value?.coldId && entity.value?.table)),
+});
+
+const entityData = computed(() => {
+  if (!rawData.value) return null;
+  return rawData.value as Record<string, unknown>;
+});
+
+const fullPagePath = computed(() => {
+  if (!entity.value) return "/";
+  const id = entity.value.coldId;
+  const basePath = entity.value.basePath;
+  return id.startsWith("/") ? id : `${basePath}/${id}`;
+});
+
+const drawerVariant = computed(() => {
+  if (!entity.value) return undefined;
+  const variantMap: Record<string, string> = {
+    "/court-decision": "court-decision",
+    "/question": "question",
+    "/literature": "literature",
+    "/jurisdiction": "jurisdiction",
+    "/specialist": "specialist",
+    "/domestic-instrument": "instrument",
+    "/regional-instrument": "instrument",
+    "/international-instrument": "instrument",
+    "/arbitral-rule": "arbitration",
+    "/arbitral-award": "arbitration",
+  };
+  return variantMap[entity.value.basePath];
+});
+
+interface KeyLabelPair {
+  key: string;
+  label: string;
+  tooltip?: string;
+}
+
+const scalarLabelPairs = computed<KeyLabelPair[]>(() => {
+  if (!config.value) return [];
+  const tooltips = config.value.tooltips ?? {};
+  const skip = config.value.skipLabelKeys;
+  return Object.entries(config.value.labels)
+    .filter(([key]) => !skip.has(key))
+    .map(([key, label]) => ({
+      key,
+      label,
+      tooltip: tooltips[key],
+    }));
+});
+
+interface RelationSection extends RelationConfig {
+  items: RelatedItem[];
+}
+
+const relationSections = computed<RelationSection[]>(() => {
+  if (!config.value || !entityData.value) return [];
+  const relations = entityData.value.relations as
+    | Record<string, Record<string, unknown>[]>
+    | undefined;
+  if (!relations) return [];
+
+  return config.value.relations
+    .map((rel) => {
+      const items = (relations[rel.relationKey] ?? []).map(mapRelationToItem);
+      return { ...rel, items };
+    })
+    .filter((rel) => rel.items.length > 0);
+});
+
+function shouldDisplayValue(value: unknown): boolean {
+  if (!value) return false;
+  if (value === "NA" || value === "N/A") return false;
+  if (Array.isArray(value) && value.length === 0) return false;
+  if (typeof value === "string" && value.trim() === "") return false;
+  return true;
+}
+
+function formatValue(value: unknown): string {
+  if (value === null || value === undefined) return "\u2014";
+  if (Array.isArray(value)) {
+    if (value.length === 0) return "\u2014";
+    if (typeof value[0] === "string") return value.join(", ");
+    return String(value.length) + " items";
+  }
+  return String(value);
+}
+</script>
