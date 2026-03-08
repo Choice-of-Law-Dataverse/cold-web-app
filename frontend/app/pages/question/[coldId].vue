@@ -15,10 +15,11 @@
       <!-- Custom rendering for Legal provision articles -->
       <template #domesticlegalprovisions>
         <DetailRow
+          v-if="hasSourceData"
           :label="questionLabels.domesticLegalProvisions"
           :tooltip="questionTooltips.domesticLegalProvisions"
         >
-          <QuestionSourceList v-if="answerData" :data="answerData" />
+          <QuestionSourceList :data="answerData!" />
         </DetailRow>
       </template>
 
@@ -40,13 +41,13 @@
 
       <template #relatedliterature>
         <DetailRow
+          v-if="relatedLiterature.length"
           :label="questionLabels.relatedLiterature"
           variant="literature"
         >
           <RelatedItemsList
             :items="relatedLiterature"
             base-path="/literature"
-            :empty-value-behavior="{ action: 'hide' }"
           />
         </DetailRow>
       </template>
@@ -121,6 +122,12 @@ const relatedLiterature = computed<RelatedItem[]>(() =>
       ? { badge: { label: "OUP", color: "var(--color-label-oup)" } }
       : {}),
   })),
+);
+
+const hasSourceData = computed(
+  () =>
+    Boolean(answerData.value?.domesticLegalProvisions) ||
+    Boolean(answerData.value?.domesticInstrumentsId),
 );
 
 const questionSuffix = computed(() => {

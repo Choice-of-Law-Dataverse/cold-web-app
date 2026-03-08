@@ -53,13 +53,7 @@ const instrumentsById = computed(() => {
 const formatArticle = (article: string | undefined) =>
   article ? article.replace(/(Art\.)(\d+)/, "$1 $2") : "";
 
-const isLoading = computed(() => {
-  if (instrumentsLoading.value) return true;
-  return processedProvisions.value.some(
-    (prov) =>
-      prov.instrumentId && !instrumentsById.value.has(prov.instrumentId),
-  );
-});
+const isLoading = computed(() => instrumentsLoading.value);
 
 const formattedItems = computed<RelatedItem[]>(() => {
   const items: RelatedItem[] = [];
