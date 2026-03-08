@@ -82,24 +82,14 @@
       <!-- Slot for Legal provisions -->
       <template #domesticlegalprovisions>
         <DetailRow
-          v-if="sortedProvisions.length"
+          v-if="provisionItems.length"
           :label="domesticInstrumentLabels.domesticLegalProvisions"
           :tooltip="domesticInstrumentTooltips.domesticLegalProvisions"
         >
-          <div class="provisions-container">
-            <LegalProvision
-              v-for="provision in sortedProvisions"
-              :key="provision.coldId ?? provision.id"
-              :provision-id="provision.coldId!"
-              :text-type="textType"
-              :instrument-title="
-                legalInstrument?.abbreviation ||
-                legalInstrument?.titleInEnglish ||
-                ''
-              "
-              @update:has-english-translation="hasEnglishTranslation = $event"
-            />
-          </div>
+          <RelatedItemsList
+            :items="provisionItems"
+            base-path="/domestic-legal-provision"
+          />
         </DetailRow>
       </template>
 
@@ -134,7 +124,7 @@ import DetailRow from "@/components/ui/DetailRow.vue";
 import PdfLink from "@/components/ui/PdfLink.vue";
 import TitleWithActions from "@/components/ui/TitleWithActions.vue";
 import SourceExternalLink from "@/components/sources/SourceExternalLink.vue";
-import LegalProvision from "@/components/legal/LegalProvision.vue";
+import RelatedItemsList from "@/components/ui/RelatedItemsList.vue";
 import InstrumentLink from "@/components/legal/InstrumentLink.vue";
 import CompatibleLabel from "@/components/ui/CompatibleLabel.vue";
 import JurisdictionReportBanner from "@/components/jurisdiction/JurisdictionReportBanner.vue";
@@ -145,10 +135,9 @@ import { useDomesticInstrument } from "@/composables/useRecordDetails";
 import { isTruthy } from "@/types/entities/domestic-instrument";
 import { domesticInstrumentLabels } from "@/config/labels";
 import { domesticInstrumentTooltips } from "@/config/tooltips";
+import type { RelatedItem } from "@/types/ui";
 
 const route = useRoute();
-const textType = ref("fullTextOfTheProvisionEnglishTranslation");
-const hasEnglishTranslation = ref(false);
 
 const instrumentId = ref(route.params.coldId as string);
 
@@ -171,28 +160,27 @@ const isCompatible = (
   return isTruthy(legalInstrument.value[field]);
 };
 
-const sortedProvisions = computed(() => {
-  const provisions =
-    legalInstrument.value?.relations.domesticLegalProvisions ?? [];
-  const filtered = provisions.filter((p) => p.coldId);
-  const rankingStr = legalInstrument.value?.rankingDisplayOrder;
-  if (!rankingStr) return filtered;
+const instrumentTitle = computed(
+  () =>
+    legalInstrument.value?.abbreviation ||
+    legalInstrument.value?.titleInEnglish ||
+    "",
+);
 
-  const rankingMap: Record<string, number> = {};
-  rankingStr.split(",").forEach((pair) => {
-    const [coldId, rank] = pair.split(/:(?=[^:]*$)/);
-    if (coldId && rank && !isNaN(Number(rank))) {
-      rankingMap[coldId.trim()] = Number(rank.trim());
-    }
-  });
-
-  return [...filtered].sort((a, b) => {
-    const ra = rankingMap[a.coldId!];
-    const rb = rankingMap[b.coldId!];
-    if (ra == null && rb == null) return 0;
-    if (ra == null) return 1;
-    if (rb == null) return -1;
-    return ra - rb;
-  });
+const provisionItems = computed<RelatedItem[]>(() => {
+  const provisions = [
+    ...(legalInstrument.value?.relations.domesticLegalProvisions ?? []),
+  ]
+    .filter((p) => p.coldId)
+    .sort(
+      (a, b) =>
+        (Number(a.rankingDisplayOrder) || 0) -
+        (Number(b.rankingDisplayOrder) || 0),
+    );
+  const suffix = instrumentTitle.value ? `, ${instrumentTitle.value}` : "";
+  return provisions.map((p) => ({
+    id: p.coldId || String(p.id),
+    title: (p.article || p.coldId || String(p.id)) + suffix,
+  }));
 });
 </script>

@@ -33,6 +33,7 @@
 
       <template #specialists>
         <DetailRow
+          v-if="specialistItems.length"
           :label="internationalInstrumentLabels.specialists"
           :tooltip="internationalInstrumentTooltips.specialists"
           variant="specialist"
@@ -43,44 +44,27 @@
 
       <template #literature>
         <DetailRow
+          v-if="relatedLiterature.length"
           :label="internationalInstrumentLabels.literature"
           :tooltip="internationalInstrumentTooltips.literature"
         >
           <RelatedItemsList
             :items="relatedLiterature"
             base-path="/literature"
-            :empty-value-behavior="{ action: 'hide' }"
           />
         </DetailRow>
       </template>
 
       <template #selectedprovisions>
         <DetailRow
+          v-if="provisionItems.length"
           :label="internationalInstrumentLabels.selectedProvisions"
           :tooltip="internationalInstrumentTooltips.selectedProvisions"
         >
-          <div class="provisions-container">
-            <div v-if="sortedProvisions.length">
-              <BaseLegalContent
-                v-for="(provision, index) in sortedProvisions"
-                :key="index"
-                :title="
-                  provision.titleOfTheProvision +
-                  (internationalInstrument
-                    ? ', ' + (internationalInstrument.name || '')
-                    : '')
-                "
-                :anchor-id="
-                  normalizeAnchorId(String(provision.titleOfTheProvision || ''))
-                "
-              >
-                <template #default>
-                  {{ provision.fullText }}
-                </template>
-              </BaseLegalContent>
-            </div>
-            <div v-else-if="!loading">No provisions found.</div>
-          </div>
+          <RelatedItemsList
+            :items="provisionItems"
+            base-path="/international-legal-provision"
+          />
         </DetailRow>
       </template>
 
@@ -111,7 +95,6 @@ import DetailRow from "@/components/ui/DetailRow.vue";
 import PdfLink from "@/components/ui/PdfLink.vue";
 import TitleWithActions from "@/components/ui/TitleWithActions.vue";
 import SourceExternalLink from "@/components/sources/SourceExternalLink.vue";
-import BaseLegalContent from "@/components/legal/BaseLegalContent.vue";
 import RelatedItemsList from "@/components/ui/RelatedItemsList.vue";
 import LastModified from "@/components/ui/LastModified.vue";
 import { useInternationalInstrument } from "@/composables/useRecordDetails";
@@ -147,24 +130,25 @@ const specialistItems = computed<RelatedItem[]>(() =>
   })),
 );
 
-const sortedProvisions = computed(() =>
-  [
+const instrumentTitle = computed(
+  () => internationalInstrument.value?.name || "",
+);
+
+const provisionItems = computed<RelatedItem[]>(() => {
+  const provisions = [
     ...(internationalInstrument.value?.relations.internationalLegalProvisions ??
       []),
   ].sort(
     (a, b) =>
       (Number(a.rankingDisplayOrder) || 0) -
       (Number(b.rankingDisplayOrder) || 0),
-  ),
-);
-
-function normalizeAnchorId(str: string): string {
-  if (!str) return "";
-  return str
-    .normalize("NFD")
-    .replace(/\p{Diacritic}/gu, "")
-    .replace(/\s+/g, "-")
-    .replace(/[^a-zA-Z0-9\-_]/g, "")
-    .toLowerCase();
-}
+  );
+  const suffix = instrumentTitle.value ? `, ${instrumentTitle.value}` : "";
+  return provisions
+    .filter((p) => p.coldId)
+    .map((p) => ({
+      id: p.coldId || String(p.id),
+      title: (p.titleOfTheProvision || p.coldId || String(p.id)) + suffix,
+    }));
+});
 </script>

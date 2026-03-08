@@ -17,32 +17,40 @@
       </DetailRow>
 
       <template #search-links>
-        <DetailRow label="Specialists" variant="specialist">
+        <DetailRow
+          v-if="specialistItems.length"
+          label="Specialists"
+          variant="specialist"
+        >
           <RelatedItemsList :items="specialistItems" base-path="/specialist" />
         </DetailRow>
-        <DetailRow label="Domestic Instruments" variant="instrument">
+        <DetailRow
+          v-if="domesticInstruments.length"
+          label="Domestic Instruments"
+          variant="instrument"
+        >
           <RelatedItemsList
             :items="domesticInstruments"
             base-path="/domestic-instrument"
           />
         </DetailRow>
-        <DetailRow label="Court Decisions" variant="court-decision">
+        <DetailRow
+          v-if="courtDecisions.length"
+          label="Court Decisions"
+          variant="court-decision"
+        >
           <RelatedItemsList
             :items="courtDecisions"
             base-path="/court-decision"
           />
         </DetailRow>
-
         <DetailRow
+          v-if="allLiterature.length"
           :label="jurisdictionLabels.literature"
           :tooltip="jurisdictionTooltips.literature"
           variant="literature"
         >
-          <RelatedItemsList
-            :items="allLiterature"
-            base-path="/literature"
-            :empty-value-behavior="{ action: 'hide' }"
-          />
+          <RelatedItemsList :items="allLiterature" base-path="/literature" />
         </DetailRow>
       </template>
 

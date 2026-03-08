@@ -119,3 +119,19 @@ export type InternationalInstrumentField =
 export type SpecialistField = keyof typeof specialistLabels;
 export type ArbitralRuleField = keyof typeof arbitralRuleLabels;
 export type ArbitralAwardField = keyof typeof arbitralAwardLabels;
+
+export const domesticLegalProvisionLabels = {
+  title: "Article",
+  englishText: "English Translation",
+  originalText: "Original Text",
+} as const;
+
+export const regionalLegalProvisionLabels = {
+  title: "Provision",
+  originalText: "Text",
+} as const;
+
+export const internationalLegalProvisionLabels = {
+  title: "Provision",
+  originalText: "Text",
+} as const;
