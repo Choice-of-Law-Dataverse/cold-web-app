@@ -13,6 +13,16 @@
           :to="item.id.startsWith('/') ? item.id : `${basePath}/${item.id}`"
         >
           {{ item.title }}
+          <span
+            v-if="item.badge"
+            class="related-item-badge"
+            :style="{
+              backgroundColor: `color-mix(in srgb, ${item.badge.color} 14%, white)`,
+              color: item.badge.color,
+            }"
+          >
+            {{ item.badge.label }}
+          </span>
         </NuxtLink>
       </div>
       <ShowMoreLess
@@ -73,3 +83,19 @@ const displayedItems = computed(() => {
     : props.items;
 });
 </script>
+
+<style scoped>
+.related-item-badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 9999px;
+  padding: 0.0625rem 0.4rem;
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  line-height: 1.125rem;
+  white-space: nowrap;
+  margin-left: 0.25rem;
+  vertical-align: middle;
+}
+</style>

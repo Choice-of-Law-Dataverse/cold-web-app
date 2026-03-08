@@ -49,6 +49,7 @@
           <RelatedItemsList
             :items="relatedLiterature"
             base-path="/literature"
+            :empty-value-behavior="{ action: 'hide' }"
           />
         </DetailRow>
       </template>
@@ -130,12 +131,13 @@ const {
 } = useInternationalInstrument(instrumentId);
 
 const relatedLiterature = computed<RelatedItem[]>(() =>
-  (internationalInstrument.value?.relations.literature ?? [])
-    .filter((lit) => !lit.oupJdChapter)
-    .map((lit) => ({
-      id: lit.coldId || String(lit.id),
-      title: lit.title || String(lit.id),
-    })),
+  (internationalInstrument.value?.relations.literature ?? []).map((lit) => ({
+    id: lit.coldId || String(lit.id),
+    title: lit.title || String(lit.id),
+    ...(lit.oupJdChapter
+      ? { badge: { label: "OUP", color: "var(--color-label-oup)" } }
+      : {}),
+  })),
 );
 
 const specialistItems = computed<RelatedItem[]>(() =>

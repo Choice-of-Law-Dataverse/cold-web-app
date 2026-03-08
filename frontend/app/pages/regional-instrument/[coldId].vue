@@ -37,6 +37,7 @@
           <RelatedItemsList
             :items="relatedLiterature"
             base-path="/literature"
+            :empty-value-behavior="{ action: 'hide' }"
           />
         </DetailRow>
       </template>
@@ -111,12 +112,13 @@ const {
 } = useRegionalInstrument(instrumentId);
 
 const relatedLiterature = computed<RelatedItem[]>(() =>
-  (regionalInstrument.value?.relations.literature ?? [])
-    .filter((lit) => !lit.oupJdChapter)
-    .map((lit) => ({
-      id: lit.coldId || String(lit.id),
-      title: lit.title || String(lit.id),
-    })),
+  (regionalInstrument.value?.relations.literature ?? []).map((lit) => ({
+    id: lit.coldId || String(lit.id),
+    title: lit.title || String(lit.id),
+    ...(lit.oupJdChapter
+      ? { badge: { label: "OUP", color: "var(--color-label-oup)" } }
+      : {}),
+  })),
 );
 
 const sortedRegionalProvisions = computed(() =>
