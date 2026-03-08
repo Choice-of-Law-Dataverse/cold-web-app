@@ -77,8 +77,10 @@ function getCardLink() {
     case "International Instrument":
       return `/international-instrument/${props.resultData.id}`;
     case "Arbitral Rule":
+    case "Arbitral Rules":
       return `/arbitral-rule/${props.resultData.id}`;
     case "Arbitral Award":
+    case "Arbitral Awards":
       return `/arbitral-award/${props.resultData.id}`;
     case "Literature":
       return `/literature/${props.resultData.id}`;

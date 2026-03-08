@@ -18,6 +18,7 @@
           <component
             :is="getResultComponent(resultData.sourceTable as string)"
             :result-data="resultData"
+            :card-type="resultData.sourceTable as string"
           />
         </div>
         <LoadingCard

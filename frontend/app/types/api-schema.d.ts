@@ -15,7 +15,7 @@ export interface paths {
     put?: never;
     /**
      * Full-text search across CoLD data
-     * @description Searches across multiple domains (Answers, HCCH Answers, Court Decisions, Domestic Instruments, Regional Instruments, International Instruments, and Literature). Filters support user-facing fields like 'tables', 'Jurisdictions', or 'Themes'. You can sort by date and paginate results.
+     * @description Searches across multiple domains (Answers, HCCH Answers, Court Decisions, Domestic Instruments, Regional Instruments, International Instruments, Literature, Arbitral Awards, and Arbitral Rules). Filters support user-facing fields like 'tables', 'Jurisdictions', or 'Themes'. You can sort by date and paginate results.
      */
     post: operations["handle_full_text_search_api_v1_search__post"];
     delete?: never;

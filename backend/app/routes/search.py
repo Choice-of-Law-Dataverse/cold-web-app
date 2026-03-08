@@ -45,7 +45,7 @@ router = APIRouter(
     "/",
     summary="Full-text search across CoLD data",
     description=(
-        "Searches across multiple domains (Answers, HCCH Answers, Court Decisions, Domestic Instruments, Regional Instruments, International Instruments, and Literature). "  # noqa: E501
+        "Searches across multiple domains (Answers, HCCH Answers, Court Decisions, Domestic Instruments, Regional Instruments, International Instruments, Literature, Arbitral Awards, and Arbitral Rules). "  # noqa: E501
         "Filters support user-facing fields like 'tables', 'Jurisdictions', or 'Themes'. "
         "You can sort by date and paginate results."
     ),
