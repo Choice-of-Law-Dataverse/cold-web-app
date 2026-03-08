@@ -625,6 +625,8 @@ export interface components {
       rank?: number | null;
       /** Answer */
       answer?: string | null;
+      /** Coldid */
+      coldId?: string | null;
       /** Created */
       created?: string | null;
       /** Recordid */

@@ -87,7 +87,7 @@ function processAnswers(
 
 export function useQuestionJurisdictions(suffix: Ref<string>) {
   const filters = computed(() => [
-    { column: "id" as const, value: suffix.value },
+    { column: "coldId" as const, value: suffix.value },
   ]);
 
   return useFullTableWithFilters<
