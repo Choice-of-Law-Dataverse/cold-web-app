@@ -13,13 +13,23 @@
     <template #content>
       <div class="flex h-full flex-col">
         <div class="flex items-center justify-between gap-3 px-6 py-5">
-          <CardTags
-            :formatted-jurisdiction="headerJurisdictions"
-            :legal-family="headerLegalFamily"
-            :source-table-label="headerSourceTable"
-            :label-color-class="headerLabelColor"
-            :formatted-theme="[]"
-          />
+          <div class="flex min-w-0 items-center gap-2">
+            <UButton
+              v-if="canGoBack"
+              icon="i-lucide-arrow-left"
+              variant="ghost"
+              color="neutral"
+              size="xs"
+              @click="goBack"
+            />
+            <CardTags
+              :formatted-jurisdiction="headerJurisdictions"
+              :legal-family="headerLegalFamily"
+              :source-table-label="headerSourceTable"
+              :label-color-class="headerLabelColor"
+              :formatted-theme="[]"
+            />
+          </div>
           <div class="flex shrink-0 items-center gap-1">
             <UButton
               v-if="hasDetailPage"
@@ -120,7 +130,7 @@ import DrawerAnswerMap from "@/components/jurisdiction/DrawerAnswerMap.vue";
 import CardTags from "@/components/ui/CardTags.vue";
 
 const route = useRoute();
-const { isOpen, entity, closeDrawer } = useEntityDrawer();
+const { isOpen, entity, canGoBack, closeDrawer, goBack } = useEntityDrawer();
 
 const config = computed(() =>
   entity.value ? getEntityConfig(entity.value.basePath) : undefined,
