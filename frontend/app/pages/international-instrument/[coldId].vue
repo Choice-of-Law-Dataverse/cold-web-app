@@ -31,6 +31,16 @@
         </DetailRow>
       </template>
 
+      <template #specialists>
+        <DetailRow
+          :label="internationalInstrumentLabels.specialists"
+          :tooltip="internationalInstrumentTooltips.specialists"
+          variant="specialist"
+        >
+          <RelatedItemsList :items="specialistItems" base-path="/specialist" />
+        </DetailRow>
+      </template>
+
       <template #literature>
         <DetailRow
           :label="internationalInstrumentLabels.literature"
@@ -126,6 +136,13 @@ const relatedLiterature = computed<RelatedItem[]>(() =>
       id: lit.coldId || String(lit.id),
       title: lit.title || String(lit.id),
     })),
+);
+
+const specialistItems = computed<RelatedItem[]>(() =>
+  (internationalInstrument.value?.relations.specialists ?? []).map((s) => ({
+    id: s.coldId || String(s.id),
+    title: s.specialist || String(s.id),
+  })),
 );
 
 const sortedProvisions = computed(() =>

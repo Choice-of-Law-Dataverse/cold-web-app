@@ -17,19 +17,8 @@
       </DetailRow>
 
       <template #search-links>
-        <DetailRow label="Specialists">
-          <div v-if="specialists.length > 0" class="result-value-small">
-            <div class="mb-2 flex flex-row flex-wrap gap-2">
-              <span
-                v-for="(specialist, i) in specialists"
-                :key="i"
-                class="link-chip--static"
-              >
-                {{ specialist.specialist }}
-              </span>
-            </div>
-          </div>
-          <div v-else class="prose mb-1">No specialists available</div>
+        <DetailRow label="Specialists" variant="specialist">
+          <RelatedItemsList :items="specialistItems" base-path="/specialist" />
         </DetailRow>
         <DetailRow label="Domestic Instruments" variant="instrument">
           <RelatedItemsList
@@ -154,7 +143,12 @@ const jurisdictionId = ref((route.params.coldId as string).toUpperCase());
 
 const { isLoading, data, error } = useJurisdictionDetail(jurisdictionId);
 
-const specialists = computed(() => data.value?.relations.specialists ?? []);
+const specialistItems = computed<RelatedItem[]>(() =>
+  (data.value?.relations.specialists ?? []).map((s) => ({
+    id: s.coldId || String(s.id),
+    title: s.specialist || String(s.id),
+  })),
+);
 
 const courtDecisions = computed<RelatedItem[]>(() =>
   (data.value?.relations.courtDecisions ?? []).map((cd) => ({

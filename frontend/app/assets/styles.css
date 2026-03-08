@@ -37,6 +37,8 @@
   --color-label-arbitration-alpha: #5a6ab81a;
   --color-label-oup: #7c3aed;
   --color-label-oup-alpha: #7c3aed1a;
+  --color-label-specialist: #c2508a;
+  --color-label-specialist-alpha: #c2508a1a;
 
   /* Max width */
   --max-width-container: var(--container-width);
@@ -64,6 +66,9 @@
 }
 .type-arbitration {
   --type-color: var(--color-label-arbitration);
+}
+.type-specialist {
+  --type-color: var(--color-label-specialist);
 }
 .type-jurisdiction {
   --type-color: var(--color-cold-purple);

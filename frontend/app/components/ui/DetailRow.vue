@@ -43,6 +43,7 @@ defineProps({
         "oup",
         "arbitration",
         "jurisdiction",
+        "specialist",
       ].includes(value),
   },
 });

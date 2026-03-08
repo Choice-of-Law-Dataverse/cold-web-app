@@ -49,6 +49,11 @@ import type {
   RegionalInstrumentResponse,
   RegionalInstrumentDetailResponse,
 } from "./entities/regional-instrument";
+import type {
+  Specialist,
+  SpecialistResponse,
+  SpecialistDetailResponse,
+} from "./entities/specialist";
 
 export { ApiError } from "./errors";
 
@@ -118,7 +123,7 @@ export type TableResponseMap = {
   Questions: QuestionResponse;
   "Regional Instruments": RegionalInstrumentResponse;
   "Regional Legal Provisions": RegionalLegalProvisionResponse;
-  Specialists: Record<string, unknown>;
+  Specialists: SpecialistResponse;
 };
 
 export type TableDetailMap = {
@@ -136,7 +141,7 @@ export type TableDetailMap = {
   Questions: AnswerDetailResponse;
   "Regional Instruments": RegionalInstrumentDetailResponse;
   "Regional Legal Provisions": RegionalLegalProvisionDetailResponse;
-  Specialists: Record<string, unknown>;
+  Specialists: SpecialistDetailResponse;
 };
 
 export type TableProcessedMap = {
@@ -154,7 +159,7 @@ export type TableProcessedMap = {
   Questions: Question;
   "Regional Instruments": RegionalInstrument;
   "Regional Legal Provisions": RegionalLegalProvisionDetailResponse;
-  Specialists: Record<string, unknown>;
+  Specialists: Specialist;
 };
 
 export type TypedFilter<T extends TableName> = {

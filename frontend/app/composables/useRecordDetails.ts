@@ -13,6 +13,7 @@ import { processLiterature } from "@/types/entities/literature";
 import { processArbitralAward } from "@/types/entities/arbitral-award";
 import { processArbitralRule } from "@/types/entities/arbitral-rule";
 import { processJurisdiction } from "@/types/entities/jurisdiction";
+import { processSpecialist } from "@/types/entities/specialist";
 
 type ApiClient = ReturnType<typeof createClient<paths>>;
 
@@ -132,6 +133,10 @@ export function useArbitralRule(id: Ref<string | number>) {
 
 export function useJurisdictionDetail(id: Ref<string | number>) {
   return useRecordDetails("Jurisdictions", id, processJurisdiction);
+}
+
+export function useSpecialistDetail(id: Ref<string | number>) {
+  return useRecordDetails("Specialists", id, processSpecialist);
 }
 
 export function useCourtDecisionsList(ids: Ref<(string | number)[]>) {
