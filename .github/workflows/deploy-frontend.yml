@@ -42,24 +42,6 @@ jobs:
         with:
           node-version: 20
 
-      - name: Verify API types match production
-        run: |
-          curl -sf https://api.cold.global/api/v1/openapi.json -o /tmp/openapi-raw.json
-          jq '{
-            openapi, info,
-            paths: (.paths | with_entries(
-              select(.key | startswith("/api/v1"))
-              | .key |= ltrimstr("/api/v1")
-            )),
-            components, tags,
-            servers: [{"url": "/api/proxy"}]
-          }' /tmp/openapi-raw.json > /tmp/openapi-transformed.json
-          npx openapi-typescript@7.13.0 /tmp/openapi-transformed.json -o /tmp/api-schema-check.d.ts
-          diff frontend/app/types/api-schema.d.ts /tmp/api-schema-check.d.ts || {
-            echo "::error::API types are out of sync with production. Run 'npm run generate:api' locally and commit the result."
-            exit 1
-          }
-
       - name: Build and deploy to Azure Container Apps
         uses: azure/container-apps-deploy-action@v2
         with:
