@@ -25,10 +25,18 @@
       </template>
 
       <template #search-links>
-        <DetailRow label="Jurisdictions" variant="jurisdiction">
+        <DetailRow
+          v-if="jurisdictions.length"
+          label="Jurisdictions"
+          variant="jurisdiction"
+        >
           <RelatedItemsList :items="jurisdictions" base-path="/jurisdiction" />
         </DetailRow>
-        <DetailRow label="International Instruments" variant="instrument">
+        <DetailRow
+          v-if="internationalInstruments.length"
+          label="International Instruments"
+          variant="instrument"
+        >
           <RelatedItemsList
             :items="internationalInstruments"
             base-path="/international-instrument"

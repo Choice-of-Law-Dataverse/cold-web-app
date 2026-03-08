@@ -46,3 +46,15 @@ export function processRegionalLegalProvision(
     hasEnglishTranslation: false,
   };
 }
+
+export function processInternationalLegalProvision(
+  raw: InternationalLegalProvisionDetailResponse,
+): LegalProvision {
+  return {
+    id: raw.id,
+    title: raw.titleOfTheProvision || "Unknown Article",
+    originalText: raw.fullText || "No content available",
+    englishText: undefined,
+    hasEnglishTranslation: false,
+  };
+}

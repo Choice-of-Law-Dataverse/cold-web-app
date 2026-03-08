@@ -31,13 +31,13 @@
 
       <template #literature>
         <DetailRow
+          v-if="relatedLiterature.length"
           :label="regionalInstrumentLabels.literature"
           :tooltip="regionalInstrumentTooltips.literature"
         >
           <RelatedItemsList
             :items="relatedLiterature"
             base-path="/literature"
-            :empty-value-behavior="{ action: 'hide' }"
           />
         </DetailRow>
       </template>
@@ -45,23 +45,14 @@
       <!-- Slot for Legal provisions -->
       <template #regionallegalprovisions>
         <DetailRow
-          v-if="sortedRegionalProvisions.length"
+          v-if="provisionItems.length"
           :label="regionalInstrumentLabels.regionalLegalProvisions"
           :tooltip="regionalInstrumentTooltips.regionalLegalProvisions"
         >
-          <div class="provisions-container">
-            <LegalProvision
-              v-for="provision in sortedRegionalProvisions"
-              :key="provision.coldId ?? provision.id"
-              :provision-id="provision.coldId!"
-              :instrument-title="
-                regionalInstrument?.abbreviation ||
-                regionalInstrument?.title ||
-                ''
-              "
-              table="Regional Legal Provisions"
-            />
-          </div>
+          <RelatedItemsList
+            :items="provisionItems"
+            base-path="/regional-legal-provision"
+          />
         </DetailRow>
       </template>
 
@@ -95,7 +86,6 @@ import SourceExternalLink from "@/components/sources/SourceExternalLink.vue";
 import RelatedItemsList from "@/components/ui/RelatedItemsList.vue";
 import LastModified from "@/components/ui/LastModified.vue";
 import { useRegionalInstrument } from "@/composables/useRecordDetails";
-import LegalProvision from "@/components/legal/LegalProvision.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
 import EntityFeedback from "@/components/ui/EntityFeedback.vue";
 import { regionalInstrumentLabels } from "@/config/labels";
@@ -121,9 +111,21 @@ const relatedLiterature = computed<RelatedItem[]>(() =>
   })),
 );
 
-const sortedRegionalProvisions = computed(() =>
-  (regionalInstrument.value?.relations.regionalLegalProvisions ?? []).filter(
-    (p) => p.coldId,
-  ),
+const instrumentTitle = computed(
+  () =>
+    regionalInstrument.value?.abbreviation ||
+    regionalInstrument.value?.title ||
+    "",
 );
+
+const provisionItems = computed<RelatedItem[]>(() => {
+  const provisions = (
+    regionalInstrument.value?.relations.regionalLegalProvisions ?? []
+  ).filter((p) => p.coldId);
+  const suffix = instrumentTitle.value ? `, ${instrumentTitle.value}` : "";
+  return provisions.map((p) => ({
+    id: p.coldId || String(p.id),
+    title: (p.titleOfTheProvision || p.coldId || String(p.id)) + suffix,
+  }));
+});
 </script>

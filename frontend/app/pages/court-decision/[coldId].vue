@@ -34,13 +34,16 @@
         </DetailRow>
       </template>
 
-      <template #domesticlegalprovisions="{ value }">
+      <template #domesticlegalprovisions>
         <DetailRow
-          v-if="value"
+          v-if="domesticInstrumentItems.length"
           :label="courtDecisionLabels.domesticLegalProvisions"
           :tooltip="courtDecisionTooltips.domesticLegalProvisions"
         >
-          <InstrumentLink :id="value as string" table="Domestic Instruments" />
+          <RelatedItemsList
+            :items="domesticInstrumentItems"
+            base-path="/domestic-instrument"
+          />
         </DetailRow>
       </template>
 
@@ -114,6 +117,7 @@
       </template>
       <template #relatedliterature>
         <DetailRow
+          v-if="relatedLiterature.length"
           :label="courtDecisionLabels.relatedLiterature"
           :tooltip="courtDecisionTooltips.relatedLiterature"
           variant="literature"
@@ -121,10 +125,6 @@
           <RelatedItemsList
             :items="relatedLiterature"
             base-path="/literature"
-            :empty-value-behavior="{
-              action: 'display',
-              fallback: 'No related literature available',
-            }"
           />
         </DetailRow>
       </template>
@@ -191,7 +191,6 @@ import DetailRow from "@/components/ui/DetailRow.vue";
 import PdfLink from "@/components/ui/PdfLink.vue";
 import TitleWithActions from "@/components/ui/TitleWithActions.vue";
 import SourceExternalLink from "@/components/sources/SourceExternalLink.vue";
-import InstrumentLink from "@/components/legal/InstrumentLink.vue";
 import RelatedItemsList from "@/components/ui/RelatedItemsList.vue";
 import JurisdictionReportBanner from "@/components/jurisdiction/JurisdictionReportBanner.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
@@ -224,6 +223,14 @@ const showFullText = ref(false);
 
 const primaryJurisdiction = computed(
   () => courtDecision.value?.relations.jurisdictions[0] ?? null,
+);
+
+const domesticInstrumentItems = computed<RelatedItem[]>(() =>
+  (courtDecision.value?.relations.domesticInstruments ?? []).map((di) => ({
+    id: di.coldId || String(di.id),
+    title:
+      di.abbreviation || di.titleInEnglish || di.officialTitle || String(di.id),
+  })),
 );
 
 const relatedQuestions = computed<RelatedItem[]>(() =>

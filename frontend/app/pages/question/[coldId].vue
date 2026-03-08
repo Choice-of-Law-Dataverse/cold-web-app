@@ -12,13 +12,16 @@
       :tooltips="questionTooltips"
       :show-suggest-edit="true"
     >
-      <!-- Custom rendering for Legal provision articles -->
       <template #domesticlegalprovisions>
         <DetailRow
+          v-if="domesticInstrumentItems.length"
           :label="questionLabels.domesticLegalProvisions"
           :tooltip="questionTooltips.domesticLegalProvisions"
         >
-          <QuestionSourceList v-if="answerData" :data="answerData" />
+          <RelatedItemsList
+            :items="domesticInstrumentItems"
+            base-path="/domestic-instrument"
+          />
         </DetailRow>
       </template>
 
@@ -87,7 +90,6 @@ import BaseDetailLayout from "@/components/layout/BaseDetailLayout.vue";
 import DetailRow from "@/components/ui/DetailRow.vue";
 import RelatedItemsList from "@/components/ui/RelatedItemsList.vue";
 import JurisdictionReportBanner from "@/components/jurisdiction/JurisdictionReportBanner.vue";
-import QuestionSourceList from "@/components/sources/QuestionSourceList.vue";
 import QuestionAnswerMap from "@/components/jurisdiction/QuestionAnswerMap.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
 import EntityFeedback from "@/components/ui/EntityFeedback.vue";
@@ -104,6 +106,14 @@ const { data: answerData, isLoading, error } = useAnswer(answerId);
 
 const primaryJurisdiction = computed(
   () => answerData.value?.relations.jurisdictions[0] ?? null,
+);
+
+const domesticInstrumentItems = computed<RelatedItem[]>(() =>
+  (answerData.value?.relations.domesticInstruments ?? []).map((di) => ({
+    id: di.coldId || String(di.id),
+    title:
+      di.abbreviation || di.titleInEnglish || di.officialTitle || String(di.id),
+  })),
 );
 
 const relatedCourtDecisions = computed<RelatedItem[]>(() =>

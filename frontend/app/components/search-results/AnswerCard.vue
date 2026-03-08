@@ -39,38 +39,6 @@
           <div v-else-if="resultData.oupBookQuote">
             {{ getValue("oupBookQuote") }}
           </div>
-          <template v-if="hasDomesticValue">
-            <template v-if="resultData.domesticLegalProvisions">
-              <LegalProvisionRenderer
-                :value="String(getValue('domesticLegalProvisions') ?? '')"
-              />
-            </template>
-            <template v-else-if="resultData.domesticInstrumentsId">
-              <LegalProvisionRenderer
-                skip-article
-                :value="String(getValue('domesticInstrumentsId') ?? '')"
-              />
-            </template>
-            <template v-else>
-              <div v-if="literatureLoading">
-                <LoadingBar class="pt-[11px]" />
-              </div>
-              <template v-else>
-                <template v-if="literatureItems.length > 0">
-                  <div v-for="item in literatureItems" :key="item.id">
-                    <NuxtLink
-                      class="text-cold-purple"
-                      :to="`/literature/L-${item.id}`"
-                      >{{ item.title }}</NuxtLink
-                    >
-                  </div>
-                </template>
-                <div v-else>
-                  {{ getValue("Literature") }}
-                </div>
-              </template>
-            </template>
-          </template>
           <div v-if="relatedCasesCount">
             <NuxtLink class="text-cold-purple" :to="relatedDecisionsLink">
               {{ relatedCasesCount }} related court decisions
@@ -100,11 +68,8 @@ import { computed } from "vue";
 import ResultCard from "@/components/search-results/ResultCard.vue";
 import DetailRow from "@/components/ui/DetailRow.vue";
 import { answerCardConfig } from "@/config/cardConfigs";
-import LoadingBar from "@/components/layout/LoadingBar.vue";
-import LegalProvisionRenderer from "@/components/legal/LegalProvisionRenderer.vue";
 import { formatYear } from "@/utils/format";
 import { useCardFields } from "@/composables/useCardFields";
-import { useRecordDetailsList } from "@/composables/useRecordDetails";
 
 const props = defineProps<{
   resultData: Record<string, unknown>;
@@ -125,35 +90,6 @@ const answerValue = computed(() => {
   return getValue("answer");
 });
 
-const literatureIdStr = computed(() => {
-  const raw = props.resultData.literature;
-  return typeof raw === "string" ? raw : "";
-});
-
-const literatureIds = computed(() =>
-  literatureIdStr.value
-    ? literatureIdStr.value
-        .split(",")
-        .map((id: string) => id.trim())
-        .filter((id: string) => id)
-    : [],
-);
-
-const { data: literatureData, isLoading: literatureLoading } =
-  useRecordDetailsList("Literature", literatureIds);
-
-const literatureItems = computed(() => {
-  if (!literatureData.value) return [];
-  return literatureIds.value
-    .map((id, i) => {
-      const record = literatureData.value[i];
-      const title = record?.title;
-      const finalTitle = title && title !== "NA" ? title : id;
-      return { id, title: finalTitle as string };
-    })
-    .filter((item) => item.title);
-});
-
 const relatedCasesCount = computed(() => {
   const links = props.resultData.courtDecisionsLink;
   if (!links || typeof links !== "string") return 0;
@@ -165,20 +101,11 @@ const relatedDecisionsLink = computed(() => {
   return `question/${id}#related-court-decisions`;
 });
 
-const hasDomesticValue = computed(() => {
-  return !!(
-    props.resultData.domesticLegalProvisions ||
-    props.resultData.domesticInstrumentsId ||
-    props.resultData.literature
-  );
-});
-
 const hasMoreInformation = computed(() => {
   return (
     (props.resultData.moreInformation &&
       props.resultData.moreInformation !== "") ||
     (props.resultData.oupBookQuote && props.resultData.oupBookQuote !== "") ||
-    hasDomesticValue.value ||
     relatedCasesCount.value > 0
   );
 });
@@ -189,10 +116,3 @@ const lastUpdatedDisplay = computed(() => {
   return y ? String(y) : "";
 });
 </script>
-
-<style scoped>
-.result-value-small li {
-  list-style-type: disc;
-  margin-left: 20px;
-}
-</style>
