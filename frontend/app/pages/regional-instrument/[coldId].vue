@@ -8,13 +8,14 @@
       :loading="loading"
       :error="error"
       :data="regionalInstrument || {}"
-      :labels="regionalInstrumentLabels"
-      :tooltips="regionalInstrumentTooltips"
+      :field-order="entityConfig.fieldOrder"
+      :label-overrides="entityConfig.labelOverrides"
+      :tooltips="entityConfig.tooltips"
       :relations="regionalInstrument?.relations"
       :show-suggest-edit="true"
     >
-      <template #abbreviation="{ value }">
-        <DetailRow :label="regionalInstrumentLabels.abbreviation">
+      <template #abbreviation="{ value, label }">
+        <DetailRow :label="label">
           <TitleWithActions>
             {{ value }}
             <template #actions>
@@ -60,8 +61,9 @@ import LastModified from "@/components/ui/LastModified.vue";
 import { useRegionalInstrument } from "@/composables/useRecordDetails";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
 import EntityFeedback from "@/components/ui/EntityFeedback.vue";
-import { regionalInstrumentLabels } from "@/config/labels";
-import { regionalInstrumentTooltips } from "@/config/tooltips";
+import { getEntityConfig } from "@/config/entityRegistry";
+
+const entityConfig = getEntityConfig("/regional-instrument")!;
 
 const route = useRoute();
 const instrumentId = ref(route.params.coldId as string);

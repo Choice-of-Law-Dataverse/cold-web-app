@@ -8,13 +8,14 @@
       :loading="loading"
       :error="error"
       :data="internationalInstrument || {}"
-      :labels="internationalInstrumentLabels"
-      :tooltips="internationalInstrumentTooltips"
+      :field-order="entityConfig.fieldOrder"
+      :label-overrides="entityConfig.labelOverrides"
+      :tooltips="entityConfig.tooltips"
       :relations="internationalInstrument?.relations"
       :show-suggest-edit="true"
     >
-      <template #name="{ value }">
-        <DetailRow :label="internationalInstrumentLabels.name">
+      <template #name="{ value, label }">
+        <DetailRow :label="label">
           <TitleWithActions>
             {{ value }}
             <template #actions>
@@ -62,8 +63,9 @@ import LastModified from "@/components/ui/LastModified.vue";
 import { useInternationalInstrument } from "@/composables/useRecordDetails";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
 import EntityFeedback from "@/components/ui/EntityFeedback.vue";
-import { internationalInstrumentLabels } from "@/config/labels";
-import { internationalInstrumentTooltips } from "@/config/tooltips";
+import { getEntityConfig } from "@/config/entityRegistry";
+
+const entityConfig = getEntityConfig("/international-instrument")!;
 
 const route = useRoute();
 const instrumentId = ref(route.params.coldId as string);

@@ -7,15 +7,16 @@
       table="Literature"
       :loading="loading"
       :error="error"
-      :data="literature || {}"
-      :labels="literatureLabels"
-      :tooltips="literatureTooltips"
+      :data="(literature as unknown as Record<string, unknown>) || {}"
+      :field-order="entityConfig.fieldOrder"
+      :label-overrides="entityConfig.labelOverrides"
+      :tooltips="entityConfig.tooltips"
       :show-suggest-edit="true"
     >
       <!-- Title with PDF and Source Link -->
-      <template #title="{ value }">
+      <template #title="{ value, label }">
         <section v-if="value" class="section-gap">
-          <DetailRow :label="literatureLabels.title">
+          <DetailRow :label="label">
             <TitleWithActions>
               {{ value }}
               <template #actions>
@@ -35,27 +36,24 @@
         </section>
       </template>
 
-      <template #publicationtitle="{ value }">
+      <template #publicationTitle="{ value, label }">
         <section v-if="value" class="section-gap">
-          <DetailRow :label="literatureLabels.publicationTitle">
+          <DetailRow :label="label">
             <span class="result-value-small">{{ value }}</span>
           </DetailRow>
         </section>
       </template>
 
-      <template #publisher="{ value }">
+      <template #publisher="{ value, label, tooltip }">
         <section v-if="value" class="section-gap">
-          <DetailRow
-            :label="literatureLabels.publisher"
-            :tooltip="literatureTooltips.publisher"
-          >
+          <DetailRow :label="label" :tooltip="tooltip">
             <span class="result-value-small">{{ value }}</span>
           </DetailRow>
         </section>
       </template>
 
       <!-- BibTeX Export Section -->
-      <template #abstractnote>
+      <template #abstractNote>
         <section class="section-gap">
           <DetailRow label="BibTeX Citation">
             <div class="flex flex-col gap-3">
@@ -119,8 +117,9 @@ import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
 import EntityFeedback from "@/components/ui/EntityFeedback.vue";
 import LastModified from "@/components/ui/LastModified.vue";
 import { generateBibTeX, sanitizeFilename, downloadFile } from "@/utils/bibtex";
-import { literatureLabels } from "@/config/labels";
-import { literatureTooltips } from "@/config/tooltips";
+import { getEntityConfig } from "@/config/entityRegistry";
+
+const entityConfig = getEntityConfig("/literature")!;
 
 const route = useRoute();
 

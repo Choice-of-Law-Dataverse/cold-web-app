@@ -8,7 +8,9 @@
       :loading="loading"
       :error="error"
       :data="arbitralRule || {}"
-      :labels="arbitralRuleLabels"
+      :field-order="entityConfig.fieldOrder"
+      :label-overrides="entityConfig.labelOverrides"
+      :tooltips="entityConfig.tooltips"
       :relations="arbitralRule?.relations"
       :show-suggest-edit="true"
     >
@@ -39,7 +41,9 @@ import { useArbitralRule } from "@/composables/useRecordDetails";
 import LastModified from "@/components/ui/LastModified.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
 import EntityFeedback from "@/components/ui/EntityFeedback.vue";
-import { arbitralRuleLabels } from "@/config/labels";
+import { getEntityConfig } from "@/config/entityRegistry";
+
+const entityConfig = getEntityConfig("/arbitral-rule")!;
 
 const route = useRoute();
 

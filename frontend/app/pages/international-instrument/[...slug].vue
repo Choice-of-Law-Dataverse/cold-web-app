@@ -7,6 +7,7 @@
       header-mode="new"
       :show-notification-banner="true"
       :notification-banner-message="notificationBannerMessage"
+      :field-order="[]"
       :icon="'i-material-symbols:warning-outline'"
       @open-save-modal="openSaveModal"
       @open-cancel-modal="showCancelModal = true"
@@ -138,8 +139,9 @@ import { format, parseISO } from "date-fns";
 import { internationalInstrumentTooltips } from "@/config/tooltips";
 
 const tooltipInternationalInstrumentSpecialist =
-  internationalInstrumentTooltips.specialists;
-const tooltipInternationalInstrumentDate = internationalInstrumentTooltips.date;
+  internationalInstrumentTooltips.specialists ?? "";
+const tooltipInternationalInstrumentDate =
+  internationalInstrumentTooltips.date ?? "";
 const tooltipInternationalInstrumentLink =
   "Link to the official source or full text of the instrument.";
 

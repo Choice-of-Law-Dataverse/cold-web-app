@@ -46,83 +46,23 @@
           <div
             class="main-content flex w-full flex-col gap-2 px-4 py-4 sm:px-6 sm:py-6"
           >
-            <slot />
-            <template v-for="(item, index) in keyLabelPairs" :key="index">
-              <section
-                v-if="shouldDisplayValue(item, resultData?.[item.key])"
-                class="detail-section"
-              >
-                <template v-if="item.key === 'Region'">
-                  <slot />
-                </template>
-                <template
-                  v-if="$slots[item.key.replace(/ /g, '-').toLowerCase()]"
-                >
-                  <slot
-                    :name="item.key.replace(/ /g, '-').toLowerCase()"
-                    :value="resultData?.[item.key]"
-                  />
-                </template>
-                <template v-else>
-                  <DetailRow :label="item.label" :tooltip="item.tooltip">
-                    <template #label-actions>
-                      <slot
-                        :name="item.key + '-header-actions'"
-                        :value="resultData?.[item.key]"
-                      />
-                    </template>
-
-                    <template
-                      v-if="
-                        (item.key === 'answer' || item.key === 'specialists') &&
-                        Array.isArray(
-                          getDisplayValue(item, resultData?.[item.key]),
-                        )
-                      "
-                    >
-                      <div class="mt-0 flex flex-col gap-2">
-                        <div
-                          v-for="(line, i) in getDisplayValue(
-                            item,
-                            resultData?.[item.key],
-                          ) as string[]"
-                          :key="i"
-                          :class="
-                            props.valueClassMap[item.key] ||
-                            'result-value-small'
-                          "
-                        >
-                          {{ line }}
-                        </div>
-                      </div>
-                    </template>
-                    <template v-else>
-                      <p
-                        :class="[
-                          props.valueClassMap[item.key] ||
-                            'result-value-small whitespace-pre-line',
-                          'mt-0',
-                        ]"
-                      >
-                        {{ getDisplayValue(item, resultData?.[item.key]) }}
-                      </p>
-                    </template>
-                  </DetailRow>
-                </template>
-              </section>
-            </template>
-            <slot name="search-links" />
-            <template
-              v-for="section in autoRelationSections"
-              :key="section.key"
+            <EntityContent
+              :data="resultData"
+              :field-order="fieldOrder"
+              :label-overrides="labelOverrides"
+              :tooltips="tooltips"
+              :relations="relations"
+              :exclude-relations="excludeRelations"
+              :variant="variant"
             >
-              <DetailRow :label="section.label" :variant="section.variant">
-                <RelatedItemsList
-                  :items="section.items"
-                  :base-path="section.basePath"
-                />
-              </DetailRow>
-            </template>
+              <template
+                v-for="(_, name) in $slots"
+                :key="name"
+                #[name]="slotData"
+              >
+                <slot :name="name" v-bind="slotData" />
+              </template>
+            </EntityContent>
           </div>
         </div>
         <ContributeBanner
@@ -136,34 +76,15 @@
 </template>
 
 <script setup lang="ts">
-import { useSlots, computed } from "vue";
+import { computed } from "vue";
 import { useRoute } from "vue-router";
 import { useCoveredCountries } from "@/composables/useJurisdictions";
 import BaseCardHeader from "@/components/ui/CardHeader.vue";
 import ContributeBanner from "@/components/ui/ContributeBanner.vue";
 import NotificationBanner from "@/components/ui/NotificationBanner.vue";
 import LoadingCard from "@/components/layout/LoadingCard.vue";
-import DetailRow from "@/components/ui/DetailRow.vue";
-import RelatedItemsList from "@/components/ui/RelatedItemsList.vue";
 import InlineError from "@/components/ui/InlineError.vue";
-import { RELATION_RENDERERS, mapRelationToItem } from "@/config/entityRegistry";
-import type { RelatedItem } from "@/types/ui";
-
-interface EmptyValueBehavior {
-  action?: string;
-  fallback?: string;
-  getFallback?: (data: Record<string, unknown>) => string;
-  shouldDisplay?: (data: Record<string, unknown>) => boolean;
-  shouldHide?: (data: Record<string, unknown>) => boolean;
-}
-
-interface KeyLabelPair {
-  key: string;
-  label: string;
-  tooltip?: string;
-  emptyValueBehavior?: EmptyValueBehavior;
-  valueTransform?: (value: unknown) => unknown;
-}
+import EntityContent from "@/components/entity/EntityContent.vue";
 
 type RelationRecord = Record<string, Record<string, unknown>[]>;
 
@@ -171,8 +92,9 @@ interface Props {
   loading: boolean;
   error?: Error | Record<string, unknown> | null;
   resultData: Record<string, unknown>;
-  keyLabelPairs: KeyLabelPair[];
-  valueClassMap: Record<string, string>;
+  fieldOrder: string[];
+  labelOverrides?: Record<string, string>;
+  tooltips?: Record<string, string>;
   formattedSourceTable: string;
   showHeader: boolean;
   showOpenLink: boolean;
@@ -185,14 +107,16 @@ interface Props {
   icon: string;
   relations?: RelationRecord;
   excludeRelations?: Set<string>;
+  variant?: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   loading: false,
   error: null,
   resultData: () => ({}),
-  keyLabelPairs: () => [],
-  valueClassMap: () => ({}),
+  fieldOrder: () => [],
+  labelOverrides: () => ({}),
+  tooltips: () => ({}),
   formattedSourceTable: "",
   showHeader: true,
   showOpenLink: false,
@@ -205,35 +129,7 @@ const props = withDefaults(defineProps<Props>(), {
   icon: "",
   relations: undefined,
   excludeRelations: undefined,
-});
-
-interface AutoRelationSection {
-  key: string;
-  label: string;
-  basePath: string;
-  variant?: string;
-  items: RelatedItem[];
-}
-
-const autoRelationSections = computed<AutoRelationSection[]>(() => {
-  if (!props.relations) return [];
-  const exclude = props.excludeRelations ?? new Set<string>();
-  return Object.entries(RELATION_RENDERERS)
-    .filter(([key]) => !exclude.has(key))
-    .map(([key, config]) => {
-      const rawItems = props.relations?.[key] ?? [];
-      const sorted = [...rawItems].sort(
-        (a, b) =>
-          (Number(a.rankingDisplayOrder) || 0) -
-          (Number(b.rankingDisplayOrder) || 0),
-      );
-      return {
-        key,
-        ...config,
-        items: sorted.map(mapRelationToItem).filter((item) => item.id),
-      };
-    })
-    .filter((s) => s.items.length > 0);
+  variant: undefined,
 });
 
 const emit = defineEmits<{
@@ -294,75 +190,6 @@ const contributeBannerJurisdictionName = computed((): string => {
     ""
   );
 });
-
-const slots = useSlots();
-
-const selfFetchingSlots = new Set([
-  "oupchapter",
-  "relatedliterature",
-  "literature",
-  "domesticlegalprovisions",
-  "regionallegalprovisions",
-]);
-
-function shouldDisplayValue(item: KeyLabelPair, value: unknown): boolean {
-  const slotName = item.key.replace(/ /g, "-").toLowerCase();
-
-  if (slots[slotName] && selfFetchingSlots.has(slotName)) return true;
-
-  if (!item.emptyValueBehavior) return true;
-  if (
-    item.emptyValueBehavior.shouldDisplay &&
-    !item.emptyValueBehavior.shouldDisplay(props.resultData)
-  ) {
-    return false;
-  }
-  if (
-    item.emptyValueBehavior.shouldHide &&
-    item.emptyValueBehavior.shouldHide(props.resultData)
-  ) {
-    return false;
-  }
-  if (
-    item.emptyValueBehavior.action === "hide" &&
-    (!value || value === "NA" || value === "N/A")
-  ) {
-    return false;
-  }
-  return true;
-}
-
-function getDisplayValue(item: KeyLabelPair, value: unknown): unknown {
-  if (item.valueTransform) {
-    return item.valueTransform(value);
-  }
-  if (
-    (item.key === "answer" || item.key === "specialists") &&
-    typeof value === "string" &&
-    value.includes(",")
-  ) {
-    return value.split(",").map((part) => part.trim());
-  }
-  if (
-    Array.isArray(value) &&
-    value.length === 0 &&
-    item.emptyValueBehavior &&
-    item.emptyValueBehavior.action === "display"
-  ) {
-    return "—";
-  }
-  if (!item.emptyValueBehavior) return value || "—";
-  if (
-    (!value || value === "NA") &&
-    item.emptyValueBehavior.action === "display"
-  ) {
-    if (item.emptyValueBehavior.getFallback) {
-      return item.emptyValueBehavior.getFallback(props.resultData);
-    }
-    return "—";
-  }
-  return value;
-}
 </script>
 
 <style scoped>

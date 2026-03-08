@@ -1,28 +1,16 @@
 /**
- * Tooltip content for entity detail pages
- * Only fields that need tooltips are included (Partial)
- *
- * `satisfies` ensures keys match the corresponding label maps.
+ * Tooltip content for entity detail pages.
+ * Only fields that need tooltips are included.
  */
 
-import type {
-  JurisdictionField,
-  QuestionField,
-  CourtDecisionField,
-  LiteratureField,
-  DomesticInstrumentField,
-  RegionalInstrumentField,
-  InternationalInstrumentField,
-} from "@/config/labels";
-
-export const jurisdictionTooltips = {
+export const jurisdictionTooltips: Record<string, string> = {
   jurisdictionalDifferentiator:
     "Jurisdictional peculiarities, such as the judicial hierarchy. To be read before consulting jurisdictional information.",
   literature:
     "Academic literature relevant to this jurisdiction's choice of law framework.",
-} as const satisfies Partial<Record<JurisdictionField, string>>;
+};
 
-export const questionTooltips = {
+export const questionTooltips: Record<string, string> = {
   question: "Question pertaining to chosen topic and jurisdiction.",
   answer:
     "Predetermined response mostly limited to 'Yes', 'No', 'Not applicable', or 'No data'. Not a detailed or explanatory answer.",
@@ -33,9 +21,9 @@ export const questionTooltips = {
   courtDecisionsId:
     "Court decisions that have addressed the same legal issue, according to our database.",
   relatedLiterature: "Academic literature relevant to this question's topic.",
-} as const satisfies Partial<Record<QuestionField, string>>;
+};
 
-export const courtDecisionTooltips = {
+export const courtDecisionTooltips: Record<string, string> = {
   caseTitle:
     "Extracted from the case citation; main information to identify the case.",
   caseCitation: "Official and generally accepted citation of a case.",
@@ -64,14 +52,14 @@ export const courtDecisionTooltips = {
     "Questions in our database that the court decision addresses.",
   relatedLiterature:
     "Academic literature relevant to this court decision's legal issues.",
-} as const satisfies Partial<Record<CourtDecisionField, string>>;
+};
 
-export const literatureTooltips = {
+export const literatureTooltips: Record<string, string> = {
   publicationYear: "Year of publication.",
   publisher: "Publishing house.",
-} as const satisfies Partial<Record<LiteratureField, string>>;
+};
 
-export const domesticInstrumentTooltips = {
+export const domesticInstrumentTooltips: Record<string, string> = {
   titleInEnglish:
     "English translation or accepted name of the instrument, typically a statute or regulation.",
   compatibility:
@@ -83,17 +71,17 @@ export const domesticInstrumentTooltips = {
   publicationDate: "Date of publication in the official reporter or gazette.",
   domesticLegalProvisions:
     "Link to provisions of a particular relevance to Choice of Law, including key articles or sections.",
-} as const satisfies Partial<Record<DomesticInstrumentField, string>>;
+};
 
-export const regionalInstrumentTooltips = {
+export const regionalInstrumentTooltips: Record<string, string> = {
   date: "Date when the instrument was enacted or came into force.",
   literature:
     "This button will open the CoLD search and return all literature pieces that are relevant for this instrument.",
   regionalLegalProvisions:
     "Key provisions within the instrument, selected for their relevance to choice of law.",
-} as const satisfies Partial<Record<RegionalInstrumentField, string>>;
+};
 
-export const internationalInstrumentTooltips = {
+export const internationalInstrumentTooltips: Record<string, string> = {
   date: "Date when the instrument was enacted or came into force.",
   specialists:
     "Academics who have published on or are otherwise associated with this instrument.",
@@ -101,4 +89,4 @@ export const internationalInstrumentTooltips = {
     "This button will open the CoLD search and return all literature pieces that are relevant for this instrument.",
   selectedProvisions:
     "Key provisions within the instrument, selected for their relevance to choice of law.",
-} as const satisfies Partial<Record<InternationalInstrumentField, string>>;
+};

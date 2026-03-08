@@ -8,12 +8,14 @@
       :loading="loading"
       :error="error"
       :data="specialist || {}"
-      :labels="specialistLabels"
+      :field-order="entityConfig.fieldOrder"
+      :label-overrides="entityConfig.labelOverrides"
+      :tooltips="entityConfig.tooltips"
       :relations="specialist?.relations"
       :show-suggest-edit="true"
     >
-      <template #website="{ value }">
-        <DetailRow :label="specialistLabels.website">
+      <template #website="{ value, label }">
+        <DetailRow :label="label">
           <a
             :href="String(value)"
             target="_blank"
@@ -45,7 +47,9 @@ import DetailRow from "@/components/ui/DetailRow.vue";
 import LastModified from "@/components/ui/LastModified.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
 import { useSpecialistDetail } from "@/composables/useRecordDetails";
-import { specialistLabels } from "@/config/labels";
+import { getEntityConfig } from "@/config/entityRegistry";
+
+const entityConfig = getEntityConfig("/specialist")!;
 
 const route = useRoute();
 const specialistId = ref(route.params.coldId as string);

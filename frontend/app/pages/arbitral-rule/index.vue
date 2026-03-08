@@ -3,7 +3,7 @@
     table="Arbitral Rules"
     :loading="loading"
     :data="resultData"
-    :key-label-pairs="computedKeyLabelPairs"
+    :field-order="[]"
   >
     <template #full-width>
       <div class="gradient-top-border" />
@@ -73,7 +73,6 @@ useHead({
 
 const loading = false;
 const resultData = {} as Record<string, unknown>;
-const computedKeyLabelPairs: Record<string, unknown>[] = [];
 
 const columns = [
   { id: "setofRules", accessorKey: "setofRules", header: "Set of Rules" },

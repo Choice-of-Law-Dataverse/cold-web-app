@@ -8,16 +8,14 @@
       :loading="loading"
       :error="error"
       :data="legalInstrument || {}"
-      :labels="domesticInstrumentLabels"
-      :tooltips="domesticInstrumentTooltips"
+      :field-order="entityConfig.fieldOrder"
+      :label-overrides="entityConfig.labelOverrides"
+      :tooltips="entityConfig.tooltips"
       :relations="legalInstrument?.relations"
       :show-suggest-edit="true"
     >
-      <template #titleinenglish="{ value }">
-        <DetailRow
-          :label="domesticInstrumentLabels.titleInEnglish"
-          :tooltip="domesticInstrumentTooltips.titleInEnglish"
-        >
+      <template #titleInEnglish="{ value, label, tooltip }">
+        <DetailRow :label="label" :tooltip="tooltip">
           <TitleWithActions>
             {{ value }}
             <template #actions>
@@ -32,35 +30,35 @@
         </DetailRow>
       </template>
 
-      <template #amendedby="{ value }">
-        <DetailRow v-if="value" :label="domesticInstrumentLabels.amendedBy">
+      <template #amendedBy="{ value, label }">
+        <DetailRow v-if="value" :label="label">
           <InstrumentLink :id="value as string" table="Domestic Instruments" />
         </DetailRow>
       </template>
-      <template #amends="{ value }">
-        <DetailRow v-if="value" :label="domesticInstrumentLabels.amends">
+      <template #amends="{ value, label }">
+        <DetailRow v-if="value" :label="label">
           <InstrumentLink :id="value as string" table="Domestic Instruments" />
         </DetailRow>
       </template>
-      <template #replacedby="{ value }">
-        <DetailRow v-if="value" :label="domesticInstrumentLabels.replacedBy">
+      <template #replacedBy="{ value, label }">
+        <DetailRow v-if="value" :label="label">
           <InstrumentLink :id="value as string" table="Domestic Instruments" />
         </DetailRow>
       </template>
-      <template #replaces="{ value }">
-        <DetailRow v-if="value" :label="domesticInstrumentLabels.replaces">
+      <template #replaces="{ value, label }">
+        <DetailRow v-if="value" :label="label">
           <InstrumentLink :id="value as string" table="Domestic Instruments" />
         </DetailRow>
       </template>
-      <template #compatibility="{ value }">
+      <template #compatibility="{ value, label, tooltip }">
         <DetailRow
           v-if="
             value &&
             (isCompatible('compatibleWithTheUncitralModelLaw') ||
               isCompatible('compatibleWithTheHcchPrinciples'))
           "
-          :label="domesticInstrumentLabels.compatibility"
-          :tooltip="domesticInstrumentTooltips.compatibility"
+          :label="label"
+          :tooltip="tooltip"
         >
           <div class="result-value-small flex gap-2">
             <CompatibleLabel
@@ -114,8 +112,9 @@ import EntityFeedback from "@/components/ui/EntityFeedback.vue";
 import LastModified from "@/components/ui/LastModified.vue";
 import { useDomesticInstrument } from "@/composables/useRecordDetails";
 import { isTruthy } from "@/types/entities/domestic-instrument";
-import { domesticInstrumentLabels } from "@/config/labels";
-import { domesticInstrumentTooltips } from "@/config/tooltips";
+import { getEntityConfig } from "@/config/entityRegistry";
+
+const entityConfig = getEntityConfig("/domestic-instrument")!;
 
 const route = useRoute();
 

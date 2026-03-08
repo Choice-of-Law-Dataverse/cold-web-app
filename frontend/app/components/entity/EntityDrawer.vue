@@ -60,40 +60,23 @@
             <LoadingBar />
           </div>
           <InlineError v-else-if="queryError" :error="queryError" class="p-6" />
-          <div v-else-if="entityData" class="flex flex-col gap-2 px-4 py-4">
-            <template v-for="pair in scalarLabelPairs" :key="pair.key">
-              <section v-if="shouldDisplayValue(entityData[pair.key])">
-                <DetailRow
-                  :label="pair.label"
-                  :tooltip="pair.tooltip"
-                  :variant="drawerVariant"
+          <div
+            v-else-if="entityData && config"
+            class="flex flex-col gap-2 px-4 py-4"
+          >
+            <EntityContent
+              :data="entityData"
+              :field-order="config.fieldOrder"
+              :label-overrides="config.labelOverrides"
+              :tooltips="config.tooltips"
+              :relations="
+                entityData.relations as Record<
+                  string,
+                  Record<string, unknown>[]
                 >
-                  <p class="result-value-small whitespace-pre-line">
-                    {{ formatValue(entityData[pair.key]) }}
-                  </p>
-                </DetailRow>
-              </section>
-            </template>
-
-            <section v-if="domesticInstrumentItems.length">
-              <DetailRow label="Legal Provisions">
-                <RelatedItemsList
-                  :items="domesticInstrumentItems"
-                  base-path="/domestic-instrument"
-                />
-              </DetailRow>
-            </section>
-
-            <template v-for="rel in relationSections" :key="rel.relationKey">
-              <section v-if="rel.items.length > 0">
-                <DetailRow :label="rel.label" :variant="rel.variant">
-                  <RelatedItemsList
-                    :items="rel.items"
-                    :base-path="rel.basePath"
-                  />
-                </DetailRow>
-              </section>
-            </template>
+              "
+              :variant="config.variant"
+            />
 
             <section v-if="isJurisdiction && jurisdictionCode">
               <DetailRow label="Questions & Answers" variant="jurisdiction">
@@ -117,12 +100,10 @@
 import { computed } from "vue";
 import { useQuery } from "@tanstack/vue-query";
 import { useEntityDrawer } from "@/composables/useEntityDrawer";
-import { getEntityConfig, mapRelationToItem } from "@/config/entityRegistry";
-import type { RelationConfig } from "@/config/entityRegistry";
+import { getEntityConfig } from "@/config/entityRegistry";
 import { useApiClient } from "@/composables/useApiClient";
-import type { RelatedItem } from "@/types/ui";
 import DetailRow from "@/components/ui/DetailRow.vue";
-import RelatedItemsList from "@/components/ui/RelatedItemsList.vue";
+import EntityContent from "@/components/entity/EntityContent.vue";
 import LoadingBar from "@/components/layout/LoadingBar.vue";
 import InlineError from "@/components/ui/InlineError.vue";
 import JurisdictionDrawerQA from "@/components/jurisdiction/JurisdictionDrawerQA.vue";
@@ -180,70 +161,6 @@ const fullPagePath = computed(() => {
 });
 
 const hasDetailPage = computed(() => config.value?.hasDetailPage !== false);
-
-const drawerVariant = computed(() => {
-  if (!entity.value) return undefined;
-  const variantMap: Record<string, string> = {
-    "/court-decision": "court-decision",
-    "/question": "question",
-    "/literature": "literature",
-    "/jurisdiction": "jurisdiction",
-    "/specialist": "specialist",
-    "/domestic-instrument": "instrument",
-    "/regional-instrument": "instrument",
-    "/international-instrument": "instrument",
-    "/arbitral-rule": "arbitration",
-    "/arbitral-award": "arbitration",
-  };
-  return variantMap[entity.value.basePath];
-});
-
-interface KeyLabelPair {
-  key: string;
-  label: string;
-  tooltip?: string;
-}
-
-const scalarLabelPairs = computed<KeyLabelPair[]>(() => {
-  if (!config.value) return [];
-  const tooltips = config.value.tooltips ?? {};
-  const skip = config.value.skipLabelKeys;
-  return Object.entries(config.value.labels)
-    .filter(([key]) => !skip.has(key))
-    .map(([key, label]) => ({
-      key,
-      label,
-      tooltip: tooltips[key],
-    }));
-});
-
-interface RelationSection extends RelationConfig {
-  items: RelatedItem[];
-}
-
-const relationSections = computed<RelationSection[]>(() => {
-  if (!config.value || !entityData.value) return [];
-  const relations = entityData.value.relations as
-    | Record<string, Record<string, unknown>[]>
-    | undefined;
-  if (!relations) return [];
-
-  return config.value.relations
-    .map((rel) => {
-      const items = (relations[rel.relationKey] ?? []).map(mapRelationToItem);
-      return { ...rel, items };
-    })
-    .filter((rel) => rel.items.length > 0);
-});
-
-const domesticInstrumentItems = computed<RelatedItem[]>(() => {
-  if (!entityData.value) return [];
-  const relations = entityData.value.relations as
-    | Record<string, Record<string, unknown>[]>
-    | undefined;
-  if (!relations?.domesticInstruments) return [];
-  return relations.domesticInstruments.map(mapRelationToItem);
-});
 
 const pageJurisdictionCode = computed(() => {
   if (route.path.startsWith("/jurisdiction/")) {
@@ -335,24 +252,6 @@ const questionSuffix = computed(() => {
   if (parts.length > 1) return "_" + parts.slice(1).join("_");
   return "_" + id;
 });
-
-function shouldDisplayValue(value: unknown): boolean {
-  if (!value) return false;
-  if (value === "NA" || value === "N/A") return false;
-  if (Array.isArray(value) && value.length === 0) return false;
-  if (typeof value === "string" && value.trim() === "") return false;
-  return true;
-}
-
-function formatValue(value: unknown): string {
-  if (value === null || value === undefined) return "\u2014";
-  if (Array.isArray(value)) {
-    if (value.length === 0) return "\u2014";
-    if (typeof value[0] === "string") return value.join(", ");
-    return String(value.length) + " items";
-  }
-  return String(value);
-}
 </script>
 
 <style scoped>

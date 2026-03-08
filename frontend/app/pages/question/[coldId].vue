@@ -8,8 +8,9 @@
       :loading="isLoading"
       :error="error"
       :data="answerData || {}"
-      :labels="questionLabels"
-      :tooltips="questionTooltips"
+      :field-order="entityConfig.fieldOrder"
+      :label-overrides="entityConfig.labelOverrides"
+      :tooltips="entityConfig.tooltips"
       :relations="answerData?.relations"
       :show-suggest-edit="true"
     >
@@ -52,8 +53,9 @@ import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
 import EntityFeedback from "@/components/ui/EntityFeedback.vue";
 import LastModified from "@/components/ui/LastModified.vue";
 import { useAnswer } from "@/composables/useRecordDetails";
-import { questionLabels } from "@/config/labels";
-import { questionTooltips } from "@/config/tooltips";
+import { getEntityConfig } from "@/config/entityRegistry";
+
+const entityConfig = getEntityConfig("/question")!;
 
 const route = useRoute();
 const answerId = ref(route.params.coldId as string);

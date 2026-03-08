@@ -8,16 +8,14 @@
       :loading="isLoading"
       :error="error"
       :data="courtDecision || {}"
-      :labels="courtDecisionLabels"
-      :tooltips="courtDecisionTooltips"
+      :field-order="entityConfig.fieldOrder"
+      :label-overrides="entityConfig.labelOverrides"
+      :tooltips="entityConfig.tooltips"
       :relations="courtDecision?.relations"
       :show-suggest-edit="true"
     >
-      <template #casetitle="{ value }">
-        <DetailRow
-          :label="courtDecisionLabels.caseTitle"
-          :tooltip="courtDecisionTooltips.caseTitle"
-        >
+      <template #caseTitle="{ value, label, tooltip }">
+        <DetailRow :label="label" :tooltip="tooltip">
           <TitleWithActions>
             {{ value }}
             <template #actions>
@@ -34,14 +32,14 @@
         </DetailRow>
       </template>
 
-      <template #quote>
+      <template #quote="{ label, tooltip }">
         <DetailRow
           v-if="
             courtDecision &&
             (courtDecision.quote || courtDecision.translatedExcerpt)
           "
-          :label="courtDecisionLabels.quote"
-          :tooltip="courtDecisionTooltips.quote"
+          :label="label"
+          :tooltip="tooltip"
         >
           <div>
             <div
@@ -92,10 +90,10 @@
         </DetailRow>
       </template>
 
-      <template #originaltext="{ value }">
+      <template #originalText="{ value, label }">
         <DetailRow
           v-if="value && (value as string).trim() !== ''"
-          :label="courtDecisionLabels.originalText"
+          :label="label"
         >
           <div>
             <p class="result-value-small">
@@ -158,8 +156,9 @@ import ShowMoreLess from "@/components/ui/ShowMoreLess.vue";
 import LastModified from "@/components/ui/LastModified.vue";
 import EntityFeedback from "@/components/ui/EntityFeedback.vue";
 import { useCourtDecision } from "@/composables/useRecordDetails";
-import { courtDecisionLabels } from "@/config/labels";
-import { courtDecisionTooltips } from "@/config/tooltips";
+import { getEntityConfig } from "@/config/entityRegistry";
+
+const entityConfig = getEntityConfig("/court-decision")!;
 
 defineProps({
   iconClass: {

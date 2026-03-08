@@ -3,8 +3,9 @@
     :loading="props.loading"
     :error="props.error ?? undefined"
     :result-data="resultDataForDisplay"
-    :key-label-pairs="keyLabelPairsForDisplay"
-    :value-class-map="{}"
+    :field-order="props.fieldOrder"
+    :label-overrides="props.labelOverrides"
+    :tooltips="props.tooltips"
     :formatted-source-table="props.table"
     :formatted-jurisdiction="props.formattedJurisdiction"
     :formatted-theme="props.formattedTheme"
@@ -28,20 +29,19 @@
   </DetailDisplay>
 </template>
 
-<script setup lang="ts" generic="T extends TableName">
+<script setup lang="ts">
 import { computed } from "vue";
-import type { TableName, TableProcessedMap } from "@/types/api";
 import DetailDisplay from "@/components/ui/DetailDisplay.vue";
 
 const props = withDefaults(
   defineProps<{
-    table: T;
+    table: string;
     loading: boolean;
     error?: Error | null;
-    data: TableProcessedMap[T] | Record<string, unknown>;
-    labels?: Partial<Record<keyof TableProcessedMap[T], string>>;
-    tooltips?: Partial<Record<keyof TableProcessedMap[T], string>>;
-    keyLabelPairs?: Record<string, unknown>[];
+    data: Record<string, unknown>;
+    fieldOrder: string[];
+    labelOverrides?: Record<string, string>;
+    tooltips?: Record<string, string>;
     formattedJurisdiction?: string[];
     formattedTheme?: string[];
     headerMode?: string;
@@ -54,9 +54,9 @@ const props = withDefaults(
   }>(),
   {
     error: undefined,
-    labels: () => ({}),
-    tooltips: undefined,
-    keyLabelPairs: undefined,
+    fieldOrder: () => [],
+    labelOverrides: () => ({}),
+    tooltips: () => ({}),
     formattedJurisdiction: () => [],
     formattedTheme: () => [],
     headerMode: "default",
@@ -71,31 +71,7 @@ const props = withDefaults(
 
 const emit = defineEmits(["save", "open-save-modal", "open-cancel-modal"]);
 
-interface KeyLabelPair {
-  key: string;
-  label: string;
-  tooltip?: string;
-  emptyValueBehavior?: { action: string };
-}
-
 const resultDataForDisplay = computed(
   () => props.data as Record<string, unknown>,
-);
-
-const computedKeyLabelPairs = computed(() => {
-  if (props.labels && Object.keys(props.labels).length > 0) {
-    const tooltips = props.tooltips as Record<string, string> | undefined;
-    return Object.entries(props.labels).map(([key, label]) => ({
-      key,
-      label,
-      tooltip: tooltips?.[key],
-      emptyValueBehavior: { action: "hide" },
-    }));
-  }
-  return props.keyLabelPairs ?? [];
-});
-
-const keyLabelPairsForDisplay = computed(
-  () => computedKeyLabelPairs.value as KeyLabelPair[],
 );
 </script>

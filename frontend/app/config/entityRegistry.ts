@@ -1,29 +1,5 @@
 import type { TableName } from "@/types/api";
 import type { RelatedItem } from "@/types/ui";
-import {
-  specialistLabels,
-  courtDecisionLabels,
-  questionLabels,
-  literatureLabels,
-  domesticInstrumentLabels,
-  regionalInstrumentLabels,
-  internationalInstrumentLabels,
-  arbitralRuleLabels,
-  arbitralAwardLabels,
-  jurisdictionLabels,
-  domesticLegalProvisionLabels,
-  regionalLegalProvisionLabels,
-  internationalLegalProvisionLabels,
-} from "@/config/labels";
-import {
-  courtDecisionTooltips,
-  questionTooltips,
-  literatureTooltips,
-  domesticInstrumentTooltips,
-  regionalInstrumentTooltips,
-  internationalInstrumentTooltips,
-  jurisdictionTooltips,
-} from "@/config/tooltips";
 import { processSpecialist } from "@/types/entities/specialist";
 import { processCourtDecision } from "@/types/entities/court-decision";
 import { processQuestion } from "@/types/entities/question";
@@ -39,6 +15,15 @@ import {
   processRegionalLegalProvision,
   processInternationalLegalProvision,
 } from "@/types/entities/legal-provision";
+import {
+  courtDecisionTooltips,
+  questionTooltips,
+  literatureTooltips,
+  domesticInstrumentTooltips,
+  regionalInstrumentTooltips,
+  internationalInstrumentTooltips,
+  jurisdictionTooltips,
+} from "@/config/tooltips";
 
 export interface RelationConfig {
   relationKey: string;
@@ -115,14 +100,15 @@ export const RELATION_RENDERERS: Record<string, RelationRendererConfig> = {
 
 export interface EntityConfig {
   table: TableName;
-  labels: Record<string, string>;
+  fieldOrder: string[];
+  labelOverrides?: Record<string, string>;
   tooltips?: Record<string, string>;
   titleKey: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   process: (raw: any) => any;
-  skipLabelKeys: Set<string>;
   relations: RelationConfig[];
   hasDetailPage?: boolean;
+  variant?: string;
 }
 
 type RelationItem = Record<string, unknown>;
@@ -157,10 +143,10 @@ export function mapRelationToItem(item: RelationItem): RelatedItem {
 export const entityRegistry: Record<string, EntityConfig> = {
   "/specialist": {
     table: "Specialists",
-    labels: specialistLabels,
+    fieldOrder: ["specialist", "affiliation", "contact", "bio", "website"],
+    labelOverrides: { specialist: "Name", bio: "Biography" },
     titleKey: "specialist",
     process: processSpecialist,
-    skipLabelKeys: new Set(),
     relations: [
       {
         relationKey: "jurisdictions",
@@ -181,18 +167,37 @@ export const entityRegistry: Record<string, EntityConfig> = {
         variant: "literature",
       },
     ],
+    variant: "specialist",
   },
   "/court-decision": {
     table: "Court Decisions",
-    labels: courtDecisionLabels,
+    fieldOrder: [
+      "caseTitle",
+      "caseCitation",
+      "publicationDateIso",
+      "dateOfJudgment",
+      "instance",
+      "abstract",
+      "relevantFacts",
+      "pilProvisions",
+      "domesticLegalProvisions",
+      "textOfTheRelevantLegalProvisions",
+      "choiceOfLawIssue",
+      "courtSPosition",
+      "quote",
+      "originalText",
+    ],
+    labelOverrides: {
+      caseCitation: "Suggested Case Citation",
+      publicationDateIso: "Publication Date",
+      dateOfJudgment: "Judgment Date",
+      pilProvisions: "PIL Provisions",
+      courtSPosition: "Court's Position",
+      originalText: "Full Text",
+    },
     tooltips: courtDecisionTooltips,
     titleKey: "caseTitle",
     process: processCourtDecision,
-    skipLabelKeys: new Set([
-      "relatedQuestions",
-      "relatedLiterature",
-      "domesticLegalProvisions",
-    ]),
     relations: [
       {
         relationKey: "questions",
@@ -207,18 +212,24 @@ export const entityRegistry: Record<string, EntityConfig> = {
         variant: "literature",
       },
     ],
+    variant: "court-decision",
   },
   "/question": {
     table: "Answers",
-    labels: questionLabels,
+    fieldOrder: [
+      "question",
+      "answer",
+      "moreInformation",
+      "domesticLegalProvisions",
+      "oupBookQuote",
+    ],
+    labelOverrides: {
+      domesticLegalProvisions: "Source",
+      oupBookQuote: "OUP Book Quote",
+    },
     tooltips: questionTooltips,
     titleKey: "question",
     process: processQuestion,
-    skipLabelKeys: new Set([
-      "courtDecisionsId",
-      "relatedLiterature",
-      "domesticLegalProvisions",
-    ]),
     relations: [
       {
         relationKey: "courtDecisions",
@@ -233,32 +244,68 @@ export const entityRegistry: Record<string, EntityConfig> = {
         variant: "literature",
       },
     ],
+    variant: "question",
   },
   "/literature": {
     table: "Literature",
-    labels: literatureLabels,
+    fieldOrder: [
+      "title",
+      "author",
+      "editor",
+      "publicationYear",
+      "publicationTitle",
+      "publisher",
+      "abstractNote",
+    ],
+    labelOverrides: {
+      author: "Author(s)",
+      editor: "Editor(s)",
+      publicationYear: "Year",
+      publicationTitle: "Publication",
+      abstractNote: "Abstract",
+    },
     tooltips: literatureTooltips,
     titleKey: "title",
     process: processLiterature,
-    skipLabelKeys: new Set(),
     relations: [],
+    variant: "literature",
   },
   "/domestic-instrument": {
     table: "Domestic Instruments",
-    labels: domesticInstrumentLabels,
+    fieldOrder: [
+      "titleInEnglish",
+      "compatibility",
+      "amendedBy",
+      "amends",
+      "replaces",
+      "replacedBy",
+      "officialTitle",
+      "abbreviation",
+      "date",
+      "entryIntoForce",
+      "publicationDate",
+      "domesticLegalProvisions",
+    ],
+    labelOverrides: {
+      titleInEnglish: "Name",
+      compatibility: "Compatible with",
+      domesticLegalProvisions: "Selected Provisions",
+    },
     tooltips: domesticInstrumentTooltips,
     titleKey: "titleInEnglish",
     process: processDomesticInstrument,
-    skipLabelKeys: new Set(["domesticLegalProvisions"]),
     relations: [],
+    variant: "instrument",
   },
   "/regional-instrument": {
     table: "Regional Instruments",
-    labels: regionalInstrumentLabels,
+    fieldOrder: ["abbreviation", "title", "date", "regionalLegalProvisions"],
+    labelOverrides: {
+      regionalLegalProvisions: "Selected Provisions",
+    },
     tooltips: regionalInstrumentTooltips,
     titleKey: "title",
     process: processRegionalInstrument,
-    skipLabelKeys: new Set(["regionalLegalProvisions", "literature"]),
     relations: [
       {
         relationKey: "literature",
@@ -267,14 +314,15 @@ export const entityRegistry: Record<string, EntityConfig> = {
         variant: "literature",
       },
     ],
+    variant: "instrument",
   },
   "/international-instrument": {
     table: "International Instruments",
-    labels: internationalInstrumentLabels,
+    fieldOrder: ["name", "date", "selectedProvisions"],
+    labelOverrides: { name: "Title" },
     tooltips: internationalInstrumentTooltips,
     titleKey: "name",
     process: processInternationalInstrument,
-    skipLabelKeys: new Set(["selectedProvisions", "specialists", "literature"]),
     relations: [
       {
         relationKey: "specialists",
@@ -289,30 +337,49 @@ export const entityRegistry: Record<string, EntityConfig> = {
         variant: "literature",
       },
     ],
+    variant: "instrument",
   },
   "/arbitral-rule": {
     table: "Arbitral Rules",
-    labels: arbitralRuleLabels,
+    fieldOrder: ["setOfRules", "arbitralInstitution", "inForceFrom"],
+    labelOverrides: {
+      setOfRules: "Set of Rules",
+      arbitralInstitution: "Arbitral Institutions",
+    },
     titleKey: "setOfRules",
     process: processArbitralRule,
-    skipLabelKeys: new Set(),
     relations: [],
+    variant: "arbitration",
   },
   "/arbitral-award": {
     table: "Arbitral Awards",
-    labels: arbitralAwardLabels,
+    fieldOrder: [
+      "caseNumber",
+      "arbitralInstitution",
+      "source",
+      "year",
+      "natureOfTheAward",
+      "context",
+      "seatTown",
+      "awardSummary",
+    ],
+    labelOverrides: {
+      arbitralInstitution: "Arbitral Institutions",
+      natureOfTheAward: "Nature of the Award",
+      seatTown: "Seat (Town)",
+    },
     titleKey: "caseNumber",
     process: processArbitralAward,
-    skipLabelKeys: new Set(),
     relations: [],
+    variant: "arbitration",
   },
   "/jurisdiction": {
     table: "Jurisdictions",
-    labels: jurisdictionLabels,
+    fieldOrder: ["jurisdictionSummary", "jurisdictionalDifferentiator"],
+    labelOverrides: { jurisdictionSummary: "Summary" },
     tooltips: jurisdictionTooltips,
     titleKey: "name",
     process: processJurisdiction,
-    skipLabelKeys: new Set(["literature", "relatedData"]),
     relations: [
       {
         relationKey: "specialists",
@@ -339,31 +406,32 @@ export const entityRegistry: Record<string, EntityConfig> = {
         variant: "literature",
       },
     ],
+    variant: "jurisdiction",
   },
   "/domestic-legal-provision": {
     table: "Domestic Legal Provisions",
-    labels: domesticLegalProvisionLabels,
+    fieldOrder: ["title", "englishText", "originalText"],
+    labelOverrides: { title: "Article", englishText: "English Translation" },
     titleKey: "title",
     process: processDomesticLegalProvision,
-    skipLabelKeys: new Set(),
     relations: [],
     hasDetailPage: false,
   },
   "/regional-legal-provision": {
     table: "Regional Legal Provisions",
-    labels: regionalLegalProvisionLabels,
+    fieldOrder: ["title", "originalText"],
+    labelOverrides: { title: "Provision", originalText: "Text" },
     titleKey: "title",
     process: processRegionalLegalProvision,
-    skipLabelKeys: new Set(),
     relations: [],
     hasDetailPage: false,
   },
   "/international-legal-provision": {
     table: "International Legal Provisions",
-    labels: internationalLegalProvisionLabels,
+    fieldOrder: ["title", "originalText"],
+    labelOverrides: { title: "Provision", originalText: "Text" },
     titleKey: "title",
     process: processInternationalLegalProvision,
-    skipLabelKeys: new Set(),
     relations: [],
     hasDetailPage: false,
   },

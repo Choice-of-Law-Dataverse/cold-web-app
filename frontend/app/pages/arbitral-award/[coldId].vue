@@ -8,7 +8,9 @@
       :loading="loading"
       :error="error"
       :data="arbitralAward || {}"
-      :labels="arbitralAwardLabels"
+      :field-order="entityConfig.fieldOrder"
+      :label-overrides="entityConfig.labelOverrides"
+      :tooltips="entityConfig.tooltips"
       :formatted-jurisdiction="
         arbitralAward?.formattedJurisdictions?.map((j) => j.name) || []
       "
@@ -53,7 +55,9 @@ import { useArbitralAward } from "@/composables/useRecordDetails";
 import LastModified from "@/components/ui/LastModified.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
 import EntityFeedback from "@/components/ui/EntityFeedback.vue";
-import { arbitralAwardLabels } from "@/config/labels";
+import { getEntityConfig } from "@/config/entityRegistry";
+
+const entityConfig = getEntityConfig("/arbitral-award")!;
 
 const route = useRoute();
 

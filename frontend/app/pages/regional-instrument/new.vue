@@ -7,6 +7,7 @@
       header-mode="new"
       :show-notification-banner="true"
       :notification-banner-message="notificationBannerMessage"
+      :field-order="[]"
       :icon="'i-material-symbols:warning-outline'"
       @open-save-modal="openSaveModal"
       @open-cancel-modal="showCancelModal = true"
@@ -99,7 +100,7 @@ import CancelModal from "@/components/ui/CancelModal.vue";
 import { format } from "date-fns";
 import { regionalInstrumentTooltips } from "@/config/tooltips";
 
-const tooltipRegionalInstrumentDate = regionalInstrumentTooltips.date;
+const tooltipRegionalInstrumentDate = regionalInstrumentTooltips.date ?? "";
 
 definePageMeta({
   middleware: ["auth"],

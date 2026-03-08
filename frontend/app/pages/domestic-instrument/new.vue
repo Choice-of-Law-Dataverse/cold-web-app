@@ -7,6 +7,7 @@
       header-mode="new"
       :show-notification-banner="true"
       :notification-banner-message="notificationBannerMessage"
+      :field-order="[]"
       :icon="'i-material-symbols:warning-outline'"
       @open-save-modal="openSaveModal"
       @open-cancel-modal="showCancelModal = true"
@@ -244,15 +245,17 @@ interface JurisdictionOption {
   avatar?: string;
 }
 
-const tooltipAbbreviation = domesticInstrumentTooltips.abbreviation;
-const tooltipCompatibleWithHCCH = domesticInstrumentTooltips.compatibility;
-const tooltipCompatibleWithUNCITRAL = domesticInstrumentTooltips.compatibility;
-const tooltipEntryIntoForce = domesticInstrumentTooltips.entryIntoForce;
-const tooltipOfficialTitle = domesticInstrumentTooltips.officialTitle;
+const tooltipAbbreviation = domesticInstrumentTooltips.abbreviation ?? "";
+const tooltipCompatibleWithHCCH =
+  domesticInstrumentTooltips.compatibility ?? "";
+const tooltipCompatibleWithUNCITRAL =
+  domesticInstrumentTooltips.compatibility ?? "";
+const tooltipEntryIntoForce = domesticInstrumentTooltips.entryIntoForce ?? "";
+const tooltipOfficialTitle = domesticInstrumentTooltips.officialTitle ?? "";
 const tooltipDomesticInstrumentPublicationDate =
-  domesticInstrumentTooltips.publicationDate;
+  domesticInstrumentTooltips.publicationDate ?? "";
 const tooltipDomesticInstrumentTitle =
-  domesticInstrumentTooltips.titleInEnglish;
+  domesticInstrumentTooltips.titleInEnglish ?? "";
 
 definePageMeta({
   middleware: ["auth"],

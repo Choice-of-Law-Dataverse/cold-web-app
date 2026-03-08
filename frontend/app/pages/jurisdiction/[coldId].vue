@@ -5,8 +5,9 @@
       :loading="isLoading"
       :error="error"
       :data="data || {}"
-      :labels="jurisdictionLabels"
-      :tooltips="jurisdictionTooltips"
+      :field-order="entityConfig.fieldOrder"
+      :label-overrides="entityConfig.labelOverrides"
+      :tooltips="entityConfig.tooltips"
       :formatted-jurisdiction="[data?.name as string]"
       :relations="data?.relations"
       :show-suggest-edit="true"
@@ -104,8 +105,9 @@ import LoadingBar from "@/components/layout/LoadingBar.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
 import EntityFeedback from "@/components/ui/EntityFeedback.vue";
 import { useJurisdictionDetail } from "@/composables/useRecordDetails";
-import { jurisdictionLabels } from "@/config/labels";
-import { jurisdictionTooltips } from "@/config/tooltips";
+import { getEntityConfig } from "@/config/entityRegistry";
+
+const entityConfig = getEntityConfig("/jurisdiction")!;
 
 const route = useRoute();
 const jurisdictionId = ref((route.params.coldId as string).toUpperCase());
