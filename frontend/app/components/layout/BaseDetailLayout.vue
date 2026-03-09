@@ -3,9 +3,6 @@
     :loading="props.loading"
     :error="props.error ?? undefined"
     :result-data="resultDataForDisplay"
-    :field-order="props.fieldOrder"
-    :label-overrides="props.labelOverrides"
-    :tooltips="props.tooltips"
     :formatted-source-table="props.table"
     :formatted-jurisdiction="props.formattedJurisdiction"
     :formatted-theme="props.formattedTheme"
@@ -16,8 +13,6 @@
     :show-notification-banner="props.showNotificationBanner"
     :notification-banner-message="props.notificationBannerMessage"
     :icon="props.icon"
-    :relations="props.relations"
-    :exclude-relations="props.excludeRelations"
     @save="emit('save')"
     @open-save-modal="emit('open-save-modal')"
     @open-cancel-modal="emit('open-cancel-modal')"
@@ -39,9 +34,6 @@ const props = withDefaults(
     loading: boolean;
     error?: Error | null;
     data: Record<string, unknown>;
-    fieldOrder: string[];
-    labelOverrides?: Record<string, string>;
-    tooltips?: Record<string, string>;
     formattedJurisdiction?: string[];
     formattedTheme?: string[];
     headerMode?: string;
@@ -49,14 +41,9 @@ const props = withDefaults(
     notificationBannerMessage?: string;
     icon?: string;
     showSuggestEdit?: boolean;
-    relations?: Record<string, Record<string, unknown>[]>;
-    excludeRelations?: Set<string>;
   }>(),
   {
     error: undefined,
-    fieldOrder: () => [],
-    labelOverrides: () => ({}),
-    tooltips: () => ({}),
     formattedJurisdiction: () => [],
     formattedTheme: () => [],
     headerMode: "default",
@@ -64,8 +51,6 @@ const props = withDefaults(
     notificationBannerMessage: "",
     icon: "",
     showSuggestEdit: false,
-    relations: undefined,
-    excludeRelations: undefined,
   },
 );
 

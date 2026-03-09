@@ -15,15 +15,6 @@ import {
   processRegionalLegalProvision,
   processInternationalLegalProvision,
 } from "@/types/entities/legal-provision";
-import {
-  courtDecisionTooltips,
-  questionTooltips,
-  literatureTooltips,
-  domesticInstrumentTooltips,
-  regionalInstrumentTooltips,
-  internationalInstrumentTooltips,
-  jurisdictionTooltips,
-} from "@/config/tooltips";
 
 export interface RelationConfig {
   relationKey: string;
@@ -102,7 +93,6 @@ export interface EntityConfig {
   table: TableName;
   fieldOrder: string[];
   labelOverrides?: Record<string, string>;
-  tooltips?: Record<string, string>;
   titleKey: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   process: (raw: any) => any;
@@ -195,7 +185,7 @@ export const entityRegistry: Record<string, EntityConfig> = {
       courtSPosition: "Court's Position",
       originalText: "Full Text",
     },
-    tooltips: courtDecisionTooltips,
+
     titleKey: "caseTitle",
     process: processCourtDecision,
     relations: [
@@ -227,7 +217,7 @@ export const entityRegistry: Record<string, EntityConfig> = {
       domesticLegalProvisions: "Source",
       oupBookQuote: "OUP Book Quote",
     },
-    tooltips: questionTooltips,
+
     titleKey: "question",
     process: processQuestion,
     relations: [
@@ -264,7 +254,7 @@ export const entityRegistry: Record<string, EntityConfig> = {
       publicationTitle: "Publication",
       abstractNote: "Abstract",
     },
-    tooltips: literatureTooltips,
+
     titleKey: "title",
     process: processLiterature,
     relations: [],
@@ -291,7 +281,7 @@ export const entityRegistry: Record<string, EntityConfig> = {
       compatibility: "Compatible with",
       domesticLegalProvisions: "Selected Provisions",
     },
-    tooltips: domesticInstrumentTooltips,
+
     titleKey: "titleInEnglish",
     process: processDomesticInstrument,
     relations: [],
@@ -303,7 +293,7 @@ export const entityRegistry: Record<string, EntityConfig> = {
     labelOverrides: {
       regionalLegalProvisions: "Selected Provisions",
     },
-    tooltips: regionalInstrumentTooltips,
+
     titleKey: "title",
     process: processRegionalInstrument,
     relations: [
@@ -320,7 +310,7 @@ export const entityRegistry: Record<string, EntityConfig> = {
     table: "International Instruments",
     fieldOrder: ["name", "date", "selectedProvisions"],
     labelOverrides: { name: "Title" },
-    tooltips: internationalInstrumentTooltips,
+
     titleKey: "name",
     process: processInternationalInstrument,
     relations: [
@@ -377,7 +367,7 @@ export const entityRegistry: Record<string, EntityConfig> = {
     table: "Jurisdictions",
     fieldOrder: ["jurisdictionSummary", "jurisdictionalDifferentiator"],
     labelOverrides: { jurisdictionSummary: "Summary" },
-    tooltips: jurisdictionTooltips,
+
     titleKey: "name",
     process: processJurisdiction,
     relations: [

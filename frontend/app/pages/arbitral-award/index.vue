@@ -3,7 +3,6 @@
     table="Arbitral Awards"
     :loading="loading"
     :data="resultData"
-    :field-order="[]"
   >
     <template #full-width>
       <div class="gradient-top-border" />

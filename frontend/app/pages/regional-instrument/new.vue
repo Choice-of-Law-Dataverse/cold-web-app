@@ -7,7 +7,6 @@
       header-mode="new"
       :show-notification-banner="true"
       :notification-banner-message="notificationBannerMessage"
-      :field-order="[]"
       :icon="'i-material-symbols:warning-outline'"
       @open-save-modal="openSaveModal"
       @open-cancel-modal="showCancelModal = true"
@@ -98,9 +97,9 @@ import DatePicker from "@/components/ui/DatePicker.vue";
 import SaveModal from "@/components/ui/SaveModal.vue";
 import CancelModal from "@/components/ui/CancelModal.vue";
 import { format } from "date-fns";
-import { regionalInstrumentTooltips } from "@/config/tooltips";
+import { tooltips } from "@/config/tooltips";
 
-const tooltipRegionalInstrumentDate = regionalInstrumentTooltips.date ?? "";
+const tooltipRegionalInstrumentDate = tooltips.date ?? "";
 
 definePageMeta({
   middleware: ["auth"],

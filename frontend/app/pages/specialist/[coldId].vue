@@ -1,39 +1,24 @@
 <template>
   <div>
-    <h1 v-if="specialist?.specialist" class="sr-only">
-      {{ specialist.specialist }}
+    <h1 v-if="data?.specialist" class="sr-only">
+      {{ data.specialist }}
     </h1>
     <BaseDetailLayout
       table="Specialists"
-      :loading="loading"
+      :loading="isLoading"
       :error="error"
-      :data="specialist || {}"
-      :field-order="entityConfig.fieldOrder"
-      :label-overrides="entityConfig.labelOverrides"
-      :tooltips="entityConfig.tooltips"
-      :relations="specialist?.relations"
+      :data="data || {}"
       :show-suggest-edit="true"
     >
-      <template #website="{ value, label }">
-        <DetailRow :label="label">
-          <a
-            :href="String(value)"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="text-primary break-all hover:underline"
-          >
-            {{ value }}
-          </a>
-        </DetailRow>
-      </template>
+      <SpecialistContent v-if="data" :data="data" />
 
       <template #footer>
-        <LastModified :date="specialist?.updatedAt" />
+        <LastModified :date="data?.updatedAt as string" />
       </template>
     </BaseDetailLayout>
 
     <PageSeoMeta
-      :title-candidates="[specialist?.specialist]"
+      :title-candidates="[data?.specialist as string]"
       fallback="Specialist"
     />
   </div>
@@ -43,20 +28,13 @@
 import { ref } from "vue";
 import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layout/BaseDetailLayout.vue";
-import DetailRow from "@/components/ui/DetailRow.vue";
+import SpecialistContent from "@/components/entity/content/SpecialistContent.vue";
 import LastModified from "@/components/ui/LastModified.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
-import { useSpecialistDetail } from "@/composables/useRecordDetails";
-import { getEntityConfig } from "@/config/entityRegistry";
-
-const entityConfig = getEntityConfig("/specialist")!;
+import { useEntityData } from "@/composables/useEntityData";
 
 const route = useRoute();
 const specialistId = ref(route.params.coldId as string);
 
-const {
-  data: specialist,
-  isLoading: loading,
-  error,
-} = useSpecialistDetail(specialistId);
+const { data, isLoading, error } = useEntityData("/specialist", specialistId);
 </script>

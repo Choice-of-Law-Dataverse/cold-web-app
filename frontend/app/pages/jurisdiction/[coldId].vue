@@ -5,11 +5,7 @@
       :loading="isLoading"
       :error="error"
       :data="data || {}"
-      :field-order="entityConfig.fieldOrder"
-      :label-overrides="entityConfig.labelOverrides"
-      :tooltips="entityConfig.tooltips"
       :formatted-jurisdiction="[data?.name as string]"
-      :relations="data?.relations"
       :show-suggest-edit="true"
     >
       <DetailRow label="">
@@ -18,8 +14,10 @@
         </h1>
       </DetailRow>
 
+      <EntityContent base-path="/jurisdiction" :data="data || {}" />
+
       <template #footer>
-        <LastModified :date="data?.updatedAt" />
+        <LastModified :date="data?.updatedAt as string" />
       </template>
     </BaseDetailLayout>
     <ClientOnly>
@@ -99,27 +97,28 @@ import { computed, ref } from "vue";
 import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layout/BaseDetailLayout.vue";
 import DetailRow from "@/components/ui/DetailRow.vue";
+import EntityContent from "@/components/entity/EntityContent.vue";
 import JurisdictionComparisonTable from "@/components/jurisdiction/JurisdictionComparisonTable.vue";
 import LastModified from "@/components/ui/LastModified.vue";
 import LoadingBar from "@/components/layout/LoadingBar.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
 import EntityFeedback from "@/components/ui/EntityFeedback.vue";
-import { useJurisdictionDetail } from "@/composables/useRecordDetails";
-import { getEntityConfig } from "@/config/entityRegistry";
-
-const entityConfig = getEntityConfig("/jurisdiction")!;
+import { useEntityData } from "@/composables/useEntityData";
 
 const route = useRoute();
 const jurisdictionId = ref((route.params.coldId as string).toUpperCase());
 
-const { isLoading, data, error } = useJurisdictionDetail(jurisdictionId);
+const { data, isLoading, error } = useEntityData(
+  "/jurisdiction",
+  jurisdictionId,
+);
 
 const jurisdictionOption = computed(() => {
   if (!data.value) return null;
   return {
-    name: data.value.name || "",
-    label: data.value.name || "",
-    coldId: data.value.coldId || "",
+    name: (data.value?.name as string) || "",
+    label: (data.value?.name as string) || "",
+    coldId: (data.value?.coldId as string) || "",
   };
 });
 </script>

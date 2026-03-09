@@ -59,24 +59,17 @@
           <div v-if="isLoading" class="p-6">
             <LoadingBar />
           </div>
-          <InlineError v-else-if="queryError" :error="queryError" class="p-6" />
+          <InlineError v-else-if="error" :error="error" class="p-6" />
           <div
             v-else-if="entityData && config"
             class="flex flex-col gap-2 px-4 py-4"
           >
-            <EntityContent
+            <component
+              v-if="customContentComponent"
+              :is="customContentComponent"
               :data="entityData"
-              :field-order="config.fieldOrder"
-              :label-overrides="config.labelOverrides"
-              :tooltips="config.tooltips"
-              :relations="
-                entityData.relations as Record<
-                  string,
-                  Record<string, unknown>[]
-                >
-              "
-              :variant="config.variant"
             />
+            <EntityContent v-else :base-path="basePath" :data="entityData" />
 
             <section v-if="isJurisdiction && jurisdictionCode">
               <DetailRow label="Questions & Answers" variant="jurisdiction">
@@ -97,67 +90,55 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
-import { useQuery } from "@tanstack/vue-query";
+import { computed, type Component } from "vue";
 import { useEntityDrawer } from "@/composables/useEntityDrawer";
-import { getEntityConfig } from "@/config/entityRegistry";
-import { useApiClient } from "@/composables/useApiClient";
+import { useEntityData } from "@/composables/useEntityData";
 import DetailRow from "@/components/ui/DetailRow.vue";
 import EntityContent from "@/components/entity/EntityContent.vue";
+import CourtDecisionContent from "@/components/entity/content/CourtDecisionContent.vue";
+import LiteratureContent from "@/components/entity/content/LiteratureContent.vue";
+import DomesticInstrumentContent from "@/components/entity/content/DomesticInstrumentContent.vue";
+import SpecialistContent from "@/components/entity/content/SpecialistContent.vue";
+import RegionalInstrumentContent from "@/components/entity/content/RegionalInstrumentContent.vue";
+import InternationalInstrumentContent from "@/components/entity/content/InternationalInstrumentContent.vue";
 import LoadingBar from "@/components/layout/LoadingBar.vue";
 import InlineError from "@/components/ui/InlineError.vue";
 import JurisdictionDrawerQA from "@/components/jurisdiction/JurisdictionDrawerQA.vue";
 import DrawerAnswerMap from "@/components/jurisdiction/DrawerAnswerMap.vue";
 import CardTags from "@/components/ui/CardTags.vue";
 
+const contentComponentMap: Record<string, Component> = {
+  "/court-decision": CourtDecisionContent,
+  "/literature": LiteratureContent,
+  "/domestic-instrument": DomesticInstrumentContent,
+  "/specialist": SpecialistContent,
+  "/regional-instrument": RegionalInstrumentContent,
+  "/international-instrument": InternationalInstrumentContent,
+};
+
 const route = useRoute();
 const { isOpen, entity, canGoBack, closeDrawer, goBack } = useEntityDrawer();
 
-const config = computed(() =>
-  entity.value ? getEntityConfig(entity.value.basePath) : undefined,
-);
-
-const { client } = useApiClient();
-
-const resolvedTable = computed(() => {
-  if (!entity.value) return undefined;
-  if (entity.value.table === "Answers" && !entity.value.coldId.includes("_")) {
-    return "Questions" as const;
-  }
-  return entity.value.table;
-});
+const basePath = computed(() => entity.value?.basePath);
+const coldId = computed(() => entity.value?.coldId ?? "");
 
 const {
-  data: rawData,
+  data: entityData,
   isLoading,
-  error: queryError,
-} = useQuery({
-  queryKey: computed(() => [
-    "entity-drawer",
-    resolvedTable.value,
-    entity.value?.coldId,
-  ]),
-  queryFn: async () => {
-    if (!entity.value || !config.value || !resolvedTable.value) return null;
-    const { data, error } = await client.POST("/search/details", {
-      body: { table: resolvedTable.value, id: entity.value.coldId },
-    });
-    if (error) throw error;
-    return config.value.process(data);
-  },
-  enabled: computed(() => Boolean(entity.value?.coldId && resolvedTable.value)),
-});
+  error,
+  config,
+} = useEntityData(basePath, coldId);
 
-const entityData = computed(() => {
-  if (!rawData.value) return null;
-  return rawData.value as Record<string, unknown>;
+const customContentComponent = computed<Component | undefined>(() => {
+  const bp = basePath.value;
+  return bp ? contentComponentMap[bp] : undefined;
 });
 
 const fullPagePath = computed(() => {
   if (!entity.value) return "/";
   const id = entity.value.coldId;
-  const basePath = entity.value.basePath;
-  return id.startsWith("/") ? id : `${basePath}/${id}`;
+  const bp = entity.value.basePath;
+  return id.startsWith("/") ? id : `${bp}/${id}`;
 });
 
 const hasDetailPage = computed(() => config.value?.hasDetailPage !== false);

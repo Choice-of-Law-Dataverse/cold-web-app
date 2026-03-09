@@ -1,52 +1,31 @@
 <template>
   <div>
-    <h1 v-if="internationalInstrument?.name" class="sr-only">
-      {{ internationalInstrument.name }}
+    <h1 v-if="data?.name" class="sr-only">
+      {{ data.name }}
     </h1>
     <BaseDetailLayout
       table="International Instruments"
-      :loading="loading"
+      :loading="isLoading"
       :error="error"
-      :data="internationalInstrument || {}"
-      :field-order="entityConfig.fieldOrder"
-      :label-overrides="entityConfig.labelOverrides"
-      :tooltips="entityConfig.tooltips"
-      :relations="internationalInstrument?.relations"
+      :data="data || {}"
       :show-suggest-edit="true"
     >
-      <template #name="{ value, label }">
-        <DetailRow :label="label">
-          <TitleWithActions>
-            {{ value }}
-            <template #actions>
-              <PdfLink
-                :pdf-field="internationalInstrument?.attachment"
-                :record-id="instrumentId"
-                folder-name="international-instruments"
-              />
-              <SourceExternalLink
-                :source-url="internationalInstrument?.displayUrl"
-              />
-            </template>
-          </TitleWithActions>
-        </DetailRow>
-      </template>
+      <InternationalInstrumentContent v-if="data" :data="data" />
 
       <template #footer>
-        <LastModified :date="internationalInstrument?.updatedAt" />
+        <LastModified :date="data?.updatedAt as string" />
       </template>
     </BaseDetailLayout>
 
-    <!-- Handle SEO meta tags -->
     <PageSeoMeta
-      :title-candidates="[internationalInstrument?.name]"
+      :title-candidates="[data?.name as string]"
       fallback="International Instrument"
     />
 
     <EntityFeedback
       entity-type="international_instrument"
       :entity-id="instrumentId"
-      :entity-title="(internationalInstrument?.name as string) || undefined"
+      :entity-title="(data?.name as string) || undefined"
     />
   </div>
 </template>
@@ -55,24 +34,17 @@
 import { ref } from "vue";
 import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layout/BaseDetailLayout.vue";
-import DetailRow from "@/components/ui/DetailRow.vue";
-import PdfLink from "@/components/ui/PdfLink.vue";
-import TitleWithActions from "@/components/ui/TitleWithActions.vue";
-import SourceExternalLink from "@/components/sources/SourceExternalLink.vue";
+import InternationalInstrumentContent from "@/components/entity/content/InternationalInstrumentContent.vue";
 import LastModified from "@/components/ui/LastModified.vue";
-import { useInternationalInstrument } from "@/composables/useRecordDetails";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
 import EntityFeedback from "@/components/ui/EntityFeedback.vue";
-import { getEntityConfig } from "@/config/entityRegistry";
-
-const entityConfig = getEntityConfig("/international-instrument")!;
+import { useEntityData } from "@/composables/useEntityData";
 
 const route = useRoute();
 const instrumentId = ref(route.params.coldId as string);
 
-const {
-  data: internationalInstrument,
-  isLoading: loading,
-  error,
-} = useInternationalInstrument(instrumentId);
+const { data, isLoading, error } = useEntityData(
+  "/international-instrument",
+  instrumentId,
+);
 </script>

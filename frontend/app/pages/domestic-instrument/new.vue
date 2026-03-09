@@ -7,7 +7,6 @@
       header-mode="new"
       :show-notification-banner="true"
       :notification-banner-message="notificationBannerMessage"
-      :field-order="[]"
       :icon="'i-material-symbols:warning-outline'"
       @open-save-modal="openSaveModal"
       @open-cancel-modal="showCancelModal = true"
@@ -230,7 +229,7 @@ import InfoPopover from "@/components/ui/InfoPopover.vue";
 import SaveModal from "@/components/ui/SaveModal.vue";
 import CancelModal from "@/components/ui/CancelModal.vue";
 import { format } from "date-fns";
-import { domesticInstrumentTooltips } from "@/config/tooltips";
+import { tooltips } from "@/config/tooltips";
 import { flagUrl } from "@/config/assets";
 
 interface JurisdictionEntry {
@@ -245,17 +244,13 @@ interface JurisdictionOption {
   avatar?: string;
 }
 
-const tooltipAbbreviation = domesticInstrumentTooltips.abbreviation ?? "";
-const tooltipCompatibleWithHCCH =
-  domesticInstrumentTooltips.compatibility ?? "";
-const tooltipCompatibleWithUNCITRAL =
-  domesticInstrumentTooltips.compatibility ?? "";
-const tooltipEntryIntoForce = domesticInstrumentTooltips.entryIntoForce ?? "";
-const tooltipOfficialTitle = domesticInstrumentTooltips.officialTitle ?? "";
-const tooltipDomesticInstrumentPublicationDate =
-  domesticInstrumentTooltips.publicationDate ?? "";
-const tooltipDomesticInstrumentTitle =
-  domesticInstrumentTooltips.titleInEnglish ?? "";
+const tooltipAbbreviation = tooltips.abbreviation ?? "";
+const tooltipCompatibleWithHCCH = tooltips.compatibility ?? "";
+const tooltipCompatibleWithUNCITRAL = tooltips.compatibility ?? "";
+const tooltipEntryIntoForce = tooltips.entryIntoForce ?? "";
+const tooltipOfficialTitle = tooltips.officialTitle ?? "";
+const tooltipDomesticInstrumentPublicationDate = tooltips.publicationDate ?? "";
+const tooltipDomesticInstrumentTitle = tooltips.titleInEnglish ?? "";
 
 definePageMeta({
   middleware: ["auth"],

@@ -27,15 +27,7 @@
             @save="emit('save')"
             @open-save-modal="emit('open-save-modal')"
             @open-cancel-modal="emit('open-cancel-modal')"
-          >
-            <template
-              v-for="(_, name) in $slots"
-              :key="name"
-              #[name]="slotData"
-            >
-              <slot :name="name" v-bind="slotData" />
-            </template>
-          </BaseCardHeader>
+          />
         </template>
 
         <slot name="full-width" />
@@ -46,23 +38,7 @@
           <div
             class="main-content flex w-full flex-col gap-2 px-4 py-4 sm:px-6 sm:py-6"
           >
-            <EntityContent
-              :data="resultData"
-              :field-order="fieldOrder"
-              :label-overrides="labelOverrides"
-              :tooltips="tooltips"
-              :relations="relations"
-              :exclude-relations="excludeRelations"
-              :variant="variant"
-            >
-              <template
-                v-for="(_, name) in $slots"
-                :key="name"
-                #[name]="slotData"
-              >
-                <slot :name="name" v-bind="slotData" />
-              </template>
-            </EntityContent>
+            <slot />
           </div>
         </div>
         <ContributeBanner
@@ -84,17 +60,11 @@ import ContributeBanner from "@/components/ui/ContributeBanner.vue";
 import NotificationBanner from "@/components/ui/NotificationBanner.vue";
 import LoadingCard from "@/components/layout/LoadingCard.vue";
 import InlineError from "@/components/ui/InlineError.vue";
-import EntityContent from "@/components/entity/EntityContent.vue";
-
-type RelationRecord = Record<string, Record<string, unknown>[]>;
 
 interface Props {
   loading: boolean;
   error?: Error | Record<string, unknown> | null;
   resultData: Record<string, unknown>;
-  fieldOrder: string[];
-  labelOverrides?: Record<string, string>;
-  tooltips?: Record<string, string>;
   formattedSourceTable: string;
   showHeader: boolean;
   showOpenLink: boolean;
@@ -105,18 +75,12 @@ interface Props {
   showNotificationBanner: boolean;
   notificationBannerMessage: string;
   icon: string;
-  relations?: RelationRecord;
-  excludeRelations?: Set<string>;
-  variant?: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   loading: false,
   error: null,
   resultData: () => ({}),
-  fieldOrder: () => [],
-  labelOverrides: () => ({}),
-  tooltips: () => ({}),
   formattedSourceTable: "",
   showHeader: true,
   showOpenLink: false,
@@ -127,9 +91,6 @@ const props = withDefaults(defineProps<Props>(), {
   showNotificationBanner: false,
   notificationBannerMessage: "",
   icon: "",
-  relations: undefined,
-  excludeRelations: undefined,
-  variant: undefined,
 });
 
 const emit = defineEmits<{

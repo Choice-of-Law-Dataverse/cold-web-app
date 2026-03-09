@@ -15,7 +15,7 @@
         <DetailRow
           :label="field.label"
           :tooltip="field.tooltip"
-          :variant="variant"
+          :variant="resolvedVariant"
         >
           <p class="result-value-small whitespace-pre-line">
             {{ formatValue(data[field.key]) }}
@@ -44,7 +44,12 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { camelCaseToLabel } from "@/utils/camelCaseToLabel";
-import { RELATION_RENDERERS, mapRelationToItem } from "@/config/entityRegistry";
+import { tooltips } from "@/config/tooltips";
+import {
+  getEntityConfig,
+  RELATION_RENDERERS,
+  mapRelationToItem,
+} from "@/config/entityRegistry";
 import type { RelatedItem } from "@/types/ui";
 import DetailRow from "@/components/ui/DetailRow.vue";
 import RelatedItemsList from "@/components/ui/RelatedItemsList.vue";
@@ -66,37 +71,63 @@ interface ResolvedRelation {
 const props = withDefaults(
   defineProps<{
     data: Record<string, unknown>;
-    fieldOrder: string[];
+    basePath?: string;
+    fieldOrder?: string[];
     labelOverrides?: Record<string, string>;
-    tooltips?: Record<string, string>;
     relations?: Record<string, Record<string, unknown>[]>;
     excludeRelations?: Set<string>;
     variant?: string;
   }>(),
   {
+    basePath: undefined,
+    fieldOrder: () => [],
     labelOverrides: () => ({}),
-    tooltips: () => ({}),
     relations: undefined,
     excludeRelations: undefined,
     variant: undefined,
   },
 );
 
+const entityConfig = computed(() =>
+  props.basePath ? getEntityConfig(props.basePath) : undefined,
+);
+
+const resolvedFieldOrder = computed(
+  () => entityConfig.value?.fieldOrder ?? props.fieldOrder ?? [],
+);
+
+const resolvedLabelOverrides = computed(
+  () => entityConfig.value?.labelOverrides ?? props.labelOverrides ?? {},
+);
+
+const resolvedVariant = computed(
+  () => entityConfig.value?.variant ?? props.variant,
+);
+
+const resolvedRelationsData = computed(
+  () =>
+    props.relations ??
+    (props.data.relations as
+      | Record<string, Record<string, unknown>[]>
+      | undefined),
+);
+
 const resolvedFields = computed<ResolvedField[]>(() =>
-  props.fieldOrder.map((key) => ({
+  resolvedFieldOrder.value.map((key) => ({
     key,
-    label: props.labelOverrides[key] ?? camelCaseToLabel(key),
-    tooltip: props.tooltips[key],
+    label: resolvedLabelOverrides.value[key] ?? camelCaseToLabel(key),
+    tooltip: tooltips[key],
   })),
 );
 
 const resolvedRelations = computed<ResolvedRelation[]>(() => {
-  if (!props.relations) return [];
+  const relData = resolvedRelationsData.value;
+  if (!relData) return [];
   const exclude = props.excludeRelations ?? new Set<string>();
   return Object.entries(RELATION_RENDERERS)
     .filter(([key]) => !exclude.has(key))
     .map(([key, config]) => {
-      const rawItems = props.relations?.[key] ?? [];
+      const rawItems = relData[key] ?? [];
       const sorted = [...rawItems].sort(
         (a, b) =>
           (Number(a.rankingDisplayOrder) || 0) -

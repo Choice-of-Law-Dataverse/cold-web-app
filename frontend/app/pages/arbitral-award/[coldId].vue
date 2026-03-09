@@ -1,71 +1,62 @@
 <template>
   <div>
-    <h1 v-if="arbitralAward?.caseNumber" class="sr-only">
-      Arbitral Award: {{ arbitralAward.caseNumber }}
+    <h1 v-if="data?.caseNumber" class="sr-only">
+      Arbitral Award: {{ data.caseNumber }}
     </h1>
     <BaseDetailLayout
       table="Arbitral Awards"
-      :loading="loading"
+      :loading="isLoading"
       :error="error"
-      :data="arbitralAward || {}"
-      :field-order="entityConfig.fieldOrder"
-      :label-overrides="entityConfig.labelOverrides"
-      :tooltips="entityConfig.tooltips"
+      :data="data || {}"
       :formatted-jurisdiction="
-        arbitralAward?.formattedJurisdictions?.map((j) => j.name) || []
+        (data?.formattedJurisdictions as { name: string }[])?.map(
+          (j) => j.name,
+        ) || []
       "
       :formatted-theme="
-        arbitralAward?.formattedThemes?.map((t) => t.theme) || []
+        (data?.formattedThemes as { theme: string }[])?.map((t) => t.theme) ||
+        []
       "
-      :relations="arbitralAward?.relations"
       :show-suggest-edit="true"
     >
+      <EntityContent base-path="/arbitral-award" :data="data || {}" />
+
       <template #footer>
-        <LastModified :date="arbitralAward?.updatedAt" />
+        <LastModified :date="data?.updatedAt as string" />
       </template>
     </BaseDetailLayout>
 
-    <!-- Handle SEO meta tags -->
     <PageSeoMeta
-      :title-candidates="[
-        arbitralAward?.caseNumber && String(arbitralAward.caseNumber).trim()
-          ? `Case Number ${arbitralAward.caseNumber}`
-          : null,
-      ]"
+      :title-candidates="[caseNumberTitle]"
       fallback="Arbitral Award"
     />
 
     <EntityFeedback
       entity-type="arbitral_award"
       :entity-id="awardId"
-      :entity-title="
-        arbitralAward?.caseNumber
-          ? `Case Number ${arbitralAward.caseNumber}`
-          : undefined
-      "
+      :entity-title="caseNumberTitle ?? undefined"
     />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layout/BaseDetailLayout.vue";
-import { useArbitralAward } from "@/composables/useRecordDetails";
+import EntityContent from "@/components/entity/EntityContent.vue";
+import { useEntityData } from "@/composables/useEntityData";
 import LastModified from "@/components/ui/LastModified.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
 import EntityFeedback from "@/components/ui/EntityFeedback.vue";
-import { getEntityConfig } from "@/config/entityRegistry";
-
-const entityConfig = getEntityConfig("/arbitral-award")!;
 
 const route = useRoute();
 
 const awardId = ref(route.params.coldId as string);
 
-const {
-  data: arbitralAward,
-  isLoading: loading,
-  error,
-} = useArbitralAward(awardId);
+const { data, isLoading, error } = useEntityData("/arbitral-award", awardId);
+
+const caseNumberTitle = computed(() => {
+  const cn = data.value?.caseNumber as string | undefined;
+  return cn?.trim() ? `Case Number ${cn}` : null;
+});
 </script>
