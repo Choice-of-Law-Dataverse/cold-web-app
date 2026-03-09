@@ -34,6 +34,7 @@
             <UButton
               v-if="hasDetailPage"
               :to="fullPagePath"
+              leading-icon="i-lucide-external-link"
               trailing-icon="i-lucide-external-link"
               variant="outline"
               color="neutral"
