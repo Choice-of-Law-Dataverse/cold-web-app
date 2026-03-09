@@ -6,9 +6,16 @@
     }"
   >
     <template #header>
-      <div class="flex justify-between">
+      <div class="flex items-center justify-between">
         <h3 class="comparison-title">Comparison</h3>
-        <span class="flex flex-wrap gap-2">
+        <span class="flex flex-wrap items-center gap-2">
+          <USelect
+            v-model="selectedRegion"
+            :items="regions"
+            size="xs"
+            class="w-52"
+            icon="i-material-symbols:globe"
+          />
           <UButton
             to="/learn/methodology"
             variant="outline"
@@ -34,21 +41,6 @@
     <div class="gradient-top-border" />
 
     <div class="flex flex-col gap-4 px-4 py-5 sm:px-6">
-      <DetailRow label="Region">
-        <div class="flex flex-wrap gap-2">
-          <button
-            v-for="region in regions"
-            :key="region"
-            type="button"
-            class="region-badge"
-            :class="{ 'region-badge-active': selectedRegion === region }"
-            @click="selectRegion(region)"
-          >
-            {{ region }}
-          </button>
-        </div>
-      </DetailRow>
-
       <div v-if="isLoading" class="copy mt-4">Loading jurisdictions...</div>
       <div v-else-if="error" class="copy mt-4">Error loading jurisdictions</div>
       <div v-else class="flex flex-col gap-4">
@@ -129,10 +121,6 @@ const filteredAnswerGroups = computed(() => {
 const answersWithJurisdictions = computed(() => [
   ...filteredAnswerGroups.value.keys(),
 ]);
-
-function selectRegion(region: string) {
-  selectedRegion.value = region;
-}
 </script>
 
 <style lang="sass" scoped></style>
