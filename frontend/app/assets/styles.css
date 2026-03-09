@@ -762,6 +762,24 @@ li::marker {
   white-space: pre-wrap;
 }
 
+.result-value-large {
+  font-weight: 500;
+  color: var(--color-cold-night);
+  overflow-wrap: break-word;
+  font-size: 1rem;
+  line-height: 1.7;
+  white-space: normal;
+}
+
+.result-value-medium {
+  font-weight: 500;
+  color: var(--color-cold-night);
+  overflow-wrap: break-word;
+  font-size: 0.9375rem;
+  line-height: 1.7;
+  white-space: normal;
+}
+
 .result-value-small {
   font-weight: 500;
   color: var(--color-cold-night);
