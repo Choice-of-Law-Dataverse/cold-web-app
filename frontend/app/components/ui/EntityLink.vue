@@ -137,6 +137,17 @@ function handleClick(event: MouseEvent) {
   opacity: 1;
 }
 
+@media (pointer: coarse) {
+  .entity-link:active .entity-link__icon--arrow {
+    width: 1rem;
+    opacity: 1;
+  }
+
+  .entity-link .entity-link__icon--panel {
+    display: none;
+  }
+}
+
 .entity-link.label-jurisdiction:hover .entity-link__icon {
   color: var(--color-cold-purple);
 }
