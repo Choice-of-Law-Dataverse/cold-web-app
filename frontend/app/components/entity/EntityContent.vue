@@ -6,15 +6,15 @@
       <template v-if="$slots[field.key]">
         <slot
           :name="field.key"
-          :value="data[field.key]"
+          :value="getValue(field.key)"
           :label="field.label"
           :tooltip="field.tooltip"
         />
       </template>
-      <section v-else-if="shouldDisplayValue(data[field.key])">
+      <section v-else-if="shouldDisplayValue(getValue(field.key))">
         <DetailRow :label="field.label" :tooltip="field.tooltip">
           <p class="result-value-small whitespace-pre-line">
-            {{ formatValue(data[field.key]) }}
+            {{ formatValue(getValue(field.key)) }}
           </p>
         </DetailRow>
       </section>
@@ -46,6 +46,7 @@ import {
   getEntityConfig,
   RELATION_RENDERERS,
   mapRelationToItem,
+  type ProcessedEntity,
 } from "@/config/entityRegistry";
 import type { RelatedItem } from "@/types/ui";
 import DetailRow from "@/components/ui/DetailRow.vue";
@@ -66,9 +67,13 @@ interface ResolvedRelation {
 }
 
 const props = defineProps<{
-  data: Record<string, unknown>;
+  data: ProcessedEntity;
   basePath: string;
 }>();
+
+function getValue(key: string): unknown {
+  return (props.data as Record<string, unknown>)[key];
+}
 
 const entityConfig = computed(() => getEntityConfig(props.basePath));
 
@@ -83,7 +88,7 @@ const resolvedFields = computed<ResolvedField[]>(() => {
 });
 
 const resolvedRelations = computed<ResolvedRelation[]>(() => {
-  const relData = props.data.relations as
+  const relData = (props.data as Record<string, unknown>).relations as
     | Record<string, Record<string, unknown>[]>
     | undefined;
   if (!relData) return [];

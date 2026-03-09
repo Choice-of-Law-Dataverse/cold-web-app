@@ -50,13 +50,6 @@ export interface ProcessedEntityMap {
 export type EntityBasePath = keyof ProcessedEntityMap;
 export type ProcessedEntity = ProcessedEntityMap[EntityBasePath];
 
-export interface RelationConfig {
-  relationKey: string;
-  label: string;
-  basePath: string;
-  variant?: string;
-}
-
 export interface RelationRendererConfig {
   label: string;
   basePath: string;
@@ -128,12 +121,13 @@ export const RELATION_RENDERERS: Record<string, RelationRendererConfig> = {
 
 export interface EntityConfig {
   table: TableName;
+  singularLabel: string;
   fieldOrder: string[];
   labelOverrides?: Record<string, string>;
   titleKey: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   process: (raw: any) => any;
-  relations: RelationConfig[];
+  contentComponentId?: string;
   excludeRelations?: string[];
   hasDetailPage?: boolean;
   variant?: string;
@@ -171,34 +165,17 @@ export function mapRelationToItem(item: RelationItem): RelatedItem {
 export const entityRegistry: Record<string, EntityConfig> = {
   "/specialist": {
     table: "Specialists",
+    singularLabel: "Specialist",
     fieldOrder: ["specialist", "affiliation", "contact", "bio", "website"],
     labelOverrides: { specialist: "Name", bio: "Biography" },
     titleKey: "specialist",
     process: processSpecialist,
-    relations: [
-      {
-        relationKey: "jurisdictions",
-        label: "Jurisdictions",
-        basePath: "/jurisdiction",
-        variant: "jurisdiction",
-      },
-      {
-        relationKey: "internationalInstruments",
-        label: "International Instruments",
-        basePath: "/international-instrument",
-        variant: "instrument",
-      },
-      {
-        relationKey: "literature",
-        label: "Literature",
-        basePath: "/literature",
-        variant: "literature",
-      },
-    ],
+    contentComponentId: "SpecialistContent",
     variant: "specialist",
   },
   "/court-decision": {
     table: "Court Decisions",
+    singularLabel: "Court Decision",
     fieldOrder: [
       "caseTitle",
       "caseCitation",
@@ -223,27 +200,14 @@ export const entityRegistry: Record<string, EntityConfig> = {
       courtSPosition: "Court's Position",
       originalText: "Full Text",
     },
-
     titleKey: "caseTitle",
     process: processCourtDecision,
-    relations: [
-      {
-        relationKey: "questions",
-        label: "Related Questions",
-        basePath: "/question",
-        variant: "question",
-      },
-      {
-        relationKey: "literature",
-        label: "Literature",
-        basePath: "/literature",
-        variant: "literature",
-      },
-    ],
+    contentComponentId: "CourtDecisionContent",
     variant: "court-decision",
   },
   "/question": {
     table: "Answers",
+    singularLabel: "Question",
     fieldOrder: [
       "question",
       "answer",
@@ -255,28 +219,14 @@ export const entityRegistry: Record<string, EntityConfig> = {
       domesticLegalProvisions: "Source",
       oupBookQuote: "OUP Book Quote",
     },
-
     titleKey: "question",
     process: processQuestion,
     excludeRelations: ["questions"],
-    relations: [
-      {
-        relationKey: "courtDecisions",
-        label: "Related Court Decisions",
-        basePath: "/court-decision",
-        variant: "court-decision",
-      },
-      {
-        relationKey: "literature",
-        label: "Literature",
-        basePath: "/literature",
-        variant: "literature",
-      },
-    ],
     variant: "question",
   },
   "/literature": {
     table: "Literature",
+    singularLabel: "Literature",
     fieldOrder: [
       "title",
       "author",
@@ -293,14 +243,14 @@ export const entityRegistry: Record<string, EntityConfig> = {
       publicationTitle: "Publication",
       abstractNote: "Abstract",
     },
-
     titleKey: "title",
     process: processLiterature,
-    relations: [],
+    contentComponentId: "LiteratureContent",
     variant: "literature",
   },
   "/domestic-instrument": {
     table: "Domestic Instruments",
+    singularLabel: "Domestic Instrument",
     fieldOrder: [
       "titleInEnglish",
       "compatibility",
@@ -320,56 +270,36 @@ export const entityRegistry: Record<string, EntityConfig> = {
       compatibility: "Compatible with",
       domesticLegalProvisions: "Selected Provisions",
     },
-
     titleKey: "titleInEnglish",
     process: processDomesticInstrument,
-    relations: [],
+    contentComponentId: "DomesticInstrumentContent",
     variant: "instrument",
   },
   "/regional-instrument": {
     table: "Regional Instruments",
+    singularLabel: "Regional Instrument",
     fieldOrder: ["abbreviation", "title", "date", "regionalLegalProvisions"],
     labelOverrides: {
       regionalLegalProvisions: "Selected Provisions",
     },
-
     titleKey: "title",
     process: processRegionalInstrument,
-    relations: [
-      {
-        relationKey: "literature",
-        label: "Literature",
-        basePath: "/literature",
-        variant: "literature",
-      },
-    ],
+    contentComponentId: "RegionalInstrumentContent",
     variant: "instrument",
   },
   "/international-instrument": {
     table: "International Instruments",
+    singularLabel: "International Instrument",
     fieldOrder: ["name", "date", "selectedProvisions"],
     labelOverrides: { name: "Title" },
-
     titleKey: "name",
     process: processInternationalInstrument,
-    relations: [
-      {
-        relationKey: "specialists",
-        label: "Specialists",
-        basePath: "/specialist",
-        variant: "specialist",
-      },
-      {
-        relationKey: "literature",
-        label: "Literature",
-        basePath: "/literature",
-        variant: "literature",
-      },
-    ],
+    contentComponentId: "InternationalInstrumentContent",
     variant: "instrument",
   },
   "/arbitral-rule": {
     table: "Arbitral Rules",
+    singularLabel: "Arbitral Rule",
     fieldOrder: ["setOfRules", "arbitralInstitution", "inForceFrom"],
     labelOverrides: {
       setOfRules: "Set of Rules",
@@ -377,11 +307,11 @@ export const entityRegistry: Record<string, EntityConfig> = {
     },
     titleKey: "setOfRules",
     process: processArbitralRule,
-    relations: [],
     variant: "arbitration",
   },
   "/arbitral-award": {
     table: "Arbitral Awards",
+    singularLabel: "Arbitral Award",
     fieldOrder: [
       "caseNumber",
       "arbitralInstitution",
@@ -399,46 +329,20 @@ export const entityRegistry: Record<string, EntityConfig> = {
     },
     titleKey: "caseNumber",
     process: processArbitralAward,
-    relations: [],
     variant: "arbitration",
   },
   "/jurisdiction": {
     table: "Jurisdictions",
+    singularLabel: "Jurisdiction",
     fieldOrder: ["jurisdictionSummary", "jurisdictionalDifferentiator"],
     labelOverrides: { jurisdictionSummary: "Summary" },
-
     titleKey: "name",
     process: processJurisdiction,
-    relations: [
-      {
-        relationKey: "specialists",
-        label: "Specialists",
-        basePath: "/specialist",
-        variant: "specialist",
-      },
-      {
-        relationKey: "domesticInstruments",
-        label: "Domestic Instruments",
-        basePath: "/domestic-instrument",
-        variant: "instrument",
-      },
-      {
-        relationKey: "courtDecisions",
-        label: "Court Decisions",
-        basePath: "/court-decision",
-        variant: "court-decision",
-      },
-      {
-        relationKey: "literature",
-        label: "Literature",
-        basePath: "/literature",
-        variant: "literature",
-      },
-    ],
     variant: "jurisdiction",
   },
   "/domestic-legal-provision": {
     table: "Domestic Legal Provisions",
+    singularLabel: "Domestic Legal Provision",
     fieldOrder: [
       "article",
       "fullTextOfTheProvisionEnglishTranslation",
@@ -451,11 +355,11 @@ export const entityRegistry: Record<string, EntityConfig> = {
     },
     titleKey: "article",
     process: processDomesticLegalProvision,
-    relations: [],
     hasDetailPage: false,
   },
   "/regional-legal-provision": {
     table: "Regional Legal Provisions",
+    singularLabel: "Regional Legal Provision",
     fieldOrder: ["titleOfTheProvision", "fullText"],
     labelOverrides: {
       titleOfTheProvision: "Provision",
@@ -463,11 +367,11 @@ export const entityRegistry: Record<string, EntityConfig> = {
     },
     titleKey: "titleOfTheProvision",
     process: processRegionalLegalProvision,
-    relations: [],
     hasDetailPage: false,
   },
   "/international-legal-provision": {
     table: "International Legal Provisions",
+    singularLabel: "International Legal Provision",
     fieldOrder: ["titleOfTheProvision", "fullText"],
     labelOverrides: {
       titleOfTheProvision: "Provision",
@@ -475,7 +379,6 @@ export const entityRegistry: Record<string, EntityConfig> = {
     },
     titleKey: "titleOfTheProvision",
     process: processInternationalLegalProvision,
-    relations: [],
     hasDetailPage: false,
   },
 };

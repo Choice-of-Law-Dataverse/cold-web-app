@@ -10,7 +10,7 @@
       :data="data"
       :show-suggest-edit="true"
     >
-      <EntityContent base-path="/arbitral-rule" :data="data || {}" />
+      <EntityContent v-if="data" base-path="/arbitral-rule" :data="data" />
 
       <template #footer>
         <LastModified :date="data?.updatedAt" />

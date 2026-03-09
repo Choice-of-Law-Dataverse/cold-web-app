@@ -34,7 +34,6 @@
             <UButton
               v-if="hasDetailPage"
               :to="fullPagePath"
-              leading-icon="i-lucide-external-link"
               trailing-icon="i-lucide-external-link"
               variant="outline"
               color="neutral"
@@ -107,13 +106,13 @@ import JurisdictionDrawerQA from "@/components/jurisdiction/JurisdictionDrawerQA
 import DrawerAnswerMap from "@/components/jurisdiction/DrawerAnswerMap.vue";
 import CardTags from "@/components/ui/CardTags.vue";
 
-const contentComponentMap: Record<string, Component> = {
-  "/court-decision": CourtDecisionContent,
-  "/literature": LiteratureContent,
-  "/domestic-instrument": DomesticInstrumentContent,
-  "/specialist": SpecialistContent,
-  "/regional-instrument": RegionalInstrumentContent,
-  "/international-instrument": InternationalInstrumentContent,
+const contentComponents: Record<string, Component> = {
+  CourtDecisionContent,
+  LiteratureContent,
+  DomesticInstrumentContent,
+  SpecialistContent,
+  RegionalInstrumentContent,
+  InternationalInstrumentContent,
 };
 
 const route = useRoute();
@@ -129,9 +128,9 @@ const {
   config,
 } = useEntityData(basePath, coldId);
 
-const customContentComponent = computed<Component | undefined>(() => {
-  const bp = basePath.value;
-  return bp ? contentComponentMap[bp] : undefined;
+const customContentComponent = computed(() => {
+  const id = config.value?.contentComponentId;
+  return id ? contentComponents[id] : undefined;
 });
 
 const fullPagePath = computed(() => {
@@ -164,46 +163,13 @@ const headerJurisdictions = computed<string[]>(() => {
   return filtered;
 });
 
-const headerSourceTable = computed(() => {
-  if (!config.value) return "";
-  const table = config.value.table;
-  const tableMap: Record<string, string> = {
-    "Court Decisions": "Court Decision",
-    Answers: "Question",
-    "Domestic Instruments": "Domestic Instrument",
-    "Regional Instruments": "Regional Instrument",
-    "International Instruments": "International Instrument",
-    Literature: "Literature",
-    "Arbitral Rules": "Arbitral Rule",
-    "Arbitral Awards": "Arbitral Award",
-    Specialists: "Specialist",
-    Jurisdictions: "Jurisdiction",
-  };
-  return tableMap[table] || table;
-});
+const headerSourceTable = computed(() => config.value?.singularLabel ?? "");
 
 const headerLabelColor = computed(() => {
-  switch (headerSourceTable.value) {
-    case "Court Decision":
-      return "label-court-decision";
-    case "Question":
-      return "label-question";
-    case "Domestic Instrument":
-    case "Regional Instrument":
-    case "International Instrument":
-      return "label-instrument";
-    case "Arbitral Rule":
-    case "Arbitral Award":
-      return "label-arbitration";
-    case "Literature":
-      return "label-literature";
-    case "Specialist":
-      return "label-specialist";
-    case "Jurisdiction":
-      return "hidden";
-    default:
-      return "";
-  }
+  const variant = config.value?.variant;
+  if (!variant) return "";
+  if (variant === "jurisdiction") return "hidden";
+  return `label-${variant}`;
 });
 
 const headerLegalFamily = computed<string[]>(() => {

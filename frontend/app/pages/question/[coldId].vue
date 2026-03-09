@@ -10,7 +10,7 @@
       :data="data"
       :show-suggest-edit="true"
     >
-      <EntityContent base-path="/question" :data="data || {}" />
+      <EntityContent v-if="data" base-path="/question" :data="data" />
 
       <template #footer>
         <JurisdictionReportBanner

@@ -12,7 +12,7 @@
       :formatted-theme="themeNames"
       :show-suggest-edit="true"
     >
-      <EntityContent base-path="/arbitral-award" :data="data || {}" />
+      <EntityContent v-if="data" base-path="/arbitral-award" :data="data" />
 
       <template #footer>
         <LastModified :date="data?.updatedAt" />

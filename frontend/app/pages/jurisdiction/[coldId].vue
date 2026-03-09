@@ -14,7 +14,7 @@
         </h1>
       </DetailRow>
 
-      <EntityContent base-path="/jurisdiction" :data="data || {}" />
+      <EntityContent v-if="data" base-path="/jurisdiction" :data="data" />
 
       <template #footer>
         <LastModified :date="data?.updatedAt" />
