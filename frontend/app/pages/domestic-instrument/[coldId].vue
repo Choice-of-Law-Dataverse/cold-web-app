@@ -28,7 +28,7 @@
 
     <EntityFeedback
       entity-type="domestic_instrument"
-      :entity-id="instrumentId"
+      :entity-id="coldId"
       :entity-title="data?.titleInEnglish ?? undefined"
     />
   </div>
@@ -47,11 +47,11 @@ import { useEntityData } from "@/composables/useEntityData";
 
 const route = useRoute();
 
-const instrumentId = ref(route.params.coldId as string);
+const coldId = ref(route.params.coldId as string);
 
 const { data, isLoading, error } = useEntityData(
   "/domestic-instrument",
-  instrumentId,
+  coldId,
 );
 
 const primaryJurisdiction = computed(

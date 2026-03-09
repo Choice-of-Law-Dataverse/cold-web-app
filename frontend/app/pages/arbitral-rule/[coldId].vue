@@ -24,7 +24,7 @@
 
     <EntityFeedback
       entity-type="arbitral_rule"
-      :entity-id="ruleId"
+      :entity-id="coldId"
       :entity-title="data?.setOfRules ?? undefined"
     />
   </div>
@@ -42,7 +42,7 @@ import EntityFeedback from "@/components/ui/EntityFeedback.vue";
 
 const route = useRoute();
 
-const ruleId = ref(route.params.coldId as string);
+const coldId = ref(route.params.coldId as string);
 
-const { data, isLoading, error } = useEntityData("/arbitral-rule", ruleId);
+const { data, isLoading, error } = useEntityData("/arbitral-rule", coldId);
 </script>

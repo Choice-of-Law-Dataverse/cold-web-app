@@ -21,7 +21,7 @@
 
     <EntityFeedback
       entity-type="literature"
-      :entity-id="id"
+      :entity-id="coldId"
       :entity-title="data?.title ?? undefined"
     />
   </div>
@@ -39,7 +39,7 @@ import { useEntityData } from "@/composables/useEntityData";
 
 const route = useRoute();
 
-const id = ref(route.params.coldId as string);
+const coldId = ref(route.params.coldId as string);
 
-const { data, isLoading, error } = useEntityData("/literature", id);
+const { data, isLoading, error } = useEntityData("/literature", coldId);
 </script>

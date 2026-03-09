@@ -34,7 +34,7 @@
 
     <EntityFeedback
       entity-type="question"
-      :entity-id="answerId"
+      :entity-id="coldId"
       :entity-title="data?.question ?? undefined"
     />
   </div>
@@ -53,16 +53,16 @@ import LastModified from "@/components/ui/LastModified.vue";
 import { useEntityData } from "@/composables/useEntityData";
 
 const route = useRoute();
-const answerId = ref(route.params.coldId as string);
+const coldId = ref(route.params.coldId as string);
 
-const { data, isLoading, error } = useEntityData("/question", answerId);
+const { data, isLoading, error } = useEntityData("/question", coldId);
 
 const primaryJurisdiction = computed(
   () => data.value?.relations.jurisdictions[0] ?? null,
 );
 
 const questionSuffix = computed(() => {
-  const id = answerId.value;
+  const id = coldId.value;
   if (!id || typeof id !== "string") return null;
 
   const parts = id.split("_");

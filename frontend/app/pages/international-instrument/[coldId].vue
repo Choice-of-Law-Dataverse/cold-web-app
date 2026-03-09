@@ -24,7 +24,7 @@
 
     <EntityFeedback
       entity-type="international_instrument"
-      :entity-id="instrumentId"
+      :entity-id="coldId"
       :entity-title="data?.name ?? undefined"
     />
   </div>
@@ -41,10 +41,10 @@ import EntityFeedback from "@/components/ui/EntityFeedback.vue";
 import { useEntityData } from "@/composables/useEntityData";
 
 const route = useRoute();
-const instrumentId = ref(route.params.coldId as string);
+const coldId = ref(route.params.coldId as string);
 
 const { data, isLoading, error } = useEntityData(
   "/international-instrument",
-  instrumentId,
+  coldId,
 );
 </script>

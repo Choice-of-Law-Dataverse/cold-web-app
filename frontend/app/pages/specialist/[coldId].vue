@@ -31,7 +31,7 @@ import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
 import { useEntityData } from "@/composables/useEntityData";
 
 const route = useRoute();
-const specialistId = ref(route.params.coldId as string);
+const coldId = ref(route.params.coldId as string);
 
-const { data, isLoading, error } = useEntityData("/specialist", specialistId);
+const { data, isLoading, error } = useEntityData("/specialist", coldId);
 </script>

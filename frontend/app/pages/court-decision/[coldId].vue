@@ -35,7 +35,7 @@
 
     <EntityFeedback
       entity-type="court_decision"
-      :entity-id="courtDecisionId"
+      :entity-id="coldId"
       :entity-title="data?.caseTitle ?? undefined"
     />
   </div>
@@ -53,12 +53,9 @@ import EntityFeedback from "@/components/ui/EntityFeedback.vue";
 import { useEntityData } from "@/composables/useEntityData";
 
 const route = useRoute();
-const courtDecisionId = ref(route.params.coldId as string);
+const coldId = ref(route.params.coldId as string);
 
-const { data, isLoading, error } = useEntityData(
-  "/court-decision",
-  courtDecisionId,
-);
+const { data, isLoading, error } = useEntityData("/court-decision", coldId);
 
 const primaryJurisdiction = computed(
   () => data.value?.relations.jurisdictions[0] ?? null,

@@ -26,7 +26,7 @@
 
     <EntityFeedback
       entity-type="arbitral_award"
-      :entity-id="awardId"
+      :entity-id="coldId"
       :entity-title="caseNumberTitle ?? undefined"
     />
   </div>
@@ -44,9 +44,9 @@ import EntityFeedback from "@/components/ui/EntityFeedback.vue";
 
 const route = useRoute();
 
-const awardId = ref(route.params.coldId as string);
+const coldId = ref(route.params.coldId as string);
 
-const { data, isLoading, error } = useEntityData("/arbitral-award", awardId);
+const { data, isLoading, error } = useEntityData("/arbitral-award", coldId);
 
 const jurisdictionNames = computed(
   () =>
