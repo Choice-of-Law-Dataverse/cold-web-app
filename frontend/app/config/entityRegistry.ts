@@ -221,6 +221,7 @@ export const entityRegistry: Record<string, EntityConfig> = {
     },
     titleKey: "question",
     process: processQuestion,
+    contentComponentId: "QuestionContent",
     excludeRelations: ["questions"],
     variant: "question",
   },

@@ -10,7 +10,7 @@
       :data="data"
       :show-suggest-edit="true"
     >
-      <EntityContent v-if="data" base-path="/question" :data="data" />
+      <QuestionContent v-if="data" :data="data" />
 
       <template #footer>
         <JurisdictionReportBanner
@@ -44,7 +44,7 @@
 import { computed, ref } from "vue";
 import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layout/BaseDetailLayout.vue";
-import EntityContent from "@/components/entity/EntityContent.vue";
+import QuestionContent from "@/components/entity/content/QuestionContent.vue";
 import JurisdictionReportBanner from "@/components/jurisdiction/JurisdictionReportBanner.vue";
 import QuestionAnswerMap from "@/components/jurisdiction/QuestionAnswerMap.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";

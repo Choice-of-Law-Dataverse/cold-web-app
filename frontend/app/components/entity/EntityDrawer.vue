@@ -101,6 +101,7 @@ import DomesticInstrumentContent from "@/components/entity/content/DomesticInstr
 import SpecialistContent from "@/components/entity/content/SpecialistContent.vue";
 import RegionalInstrumentContent from "@/components/entity/content/RegionalInstrumentContent.vue";
 import InternationalInstrumentContent from "@/components/entity/content/InternationalInstrumentContent.vue";
+import QuestionContent from "@/components/entity/content/QuestionContent.vue";
 import LoadingBar from "@/components/layout/LoadingBar.vue";
 import InlineError from "@/components/ui/InlineError.vue";
 import JurisdictionDrawerQA from "@/components/jurisdiction/JurisdictionDrawerQA.vue";
@@ -114,6 +115,7 @@ const contentComponents: Record<string, Component> = {
   SpecialistContent,
   RegionalInstrumentContent,
   InternationalInstrumentContent,
+  QuestionContent,
 };
 
 const route = useRoute();
