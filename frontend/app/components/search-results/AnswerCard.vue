@@ -1,6 +1,6 @@
 <template>
   <ResultCard :result-data="resultData" card-type="Answers">
-    <div class="flex flex-col gap-0">
+    <div class="flex w-full flex-col gap-0">
       <DetailRow :label="getLabel('question')">
         <div
           :class="computeTextClasses('question', config.valueClassMap.question)"
