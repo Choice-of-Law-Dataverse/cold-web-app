@@ -69,7 +69,7 @@
               :is="customContentComponent"
               :data="entityData"
             />
-            <EntityContent v-else :base-path="basePath" :data="entityData" />
+            <EntityContent v-else :base-path="basePath!" :data="entityData" />
 
             <section v-if="isJurisdiction && jurisdictionCode">
               <DetailRow label="Questions & Answers" variant="jurisdiction">

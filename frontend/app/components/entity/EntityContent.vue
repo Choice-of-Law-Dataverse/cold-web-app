@@ -65,56 +65,29 @@ interface ResolvedRelation {
   items: RelatedItem[];
 }
 
-const props = withDefaults(
-  defineProps<{
-    data: Record<string, unknown>;
-    basePath?: string;
-    fieldOrder?: string[];
-    labelOverrides?: Record<string, string>;
-    relations?: Record<string, Record<string, unknown>[]>;
-    excludeRelations?: Set<string>;
-  }>(),
-  {
-    basePath: undefined,
-    fieldOrder: () => [],
-    labelOverrides: () => ({}),
-    relations: undefined,
-    excludeRelations: undefined,
-  },
-);
+const props = defineProps<{
+  data: Record<string, unknown>;
+  basePath: string;
+}>();
 
-const entityConfig = computed(() =>
-  props.basePath ? getEntityConfig(props.basePath) : undefined,
-);
+const entityConfig = computed(() => getEntityConfig(props.basePath));
 
-const resolvedFieldOrder = computed(
-  () => entityConfig.value?.fieldOrder ?? props.fieldOrder ?? [],
-);
-
-const resolvedLabelOverrides = computed(
-  () => entityConfig.value?.labelOverrides ?? props.labelOverrides ?? {},
-);
-
-const resolvedRelationsData = computed(
-  () =>
-    props.relations ??
-    (props.data.relations as
-      | Record<string, Record<string, unknown>[]>
-      | undefined),
-);
-
-const resolvedFields = computed<ResolvedField[]>(() =>
-  resolvedFieldOrder.value.map((key) => ({
+const resolvedFields = computed<ResolvedField[]>(() => {
+  const fieldOrder = entityConfig.value?.fieldOrder ?? [];
+  const labelOverrides = entityConfig.value?.labelOverrides ?? {};
+  return fieldOrder.map((key) => ({
     key,
-    label: resolvedLabelOverrides.value[key] ?? camelCaseToLabel(key),
+    label: labelOverrides[key] ?? camelCaseToLabel(key),
     tooltip: tooltips[key],
-  })),
-);
+  }));
+});
 
 const resolvedRelations = computed<ResolvedRelation[]>(() => {
-  const relData = resolvedRelationsData.value;
+  const relData = props.data.relations as
+    | Record<string, Record<string, unknown>[]>
+    | undefined;
   if (!relData) return [];
-  const exclude = props.excludeRelations ?? new Set<string>();
+  const exclude = new Set(entityConfig.value?.excludeRelations ?? []);
   return Object.entries(RELATION_RENDERERS)
     .filter(([key]) => !exclude.has(key))
     .map(([key, config]) => {

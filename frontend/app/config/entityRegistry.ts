@@ -134,6 +134,7 @@ export interface EntityConfig {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   process: (raw: any) => any;
   relations: RelationConfig[];
+  excludeRelations?: string[];
   hasDetailPage?: boolean;
   variant?: string;
 }
@@ -257,6 +258,7 @@ export const entityRegistry: Record<string, EntityConfig> = {
 
     titleKey: "question",
     process: processQuestion,
+    excludeRelations: ["questions"],
     relations: [
       {
         relationKey: "courtDecisions",

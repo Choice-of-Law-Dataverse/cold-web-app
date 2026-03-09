@@ -10,11 +10,7 @@
       :data="data"
       :show-suggest-edit="true"
     >
-      <EntityContent
-        base-path="/question"
-        :data="data || {}"
-        :exclude-relations="excludedRelations"
-      />
+      <EntityContent base-path="/question" :data="data || {}" />
 
       <template #footer>
         <JurisdictionReportBanner
@@ -60,8 +56,6 @@ const route = useRoute();
 const coldId = ref(route.params.coldId as string);
 
 const { data, isLoading, error } = useEntityData("/question", coldId);
-
-const excludedRelations = new Set(["questions"]);
 
 const soleJurisdiction = computed(() => {
   const jurisdictions = data.value?.relations.jurisdictions;
