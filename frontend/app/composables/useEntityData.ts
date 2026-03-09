@@ -25,15 +25,15 @@ interface EntityDataResult<T> {
 
 export function useEntityData<T extends EntityBasePath>(
   basePath: MaybeRefOrGetter<T>,
-  id: MaybeRefOrGetter<string>,
+  coldId: MaybeRefOrGetter<string>,
 ): EntityDataResult<ProcessedEntityMap[T]>;
 export function useEntityData(
   basePath: MaybeRefOrGetter<string | undefined>,
-  id: MaybeRefOrGetter<string>,
+  coldId: MaybeRefOrGetter<string>,
 ): EntityDataResult<ProcessedEntity>;
 export function useEntityData(
   basePath: MaybeRefOrGetter<string | undefined>,
-  id: MaybeRefOrGetter<string>,
+  coldId: MaybeRefOrGetter<string>,
 ): EntityDataResult<ProcessedEntity> {
   const { client } = useApiClient();
 
@@ -45,8 +45,8 @@ export function useEntityData(
   const resolvedTable = computed((): TableName | undefined => {
     const cfg = config.value;
     if (!cfg) return undefined;
-    const idVal = toValue(id);
-    if (cfg.table === "Answers" && !idVal.includes("_")) {
+    const id = toValue(coldId);
+    if (cfg.table === "Answers" && !id.includes("_")) {
       return "Questions";
     }
     return cfg.table;
@@ -57,19 +57,19 @@ export function useEntityData(
     isLoading,
     error,
   } = useQuery({
-    queryKey: computed(() => ["entity", resolvedTable.value, toValue(id)]),
+    queryKey: computed(() => ["entity", resolvedTable.value, toValue(coldId)]),
     queryFn: async () => {
       const cfg = config.value;
       const table = resolvedTable.value;
       if (!cfg || !table) return null;
       const { data, error } = await client.POST("/search/details", {
-        body: { table, id: toValue(id) },
+        body: { table, id: toValue(coldId) },
       });
       if (error) throw error;
       return cfg.process(data) as ProcessedEntity;
     },
     enabled: computed(() =>
-      Boolean(toValue(id) && resolvedTable.value && config.value),
+      Boolean(toValue(coldId) && resolvedTable.value && config.value),
     ),
   });
 
