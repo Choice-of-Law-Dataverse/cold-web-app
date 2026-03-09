@@ -12,11 +12,7 @@
         />
       </template>
       <section v-else-if="shouldDisplayValue(data[field.key])">
-        <DetailRow
-          :label="field.label"
-          :tooltip="field.tooltip"
-          :variant="resolvedVariant"
-        >
+        <DetailRow :label="field.label" :tooltip="field.tooltip">
           <p class="result-value-small whitespace-pre-line">
             {{ formatValue(data[field.key]) }}
           </p>
@@ -77,7 +73,6 @@ const props = withDefaults(
     labelOverrides?: Record<string, string>;
     relations?: Record<string, Record<string, unknown>[]>;
     excludeRelations?: Set<string>;
-    variant?: string;
   }>(),
   {
     basePath: undefined,
@@ -85,7 +80,6 @@ const props = withDefaults(
     labelOverrides: () => ({}),
     relations: undefined,
     excludeRelations: undefined,
-    variant: undefined,
   },
 );
 
@@ -99,10 +93,6 @@ const resolvedFieldOrder = computed(
 
 const resolvedLabelOverrides = computed(
   () => entityConfig.value?.labelOverrides ?? props.labelOverrides ?? {},
-);
-
-const resolvedVariant = computed(
-  () => entityConfig.value?.variant ?? props.variant,
 );
 
 const resolvedRelationsData = computed(
