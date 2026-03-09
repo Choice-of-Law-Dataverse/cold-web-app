@@ -87,6 +87,7 @@ export const RELATION_RENDERERS: Record<string, RelationRendererConfig> = {
   domesticLegalProvisions: {
     label: "Domestic Legal Provisions",
     basePath: "/domestic-legal-provision",
+    variant: "instrument",
   },
   regionalInstruments: {
     label: "Regional Instruments",
@@ -96,6 +97,7 @@ export const RELATION_RENDERERS: Record<string, RelationRendererConfig> = {
   regionalLegalProvisions: {
     label: "Regional Legal Provisions",
     basePath: "/regional-legal-provision",
+    variant: "instrument",
   },
   internationalInstruments: {
     label: "International Instruments",
@@ -105,6 +107,7 @@ export const RELATION_RENDERERS: Record<string, RelationRendererConfig> = {
   internationalLegalProvisions: {
     label: "International Legal Provisions",
     basePath: "/international-legal-provision",
+    variant: "instrument",
   },
   arbitralAwards: {
     label: "Arbitral Awards",

@@ -156,10 +156,12 @@ const headerJurisdictions = computed<string[]>(() => {
   if (!("relations" in data)) return [];
   const jurisdictions = data.relations.jurisdictions;
   if (!jurisdictions?.length) return [];
-  return jurisdictions
+  const filtered = jurisdictions
     .filter((j) => j.coldId !== pageJurisdictionCode.value)
     .map((j) => j.name || "")
     .filter((name) => name);
+  if (filtered.length !== 1) return [];
+  return filtered;
 });
 
 const headerSourceTable = computed(() => {

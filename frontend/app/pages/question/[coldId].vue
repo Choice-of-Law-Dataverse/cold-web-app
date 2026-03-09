@@ -10,12 +10,16 @@
       :data="data"
       :show-suggest-edit="true"
     >
-      <EntityContent base-path="/question" :data="data || {}" />
+      <EntityContent
+        base-path="/question"
+        :data="data || {}"
+        :exclude-relations="excludedRelations"
+      />
 
       <template #footer>
         <JurisdictionReportBanner
-          :jurisdiction-code="primaryJurisdiction?.coldId ?? undefined"
-          :jurisdiction-name="primaryJurisdiction?.name ?? undefined"
+          :jurisdiction-code="soleJurisdiction?.coldId ?? undefined"
+          :jurisdiction-name="soleJurisdiction?.name ?? undefined"
         />
         <LastModified :date="data?.updatedAt" />
       </template>
@@ -28,7 +32,7 @@
     </div>
 
     <PageSeoMeta
-      :title-candidates="[primaryJurisdiction?.name, data?.question]"
+      :title-candidates="[soleJurisdiction?.name, data?.question]"
       fallback="Question"
     />
 
@@ -57,9 +61,13 @@ const coldId = ref(route.params.coldId as string);
 
 const { data, isLoading, error } = useEntityData("/question", coldId);
 
-const primaryJurisdiction = computed(
-  () => data.value?.relations.jurisdictions[0] ?? null,
-);
+const excludedRelations = new Set(["questions"]);
+
+const soleJurisdiction = computed(() => {
+  const jurisdictions = data.value?.relations.jurisdictions;
+  if (jurisdictions?.length !== 1) return null;
+  return jurisdictions[0];
+});
 
 const questionSuffix = computed(() => {
   const id = coldId.value;

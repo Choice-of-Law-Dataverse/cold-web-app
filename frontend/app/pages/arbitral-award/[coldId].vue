@@ -48,12 +48,14 @@ const coldId = ref(route.params.coldId as string);
 
 const { data, isLoading, error } = useEntityData("/arbitral-award", coldId);
 
-const jurisdictionNames = computed(
-  () =>
+const jurisdictionNames = computed(() => {
+  const names =
     data.value?.relations.jurisdictions
       .map((j) => j.name)
-      .filter((n): n is string => Boolean(n)) ?? [],
-);
+      .filter((n): n is string => Boolean(n)) ?? [];
+  if (names.length !== 1) return [];
+  return names;
+});
 
 const themeNames = computed(
   () =>

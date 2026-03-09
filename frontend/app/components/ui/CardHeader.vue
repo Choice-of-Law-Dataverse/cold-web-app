@@ -88,7 +88,9 @@ const formattedJurisdiction = computed(() => {
     return [];
   }
 
-  return parseJurisdictionString(jurisdictionString);
+  const parsed = parseJurisdictionString(jurisdictionString);
+  if (parsed.length > 1) return [];
+  return parsed;
 });
 
 const formattedSourceTable = computed(() => {

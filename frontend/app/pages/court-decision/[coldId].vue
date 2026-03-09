@@ -14,8 +14,8 @@
 
       <template #footer>
         <JurisdictionReportBanner
-          :jurisdiction-code="primaryJurisdiction?.coldId ?? undefined"
-          :jurisdiction-name="primaryJurisdiction?.name ?? undefined"
+          :jurisdiction-code="soleJurisdiction?.coldId ?? undefined"
+          :jurisdiction-name="soleJurisdiction?.name ?? undefined"
         />
         <LastModified :date="data?.updatedAt" />
       </template>
@@ -57,7 +57,9 @@ const coldId = ref(route.params.coldId as string);
 
 const { data, isLoading, error } = useEntityData("/court-decision", coldId);
 
-const primaryJurisdiction = computed(
-  () => data.value?.relations.jurisdictions[0] ?? null,
-);
+const soleJurisdiction = computed(() => {
+  const jurisdictions = data.value?.relations.jurisdictions;
+  if (jurisdictions?.length !== 1) return null;
+  return jurisdictions[0];
+});
 </script>
