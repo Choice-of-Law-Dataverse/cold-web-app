@@ -64,11 +64,11 @@ import DetailRow from "@/components/ui/DetailRow.vue";
 import TitleWithActions from "@/components/ui/TitleWithActions.vue";
 import PdfLink from "@/components/ui/PdfLink.vue";
 import SourceExternalLink from "@/components/sources/SourceExternalLink.vue";
-import type { LiteratureDetailResponse } from "@/types/entities/literature";
+import type { Literature } from "@/types/entities/literature";
 import { generateBibTeX, sanitizeFilename, downloadFile } from "@/utils/bibtex";
 
 const props = defineProps<{
-  data: Record<string, unknown>;
+  data: Literature;
 }>();
 
 const sourceUrl = computed(() => {
@@ -80,9 +80,7 @@ const sourceLinkLabel = computed(() =>
   props.data.openAccessUrl ? "Open Access Link" : "Link",
 );
 
-const bibtexContent = computed(() =>
-  generateBibTeX(props.data as unknown as LiteratureDetailResponse),
-);
+const bibtexContent = computed(() => generateBibTeX(props.data));
 
 const toast = useToast();
 
@@ -108,7 +106,7 @@ async function copyBibTeX() {
 }
 
 function exportBibTeX() {
-  const rawTitle = String(props.data.title || "literature");
+  const rawTitle = props.data.title || "literature";
   const filename = `${sanitizeFilename(rawTitle)}.bib`;
   downloadFile(bibtexContent.value, filename, "application/x-bibtex");
 }

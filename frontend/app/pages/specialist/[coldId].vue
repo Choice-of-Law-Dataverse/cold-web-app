@@ -13,14 +13,11 @@
       <SpecialistContent v-if="data" :data="data" />
 
       <template #footer>
-        <LastModified :date="data?.updatedAt as string" />
+        <LastModified :date="data?.updatedAt" />
       </template>
     </BaseDetailLayout>
 
-    <PageSeoMeta
-      :title-candidates="[data?.specialist as string]"
-      fallback="Specialist"
-    />
+    <PageSeoMeta :title-candidates="[data?.specialist]" fallback="Specialist" />
   </div>
 </template>
 

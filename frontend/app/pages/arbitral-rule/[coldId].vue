@@ -13,19 +13,19 @@
       <EntityContent base-path="/arbitral-rule" :data="data || {}" />
 
       <template #footer>
-        <LastModified :date="data?.updatedAt as string" />
+        <LastModified :date="data?.updatedAt" />
       </template>
     </BaseDetailLayout>
 
     <PageSeoMeta
-      :title-candidates="[data?.setOfRules as string]"
+      :title-candidates="[data?.setOfRules]"
       fallback="Arbitral Rule"
     />
 
     <EntityFeedback
       entity-type="arbitral_rule"
       :entity-id="ruleId"
-      :entity-title="data?.setOfRules as string"
+      :entity-title="data?.setOfRules ?? undefined"
     />
   </div>
 </template>

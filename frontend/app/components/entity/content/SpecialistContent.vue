@@ -18,8 +18,9 @@
 <script setup lang="ts">
 import EntityContent from "@/components/entity/EntityContent.vue";
 import DetailRow from "@/components/ui/DetailRow.vue";
+import type { Specialist } from "@/types/entities/specialist";
 
 defineProps<{
-  data: Record<string, unknown>;
+  data: Specialist;
 }>();
 </script>

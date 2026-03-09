@@ -44,6 +44,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { camelCaseToLabel } from "@/utils/camelCaseToLabel";
+import { formatDate } from "@/utils/format";
 import { tooltips } from "@/config/tooltips";
 import {
   getEntityConfig,
@@ -150,12 +151,17 @@ function shouldDisplayValue(value: unknown): boolean {
   return true;
 }
 
+const ISO_DATE_RE = /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2})?/;
+
 function formatValue(value: unknown): string {
   if (value === null || value === undefined) return "\u2014";
   if (Array.isArray(value)) {
     if (value.length === 0) return "\u2014";
     if (typeof value[0] === "string") return value.join(", ");
     return String(value.length) + " items";
+  }
+  if (typeof value === "string" && ISO_DATE_RE.test(value)) {
+    return formatDate(value) ?? "\u2014";
   }
   return String(value);
 }

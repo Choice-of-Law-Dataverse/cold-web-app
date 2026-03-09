@@ -57,18 +57,6 @@ import type {
 
 export { ApiError } from "./errors";
 
-export interface QuestionWithAnswer {
-  id: string;
-  question: string;
-  theme?: string;
-  answer: string;
-  answerLink: string;
-  level: number;
-  hasExpand: boolean;
-  expanded: boolean;
-  parentId: string | null;
-}
-
 export interface SearchFilters {
   jurisdiction?: string;
   theme?: string;

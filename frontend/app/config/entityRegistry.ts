@@ -1,5 +1,20 @@
 import type { TableName } from "@/types/api";
 import type { RelatedItem } from "@/types/ui";
+import type { Specialist } from "@/types/entities/specialist";
+import type { CourtDecision } from "@/types/entities/court-decision";
+import type { Question } from "@/types/entities/question";
+import type { Literature } from "@/types/entities/literature";
+import type { DomesticInstrument } from "@/types/entities/domestic-instrument";
+import type { RegionalInstrument } from "@/types/entities/regional-instrument";
+import type { InternationalInstrument } from "@/types/entities/international-instrument";
+import type { ArbitralRule } from "@/types/entities/arbitral-rule";
+import type { ArbitralAward } from "@/types/entities/arbitral-award";
+import type { Jurisdiction } from "@/types/entities/jurisdiction";
+import type {
+  DomesticLegalProvision,
+  RegionalLegalProvision,
+  InternationalLegalProvision,
+} from "@/types/entities/legal-provision";
 import { processSpecialist } from "@/types/entities/specialist";
 import { processCourtDecision } from "@/types/entities/court-decision";
 import { processQuestion } from "@/types/entities/question";
@@ -15,6 +30,25 @@ import {
   processRegionalLegalProvision,
   processInternationalLegalProvision,
 } from "@/types/entities/legal-provision";
+
+export interface ProcessedEntityMap {
+  "/specialist": Specialist;
+  "/court-decision": CourtDecision;
+  "/question": Question;
+  "/literature": Literature;
+  "/domestic-instrument": DomesticInstrument;
+  "/regional-instrument": RegionalInstrument;
+  "/international-instrument": InternationalInstrument;
+  "/arbitral-rule": ArbitralRule;
+  "/arbitral-award": ArbitralAward;
+  "/jurisdiction": Jurisdiction;
+  "/domestic-legal-provision": DomesticLegalProvision;
+  "/regional-legal-provision": RegionalLegalProvision;
+  "/international-legal-provision": InternationalLegalProvision;
+}
+
+export type EntityBasePath = keyof ProcessedEntityMap;
+export type ProcessedEntity = ProcessedEntityMap[EntityBasePath];
 
 export interface RelationConfig {
   relationKey: string;
@@ -400,27 +434,41 @@ export const entityRegistry: Record<string, EntityConfig> = {
   },
   "/domestic-legal-provision": {
     table: "Domestic Legal Provisions",
-    fieldOrder: ["title", "englishText", "originalText"],
-    labelOverrides: { title: "Article", englishText: "English Translation" },
-    titleKey: "title",
+    fieldOrder: [
+      "article",
+      "fullTextOfTheProvisionEnglishTranslation",
+      "fullTextOfTheProvisionOriginalLanguage",
+    ],
+    labelOverrides: {
+      article: "Article",
+      fullTextOfTheProvisionEnglishTranslation: "English Translation",
+      fullTextOfTheProvisionOriginalLanguage: "Original Text",
+    },
+    titleKey: "article",
     process: processDomesticLegalProvision,
     relations: [],
     hasDetailPage: false,
   },
   "/regional-legal-provision": {
     table: "Regional Legal Provisions",
-    fieldOrder: ["title", "originalText"],
-    labelOverrides: { title: "Provision", originalText: "Text" },
-    titleKey: "title",
+    fieldOrder: ["titleOfTheProvision", "fullText"],
+    labelOverrides: {
+      titleOfTheProvision: "Provision",
+      fullText: "Text",
+    },
+    titleKey: "titleOfTheProvision",
     process: processRegionalLegalProvision,
     relations: [],
     hasDetailPage: false,
   },
   "/international-legal-provision": {
     table: "International Legal Provisions",
-    fieldOrder: ["title", "originalText"],
-    labelOverrides: { title: "Provision", originalText: "Text" },
-    titleKey: "title",
+    fieldOrder: ["titleOfTheProvision", "fullText"],
+    labelOverrides: {
+      titleOfTheProvision: "Provision",
+      fullText: "Text",
+    },
+    titleKey: "titleOfTheProvision",
     process: processInternationalLegalProvision,
     relations: [],
     hasDetailPage: false,

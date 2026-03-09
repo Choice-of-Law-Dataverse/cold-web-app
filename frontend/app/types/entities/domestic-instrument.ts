@@ -1,5 +1,4 @@
 import type { components } from "@/types/api-schema";
-import { formatDate } from "@/utils/format";
 
 export type DomesticInstrumentResponse =
   components["schemas"]["DomesticInstrumentRecord"];
@@ -36,8 +35,6 @@ export function processDomesticInstrument(
 
   return {
     ...raw,
-    date: formatDate(raw.date),
-    publicationDate: formatDate(raw.publicationDate),
     displayTitle,
     compatibility: hasCompatibility ? true : undefined,
     rankingDisplayOrder: rankingOrders || undefined,

@@ -14,14 +14,10 @@
 
       <template #footer>
         <JurisdictionReportBanner
-          :jurisdiction-code="
-            (primaryJurisdiction?.coldId as string) ?? undefined
-          "
-          :jurisdiction-name="
-            (primaryJurisdiction?.name as string) ?? undefined
-          "
+          :jurisdiction-code="primaryJurisdiction?.coldId ?? undefined"
+          :jurisdiction-name="primaryJurisdiction?.name ?? undefined"
         />
-        <LastModified :date="data?.updatedAt as string" />
+        <LastModified :date="data?.updatedAt" />
       </template>
     </BaseDetailLayout>
     <div class="mt-8">
@@ -32,17 +28,14 @@
     </div>
 
     <PageSeoMeta
-      :title-candidates="[
-        data?.jurisdictions as string,
-        data?.question as string,
-      ]"
+      :title-candidates="[primaryJurisdiction?.name, data?.question]"
       fallback="Question"
     />
 
     <EntityFeedback
       entity-type="question"
       :entity-id="answerId"
-      :entity-title="data?.question as string"
+      :entity-title="data?.question ?? undefined"
     />
   </div>
 </template>
@@ -64,12 +57,9 @@ const answerId = ref(route.params.coldId as string);
 
 const { data, isLoading, error } = useEntityData("/question", answerId);
 
-const primaryJurisdiction = computed(() => {
-  const rels = data.value?.relations as
-    | Record<string, Record<string, unknown>[]>
-    | undefined;
-  return rels?.jurisdictions?.[0] ?? null;
-});
+const primaryJurisdiction = computed(
+  () => data.value?.relations.jurisdictions[0] ?? null,
+);
 
 const questionSuffix = computed(() => {
   const id = answerId.value;

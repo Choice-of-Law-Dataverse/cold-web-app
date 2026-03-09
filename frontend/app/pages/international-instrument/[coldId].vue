@@ -13,19 +13,19 @@
       <InternationalInstrumentContent v-if="data" :data="data" />
 
       <template #footer>
-        <LastModified :date="data?.updatedAt as string" />
+        <LastModified :date="data?.updatedAt" />
       </template>
     </BaseDetailLayout>
 
     <PageSeoMeta
-      :title-candidates="[data?.name as string]"
+      :title-candidates="[data?.name]"
       fallback="International Instrument"
     />
 
     <EntityFeedback
       entity-type="international_instrument"
       :entity-id="instrumentId"
-      :entity-title="(data?.name as string) || undefined"
+      :entity-title="data?.name ?? undefined"
     />
   </div>
 </template>

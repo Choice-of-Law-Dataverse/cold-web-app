@@ -5,7 +5,7 @@
       :loading="isLoading"
       :error="error"
       :data="data || {}"
-      :formatted-jurisdiction="[data?.name as string]"
+      :formatted-jurisdiction="[data?.name ?? '']"
       :show-suggest-edit="true"
     >
       <DetailRow label="">
@@ -17,7 +17,7 @@
       <EntityContent base-path="/jurisdiction" :data="data || {}" />
 
       <template #footer>
-        <LastModified :date="data?.updatedAt as string" />
+        <LastModified :date="data?.updatedAt" />
       </template>
     </BaseDetailLayout>
     <ClientOnly>
@@ -79,15 +79,12 @@
       </template>
     </ClientOnly>
 
-    <PageSeoMeta
-      :title-candidates="[data?.name as string]"
-      fallback="Country Report"
-    />
+    <PageSeoMeta :title-candidates="[data?.name]" fallback="Country Report" />
 
     <EntityFeedback
       entity-type="jurisdiction"
       :entity-id="jurisdictionId"
-      :entity-title="data?.name as string"
+      :entity-title="data?.name ?? undefined"
     />
   </div>
 </template>
@@ -116,9 +113,9 @@ const { data, isLoading, error } = useEntityData(
 const jurisdictionOption = computed(() => {
   if (!data.value) return null;
   return {
-    name: (data.value?.name as string) || "",
-    label: (data.value?.name as string) || "",
-    coldId: (data.value?.coldId as string) || "",
+    name: data.value.name || "",
+    label: data.value.name || "",
+    coldId: data.value.coldId || "",
   };
 });
 </script>

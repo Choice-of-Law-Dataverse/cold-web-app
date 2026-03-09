@@ -14,26 +14,22 @@
 
       <template #footer>
         <JurisdictionReportBanner
-          :jurisdiction-code="
-            (primaryJurisdiction?.coldId as string) ?? undefined
-          "
-          :jurisdiction-name="
-            (primaryJurisdiction?.name as string) ?? undefined
-          "
+          :jurisdiction-code="primaryJurisdiction?.coldId ?? undefined"
+          :jurisdiction-name="primaryJurisdiction?.name ?? undefined"
         />
-        <LastModified :date="data?.updatedAt as string" />
+        <LastModified :date="data?.updatedAt" />
       </template>
     </BaseDetailLayout>
 
     <PageSeoMeta
-      :title-candidates="[data?.titleInEnglish as string]"
+      :title-candidates="[data?.titleInEnglish]"
       fallback="Domestic Instrument"
     />
 
     <EntityFeedback
       entity-type="domestic_instrument"
       :entity-id="instrumentId"
-      :entity-title="data?.titleInEnglish as string"
+      :entity-title="data?.titleInEnglish ?? undefined"
     />
   </div>
 </template>
@@ -58,10 +54,7 @@ const { data, isLoading, error } = useEntityData(
   instrumentId,
 );
 
-const primaryJurisdiction = computed(() => {
-  const rels = data.value?.relations as
-    | Record<string, Record<string, unknown>[]>
-    | undefined;
-  return rels?.jurisdictions?.[0] ?? null;
-});
+const primaryJurisdiction = computed(
+  () => data.value?.relations.jurisdictions[0] ?? null,
+);
 </script>

@@ -13,19 +13,16 @@
       <LiteratureContent v-if="data" :data="data" />
 
       <template #footer>
-        <LastModified :date="data?.updatedAt as string" />
+        <LastModified :date="data?.updatedAt" />
       </template>
     </BaseDetailLayout>
 
-    <PageSeoMeta
-      :title-candidates="[data?.title as string]"
-      fallback="Literature"
-    />
+    <PageSeoMeta :title-candidates="[data?.title]" fallback="Literature" />
 
     <EntityFeedback
       entity-type="literature"
       :entity-id="id"
-      :entity-title="data?.title as string"
+      :entity-title="data?.title ?? undefined"
     />
   </div>
 </template>

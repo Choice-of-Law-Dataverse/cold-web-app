@@ -73,10 +73,11 @@ import PdfLink from "@/components/ui/PdfLink.vue";
 import SourceExternalLink from "@/components/sources/SourceExternalLink.vue";
 import InstrumentLink from "@/components/legal/InstrumentLink.vue";
 import CompatibleLabel from "@/components/ui/CompatibleLabel.vue";
+import type { DomesticInstrument } from "@/types/entities/domestic-instrument";
 import { isTruthy } from "@/types/entities/domestic-instrument";
 
 const props = defineProps<{
-  data: Record<string, unknown>;
+  data: DomesticInstrument;
 }>();
 
 function isCompatible(
@@ -84,6 +85,6 @@ function isCompatible(
     | "compatibleWithTheUncitralModelLaw"
     | "compatibleWithTheHcchPrinciples",
 ): boolean {
-  return isTruthy(props.data[field] as string);
+  return isTruthy(props.data[field]);
 }
 </script>

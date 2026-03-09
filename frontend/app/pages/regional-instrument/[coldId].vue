@@ -13,19 +13,19 @@
       <RegionalInstrumentContent v-if="data" :data="data" />
 
       <template #footer>
-        <LastModified :date="data?.updatedAt as string" />
+        <LastModified :date="data?.updatedAt" />
       </template>
     </BaseDetailLayout>
 
     <PageSeoMeta
-      :title-candidates="[data?.abbreviation as string]"
+      :title-candidates="[data?.abbreviation]"
       fallback="Regional Instrument"
     />
 
     <EntityFeedback
       entity-type="regional_instrument"
       :entity-id="instrumentId"
-      :entity-title="(data?.abbreviation as string) || undefined"
+      :entity-title="data?.abbreviation ?? undefined"
     />
   </div>
 </template>

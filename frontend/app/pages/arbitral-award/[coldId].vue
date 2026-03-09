@@ -8,21 +8,14 @@
       :loading="isLoading"
       :error="error"
       :data="data || {}"
-      :formatted-jurisdiction="
-        (data?.formattedJurisdictions as { name: string }[])?.map(
-          (j) => j.name,
-        ) || []
-      "
-      :formatted-theme="
-        (data?.formattedThemes as { theme: string }[])?.map((t) => t.theme) ||
-        []
-      "
+      :formatted-jurisdiction="jurisdictionNames"
+      :formatted-theme="themeNames"
       :show-suggest-edit="true"
     >
       <EntityContent base-path="/arbitral-award" :data="data || {}" />
 
       <template #footer>
-        <LastModified :date="data?.updatedAt as string" />
+        <LastModified :date="data?.updatedAt" />
       </template>
     </BaseDetailLayout>
 
@@ -55,8 +48,22 @@ const awardId = ref(route.params.coldId as string);
 
 const { data, isLoading, error } = useEntityData("/arbitral-award", awardId);
 
+const jurisdictionNames = computed(
+  () =>
+    data.value?.relations.jurisdictions
+      .map((j) => j.name)
+      .filter((n): n is string => Boolean(n)) ?? [],
+);
+
+const themeNames = computed(
+  () =>
+    data.value?.relations.themes
+      .map((t) => t.theme)
+      .filter((t): t is string => Boolean(t)) ?? [],
+);
+
 const caseNumberTitle = computed(() => {
-  const cn = data.value?.caseNumber as string | undefined;
+  const cn = data.value?.caseNumber;
   return cn?.trim() ? `Case Number ${cn}` : null;
 });
 </script>

@@ -24,8 +24,9 @@ import DetailRow from "@/components/ui/DetailRow.vue";
 import TitleWithActions from "@/components/ui/TitleWithActions.vue";
 import PdfLink from "@/components/ui/PdfLink.vue";
 import SourceExternalLink from "@/components/sources/SourceExternalLink.vue";
+import type { InternationalInstrument } from "@/types/entities/international-instrument";
 
 defineProps<{
-  data: Record<string, unknown>;
+  data: InternationalInstrument;
 }>();
 </script>

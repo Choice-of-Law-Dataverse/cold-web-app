@@ -14,14 +14,10 @@
 
       <template #footer>
         <JurisdictionReportBanner
-          :jurisdiction-code="
-            (primaryJurisdiction?.coldId as string) ?? undefined
-          "
-          :jurisdiction-name="
-            (primaryJurisdiction?.name as string) ?? undefined
-          "
+          :jurisdiction-code="primaryJurisdiction?.coldId ?? undefined"
+          :jurisdiction-name="primaryJurisdiction?.name ?? undefined"
         />
-        <LastModified :date="data?.updatedAt as string" />
+        <LastModified :date="data?.updatedAt" />
       </template>
     </BaseDetailLayout>
 
@@ -31,10 +27,8 @@
 
     <PageSeoMeta
       :title-candidates="[
-        (data?.caseTitle as string) !== 'Not found'
-          ? (data?.caseTitle as string)
-          : null,
-        data?.caseCitation as string,
+        data?.caseTitle !== 'Not found' ? data?.caseTitle : null,
+        data?.caseCitation,
       ]"
       fallback="Court Decision"
     />
@@ -42,7 +36,7 @@
     <EntityFeedback
       entity-type="court_decision"
       :entity-id="courtDecisionId"
-      :entity-title="data?.caseTitle as string"
+      :entity-title="data?.caseTitle ?? undefined"
     />
   </div>
 </template>
@@ -66,10 +60,7 @@ const { data, isLoading, error } = useEntityData(
   courtDecisionId,
 );
 
-const primaryJurisdiction = computed(() => {
-  const rels = data.value?.relations as
-    | Record<string, Record<string, unknown>[]>
-    | undefined;
-  return rels?.jurisdictions?.[0] ?? null;
-});
+const primaryJurisdiction = computed(
+  () => data.value?.relations.jurisdictions[0] ?? null,
+);
 </script>

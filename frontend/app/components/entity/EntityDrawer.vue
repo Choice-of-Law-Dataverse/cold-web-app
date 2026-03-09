@@ -151,15 +151,14 @@ const pageJurisdictionCode = computed(() => {
 });
 
 const headerJurisdictions = computed<string[]>(() => {
-  if (!entityData.value || isJurisdiction.value) return [];
-  const relations = entityData.value.relations as
-    | Record<string, Record<string, unknown>[]>
-    | undefined;
-  const jurisdictions = relations?.jurisdictions;
+  const data = entityData.value;
+  if (!data || isJurisdiction.value) return [];
+  if (!("relations" in data)) return [];
+  const jurisdictions = data.relations.jurisdictions;
   if (!jurisdictions?.length) return [];
   return jurisdictions
-    .filter((j) => (j.coldId as string) !== pageJurisdictionCode.value)
-    .map((j) => (j.name as string) || "")
+    .filter((j) => j.coldId !== pageJurisdictionCode.value)
+    .map((j) => j.name || "")
     .filter((name) => name);
 });
 
@@ -206,8 +205,9 @@ const headerLabelColor = computed(() => {
 });
 
 const headerLegalFamily = computed<string[]>(() => {
-  if (!entityData.value) return [];
-  const value = String(entityData.value.legalFamily || "");
+  const data = entityData.value;
+  if (!data || !("legalFamily" in data)) return [];
+  const value = String(data.legalFamily || "");
   if (!value || value === "N/A") return [];
   return value
     .split(",")

@@ -1,5 +1,9 @@
 import { ref, computed, watch } from "vue";
 import { useRecordDetails } from "./useRecordDetails";
+import type {
+  DomesticLegalProvision,
+  RegionalLegalProvision,
+} from "@/types/entities/legal-provision";
 import {
   processDomesticLegalProvision,
   processRegionalLegalProvision,
@@ -8,6 +12,22 @@ import {
 type LegalProvisionTable =
   | "Domestic Legal Provisions"
   | "Regional Legal Provisions";
+
+function useDomesticProvision(idRef: Ref<string | number>) {
+  return useRecordDetails(
+    "Domestic Legal Provisions",
+    idRef,
+    processDomesticLegalProvision,
+  );
+}
+
+function useRegionalProvision(idRef: Ref<string | number>) {
+  return useRecordDetails(
+    "Regional Legal Provisions",
+    idRef,
+    processRegionalLegalProvision,
+  );
+}
 
 export function useLegalProvision({
   provisionId,
@@ -27,31 +47,35 @@ export function useLegalProvision({
     data,
     isLoading: loading,
     error,
-  } = isRegional
-    ? useRecordDetails(
-        "Regional Legal Provisions",
-        idRef,
-        processRegionalLegalProvision,
-      )
-    : useRecordDetails(
-        "Domestic Legal Provisions",
-        idRef,
-        processDomesticLegalProvision,
-      );
+  } = isRegional ? useRegionalProvision(idRef) : useDomesticProvision(idRef);
 
-  const title = computed(() => data.value?.title || "");
+  const title = computed(() => {
+    if (!data.value) return "";
+    if (isRegional) {
+      return (data.value as RegionalLegalProvision).titleOfTheProvision || "";
+    }
+    return (data.value as DomesticLegalProvision).article || "";
+  });
 
   const content = computed(() => {
     if (!data.value) return "";
-    if (showEnglish.value && data.value.englishText) {
-      return data.value.englishText;
+    if (isRegional) {
+      return (data.value as RegionalLegalProvision).fullText || "";
     }
-    return data.value.originalText;
+    const domestic = data.value as DomesticLegalProvision;
+    if (
+      showEnglish.value &&
+      domestic.fullTextOfTheProvisionEnglishTranslation
+    ) {
+      return domestic.fullTextOfTheProvisionEnglishTranslation;
+    }
+    return domestic.fullTextOfTheProvisionOriginalLanguage || "";
   });
 
-  const hasEnglishTranslation = computed(
-    () => data.value?.hasEnglishTranslation || false,
-  );
+  const hasEnglishTranslation = computed(() => {
+    if (isRegional || !data.value) return false;
+    return (data.value as DomesticLegalProvision).hasEnglishTranslation;
+  });
 
   const anchorId = computed(() => {
     const articleNumber = title.value
