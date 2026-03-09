@@ -1,24 +1,23 @@
 <template>
   <div>
-    <h1 v-if="answerData?.question" class="sr-only">
-      {{ answerData.question }}
+    <h1 v-if="data?.question" class="sr-only">
+      {{ data.question }}
     </h1>
     <BaseDetailLayout
       table="Questions"
       :loading="isLoading"
       :error="error"
-      :data="answerData || {}"
-      :labels="questionLabels"
-      :tooltips="questionTooltips"
-      :relations="answerData?.relations"
+      :data="data"
       :show-suggest-edit="true"
     >
+      <QuestionContent v-if="data" :data="data" />
+
       <template #footer>
         <JurisdictionReportBanner
-          :jurisdiction-code="primaryJurisdiction?.coldId ?? undefined"
-          :jurisdiction-name="primaryJurisdiction?.name ?? undefined"
+          :jurisdiction-code="soleJurisdiction?.coldId ?? undefined"
+          :jurisdiction-name="soleJurisdiction?.name ?? undefined"
         />
-        <LastModified :date="answerData?.updatedAt" />
+        <LastModified :date="data?.updatedAt" />
       </template>
     </BaseDetailLayout>
     <div class="mt-8">
@@ -28,16 +27,15 @@
       />
     </div>
 
-    <!-- Handle SEO meta tags -->
     <PageSeoMeta
-      :title-candidates="[answerData?.jurisdictions, answerData?.question]"
+      :title-candidates="[soleJurisdiction?.name, data?.question]"
       fallback="Question"
     />
 
     <EntityFeedback
       entity-type="question"
-      :entity-id="answerId"
-      :entity-title="answerData?.question as string"
+      :entity-id="coldId"
+      :entity-title="data?.question ?? undefined"
     />
   </div>
 </template>
@@ -46,26 +44,27 @@
 import { computed, ref } from "vue";
 import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layout/BaseDetailLayout.vue";
+import QuestionContent from "@/components/entity/content/QuestionContent.vue";
 import JurisdictionReportBanner from "@/components/jurisdiction/JurisdictionReportBanner.vue";
 import QuestionAnswerMap from "@/components/jurisdiction/QuestionAnswerMap.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
 import EntityFeedback from "@/components/ui/EntityFeedback.vue";
 import LastModified from "@/components/ui/LastModified.vue";
-import { useAnswer } from "@/composables/useRecordDetails";
-import { questionLabels } from "@/config/labels";
-import { questionTooltips } from "@/config/tooltips";
+import { useEntityData } from "@/composables/useEntityData";
 
 const route = useRoute();
-const answerId = ref(route.params.coldId as string);
+const coldId = ref(route.params.coldId as string);
 
-const { data: answerData, isLoading, error } = useAnswer(answerId);
+const { data, isLoading, error } = useEntityData("/question", coldId);
 
-const primaryJurisdiction = computed(
-  () => answerData.value?.relations.jurisdictions[0] ?? null,
-);
+const soleJurisdiction = computed(() => {
+  const jurisdictions = data.value?.relations.jurisdictions;
+  if (jurisdictions?.length !== 1) return null;
+  return jurisdictions[0];
+});
 
 const questionSuffix = computed(() => {
-  const id = answerId.value;
+  const id = coldId.value;
   if (!id || typeof id !== "string") return null;
 
   const parts = id.split("_");

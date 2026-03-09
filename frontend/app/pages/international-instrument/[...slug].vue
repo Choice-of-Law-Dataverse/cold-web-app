@@ -3,7 +3,7 @@
     <BaseDetailLayout
       table="International Instruments"
       :loading="loading"
-      :data="{}"
+      :data="null"
       header-mode="new"
       :show-notification-banner="true"
       :notification-banner-message="notificationBannerMessage"
@@ -135,11 +135,10 @@ import DatePicker from "@/components/ui/DatePicker.vue";
 import SaveModal from "@/components/ui/SaveModal.vue";
 import CancelModal from "@/components/ui/CancelModal.vue";
 import { format, parseISO } from "date-fns";
-import { internationalInstrumentTooltips } from "@/config/tooltips";
+import { tooltips } from "@/config/tooltips";
 
-const tooltipInternationalInstrumentSpecialist =
-  internationalInstrumentTooltips.specialists;
-const tooltipInternationalInstrumentDate = internationalInstrumentTooltips.date;
+const tooltipInternationalInstrumentSpecialist = tooltips.specialists ?? "";
+const tooltipInternationalInstrumentDate = tooltips.date ?? "";
 const tooltipInternationalInstrumentLink =
   "Link to the official source or full text of the instrument.";
 

@@ -3,8 +3,6 @@
     :loading="props.loading"
     :error="props.error ?? undefined"
     :result-data="resultDataForDisplay"
-    :key-label-pairs="keyLabelPairsForDisplay"
-    :value-class-map="{}"
     :formatted-source-table="props.table"
     :formatted-jurisdiction="props.formattedJurisdiction"
     :formatted-theme="props.formattedTheme"
@@ -15,8 +13,6 @@
     :show-notification-banner="props.showNotificationBanner"
     :notification-banner-message="props.notificationBannerMessage"
     :icon="props.icon"
-    :relations="props.relations"
-    :exclude-relations="props.excludeRelations"
     @save="emit('save')"
     @open-save-modal="emit('open-save-modal')"
     @open-cancel-modal="emit('open-cancel-modal')"
@@ -28,20 +24,17 @@
   </DetailDisplay>
 </template>
 
-<script setup lang="ts" generic="T extends TableName">
+<script setup lang="ts">
 import { computed } from "vue";
-import type { TableName, TableProcessedMap } from "@/types/api";
 import DetailDisplay from "@/components/ui/DetailDisplay.vue";
+import type { ProcessedEntity } from "@/config/entityRegistry";
 
 const props = withDefaults(
   defineProps<{
-    table: T;
+    table: string;
     loading: boolean;
     error?: Error | null;
-    data: TableProcessedMap[T] | Record<string, unknown>;
-    labels?: Partial<Record<keyof TableProcessedMap[T], string>>;
-    tooltips?: Partial<Record<keyof TableProcessedMap[T], string>>;
-    keyLabelPairs?: Record<string, unknown>[];
+    data: ProcessedEntity | null;
     formattedJurisdiction?: string[];
     formattedTheme?: string[];
     headerMode?: string;
@@ -49,14 +42,10 @@ const props = withDefaults(
     notificationBannerMessage?: string;
     icon?: string;
     showSuggestEdit?: boolean;
-    relations?: Record<string, Record<string, unknown>[]>;
-    excludeRelations?: Set<string>;
   }>(),
   {
     error: undefined,
-    labels: () => ({}),
-    tooltips: undefined,
-    keyLabelPairs: undefined,
+    data: null,
     formattedJurisdiction: () => [],
     formattedTheme: () => [],
     headerMode: "default",
@@ -64,38 +53,12 @@ const props = withDefaults(
     notificationBannerMessage: "",
     icon: "",
     showSuggestEdit: false,
-    relations: undefined,
-    excludeRelations: undefined,
   },
 );
 
 const emit = defineEmits(["save", "open-save-modal", "open-cancel-modal"]);
 
-interface KeyLabelPair {
-  key: string;
-  label: string;
-  tooltip?: string;
-  emptyValueBehavior?: { action: string };
-}
-
 const resultDataForDisplay = computed(
-  () => props.data as Record<string, unknown>,
-);
-
-const computedKeyLabelPairs = computed(() => {
-  if (props.labels && Object.keys(props.labels).length > 0) {
-    const tooltips = props.tooltips as Record<string, string> | undefined;
-    return Object.entries(props.labels).map(([key, label]) => ({
-      key,
-      label,
-      tooltip: tooltips?.[key],
-      emptyValueBehavior: { action: "hide" },
-    }));
-  }
-  return props.keyLabelPairs ?? [];
-});
-
-const keyLabelPairsForDisplay = computed(
-  () => computedKeyLabelPairs.value as KeyLabelPair[],
+  () => (props.data ?? {}) as Record<string, unknown>,
 );
 </script>

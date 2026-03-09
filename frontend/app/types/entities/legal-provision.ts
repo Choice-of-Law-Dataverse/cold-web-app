@@ -13,48 +13,34 @@ export type InternationalLegalProvisionResponse =
 export type InternationalLegalProvisionDetailResponse =
   components["schemas"]["InternationalLegalProvisionDetail"];
 
-export interface LegalProvision {
-  id: string | number | null | undefined;
-  title: string;
-  originalText: string;
-  englishText?: string;
+export type DomesticLegalProvision = DomesticLegalProvisionDetailResponse & {
   hasEnglishTranslation: boolean;
-}
+};
+
+export type RegionalLegalProvision = RegionalLegalProvisionDetailResponse;
+
+export type InternationalLegalProvision =
+  InternationalLegalProvisionDetailResponse;
 
 export function processDomesticLegalProvision(
   raw: DomesticLegalProvisionDetailResponse,
-): LegalProvision {
-  const englishText = raw.fullTextOfTheProvisionEnglishTranslation;
+): DomesticLegalProvision {
   return {
-    id: raw.id,
-    title: raw.article || "Unknown Article",
-    originalText:
-      raw.fullTextOfTheProvisionOriginalLanguage || "No content available",
-    englishText: englishText || undefined,
-    hasEnglishTranslation: Boolean(englishText),
+    ...raw,
+    hasEnglishTranslation: Boolean(
+      raw.fullTextOfTheProvisionEnglishTranslation,
+    ),
   };
 }
 
 export function processRegionalLegalProvision(
   raw: RegionalLegalProvisionDetailResponse,
-): LegalProvision {
-  return {
-    id: raw.id,
-    title: raw.titleOfTheProvision || "Unknown Article",
-    originalText: raw.fullText || "No content available",
-    englishText: undefined,
-    hasEnglishTranslation: false,
-  };
+): RegionalLegalProvision {
+  return raw;
 }
 
 export function processInternationalLegalProvision(
   raw: InternationalLegalProvisionDetailResponse,
-): LegalProvision {
-  return {
-    id: raw.id,
-    title: raw.titleOfTheProvision || "Unknown Article",
-    originalText: raw.fullText || "No content available",
-    englishText: undefined,
-    hasEnglishTranslation: false,
-  };
+): InternationalLegalProvision {
+  return raw;
 }

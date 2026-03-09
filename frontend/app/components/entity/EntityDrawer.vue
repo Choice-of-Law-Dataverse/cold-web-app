@@ -59,41 +59,17 @@
           <div v-if="isLoading" class="p-6">
             <LoadingBar />
           </div>
-          <InlineError v-else-if="queryError" :error="queryError" class="p-6" />
-          <div v-else-if="entityData" class="flex flex-col gap-2 px-4 py-4">
-            <template v-for="pair in scalarLabelPairs" :key="pair.key">
-              <section v-if="shouldDisplayValue(entityData[pair.key])">
-                <DetailRow
-                  :label="pair.label"
-                  :tooltip="pair.tooltip"
-                  :variant="drawerVariant"
-                >
-                  <p class="result-value-small whitespace-pre-line">
-                    {{ formatValue(entityData[pair.key]) }}
-                  </p>
-                </DetailRow>
-              </section>
-            </template>
-
-            <section v-if="domesticInstrumentItems.length">
-              <DetailRow label="Legal Provisions">
-                <RelatedItemsList
-                  :items="domesticInstrumentItems"
-                  base-path="/domestic-instrument"
-                />
-              </DetailRow>
-            </section>
-
-            <template v-for="rel in relationSections" :key="rel.relationKey">
-              <section v-if="rel.items.length > 0">
-                <DetailRow :label="rel.label" :variant="rel.variant">
-                  <RelatedItemsList
-                    :items="rel.items"
-                    :base-path="rel.basePath"
-                  />
-                </DetailRow>
-              </section>
-            </template>
+          <InlineError v-else-if="error" :error="error" class="p-6" />
+          <div
+            v-else-if="entityData && config"
+            class="flex flex-col gap-2 px-4 py-4"
+          >
+            <component
+              v-if="customContentComponent"
+              :is="customContentComponent"
+              :data="entityData"
+            />
+            <EntityContent v-else :base-path="basePath!" :data="entityData" />
 
             <section v-if="isJurisdiction && jurisdictionCode">
               <DetailRow label="Questions & Answers" variant="jurisdiction">
@@ -114,136 +90,60 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
-import { useQuery } from "@tanstack/vue-query";
+import { computed, type Component } from "vue";
 import { useEntityDrawer } from "@/composables/useEntityDrawer";
-import { getEntityConfig, mapRelationToItem } from "@/config/entityRegistry";
-import type { RelationConfig } from "@/config/entityRegistry";
-import { useApiClient } from "@/composables/useApiClient";
-import type { RelatedItem } from "@/types/ui";
+import { useEntityData } from "@/composables/useEntityData";
 import DetailRow from "@/components/ui/DetailRow.vue";
-import RelatedItemsList from "@/components/ui/RelatedItemsList.vue";
+import EntityContent from "@/components/entity/EntityContent.vue";
+import CourtDecisionContent from "@/components/entity/content/CourtDecisionContent.vue";
+import LiteratureContent from "@/components/entity/content/LiteratureContent.vue";
+import DomesticInstrumentContent from "@/components/entity/content/DomesticInstrumentContent.vue";
+import SpecialistContent from "@/components/entity/content/SpecialistContent.vue";
+import RegionalInstrumentContent from "@/components/entity/content/RegionalInstrumentContent.vue";
+import InternationalInstrumentContent from "@/components/entity/content/InternationalInstrumentContent.vue";
+import QuestionContent from "@/components/entity/content/QuestionContent.vue";
 import LoadingBar from "@/components/layout/LoadingBar.vue";
 import InlineError from "@/components/ui/InlineError.vue";
 import JurisdictionDrawerQA from "@/components/jurisdiction/JurisdictionDrawerQA.vue";
 import DrawerAnswerMap from "@/components/jurisdiction/DrawerAnswerMap.vue";
 import CardTags from "@/components/ui/CardTags.vue";
 
+const contentComponents: Record<string, Component> = {
+  CourtDecisionContent,
+  LiteratureContent,
+  DomesticInstrumentContent,
+  SpecialistContent,
+  RegionalInstrumentContent,
+  InternationalInstrumentContent,
+  QuestionContent,
+};
+
 const route = useRoute();
 const { isOpen, entity, canGoBack, closeDrawer, goBack } = useEntityDrawer();
 
-const config = computed(() =>
-  entity.value ? getEntityConfig(entity.value.basePath) : undefined,
-);
-
-const { client } = useApiClient();
-
-const resolvedTable = computed(() => {
-  if (!entity.value) return undefined;
-  if (entity.value.table === "Answers" && !entity.value.coldId.includes("_")) {
-    return "Questions" as const;
-  }
-  return entity.value.table;
-});
+const basePath = computed(() => entity.value?.basePath);
+const coldId = computed(() => entity.value?.coldId ?? "");
 
 const {
-  data: rawData,
+  data: entityData,
   isLoading,
-  error: queryError,
-} = useQuery({
-  queryKey: computed(() => [
-    "entity-drawer",
-    resolvedTable.value,
-    entity.value?.coldId,
-  ]),
-  queryFn: async () => {
-    if (!entity.value || !config.value || !resolvedTable.value) return null;
-    const { data, error } = await client.POST("/search/details", {
-      body: { table: resolvedTable.value, id: entity.value.coldId },
-    });
-    if (error) throw error;
-    return config.value.process(data);
-  },
-  enabled: computed(() => Boolean(entity.value?.coldId && resolvedTable.value)),
-});
+  error,
+  config,
+} = useEntityData(basePath, coldId);
 
-const entityData = computed(() => {
-  if (!rawData.value) return null;
-  return rawData.value as Record<string, unknown>;
+const customContentComponent = computed(() => {
+  const id = config.value?.contentComponentId;
+  return id ? contentComponents[id] : undefined;
 });
 
 const fullPagePath = computed(() => {
   if (!entity.value) return "/";
   const id = entity.value.coldId;
-  const basePath = entity.value.basePath;
-  return id.startsWith("/") ? id : `${basePath}/${id}`;
+  const bp = entity.value.basePath;
+  return id.startsWith("/") ? id : `${bp}/${id}`;
 });
 
 const hasDetailPage = computed(() => config.value?.hasDetailPage !== false);
-
-const drawerVariant = computed(() => {
-  if (!entity.value) return undefined;
-  const variantMap: Record<string, string> = {
-    "/court-decision": "court-decision",
-    "/question": "question",
-    "/literature": "literature",
-    "/jurisdiction": "jurisdiction",
-    "/specialist": "specialist",
-    "/domestic-instrument": "instrument",
-    "/regional-instrument": "instrument",
-    "/international-instrument": "instrument",
-    "/arbitral-rule": "arbitration",
-    "/arbitral-award": "arbitration",
-  };
-  return variantMap[entity.value.basePath];
-});
-
-interface KeyLabelPair {
-  key: string;
-  label: string;
-  tooltip?: string;
-}
-
-const scalarLabelPairs = computed<KeyLabelPair[]>(() => {
-  if (!config.value) return [];
-  const tooltips = config.value.tooltips ?? {};
-  const skip = config.value.skipLabelKeys;
-  return Object.entries(config.value.labels)
-    .filter(([key]) => !skip.has(key))
-    .map(([key, label]) => ({
-      key,
-      label,
-      tooltip: tooltips[key],
-    }));
-});
-
-interface RelationSection extends RelationConfig {
-  items: RelatedItem[];
-}
-
-const relationSections = computed<RelationSection[]>(() => {
-  if (!config.value || !entityData.value) return [];
-  const relations = entityData.value.relations as
-    | Record<string, Record<string, unknown>[]>
-    | undefined;
-  if (!relations) return [];
-
-  return config.value.relations
-    .map((rel) => {
-      const items = (relations[rel.relationKey] ?? []).map(mapRelationToItem);
-      return { ...rel, items };
-    })
-    .filter((rel) => rel.items.length > 0);
-});
-
-const domesticInstrumentItems = computed<RelatedItem[]>(() => {
-  if (!entityData.value) return [];
-  const relations = entityData.value.relations as
-    | Record<string, Record<string, unknown>[]>
-    | undefined;
-  if (!relations?.domesticInstruments) return [];
-  return relations.domesticInstruments.map(mapRelationToItem);
-});
 
 const pageJurisdictionCode = computed(() => {
   if (route.path.startsWith("/jurisdiction/")) {
@@ -253,63 +153,32 @@ const pageJurisdictionCode = computed(() => {
 });
 
 const headerJurisdictions = computed<string[]>(() => {
-  if (!entityData.value || isJurisdiction.value) return [];
-  const relations = entityData.value.relations as
-    | Record<string, Record<string, unknown>[]>
-    | undefined;
-  const jurisdictions = relations?.jurisdictions;
+  const data = entityData.value;
+  if (!data || isJurisdiction.value) return [];
+  if (!("relations" in data)) return [];
+  const jurisdictions = data.relations.jurisdictions;
   if (!jurisdictions?.length) return [];
-  return jurisdictions
-    .filter((j) => (j.coldId as string) !== pageJurisdictionCode.value)
-    .map((j) => (j.name as string) || "")
+  const filtered = jurisdictions
+    .filter((j) => j.coldId !== pageJurisdictionCode.value)
+    .map((j) => j.name || "")
     .filter((name) => name);
+  if (filtered.length !== 1) return [];
+  return filtered;
 });
 
-const headerSourceTable = computed(() => {
-  if (!config.value) return "";
-  const table = config.value.table;
-  const tableMap: Record<string, string> = {
-    "Court Decisions": "Court Decision",
-    Answers: "Question",
-    "Domestic Instruments": "Domestic Instrument",
-    "Regional Instruments": "Regional Instrument",
-    "International Instruments": "International Instrument",
-    Literature: "Literature",
-    "Arbitral Rules": "Arbitral Rule",
-    "Arbitral Awards": "Arbitral Award",
-    Specialists: "Specialist",
-    Jurisdictions: "Jurisdiction",
-  };
-  return tableMap[table] || table;
-});
+const headerSourceTable = computed(() => config.value?.singularLabel ?? "");
 
 const headerLabelColor = computed(() => {
-  switch (headerSourceTable.value) {
-    case "Court Decision":
-      return "label-court-decision";
-    case "Question":
-      return "label-question";
-    case "Domestic Instrument":
-    case "Regional Instrument":
-    case "International Instrument":
-      return "label-instrument";
-    case "Arbitral Rule":
-    case "Arbitral Award":
-      return "label-arbitration";
-    case "Literature":
-      return "label-literature";
-    case "Specialist":
-      return "label-specialist";
-    case "Jurisdiction":
-      return "hidden";
-    default:
-      return "";
-  }
+  const variant = config.value?.variant;
+  if (!variant) return "";
+  if (variant === "jurisdiction") return "hidden";
+  return `label-${variant}`;
 });
 
 const headerLegalFamily = computed<string[]>(() => {
-  if (!entityData.value) return [];
-  const value = String(entityData.value.legalFamily || "");
+  const data = entityData.value;
+  if (!data || !("legalFamily" in data)) return [];
+  const value = String(data.legalFamily || "");
   if (!value || value === "N/A") return [];
   return value
     .split(",")
@@ -335,24 +204,6 @@ const questionSuffix = computed(() => {
   if (parts.length > 1) return "_" + parts.slice(1).join("_");
   return "_" + id;
 });
-
-function shouldDisplayValue(value: unknown): boolean {
-  if (!value) return false;
-  if (value === "NA" || value === "N/A") return false;
-  if (Array.isArray(value) && value.length === 0) return false;
-  if (typeof value === "string" && value.trim() === "") return false;
-  return true;
-}
-
-function formatValue(value: unknown): string {
-  if (value === null || value === undefined) return "\u2014";
-  if (Array.isArray(value)) {
-    if (value.length === 0) return "\u2014";
-    if (typeof value[0] === "string") return value.join(", ");
-    return String(value.length) + " items";
-  }
-  return String(value);
-}
 </script>
 
 <style scoped>

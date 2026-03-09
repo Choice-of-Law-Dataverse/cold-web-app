@@ -1,29 +1,20 @@
 import type { TableName } from "@/types/api";
 import type { RelatedItem } from "@/types/ui";
-import {
-  specialistLabels,
-  courtDecisionLabels,
-  questionLabels,
-  literatureLabels,
-  domesticInstrumentLabels,
-  regionalInstrumentLabels,
-  internationalInstrumentLabels,
-  arbitralRuleLabels,
-  arbitralAwardLabels,
-  jurisdictionLabels,
-  domesticLegalProvisionLabels,
-  regionalLegalProvisionLabels,
-  internationalLegalProvisionLabels,
-} from "@/config/labels";
-import {
-  courtDecisionTooltips,
-  questionTooltips,
-  literatureTooltips,
-  domesticInstrumentTooltips,
-  regionalInstrumentTooltips,
-  internationalInstrumentTooltips,
-  jurisdictionTooltips,
-} from "@/config/tooltips";
+import type { Specialist } from "@/types/entities/specialist";
+import type { CourtDecision } from "@/types/entities/court-decision";
+import type { Question } from "@/types/entities/question";
+import type { Literature } from "@/types/entities/literature";
+import type { DomesticInstrument } from "@/types/entities/domestic-instrument";
+import type { RegionalInstrument } from "@/types/entities/regional-instrument";
+import type { InternationalInstrument } from "@/types/entities/international-instrument";
+import type { ArbitralRule } from "@/types/entities/arbitral-rule";
+import type { ArbitralAward } from "@/types/entities/arbitral-award";
+import type { Jurisdiction } from "@/types/entities/jurisdiction";
+import type {
+  DomesticLegalProvision,
+  RegionalLegalProvision,
+  InternationalLegalProvision,
+} from "@/types/entities/legal-provision";
 import { processSpecialist } from "@/types/entities/specialist";
 import { processCourtDecision } from "@/types/entities/court-decision";
 import { processQuestion } from "@/types/entities/question";
@@ -40,12 +31,24 @@ import {
   processInternationalLegalProvision,
 } from "@/types/entities/legal-provision";
 
-export interface RelationConfig {
-  relationKey: string;
-  label: string;
-  basePath: string;
-  variant?: string;
+export interface ProcessedEntityMap {
+  "/specialist": Specialist;
+  "/court-decision": CourtDecision;
+  "/question": Question;
+  "/literature": Literature;
+  "/domestic-instrument": DomesticInstrument;
+  "/regional-instrument": RegionalInstrument;
+  "/international-instrument": InternationalInstrument;
+  "/arbitral-rule": ArbitralRule;
+  "/arbitral-award": ArbitralAward;
+  "/jurisdiction": Jurisdiction;
+  "/domestic-legal-provision": DomesticLegalProvision;
+  "/regional-legal-provision": RegionalLegalProvision;
+  "/international-legal-provision": InternationalLegalProvision;
 }
+
+export type EntityBasePath = keyof ProcessedEntityMap;
+export type ProcessedEntity = ProcessedEntityMap[EntityBasePath];
 
 export interface RelationRendererConfig {
   label: string;
@@ -77,6 +80,7 @@ export const RELATION_RENDERERS: Record<string, RelationRendererConfig> = {
   domesticLegalProvisions: {
     label: "Domestic Legal Provisions",
     basePath: "/domestic-legal-provision",
+    variant: "instrument",
   },
   regionalInstruments: {
     label: "Regional Instruments",
@@ -86,6 +90,7 @@ export const RELATION_RENDERERS: Record<string, RelationRendererConfig> = {
   regionalLegalProvisions: {
     label: "Regional Legal Provisions",
     basePath: "/regional-legal-provision",
+    variant: "instrument",
   },
   internationalInstruments: {
     label: "International Instruments",
@@ -95,6 +100,7 @@ export const RELATION_RENDERERS: Record<string, RelationRendererConfig> = {
   internationalLegalProvisions: {
     label: "International Legal Provisions",
     basePath: "/international-legal-provision",
+    variant: "instrument",
   },
   arbitralAwards: {
     label: "Arbitral Awards",
@@ -115,14 +121,16 @@ export const RELATION_RENDERERS: Record<string, RelationRendererConfig> = {
 
 export interface EntityConfig {
   table: TableName;
-  labels: Record<string, string>;
-  tooltips?: Record<string, string>;
+  singularLabel: string;
+  fieldOrder: string[];
+  labelOverrides?: Record<string, string>;
   titleKey: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   process: (raw: any) => any;
-  skipLabelKeys: Set<string>;
-  relations: RelationConfig[];
+  contentComponentId?: string;
+  excludeRelations?: string[];
   hasDetailPage?: boolean;
+  variant?: string;
 }
 
 type RelationItem = Record<string, unknown>;
@@ -157,214 +165,221 @@ export function mapRelationToItem(item: RelationItem): RelatedItem {
 export const entityRegistry: Record<string, EntityConfig> = {
   "/specialist": {
     table: "Specialists",
-    labels: specialistLabels,
+    singularLabel: "Specialist",
+    fieldOrder: ["specialist", "affiliation", "contact", "bio", "website"],
+    labelOverrides: { specialist: "Name", bio: "Biography" },
     titleKey: "specialist",
     process: processSpecialist,
-    skipLabelKeys: new Set(),
-    relations: [
-      {
-        relationKey: "jurisdictions",
-        label: "Jurisdictions",
-        basePath: "/jurisdiction",
-        variant: "jurisdiction",
-      },
-      {
-        relationKey: "internationalInstruments",
-        label: "International Instruments",
-        basePath: "/international-instrument",
-        variant: "instrument",
-      },
-      {
-        relationKey: "literature",
-        label: "Literature",
-        basePath: "/literature",
-        variant: "literature",
-      },
-    ],
+    contentComponentId: "SpecialistContent",
+    variant: "specialist",
   },
   "/court-decision": {
     table: "Court Decisions",
-    labels: courtDecisionLabels,
-    tooltips: courtDecisionTooltips,
+    singularLabel: "Court Decision",
+    fieldOrder: [
+      "caseTitle",
+      "caseCitation",
+      "publicationDateIso",
+      "dateOfJudgment",
+      "instance",
+      "abstract",
+      "relevantFacts",
+      "pilProvisions",
+      "domesticLegalProvisions",
+      "textOfTheRelevantLegalProvisions",
+      "choiceOfLawIssue",
+      "courtSPosition",
+      "quote",
+      "originalText",
+    ],
+    labelOverrides: {
+      caseCitation: "Suggested Case Citation",
+      publicationDateIso: "Publication Date",
+      dateOfJudgment: "Judgment Date",
+      pilProvisions: "PIL Provisions",
+      courtSPosition: "Court's Position",
+      originalText: "Full Text",
+    },
     titleKey: "caseTitle",
     process: processCourtDecision,
-    skipLabelKeys: new Set([
-      "relatedQuestions",
-      "relatedLiterature",
-      "domesticLegalProvisions",
-    ]),
-    relations: [
-      {
-        relationKey: "questions",
-        label: "Related Questions",
-        basePath: "/question",
-        variant: "question",
-      },
-      {
-        relationKey: "literature",
-        label: "Literature",
-        basePath: "/literature",
-        variant: "literature",
-      },
-    ],
+    contentComponentId: "CourtDecisionContent",
+    variant: "court-decision",
   },
   "/question": {
     table: "Answers",
-    labels: questionLabels,
-    tooltips: questionTooltips,
+    singularLabel: "Question",
+    fieldOrder: [
+      "question",
+      "answer",
+      "moreInformation",
+      "domesticLegalProvisions",
+      "oupBookQuote",
+    ],
+    labelOverrides: {
+      domesticLegalProvisions: "Source",
+      oupBookQuote: "OUP Book Quote",
+    },
     titleKey: "question",
     process: processQuestion,
-    skipLabelKeys: new Set([
-      "courtDecisionsId",
-      "relatedLiterature",
-      "domesticLegalProvisions",
-    ]),
-    relations: [
-      {
-        relationKey: "courtDecisions",
-        label: "Related Court Decisions",
-        basePath: "/court-decision",
-        variant: "court-decision",
-      },
-      {
-        relationKey: "literature",
-        label: "Literature",
-        basePath: "/literature",
-        variant: "literature",
-      },
-    ],
+    contentComponentId: "QuestionContent",
+    excludeRelations: ["questions"],
+    variant: "question",
   },
   "/literature": {
     table: "Literature",
-    labels: literatureLabels,
-    tooltips: literatureTooltips,
+    singularLabel: "Literature",
+    fieldOrder: [
+      "title",
+      "author",
+      "editor",
+      "publicationYear",
+      "publicationTitle",
+      "publisher",
+      "abstractNote",
+    ],
+    labelOverrides: {
+      author: "Author(s)",
+      editor: "Editor(s)",
+      publicationYear: "Year",
+      publicationTitle: "Publication",
+      abstractNote: "Abstract",
+    },
     titleKey: "title",
     process: processLiterature,
-    skipLabelKeys: new Set(),
-    relations: [],
+    contentComponentId: "LiteratureContent",
+    variant: "literature",
   },
   "/domestic-instrument": {
     table: "Domestic Instruments",
-    labels: domesticInstrumentLabels,
-    tooltips: domesticInstrumentTooltips,
+    singularLabel: "Domestic Instrument",
+    fieldOrder: [
+      "titleInEnglish",
+      "compatibility",
+      "amendedBy",
+      "amends",
+      "replaces",
+      "replacedBy",
+      "officialTitle",
+      "abbreviation",
+      "date",
+      "entryIntoForce",
+      "publicationDate",
+      "domesticLegalProvisions",
+    ],
+    labelOverrides: {
+      titleInEnglish: "Name",
+      compatibility: "Compatible with",
+      domesticLegalProvisions: "Selected Provisions",
+    },
     titleKey: "titleInEnglish",
     process: processDomesticInstrument,
-    skipLabelKeys: new Set(["domesticLegalProvisions"]),
-    relations: [],
+    contentComponentId: "DomesticInstrumentContent",
+    variant: "instrument",
   },
   "/regional-instrument": {
     table: "Regional Instruments",
-    labels: regionalInstrumentLabels,
-    tooltips: regionalInstrumentTooltips,
+    singularLabel: "Regional Instrument",
+    fieldOrder: ["abbreviation", "title", "date", "regionalLegalProvisions"],
+    labelOverrides: {
+      regionalLegalProvisions: "Selected Provisions",
+    },
     titleKey: "title",
     process: processRegionalInstrument,
-    skipLabelKeys: new Set(["regionalLegalProvisions", "literature"]),
-    relations: [
-      {
-        relationKey: "literature",
-        label: "Literature",
-        basePath: "/literature",
-        variant: "literature",
-      },
-    ],
+    contentComponentId: "RegionalInstrumentContent",
+    variant: "instrument",
   },
   "/international-instrument": {
     table: "International Instruments",
-    labels: internationalInstrumentLabels,
-    tooltips: internationalInstrumentTooltips,
+    singularLabel: "International Instrument",
+    fieldOrder: ["name", "date", "selectedProvisions"],
+    labelOverrides: { name: "Title" },
     titleKey: "name",
     process: processInternationalInstrument,
-    skipLabelKeys: new Set(["selectedProvisions", "specialists", "literature"]),
-    relations: [
-      {
-        relationKey: "specialists",
-        label: "Specialists",
-        basePath: "/specialist",
-        variant: "specialist",
-      },
-      {
-        relationKey: "literature",
-        label: "Literature",
-        basePath: "/literature",
-        variant: "literature",
-      },
-    ],
+    contentComponentId: "InternationalInstrumentContent",
+    variant: "instrument",
   },
   "/arbitral-rule": {
     table: "Arbitral Rules",
-    labels: arbitralRuleLabels,
+    singularLabel: "Arbitral Rule",
+    fieldOrder: ["setOfRules", "arbitralInstitution", "inForceFrom"],
+    labelOverrides: {
+      setOfRules: "Set of Rules",
+      arbitralInstitution: "Arbitral Institutions",
+    },
     titleKey: "setOfRules",
     process: processArbitralRule,
-    skipLabelKeys: new Set(),
-    relations: [],
+    variant: "arbitration",
   },
   "/arbitral-award": {
     table: "Arbitral Awards",
-    labels: arbitralAwardLabels,
+    singularLabel: "Arbitral Award",
+    fieldOrder: [
+      "caseNumber",
+      "arbitralInstitution",
+      "source",
+      "year",
+      "natureOfTheAward",
+      "context",
+      "seatTown",
+      "awardSummary",
+    ],
+    labelOverrides: {
+      arbitralInstitution: "Arbitral Institutions",
+      natureOfTheAward: "Nature of the Award",
+      seatTown: "Seat (Town)",
+    },
     titleKey: "caseNumber",
     process: processArbitralAward,
-    skipLabelKeys: new Set(),
-    relations: [],
+    variant: "arbitration",
   },
   "/jurisdiction": {
     table: "Jurisdictions",
-    labels: jurisdictionLabels,
-    tooltips: jurisdictionTooltips,
+    singularLabel: "Jurisdiction",
+    fieldOrder: ["jurisdictionSummary", "jurisdictionalDifferentiator"],
+    labelOverrides: { jurisdictionSummary: "Summary" },
     titleKey: "name",
     process: processJurisdiction,
-    skipLabelKeys: new Set(["literature", "relatedData"]),
-    relations: [
-      {
-        relationKey: "specialists",
-        label: "Specialists",
-        basePath: "/specialist",
-        variant: "specialist",
-      },
-      {
-        relationKey: "domesticInstruments",
-        label: "Domestic Instruments",
-        basePath: "/domestic-instrument",
-        variant: "instrument",
-      },
-      {
-        relationKey: "courtDecisions",
-        label: "Court Decisions",
-        basePath: "/court-decision",
-        variant: "court-decision",
-      },
-      {
-        relationKey: "literature",
-        label: "Literature",
-        basePath: "/literature",
-        variant: "literature",
-      },
-    ],
+    variant: "jurisdiction",
   },
   "/domestic-legal-provision": {
     table: "Domestic Legal Provisions",
-    labels: domesticLegalProvisionLabels,
-    titleKey: "title",
+    singularLabel: "Domestic Legal Provision",
+    fieldOrder: [
+      "article",
+      "fullTextOfTheProvisionEnglishTranslation",
+      "fullTextOfTheProvisionOriginalLanguage",
+    ],
+    labelOverrides: {
+      article: "Article",
+      fullTextOfTheProvisionEnglishTranslation: "English Translation",
+      fullTextOfTheProvisionOriginalLanguage: "Original Text",
+    },
+    titleKey: "article",
     process: processDomesticLegalProvision,
-    skipLabelKeys: new Set(),
-    relations: [],
     hasDetailPage: false,
   },
   "/regional-legal-provision": {
     table: "Regional Legal Provisions",
-    labels: regionalLegalProvisionLabels,
-    titleKey: "title",
+    singularLabel: "Regional Legal Provision",
+    fieldOrder: ["titleOfTheProvision", "fullText"],
+    labelOverrides: {
+      titleOfTheProvision: "Provision",
+      fullText: "Text",
+    },
+    titleKey: "titleOfTheProvision",
     process: processRegionalLegalProvision,
-    skipLabelKeys: new Set(),
-    relations: [],
     hasDetailPage: false,
   },
   "/international-legal-provision": {
     table: "International Legal Provisions",
-    labels: internationalLegalProvisionLabels,
-    titleKey: "title",
+    singularLabel: "International Legal Provision",
+    fieldOrder: ["titleOfTheProvision", "fullText"],
+    labelOverrides: {
+      titleOfTheProvision: "Provision",
+      fullText: "Text",
+    },
+    titleKey: "titleOfTheProvision",
     process: processInternationalLegalProvision,
-    skipLabelKeys: new Set(),
-    relations: [],
     hasDetailPage: false,
   },
 };

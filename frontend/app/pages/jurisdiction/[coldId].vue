@@ -4,11 +4,8 @@
       table="Jurisdictions"
       :loading="isLoading"
       :error="error"
-      :data="data || {}"
-      :labels="jurisdictionLabels"
-      :tooltips="jurisdictionTooltips"
-      :formatted-jurisdiction="[data?.name as string]"
-      :relations="data?.relations"
+      :data="data"
+      :formatted-jurisdiction="[data?.name ?? '']"
       :show-suggest-edit="true"
     >
       <DetailRow label="">
@@ -16,6 +13,8 @@
           Country Report for {{ data?.name || "N/A" }}
         </h1>
       </DetailRow>
+
+      <EntityContent v-if="data" base-path="/jurisdiction" :data="data" />
 
       <template #footer>
         <LastModified :date="data?.updatedAt" />
@@ -80,15 +79,12 @@
       </template>
     </ClientOnly>
 
-    <PageSeoMeta
-      :title-candidates="[data?.name as string]"
-      fallback="Country Report"
-    />
+    <PageSeoMeta :title-candidates="[data?.name]" fallback="Country Report" />
 
     <EntityFeedback
       entity-type="jurisdiction"
-      :entity-id="jurisdictionId"
-      :entity-title="data?.name as string"
+      :entity-id="coldId"
+      :entity-title="data?.name ?? undefined"
     />
   </div>
 </template>
@@ -98,19 +94,18 @@ import { computed, ref } from "vue";
 import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layout/BaseDetailLayout.vue";
 import DetailRow from "@/components/ui/DetailRow.vue";
+import EntityContent from "@/components/entity/EntityContent.vue";
 import JurisdictionComparisonTable from "@/components/jurisdiction/JurisdictionComparisonTable.vue";
 import LastModified from "@/components/ui/LastModified.vue";
 import LoadingBar from "@/components/layout/LoadingBar.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
 import EntityFeedback from "@/components/ui/EntityFeedback.vue";
-import { useJurisdictionDetail } from "@/composables/useRecordDetails";
-import { jurisdictionLabels } from "@/config/labels";
-import { jurisdictionTooltips } from "@/config/tooltips";
+import { useEntityData } from "@/composables/useEntityData";
 
 const route = useRoute();
-const jurisdictionId = ref((route.params.coldId as string).toUpperCase());
+const coldId = ref((route.params.coldId as string).toUpperCase());
 
-const { isLoading, data, error } = useJurisdictionDetail(jurisdictionId);
+const { data, isLoading, error } = useEntityData("/jurisdiction", coldId);
 
 const jurisdictionOption = computed(() => {
   if (!data.value) return null;

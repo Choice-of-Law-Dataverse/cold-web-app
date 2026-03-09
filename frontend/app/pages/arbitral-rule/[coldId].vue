@@ -1,32 +1,31 @@
 <template>
   <div>
-    <h1 v-if="arbitralRule?.setOfRules" class="sr-only">
-      {{ arbitralRule.setOfRules }}
+    <h1 v-if="data?.setOfRules" class="sr-only">
+      {{ data.setOfRules }}
     </h1>
     <BaseDetailLayout
       table="Arbitral Rules"
-      :loading="loading"
+      :loading="isLoading"
       :error="error"
-      :data="arbitralRule || {}"
-      :labels="arbitralRuleLabels"
-      :relations="arbitralRule?.relations"
+      :data="data"
       :show-suggest-edit="true"
     >
+      <EntityContent v-if="data" base-path="/arbitral-rule" :data="data" />
+
       <template #footer>
-        <LastModified :date="arbitralRule?.updatedAt" />
+        <LastModified :date="data?.updatedAt" />
       </template>
     </BaseDetailLayout>
 
-    <!-- Handle SEO meta tags -->
     <PageSeoMeta
-      :title-candidates="[arbitralRule?.setOfRules]"
+      :title-candidates="[data?.setOfRules]"
       fallback="Arbitral Rule"
     />
 
     <EntityFeedback
       entity-type="arbitral_rule"
-      :entity-id="ruleId"
-      :entity-title="arbitralRule?.setOfRules as string"
+      :entity-id="coldId"
+      :entity-title="data?.setOfRules ?? undefined"
     />
   </div>
 </template>
@@ -35,19 +34,15 @@
 import { ref } from "vue";
 import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layout/BaseDetailLayout.vue";
-import { useArbitralRule } from "@/composables/useRecordDetails";
+import EntityContent from "@/components/entity/EntityContent.vue";
+import { useEntityData } from "@/composables/useEntityData";
 import LastModified from "@/components/ui/LastModified.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
 import EntityFeedback from "@/components/ui/EntityFeedback.vue";
-import { arbitralRuleLabels } from "@/config/labels";
 
 const route = useRoute();
 
-const ruleId = ref(route.params.coldId as string);
+const coldId = ref(route.params.coldId as string);
 
-const {
-  data: arbitralRule,
-  isLoading: loading,
-  error,
-} = useArbitralRule(ruleId);
+const { data, isLoading, error } = useEntityData("/arbitral-rule", coldId);
 </script>

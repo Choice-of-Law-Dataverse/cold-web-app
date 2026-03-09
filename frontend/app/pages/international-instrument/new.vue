@@ -3,7 +3,7 @@
     <BaseDetailLayout
       table="International Instruments"
       :loading="false"
-      :data="{}"
+      :data="null"
       header-mode="new"
       :show-notification-banner="true"
       :notification-banner-message="notificationBannerMessage"
@@ -91,9 +91,9 @@ import DatePicker from "@/components/ui/DatePicker.vue";
 import SaveModal from "@/components/ui/SaveModal.vue";
 import CancelModal from "@/components/ui/CancelModal.vue";
 import { format } from "date-fns";
-import { internationalInstrumentTooltips } from "@/config/tooltips";
+import { tooltips } from "@/config/tooltips";
 
-const tooltipInternationalInstrumentDate = internationalInstrumentTooltips.date;
+const tooltipInternationalInstrumentDate = tooltips.date ?? "";
 const tooltipInternationalInstrumentLink =
   "Link to the official source or full text of the instrument.";
 
