@@ -2241,36 +2241,6 @@ button.cold-toggle-btn[aria-pressed="true"] {
   border-bottom: 2px solid var(--color-cold-purple);
 }
 
-/* Legacy aliases for backwards compatibility */
-.region-badge {
-  cursor: pointer;
-  white-space: nowrap;
-  border-radius: 0.5rem 0.5rem 0 0;
-  padding: 0.625rem 1rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-  transition: all 150ms;
-  color: var(--color-cold-night);
-  position: relative;
-  margin-bottom: -2px;
-  border-bottom: 2px solid rgb(229 231 235);
-}
-
-.region-badge:hover {
-  background: var(--gradient-subtle);
-}
-
-.region-badge:focus-visible {
-  outline: 2px solid var(--color-cold-purple);
-  outline-offset: -2px;
-}
-
-.region-badge-active {
-  color: var(--color-cold-purple);
-  font-weight: 600;
-  border-bottom: 2px solid var(--color-cold-purple);
-}
-
 .section-nav-item {
   cursor: pointer;
   white-space: nowrap;
