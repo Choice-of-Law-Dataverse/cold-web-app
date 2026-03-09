@@ -4,7 +4,7 @@
       table="Jurisdictions"
       :loading="isLoading"
       :error="error"
-      :data="data || {}"
+      :data="data"
       :formatted-jurisdiction="[data?.name ?? '']"
       :show-suggest-edit="true"
     >

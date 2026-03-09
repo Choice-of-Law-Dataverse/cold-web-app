@@ -95,7 +95,7 @@ useHead({
 });
 
 const loading = false;
-const resultData = {} as Record<string, unknown>;
+const resultData = null;
 
 const columns = [
   { id: "caseNumber", accessorKey: "caseNumber", header: "Case Number" },

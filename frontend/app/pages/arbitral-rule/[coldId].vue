@@ -7,7 +7,7 @@
       table="Arbitral Rules"
       :loading="isLoading"
       :error="error"
-      :data="data || {}"
+      :data="data"
       :show-suggest-edit="true"
     >
       <EntityContent base-path="/arbitral-rule" :data="data || {}" />

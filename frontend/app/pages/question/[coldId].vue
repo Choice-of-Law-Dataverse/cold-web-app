@@ -7,7 +7,7 @@
       table="Questions"
       :loading="isLoading"
       :error="error"
-      :data="data || {}"
+      :data="data"
       :show-suggest-edit="true"
     >
       <EntityContent base-path="/question" :data="data || {}" />

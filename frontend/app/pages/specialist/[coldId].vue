@@ -7,7 +7,7 @@
       table="Specialists"
       :loading="isLoading"
       :error="error"
-      :data="data || {}"
+      :data="data"
       :show-suggest-edit="true"
     >
       <SpecialistContent v-if="data" :data="data" />

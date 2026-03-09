@@ -71,7 +71,7 @@ useHead({
 });
 
 const loading = false;
-const resultData = {} as Record<string, unknown>;
+const resultData = null;
 
 const columns = [
   { id: "setofRules", accessorKey: "setofRules", header: "Set of Rules" },

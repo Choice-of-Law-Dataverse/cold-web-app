@@ -7,7 +7,7 @@
       table="International Instruments"
       :loading="isLoading"
       :error="error"
-      :data="data || {}"
+      :data="data"
       :show-suggest-edit="true"
     >
       <InternationalInstrumentContent v-if="data" :data="data" />

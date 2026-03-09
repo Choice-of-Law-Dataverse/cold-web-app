@@ -3,7 +3,7 @@
     <BaseDetailLayout
       table="International Instruments"
       :loading="false"
-      :data="{}"
+      :data="null"
       header-mode="new"
       :show-notification-banner="true"
       :notification-banner-message="notificationBannerMessage"

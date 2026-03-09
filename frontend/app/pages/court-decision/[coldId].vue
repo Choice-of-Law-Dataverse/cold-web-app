@@ -7,7 +7,7 @@
       table="Court Decisions"
       :loading="isLoading"
       :error="error"
-      :data="data || {}"
+      :data="data"
       :show-suggest-edit="true"
     >
       <CourtDecisionContent v-if="data" :data="data" />

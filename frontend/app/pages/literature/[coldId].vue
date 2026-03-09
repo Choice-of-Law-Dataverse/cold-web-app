@@ -7,7 +7,7 @@
       table="Literature"
       :loading="isLoading"
       :error="error"
-      :data="data || {}"
+      :data="data"
       :show-suggest-edit="true"
     >
       <LiteratureContent v-if="data" :data="data" />

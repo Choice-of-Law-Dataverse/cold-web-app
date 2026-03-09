@@ -7,7 +7,7 @@
       table="Regional Instruments"
       :loading="isLoading"
       :error="error"
-      :data="data || {}"
+      :data="data"
       :show-suggest-edit="true"
     >
       <RegionalInstrumentContent v-if="data" :data="data" />

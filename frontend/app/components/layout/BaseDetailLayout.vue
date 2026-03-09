@@ -27,13 +27,14 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import DetailDisplay from "@/components/ui/DetailDisplay.vue";
+import type { ProcessedEntity } from "@/config/entityRegistry";
 
 const props = withDefaults(
   defineProps<{
     table: string;
     loading: boolean;
     error?: Error | null;
-    data: Record<string, unknown>;
+    data: ProcessedEntity | null;
     formattedJurisdiction?: string[];
     formattedTheme?: string[];
     headerMode?: string;
@@ -44,6 +45,7 @@ const props = withDefaults(
   }>(),
   {
     error: undefined,
+    data: null,
     formattedJurisdiction: () => [],
     formattedTheme: () => [],
     headerMode: "default",
@@ -57,6 +59,6 @@ const props = withDefaults(
 const emit = defineEmits(["save", "open-save-modal", "open-cancel-modal"]);
 
 const resultDataForDisplay = computed(
-  () => props.data as Record<string, unknown>,
+  () => (props.data ?? {}) as Record<string, unknown>,
 );
 </script>

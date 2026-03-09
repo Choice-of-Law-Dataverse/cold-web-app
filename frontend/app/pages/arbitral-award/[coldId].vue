@@ -7,7 +7,7 @@
       table="Arbitral Awards"
       :loading="isLoading"
       :error="error"
-      :data="data || {}"
+      :data="data"
       :formatted-jurisdiction="jurisdictionNames"
       :formatted-theme="themeNames"
       :show-suggest-edit="true"
