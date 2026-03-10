@@ -7,7 +7,7 @@ from agents.models.openai_responses import OpenAIResponsesModel
 from ..config import get_model, get_openai_client
 from ..guardrails import validate_courts_position
 from ..prompts import get_prompt_module
-from ..runner import run_with_retry
+from ..runner import TEXT_REFERENCE, run_with_retry
 from ..utils import generate_system_prompt
 from .models import (
     ColIssueOutput,
@@ -35,8 +35,9 @@ async def extract_courts_position(
         themes = ", ".join(themes_output.themes)
         col_issue = col_issue_output.col_issue
 
+        effective_text = text if previous_response_id is None else TEXT_REFERENCE
         prompt = COURTS_POSITION_PROMPT.format(
-            col_issue=col_issue, text=text, col_section=str(col_section_output), classification=themes
+            col_issue=col_issue, text=effective_text, col_section=str(col_section_output), classification=themes
         )
         system_prompt = generate_system_prompt(legal_system, jurisdiction, "analysis")
 

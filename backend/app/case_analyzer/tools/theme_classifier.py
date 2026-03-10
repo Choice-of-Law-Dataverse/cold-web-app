@@ -7,7 +7,7 @@ from agents.models.openai_responses import OpenAIResponsesModel
 from ..config import get_model, get_openai_client
 from ..guardrails import validate_themes
 from ..prompts import get_prompt_module
-from ..runner import run_with_retry
+from ..runner import TEXT_REFERENCE, run_with_retry
 from ..utils import THEMES_TABLE_STR, generate_system_prompt
 from .models import StepResult, ThemeClassificationOutput
 
@@ -24,7 +24,8 @@ async def classify_themes(
     with logfire.span("themes"):
         PIL_THEME_PROMPT = get_prompt_module(legal_system, "theme", jurisdiction).PIL_THEME_PROMPT
 
-        prompt = PIL_THEME_PROMPT.format(text=text, col_section=col_section, themes_table=THEMES_TABLE_STR)
+        effective_text = text if previous_response_id is None else TEXT_REFERENCE
+        prompt = PIL_THEME_PROMPT.format(text=effective_text, col_section=col_section, themes_table=THEMES_TABLE_STR)
         system_prompt = generate_system_prompt(legal_system, jurisdiction, "theme")
 
         try:

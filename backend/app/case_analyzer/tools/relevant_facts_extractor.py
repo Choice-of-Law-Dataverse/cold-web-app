@@ -7,7 +7,7 @@ from agents.models.openai_responses import OpenAIResponsesModel
 from ..config import get_model, get_openai_client
 from ..guardrails import validate_relevant_facts
 from ..prompts import get_prompt_module
-from ..runner import run_with_retry
+from ..runner import TEXT_REFERENCE, run_with_retry
 from ..utils import generate_system_prompt
 from .models import ColSectionOutput, RelevantFactsOutput, StepResult
 
@@ -24,7 +24,8 @@ async def extract_relevant_facts(
     with logfire.span("relevant_facts"):
         FACTS_PROMPT = get_prompt_module(legal_system, "analysis", jurisdiction).FACTS_PROMPT
 
-        prompt = FACTS_PROMPT.format(text=text, col_section=str(col_section_output))
+        effective_text = text if previous_response_id is None else TEXT_REFERENCE
+        prompt = FACTS_PROMPT.format(text=effective_text, col_section=str(col_section_output))
         system_prompt = generate_system_prompt(legal_system, jurisdiction, "analysis")
 
         agent = Agent(

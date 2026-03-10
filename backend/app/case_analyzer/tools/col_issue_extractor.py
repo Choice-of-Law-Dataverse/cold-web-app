@@ -7,7 +7,7 @@ from agents.models.openai_responses import OpenAIResponsesModel
 from ..config import get_model, get_openai_client
 from ..guardrails import validate_col_issue
 from ..prompts import get_prompt_module
-from ..runner import run_with_retry
+from ..runner import TEXT_REFERENCE, run_with_retry
 from ..utils import filter_themes_by_list, generate_system_prompt
 from .models import ColIssueOutput, ColSectionOutput, StepResult, ThemeClassificationOutput
 
@@ -28,8 +28,9 @@ async def extract_col_issue(
         themes = themes_output.themes
         themes_definitions = filter_themes_by_list(themes)
 
+        effective_text = text if previous_response_id is None else TEXT_REFERENCE
         prompt = COL_ISSUE_PROMPT.format(
-            text=text, col_section=str(col_section_output), classification_definitions=themes_definitions
+            text=effective_text, col_section=str(col_section_output), classification_definitions=themes_definitions
         )
         system_prompt = generate_system_prompt(legal_system, jurisdiction, "analysis")
 

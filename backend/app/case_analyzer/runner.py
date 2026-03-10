@@ -14,6 +14,8 @@ logger = logging.getLogger(__name__)
 
 type ValidatorFn = Callable[[Any], str | None]
 
+TEXT_REFERENCE = "[Refer to the full court decision text provided earlier in this conversation.]"
+
 LOW_CONFIDENCE_PROMPT = (
     "Your previous analysis had low confidence. "
     "Re-examine the court decision text more carefully and provide a more thorough, well-supported analysis."

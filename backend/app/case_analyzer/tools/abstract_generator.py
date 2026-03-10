@@ -7,7 +7,7 @@ from agents.models.openai_responses import OpenAIResponsesModel
 from ..config import get_model, get_openai_client
 from ..guardrails import validate_abstract
 from ..prompts import get_prompt_module
-from ..runner import run_with_retry
+from ..runner import TEXT_REFERENCE, run_with_retry
 from ..utils import generate_system_prompt
 from .models import (
     AbstractOutput,
@@ -46,8 +46,9 @@ async def extract_abstract(
         col_issue = col_issue_output.col_issue
         court_position = court_position_output.courts_position
 
+        effective_text = text if previous_response_id is None else TEXT_REFERENCE
         prompt_vars = {
-            "text": text,
+            "text": effective_text,
             "classification": themes,
             "facts": facts,
             "pil_provisions": pil_provisions,

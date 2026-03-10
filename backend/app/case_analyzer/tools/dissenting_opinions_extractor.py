@@ -7,7 +7,7 @@ from agents.models.openai_responses import OpenAIResponsesModel
 from ..config import get_model, get_openai_client
 from ..guardrails import validate_dissenting_opinions
 from ..prompts import get_prompt_module
-from ..runner import run_with_retry
+from ..runner import TEXT_REFERENCE, run_with_retry
 from ..utils import generate_system_prompt
 from .models import (
     ColIssueOutput,
@@ -36,8 +36,9 @@ async def extract_dissenting_opinions(
         themes = ", ".join(themes_output.themes)
         col_issue = col_issue_output.col_issue
 
+        effective_text = text if previous_response_id is None else TEXT_REFERENCE
         prompt = prompt_template.format(
-            text=text,
+            text=effective_text,
             col_section=str(col_section_output),
             classification=themes,
             col_issue=col_issue,
