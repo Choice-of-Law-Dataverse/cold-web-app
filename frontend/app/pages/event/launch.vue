@@ -32,7 +32,7 @@
             <span
               class="border-cold-purple text-cold-night inline-block border px-5 py-2 text-xs font-medium tracking-[1.5px] uppercase"
             >
-              28 April 2026 &middot; 11.30 am – 3.30 pm CEST
+              28 April 2026 &middot; 11.30 am – 7.00 pm CEST
             </span>
             <a
               :href="zoomUrl"
@@ -80,8 +80,16 @@
             <p>Moderated by <strong>Daniel Girsberger</strong></p>
           </EventSession>
 
+          <EventSession time="1.00 pm" title="CoLD × HCCH">
+            <p>
+              10 years of the HCCH Principles on Choice of Law in International
+              Commercial Contracts — and what lies ahead.
+            </p>
+            <p><strong>Raquel Peixoto</strong></p>
+          </EventSession>
+
           <EventSession
-            time="1.00 pm"
+            time="2.00 pm"
             title="Bilateral Q&amp;A"
             tag="Slots available"
             :special-tag="true"
@@ -89,7 +97,7 @@
             <p>
               15-minute private sessions to explore the Dataverse for your
               research, ask questions, or sign up as a specialist. Request by
-              <strong>20 April</strong> at
+              <b>20 April</b> at
               <a
                 href="mailto:mail@cold.global"
                 class="text-cold-purple font-medium no-underline"
@@ -99,8 +107,21 @@
           </EventSession>
 
           <EventSession
-            time="2.00 pm"
+            time="4.00 pm"
+            title="From Promise to Practice: CoLD Assessment"
+            tag="Invitation only"
+          >
+            <p>
+              In-person event
+              <EventDot />
+              Max Chocolatier, Luzern
+            </p>
+          </EventSession>
+
+          <EventSession
+            time="5.00 pm"
             title="Using the Dataverse for Advancing PIL Research"
+            :last="true"
           >
             <p>Perspectives on comparative law and case law analysis.</p>
             <p>
@@ -109,27 +130,6 @@
               <strong>Solomon Okorley</strong>
               <EventDot />
               <strong>Ying Wang</strong>
-            </p>
-          </EventSession>
-
-          <EventSession time="2.30 pm" title="CoLD × HCCH">
-            <p>
-              10 years of the HCCH Principles on Choice of Law in International
-              Commercial Contracts — and what lies ahead.
-            </p>
-            <p><strong>Raquel Peixoto</strong></p>
-          </EventSession>
-
-          <EventSession
-            time="4.00 pm"
-            title="From Promise to Practice: CoLD Assessment"
-            tag="Invitation only"
-            :last="true"
-          >
-            <p>
-              In-person event
-              <EventDot />
-              <strong>Max Chocolatier, Luzern</strong>
             </p>
           </EventSession>
         </div>
@@ -179,3 +179,12 @@ useHead({
   title: "CoLD Launch — 28 April 2026",
 });
 </script>
+
+<style scoped>
+:deep(.text-sm strong) {
+  font-weight: 600;
+  color: var(--color-cold-night);
+  background: linear-gradient(to top, #ebe9f8 40%, transparent 40%);
+  padding-inline: 2px;
+}
+</style>

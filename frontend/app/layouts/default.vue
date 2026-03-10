@@ -2,6 +2,7 @@
   <div class="bg-cold-bg flex min-h-dvh flex-col">
     <a href="#main-content" class="skip-link">Skip to main content</a>
     <Nav />
+    <EventBanner />
 
     <main
       id="main-content"
@@ -33,6 +34,7 @@ import Nav from "@/components/layout/Nav.vue";
 import Footer from "@/components/layout/Footer.vue";
 import ErrorBoundary from "@/components/ui/ErrorBoundary.vue";
 import EntityDrawer from "@/components/entity/EntityDrawer.vue";
+import EventBanner from "@/components/layout/EventBanner.vue";
 import { useAnnouncer } from "@/composables/useAnnouncer";
 import { useEntityDrawer } from "@/composables/useEntityDrawer";
 
@@ -73,6 +75,6 @@ const { isOpen: isDrawerOpen } = useEntityDrawer();
  * Formula: 100dvh - nav - main-margin - footer-margin
  */
 .main-content {
-  min-height: calc(100dvh - var(--nav-height) - 10rem);
+  min-height: calc(100dvh - var(--nav-height) - var(--banner-height) - 10rem);
 }
 </style>

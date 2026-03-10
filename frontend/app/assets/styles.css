@@ -90,6 +90,7 @@
   /* Nav heights - mobile defaults */
   --nav-height: 5rem;
   --nav-height-scrolled: 3.5rem;
+  --banner-height: 2.5rem;
 
   /* Gradient variables - reusable linear gradient definitions */
   /* Purple-Green gradients with white */
@@ -192,7 +193,9 @@
 /* Scroll margin for hash navigation with sticky header */
 /* Uses scrolled nav height since hash navigation typically happens after page load */
 [id] {
-  scroll-margin-top: calc(var(--nav-height-scrolled) + 1rem);
+  scroll-margin-top: calc(
+    var(--nav-height-scrolled) + var(--banner-height) + 1rem
+  );
 }
 
 /* Fonts ----------------------------------------------- */
