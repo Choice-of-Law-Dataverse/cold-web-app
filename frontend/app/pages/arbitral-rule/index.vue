@@ -1,7 +1,7 @@
 <template>
   <BaseDetailLayout
     table="Arbitral Rules"
-    :loading="loading"
+    :loading="isLoading"
     :data="resultData"
   >
     <template #full-width>
@@ -9,7 +9,7 @@
       <div class="w-full px-6 py-6">
         <div class="rules-table" :style="{ '--set-col-width': setColWidth }">
           <UTable :columns="columns" :data="rows">
-            <template #setofRules-cell="{ row }">
+            <template #setOfRules-cell="{ row }">
               <NuxtLink
                 v-if="row.original.coldId"
                 :to="`/arbitral-rule/${row.original.coldId}`"
@@ -17,13 +17,13 @@
               >
                 <span
                   class="result-value-small block truncate whitespace-nowrap"
-                  >{{ row.original.setofRules }}</span
+                  >{{ row.original.setOfRules }}</span
                 >
               </NuxtLink>
               <span
                 v-else
                 class="result-value-small block truncate whitespace-nowrap"
-                >{{ row.original.setofRules }}</span
+                >{{ row.original.setOfRules }}</span
               >
             </template>
             <template #inForceFrom-cell="{ row }">
@@ -61,91 +61,35 @@
 </template>
 
 <script setup lang="ts">
+import { computed, ref, watch } from "vue";
 import BaseDetailLayout from "@/components/layout/BaseDetailLayout.vue";
-import { ref, onMounted } from "vue";
+import { useFullTable } from "@/composables/useFullTable";
 import { formatDate } from "@/utils/format";
-import csvRaw from "./all-arbitral-rules.csv?raw";
+import type { ArbitralRuleResponse } from "@/types/entities/arbitral-rule";
 
 useHead({
   title: "Arbitral Rules — CoLD",
 });
 
-const loading = false;
+const { data: rawData, isLoading } = useFullTable("Arbitral Rules");
 const resultData = null;
 
 const columns = [
-  { id: "setofRules", accessorKey: "setofRules", header: "Set of Rules" },
+  { id: "setOfRules", accessorKey: "setOfRules", header: "Set of Rules" },
   { id: "inForceFrom", accessorKey: "inForceFrom", header: "In Force From" },
   { id: "open", accessorKey: "coldId", header: "" },
 ];
 
-type Row = {
-  setofRules: string;
-  inForceFrom: string;
-  coldId: string;
-};
+const sanitize = (v: string | number | null | undefined) =>
+  !v || v === "NA" ? "" : String(v).trim();
 
-function parseCSV(text: string): string[][] {
-  const rows: string[][] = [];
-  let row: string[] = [];
-  let field = "";
-  let inQuotes = false;
-
-  for (let i = 0; i < text.length; i++) {
-    const char = text[i];
-    if (inQuotes) {
-      if (char === '"') {
-        const next = text[i + 1];
-        if (next === '"') {
-          field += '"';
-          i++; // skip the escaped quote
-        } else {
-          inQuotes = false;
-        }
-      } else {
-        field += char;
-      }
-    } else {
-      if (char === '"') {
-        inQuotes = true;
-      } else if (char === ",") {
-        row.push(field);
-        field = "";
-      } else if (char === "\n") {
-        row.push(field);
-        rows.push(row);
-        row = [];
-        field = "";
-      } else if (char !== "\r") {
-        field += char;
-      }
-    }
-  }
-  if (field.length > 0 || row.length > 0) {
-    row.push(field);
-    rows.push(row);
-  }
-  return rows;
-}
-
-const csvRows = parseCSV(csvRaw);
-const header = csvRows[0] || [];
-const idxSet = header.indexOf("Set of Rules");
-const idxinForceFrom = header.indexOf("In Force From");
-const idxColdId = header.indexOf("CoLD ID");
-
-const rows: Row[] = (csvRows.slice(1) || [])
-  .map((r) => {
-    const get = (idx: number) =>
-      idx >= 0 && r[idx] != null ? String(r[idx]).trim() : "";
-    const sanitize = (v: string) => (v === "NA" ? "" : v);
-    return {
-      setofRules: sanitize(get(idxSet)),
-      inForceFrom: sanitize(get(idxinForceFrom)),
-      coldId: sanitize(get(idxColdId)),
-    };
-  })
-  .filter((r) => r.setofRules || r.inForceFrom || r.coldId);
+const rows = computed(() =>
+  (rawData.value || []).map((r: ArbitralRuleResponse) => ({
+    setOfRules: sanitize(r.setOfRules),
+    inForceFrom: sanitize(r.inForceFrom),
+    coldId: sanitize(r.coldId),
+  })),
+);
 
 const setColWidth = ref<string>("125px");
 
@@ -167,8 +111,8 @@ function computeSetOfRulesColumnWidth() {
     ctx.font = `${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
 
     let max = 0;
-    for (const r of rows) {
-      const text = r.setofRules || "";
+    for (const r of rows.value) {
+      const text = r.setOfRules || "";
       const m = ctx.measureText(text);
       max = Math.max(max, m.width);
     }
@@ -179,8 +123,8 @@ function computeSetOfRulesColumnWidth() {
   }
 }
 
-onMounted(() => {
-  computeSetOfRulesColumnWidth();
+watch(rows, (val) => {
+  if (val.length > 0) computeSetOfRulesColumnWidth();
 });
 </script>
 
@@ -239,18 +183,15 @@ onMounted(() => {
   padding-top: 10px;
 }
 
-/* Row hover effects */
 .rules-table :deep(tbody tr:hover) {
   background-color: rgba(0, 0, 0, 0.02);
   cursor: pointer;
 }
 
-/* Trigger arrow bounce animation on row hover */
 .rules-table :deep(tbody tr:hover .arrow-icon) {
   animation: bounce-right 0.4s ease-out;
 }
 
-/* Style header titles to visually resemble `.label` without breaking sorting */
 .rules-table :deep(thead th) {
   font-weight: 700;
   font-size: 12px;

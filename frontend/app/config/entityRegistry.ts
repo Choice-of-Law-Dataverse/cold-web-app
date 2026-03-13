@@ -9,6 +9,8 @@ import type { RegionalInstrument } from "@/types/entities/regional-instrument";
 import type { InternationalInstrument } from "@/types/entities/international-instrument";
 import type { ArbitralRule } from "@/types/entities/arbitral-rule";
 import type { ArbitralAward } from "@/types/entities/arbitral-award";
+import type { ArbitralInstitution } from "@/types/entities/arbitral-institution";
+import type { HcchAnswer } from "@/types/entities/hcch-answer";
 import type { Jurisdiction } from "@/types/entities/jurisdiction";
 import type {
   DomesticLegalProvision,
@@ -24,6 +26,8 @@ import { processRegionalInstrument } from "@/types/entities/regional-instrument"
 import { processInternationalInstrument } from "@/types/entities/international-instrument";
 import { processArbitralRule } from "@/types/entities/arbitral-rule";
 import { processArbitralAward } from "@/types/entities/arbitral-award";
+import { processArbitralInstitution } from "@/types/entities/arbitral-institution";
+import { processHcchAnswer } from "@/types/entities/hcch-answer";
 import { processJurisdiction } from "@/types/entities/jurisdiction";
 import {
   processDomesticLegalProvision,
@@ -41,6 +45,8 @@ export interface ProcessedEntityMap {
   "/international-instrument": InternationalInstrument;
   "/arbitral-rule": ArbitralRule;
   "/arbitral-award": ArbitralAward;
+  "/arbitral-institution": ArbitralInstitution;
+  "/hcch-answer": HcchAnswer;
   "/jurisdiction": Jurisdiction;
   "/domestic-legal-provision": DomesticLegalProvision;
   "/regional-legal-provision": RegionalLegalProvision;
@@ -107,6 +113,11 @@ export const RELATION_RENDERERS: Record<string, RelationRendererConfig> = {
     basePath: "/arbitral-award",
     variant: "arbitration",
   },
+  arbitralInstitutions: {
+    label: "Arbitral Institutions",
+    basePath: "/arbitral-institution",
+    variant: "arbitration",
+  },
   arbitralRules: {
     label: "Arbitral Rules",
     basePath: "/arbitral-rule",
@@ -150,6 +161,7 @@ export function mapRelationToItem(item: RelationItem): RelatedItem {
       item.question ||
       item.setOfRules ||
       item.caseNumber ||
+      item.institution ||
       item.abbreviation ||
       item.coldId ||
       item.id ||
@@ -310,6 +322,14 @@ export const entityRegistry: Record<string, EntityConfig> = {
     process: processArbitralRule,
     variant: "arbitration",
   },
+  "/arbitral-institution": {
+    table: "Arbitral Institutions",
+    singularLabel: "Arbitral Institution",
+    fieldOrder: ["institution", "abbreviation"],
+    titleKey: "institution",
+    process: processArbitralInstitution,
+    variant: "arbitration",
+  },
   "/arbitral-award": {
     table: "Arbitral Awards",
     singularLabel: "Arbitral Award",
@@ -331,6 +351,19 @@ export const entityRegistry: Record<string, EntityConfig> = {
     titleKey: "caseNumber",
     process: processArbitralAward,
     variant: "arbitration",
+  },
+  "/hcch-answer": {
+    table: "HCCH Answers",
+    singularLabel: "HCCH Answer",
+    fieldOrder: ["adaptedQuestion", "position"],
+    labelOverrides: {
+      adaptedQuestion: "Question",
+      position: "Position",
+    },
+    titleKey: "adaptedQuestion",
+    process: processHcchAnswer,
+    excludeRelations: ["questions"],
+    hasDetailPage: false,
   },
   "/jurisdiction": {
     table: "Jurisdictions",

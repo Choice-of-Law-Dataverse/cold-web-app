@@ -79,6 +79,14 @@ migrate-views: ## Apply Alembic migrations for materialized views (main DB)
 	echo "$(GREEN)Applying materialized-view migrations$(RESET)"; \
 	uv run alembic -c alembic_views/alembic.ini upgrade head
 
+.PHONY: generate-detail-sql
+generate-detail-sql: ## Generate a migration file for get_entity_detail from config
+	@uv run python -m alembic_views.detail_generator --migration "$(or $(DESC),update_entity_detail)"
+
+.PHONY: check-detail-sql
+check-detail-sql: ## Show stats for the detail function generator
+	@uv run python -m alembic_views.detail_generator --check
+
 .PHONY: revert-views
 revert-views: ## Revert the last materialized-view migration
 	@set -a; [ -f .env ] && . ./.env; set +a; \

@@ -17,6 +17,10 @@
       </template>
     </BaseDetailLayout>
 
+    <div v-if="hcchAnswers.length" class="mt-8">
+      <HcchAnswersList :answers="hcchAnswers" />
+    </div>
+
     <PageSeoMeta
       :title-candidates="[data?.name]"
       fallback="International Instrument"
@@ -31,10 +35,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layout/BaseDetailLayout.vue";
 import InternationalInstrumentContent from "@/components/entity/content/InternationalInstrumentContent.vue";
+import HcchAnswersList from "@/components/ui/HcchAnswersList.vue";
 import LastModified from "@/components/ui/LastModified.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
 import EntityFeedback from "@/components/ui/EntityFeedback.vue";
@@ -46,5 +51,11 @@ const coldId = ref(route.params.coldId as string);
 const { data, isLoading, error } = useEntityData(
   "/international-instrument",
   coldId,
+);
+
+const hcchAnswers = computed(() =>
+  (data.value?.relations.hcchAnswers ?? []).filter(
+    (a) => a.adaptedQuestion || a.position,
+  ),
 );
 </script>
