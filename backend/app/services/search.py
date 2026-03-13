@@ -142,6 +142,8 @@ class SearchService:
                     flat[k] = v
                 if flat.get("cold_id"):
                     flat["id"] = flat["cold_id"]
+                else:
+                    flat["cold_id"] = flat["id"]
                 if response_type == "both":
                     results.append({"parsed": flat, "raw": complete})
                 else:
@@ -172,6 +174,8 @@ class SearchService:
                     flat[k] = v
                 if flat.get("cold_id"):
                     flat["id"] = flat["cold_id"]
+                else:
+                    flat["cold_id"] = flat["id"]
                 if response_type == "both":
                     results.append({"parsed": flat, "raw": complete})
                 else:
@@ -276,6 +280,8 @@ class SearchService:
                     flat[key] = value
                 if flat.get("cold_id"):
                     flat["id"] = flat["cold_id"]
+                else:
+                    flat["cold_id"] = flat["id"]
                 parsed_results.append(flat)
 
             if response_type in ("raw", "both"):

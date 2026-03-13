@@ -1,7 +1,7 @@
 <template>
   <BaseDetailLayout
     table="Arbitral Awards"
-    :loading="loading"
+    :loading="isLoading"
     :data="resultData"
   >
     <template #full-width>
@@ -87,14 +87,16 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from "vue";
 import BaseDetailLayout from "@/components/layout/BaseDetailLayout.vue";
-import csvRaw from "./all-arbitral-awards.csv?raw";
+import { useFullTable } from "@/composables/useFullTable";
+import type { ArbitralAwardResponse } from "@/types/entities/arbitral-award";
 
 useHead({
   title: "Arbitral Awards — CoLD",
 });
 
-const loading = false;
+const { data: rawData, isLoading } = useFullTable("Arbitral Awards");
 const resultData = null;
 
 const columns = [
@@ -105,79 +107,18 @@ const columns = [
   { id: "open", accessorKey: "coldId", header: "" },
 ];
 
-type Row = {
-  caseNumber: string;
-  year: string;
-  seatTown: string;
-  source: string;
-  coldId: string;
-};
+const sanitize = (v: string | number | null | undefined) =>
+  !v || v === "NA" ? "" : String(v).trim();
 
-function parseCSV(text: string): string[][] {
-  const rows: string[][] = [];
-  let row: string[] = [];
-  let field = "";
-  let inQuotes = false;
-
-  for (let i = 0; i < text.length; i++) {
-    const char = text[i];
-    if (inQuotes) {
-      if (char === '"') {
-        const next = text[i + 1];
-        if (next === '"') {
-          field += '"';
-          i++; // skip the escaped quote
-        } else {
-          inQuotes = false;
-        }
-      } else {
-        field += char;
-      }
-    } else {
-      if (char === '"') {
-        inQuotes = true;
-      } else if (char === ",") {
-        row.push(field);
-        field = "";
-      } else if (char === "\n") {
-        row.push(field);
-        rows.push(row);
-        row = [];
-        field = "";
-      } else if (char !== "\r") {
-        field += char;
-      }
-    }
-  }
-  if (field.length > 0 || row.length > 0) {
-    row.push(field);
-    rows.push(row);
-  }
-  return rows;
-}
-
-const csvRows = parseCSV(csvRaw);
-const header = csvRows[0] || [];
-const idxCase = header.indexOf("Case Number");
-const idxYear = header.indexOf("Year");
-const idxSeat = header.indexOf("Seat (Town)");
-const idxSource = header.indexOf("Source");
-const idxColdId = header.indexOf("CoLD ID");
-
-const rows: Row[] = (csvRows.slice(1) || [])
-  .map((r) => {
-    const get = (idx: number) =>
-      idx >= 0 && r[idx] != null ? String(r[idx]).trim() : "";
-    const sanitize = (v: string) => (v === "NA" ? "" : v);
-    return {
-      caseNumber: sanitize(get(idxCase)),
-      year: sanitize(get(idxYear)),
-      seatTown: sanitize(get(idxSeat)),
-      source: sanitize(get(idxSource)),
-      coldId: sanitize(get(idxColdId)),
-    };
-  })
-  .filter((r) => r.caseNumber || r.year || r.seatTown || r.source || r.coldId);
+const rows = computed(() =>
+  (rawData.value || []).map((r: ArbitralAwardResponse) => ({
+    caseNumber: sanitize(r.caseNumber),
+    year: sanitize(r.year),
+    seatTown: sanitize(r.seatTown),
+    source: sanitize(r.source),
+    coldId: sanitize(r.coldId),
+  })),
+);
 </script>
 
 <style scoped>
@@ -228,18 +169,15 @@ const rows: Row[] = (csvRows.slice(1) || [])
   padding-top: 10px;
 }
 
-/* Row hover effects */
 .awards-table :deep(tbody tr:hover) {
   background-color: rgba(0, 0, 0, 0.02);
   cursor: pointer;
 }
 
-/* Trigger arrow bounce animation on row hover */
 .awards-table :deep(tbody tr:hover .arrow-icon) {
   animation: bounce-right 0.4s ease-out;
 }
 
-/* Style header titles to visually resemble `.label` without breaking sorting */
 .awards-table :deep(thead th) {
   font-weight: 700;
   font-size: 12px;

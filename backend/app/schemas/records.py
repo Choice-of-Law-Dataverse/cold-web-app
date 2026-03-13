@@ -48,6 +48,7 @@ class RecordBase(BaseModel):
 
     source_table: str | None = None
     id: str | int | None = None
+    cold_id: str | None = None
     rank: float | None = None
 
 

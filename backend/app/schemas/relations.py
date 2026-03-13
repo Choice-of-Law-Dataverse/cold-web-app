@@ -107,7 +107,6 @@ class SpecialistRelation(_RelationBase):
 class EntityRelations(BaseModel):
     model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
 
-    answers: list[AnswerRelation] = []
     hcch_answers: list[HcchAnswerRelation] = []
     questions: list[QuestionRelation] = []
     jurisdictions: list[JurisdictionRelation] = []

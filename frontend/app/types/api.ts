@@ -6,6 +6,11 @@ import type {
   ArbitralAwardDetailResponse,
 } from "./entities/arbitral-award";
 import type {
+  ArbitralInstitution,
+  ArbitralInstitutionResponse,
+  ArbitralInstitutionDetailResponse,
+} from "./entities/arbitral-institution";
+import type {
   ArbitralRule,
   ArbitralRuleResponse,
   ArbitralRuleDetailResponse,
@@ -54,6 +59,10 @@ import type {
   SpecialistResponse,
   SpecialistDetailResponse,
 } from "./entities/specialist";
+import type {
+  HcchAnswer,
+  HcchAnswerDetailResponse,
+} from "./entities/hcch-answer";
 
 export { ApiError } from "./errors";
 
@@ -82,9 +91,11 @@ export interface SearchParams {
 export type TableName =
   | "Answers"
   | "Arbitral Awards"
+  | "Arbitral Institutions"
   | "Arbitral Rules"
   | "Court Decisions"
   | "Domestic Instruments"
+  | "HCCH Answers"
   | "Domestic Legal Provisions"
   | "International Instruments"
   | "International Legal Provisions"
@@ -99,10 +110,12 @@ export type TableName =
 export type TableResponseMap = {
   Answers: AnswerResponse;
   "Arbitral Awards": ArbitralAwardResponse;
+  "Arbitral Institutions": ArbitralInstitutionResponse;
   "Arbitral Rules": ArbitralRuleResponse;
   "Court Decisions": CourtDecisionResponse;
   "Domestic Instruments": DomesticInstrumentResponse;
   "Domestic Legal Provisions": DomesticLegalProvisionResponse;
+  "HCCH Answers": HcchAnswerDetailResponse;
   "International Instruments": InternationalInstrumentResponse;
   "International Legal Provisions": InternationalLegalProvisionResponse;
   Jurisdictions: JurisdictionResponse;
@@ -117,10 +130,12 @@ export type TableResponseMap = {
 export type TableDetailMap = {
   Answers: AnswerDetailResponse;
   "Arbitral Awards": ArbitralAwardDetailResponse;
+  "Arbitral Institutions": ArbitralInstitutionDetailResponse;
   "Arbitral Rules": ArbitralRuleDetailResponse;
   "Court Decisions": CourtDecisionDetailResponse;
   "Domestic Instruments": DomesticInstrumentDetailResponse;
   "Domestic Legal Provisions": DomesticLegalProvisionDetailResponse;
+  "HCCH Answers": HcchAnswerDetailResponse;
   "International Instruments": InternationalInstrumentDetailResponse;
   "International Legal Provisions": InternationalLegalProvisionDetailResponse;
   Jurisdictions: JurisdictionDetailResponse;
@@ -135,10 +150,12 @@ export type TableDetailMap = {
 export type TableProcessedMap = {
   Answers: AnswerDetailResponse;
   "Arbitral Awards": ArbitralAward;
+  "Arbitral Institutions": ArbitralInstitution;
   "Arbitral Rules": ArbitralRule;
   "Court Decisions": CourtDecision;
   "Domestic Instruments": DomesticInstrument;
   "Domestic Legal Provisions": DomesticLegalProvisionDetailResponse;
+  "HCCH Answers": HcchAnswer;
   "International Instruments": InternationalInstrument;
   "International Legal Provisions": InternationalLegalProvisionDetailResponse;
   Jurisdictions: Jurisdiction;
