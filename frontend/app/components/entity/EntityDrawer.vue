@@ -90,7 +90,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, type Component } from "vue";
+import { computed, watch, type Component } from "vue";
 import { useEntityDrawer } from "@/composables/useEntityDrawer";
 import { useEntityData } from "@/composables/useEntityData";
 import DetailRow from "@/components/ui/DetailRow.vue";
@@ -120,6 +120,11 @@ const contentComponents: Record<string, Component> = {
 
 const route = useRoute();
 const { isOpen, entity, canGoBack, closeDrawer, goBack } = useEntityDrawer();
+
+watch(
+  () => route.fullPath,
+  () => closeDrawer(),
+);
 
 const basePath = computed(() => entity.value?.basePath);
 const coldId = computed(() => entity.value?.coldId ?? "");
