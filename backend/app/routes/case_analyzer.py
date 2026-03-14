@@ -9,7 +9,7 @@ import logfire
 from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import StreamingResponse
 
-from app.auth import require_user, verify_frontend_request
+from app.auth import extract_user_email, require_user, verify_frontend_request
 from app.case_analyzer import (
     JurisdictionOutput,
     analyze_case_streaming,
@@ -175,13 +175,7 @@ async def upload_document(
                 yield f"data: {error_event}\n\n"
                 return
 
-            jurisdiction_data = {
-                "legal_system_type": jurisdiction_result.legal_system_type,
-                "precise_jurisdiction": jurisdiction_result.precise_jurisdiction,
-                "jurisdiction_code": jurisdiction_result.jurisdiction_code,
-                "confidence": jurisdiction_result.confidence,
-                "reasoning": jurisdiction_result.reasoning,
-            }
+            jurisdiction_data = jurisdiction_result.model_dump()
 
             yield f"data: {json.dumps({'step': 'detecting_jurisdiction', 'status': 'completed', 'data': jurisdiction_data})}\n\n"
 
@@ -283,13 +277,8 @@ async def analyze_document(
         StreamingResponse with analysis steps as SSE
     """
     draft_id = body.draft_id
-    jurisdiction_data = {
-        "legal_system_type": body.jurisdiction.legal_system_type,
-        "precise_jurisdiction": body.jurisdiction.precise_jurisdiction,
-        "jurisdiction_code": body.jurisdiction.jurisdiction_code,
-        "confidence": body.jurisdiction.confidence,
-        "reasoning": body.jurisdiction.reasoning,
-    }
+    jurisdiction_data = body.jurisdiction.model_dump()
+    jurisdiction_output = JurisdictionOutput.model_validate(jurisdiction_data)
 
     async def event_generator():
         """Generate SSE events for each analysis step with heartbeats to prevent timeouts."""
@@ -388,7 +377,7 @@ async def analyze_document(
                 draft_id=draft_id,
             ):
                 try:
-                    async_gen = analyze_case_streaming(text, jurisdiction_data, cached_results)
+                    async_gen = analyze_case_streaming(text, jurisdiction_output, cached_results)
                     generator_exhausted = False
 
                     while not generator_exhausted:
@@ -534,7 +523,7 @@ async def submit_for_approval(
             )
 
         # Verify ownership - the user submitting should be the one who created the draft
-        token_sub = service._get_token_sub(user)
+        token_sub = extract_user_email(user)
         record_email = record.get("user_email")
         if token_sub and record_email and token_sub != record_email:
             logger.warning(
@@ -567,7 +556,7 @@ async def list_my_analyses(
     user: dict = Depends(require_user),
     service: SuggestionService = Depends(get_suggestion_service),
 ) -> list[UserAnalysisSummary]:
-    user_email = service._get_token_sub(user)
+    user_email = extract_user_email(user)
     if not user_email:
         raise HTTPException(status_code=401, detail="Unable to identify user")
 
@@ -593,7 +582,7 @@ async def get_draft_for_recovery(
         raise HTTPException(status_code=404, detail="Draft not found")
 
     # Verify ownership
-    token_sub = service._get_token_sub(user)
+    token_sub = extract_user_email(user)
     record_email = record.get("user_email")
     if token_sub and record_email and token_sub != record_email:
         raise HTTPException(status_code=403, detail="You can only access your own drafts")

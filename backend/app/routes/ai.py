@@ -2,12 +2,11 @@ from fastapi import APIRouter, Depends, HTTPException
 
 from app.auth import verify_frontend_request
 from app.schemas.requests import ClassifyQueryRequest
-from app.services.ai import GPT
+from app.services.ai import QueryClassifier
 
 
-def get_gpt() -> GPT:
-    """Dependency function to lazily instantiate the GPT service."""
-    return GPT()
+def get_query_classifier() -> QueryClassifier:
+    return QueryClassifier()
 
 
 router = APIRouter(prefix="/ai", tags=["AI"], dependencies=[Depends(verify_frontend_request)])
@@ -27,10 +26,10 @@ router = APIRouter(prefix="/ai", tags=["AI"], dependencies=[Depends(verify_front
 )
 def classify_query(
     body: ClassifyQueryRequest,
-    gpt: GPT = Depends(get_gpt),
+    classifier: QueryClassifier = Depends(get_query_classifier),
 ) -> str:
     query = body.query
-    classification = gpt.classify_user_query(query)
+    classification = classifier.classify_user_query(query)
     if isinstance(classification, dict):
         raise HTTPException(status_code=502, detail=classification.get("error", "Upstream AI service error"))
     return classification

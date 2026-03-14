@@ -2,7 +2,7 @@ import logging
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Request, status
 
-from app.auth import optional_user, require_editor_or_admin, verify_frontend_request
+from app.auth import extract_user_email, optional_user, require_editor_or_admin, verify_frontend_request
 from app.schemas.feedback import FeedbackDetail, FeedbackPendingItem, FeedbackResponse, FeedbackSubmit, FeedbackUpdate
 from app.schemas.responses import StatusMessage
 from app.services.email_notifications import send_feedback_notification
@@ -17,14 +17,8 @@ router = APIRouter(
 )
 
 
-def _get_service() -> SuggestionService:
+def get_feedback_service() -> SuggestionService:
     return SuggestionService()
-
-
-def _extract_email(user: dict | None) -> str | None:
-    if not user:
-        return None
-    return user.get("https://cold.global/email") or user.get("email") or user.get("sub")
 
 
 @router.post(
@@ -38,9 +32,9 @@ async def submit_feedback(
     request: Request,
     background_tasks: BackgroundTasks,
     user: dict | None = Depends(optional_user),
-    service: SuggestionService = Depends(_get_service),
+    service: SuggestionService = Depends(get_feedback_service),
 ) -> FeedbackResponse:
-    token_sub = _extract_email(user) if user else None
+    token_sub = extract_user_email(user)
     try:
         new_id = service.save_entity_feedback(
             entity_type=body.entity_type,
@@ -74,7 +68,7 @@ async def submit_feedback(
 )
 async def list_pending(
     _: dict = Depends(require_editor_or_admin),
-    service: SuggestionService = Depends(_get_service),
+    service: SuggestionService = Depends(get_feedback_service),
 ) -> list[FeedbackPendingItem]:
     results = service.list_pending_feedback()
     return [FeedbackPendingItem(**r) for r in results]
@@ -88,7 +82,7 @@ async def list_pending(
 async def get_feedback(
     feedback_id: int,
     _: dict = Depends(require_editor_or_admin),
-    service: SuggestionService = Depends(_get_service),
+    service: SuggestionService = Depends(get_feedback_service),
 ) -> FeedbackDetail:
     record = service.get_feedback_by_id(feedback_id)
     if not record:
@@ -104,7 +98,7 @@ async def update_feedback(
     feedback_id: int,
     body: FeedbackUpdate,
     _: dict = Depends(require_editor_or_admin),
-    service: SuggestionService = Depends(_get_service),
+    service: SuggestionService = Depends(get_feedback_service),
 ) -> StatusMessage:
     updated = service.update_feedback_status(feedback_id, body.moderation_status)
     if not updated:

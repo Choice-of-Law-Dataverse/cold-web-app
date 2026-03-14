@@ -54,7 +54,7 @@ class TestDatabaseManager:
         manager._engine = None  # Reset state
         manager._session_factory = None
 
-        with pytest.raises(RuntimeError, match="DatabaseManager not initialized"):
+        with pytest.raises(RuntimeError, match="not initialized"):
             manager.get_engine()
 
     def test_get_session_before_initialization(self):
@@ -63,7 +63,7 @@ class TestDatabaseManager:
         manager._engine = None  # Reset state
         manager._session_factory = None
 
-        with pytest.raises(RuntimeError, match="DatabaseManager not initialized"):
+        with pytest.raises(RuntimeError, match="not initialized"):
             manager.get_session()
 
     def test_get_session_after_initialization(self):

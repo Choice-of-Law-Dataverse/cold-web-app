@@ -51,28 +51,47 @@ def format_themes_table(themes_dict):
 
 
 def filter_themes_by_list(themes_list: list[ThemeWithNA]) -> str:
-    """
-    Returns a formatted table of Theme|Definition for specified themes.
-
-    Args:
-        themes_list: List of theme names to include
-
-    Returns:
-        Formatted markdown table string
-    """
+    """Return a formatted Theme|Definition table for the specified themes."""
     if not themes_list:
         return "No themes specified."
 
-    all_themes = THEMES_TABLE_DF
+    all_themes = _get_themes_dict()
     if not all_themes:
         return "No themes available."
 
-    # Filter themes based on the provided list
     filtered_themes = {theme: definition for theme, definition in all_themes.items() if theme in themes_list}
-
     return format_themes_table(filtered_themes)
 
 
-# Load themes at module level
-THEMES_TABLE_DF = load_themes_table()
-THEMES_TABLE_STR = format_themes_table(THEMES_TABLE_DF)
+_themes_cache: dict[str, str] | None = None
+_themes_str_cache: str | None = None
+
+
+def _get_themes_dict() -> dict[str, str]:
+    global _themes_cache
+    if _themes_cache is None:
+        _themes_cache = load_themes_table()
+    return _themes_cache
+
+
+def _get_themes_str() -> str:
+    global _themes_str_cache
+    if _themes_str_cache is None:
+        _themes_str_cache = format_themes_table(_get_themes_dict())
+    return _themes_str_cache
+
+
+class _LazyThemesStr:
+    """Lazy proxy that defers CSV I/O until the value is first accessed."""
+
+    def __str__(self) -> str:
+        return _get_themes_str()
+
+    def __repr__(self) -> str:
+        return _get_themes_str()
+
+    def __bool__(self) -> bool:
+        return bool(_get_themes_str())
+
+
+THEMES_TABLE_STR: str = _LazyThemesStr()  # type: ignore[assignment]

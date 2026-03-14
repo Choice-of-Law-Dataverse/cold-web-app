@@ -11,6 +11,7 @@ import logfire
 
 from .tools import (
     CaseCitationOutput,
+    ColIssueOutput,
     ColSectionOutput,
     CourtsPositionOutput,
     DissentingOpinionsOutput,
@@ -75,37 +76,20 @@ async def detect_jurisdiction(text: str) -> JurisdictionOutput:
 
 
 def _reconstruct_col_section(cached: dict[str, Any]) -> ColSectionOutput:
-    """Reconstruct ColSectionOutput from cached data."""
-    return ColSectionOutput(
-        col_sections=cached.get("col_sections", []),
-        confidence=cached.get("confidence", "medium"),
-        reasoning=cached.get("reasoning", "Restored from cache"),
-    )
+    return ColSectionOutput.model_validate(cached)
 
 
 def _reconstruct_theme_classification(cached: dict[str, Any]) -> ThemeClassificationOutput:
-    """Reconstruct ThemeClassificationOutput from cached data."""
-    return ThemeClassificationOutput(
-        themes=cached.get("themes", []),
-        confidence=cached.get("confidence", "medium"),
-        reasoning=cached.get("reasoning", "Restored from cache"),
-    )
+    return ThemeClassificationOutput.model_validate(cached)
 
 
-def _reconstruct_col_issue(cached: dict[str, Any]) -> Any:
-    """Reconstruct ColIssueOutput from cached data."""
-    from .tools.models import ColIssueOutput
-
-    return ColIssueOutput(
-        col_issue=cached.get("col_issue", ""),
-        confidence=cached.get("confidence", "medium"),
-        reasoning=cached.get("reasoning", "Restored from cache"),
-    )
+def _reconstruct_col_issue(cached: dict[str, Any]) -> ColIssueOutput:
+    return ColIssueOutput.model_validate(cached)
 
 
 async def analyze_case_streaming(
     text: str,
-    jurisdiction_data: dict[str, Any],
+    jurisdiction_data: JurisdictionOutput,
     cached_results: dict[str, Any] | None = None,
 ) -> AsyncGenerator[dict[str, Any], None]:
     """
@@ -113,17 +97,9 @@ async def analyze_case_streaming(
 
     Yields intermediate results as they complete. If cached_results is provided,
     steps with cached data are skipped and their cached results are yielded immediately.
-
-    Args:
-        text: Full court decision text
-        jurisdiction_data: Dictionary containing jurisdiction information
-        cached_results: Optional dict of previously completed step results (for resume)
-
-    Yields:
-        Dictionary with step name, status, and data for each analysis step
     """
-    legal_system = jurisdiction_data["legal_system_type"]
-    jurisdiction = jurisdiction_data["precise_jurisdiction"]
+    legal_system = jurisdiction_data.legal_system_type
+    jurisdiction = jurisdiction_data.precise_jurisdiction
     run_common_law_branches = _requires_common_law_steps(legal_system, jurisdiction)
     cached = cached_results or {}
 
