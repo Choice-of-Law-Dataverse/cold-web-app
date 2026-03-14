@@ -74,7 +74,7 @@ select = [
     "UP",  # pyupgrade
 ]
 ignore = ["E501"]
-isort = { combine-as-imports = true, known-first-party = ["chai"] }
+isort = { combine-as-imports = true, known-first-party = ["app"] }
 
 [tool.ruff.lint.flake8-bugbear]
 extend-immutable-calls = ["fastapi.Depends", "fastapi.params.Depends", "fastapi.Query", "fastapi.params.Query"]
