@@ -7,6 +7,7 @@ import sqlalchemy as sa
 
 from app.auth import extract_user_email
 from app.config import config
+from app.schemas.feedback import FeedbackModerationStatus
 from app.services.db_manager import suggestions_db_manager
 from app.services.suggestions_schema import SUGGESTION_TABLES, SUGGESTIONS_METADATA, entity_feedback
 
@@ -27,10 +28,6 @@ class SuggestionService:
         self.engine = suggestions_db_manager.get_engine()
         self.metadata = SUGGESTIONS_METADATA
         self.tables = SUGGESTION_TABLES
-
-    @staticmethod
-    def _get_token_sub(user: dict[str, Any] | None) -> str | None:
-        return extract_user_email(user)
 
     @staticmethod
     def _to_jsonable(obj: Any) -> Any:
@@ -80,7 +77,7 @@ class SuggestionService:
         source: str | None = None,
         user: dict[str, Any] | None = None,
     ) -> int:
-        token_sub = self._get_token_sub(user)
+        token_sub = extract_user_email(user)
         target = self.tables.get(table)
         if target is None:
             raise ValueError(f"Unknown suggestions table '{table}'")
@@ -275,7 +272,7 @@ class SuggestionService:
                     query = query.where(
                         sa.or_(
                             target.c.moderation_status.is_(None),
-                            target.c.moderation_status == "pending",
+                            target.c.moderation_status == FeedbackModerationStatus.PENDING,
                         )
                     )
                 row = session.execute(query).mappings().first()
@@ -626,7 +623,7 @@ class SuggestionService:
             # Update the record
             values: dict[str, Any] = {
                 "submitted_data": json_ready,
-                "moderation_status": "pending",
+                "moderation_status": FeedbackModerationStatus.PENDING,
             }
             if updated_data is not None:
                 values["data"] = updated_data
@@ -742,7 +739,7 @@ class SuggestionService:
                     target.c.submitted_data,
                     target.c.moderation_status,
                 )
-                .where(target.c.moderation_status == "pending")
+                .where(target.c.moderation_status == FeedbackModerationStatus.PENDING)
                 .order_by(target.c.created_at.desc())
                 .limit(limit)
             )
@@ -980,7 +977,7 @@ class SuggestionService:
                     entity_feedback.c.submitter_email,
                     entity_feedback.c.moderation_status,
                 )
-                .where(entity_feedback.c.moderation_status == "pending")
+                .where(entity_feedback.c.moderation_status == FeedbackModerationStatus.PENDING)
                 .order_by(entity_feedback.c.created_at.desc())
                 .limit(limit)
             )
@@ -1007,7 +1004,7 @@ class SuggestionService:
             return dict(row)
 
     def update_feedback_status(self, feedback_id: int, status: str) -> bool:
-        valid = {"pending", "reviewed", "dismissed"}
+        valid = set(FeedbackModerationStatus)
         if status not in valid:
             raise ValueError(f"Invalid feedback status '{status}'. Must be one of: {valid}")
         with suggestions_db_manager.get_session() as session:
