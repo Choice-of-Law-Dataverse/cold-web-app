@@ -2,7 +2,7 @@ import { ref } from "vue";
 
 const announcement = ref("");
 
-export function useAnnouncer() {
+export function useScreenAnnouncer() {
   function announce(message: string) {
     announcement.value = "";
     requestAnimationFrame(() => {
