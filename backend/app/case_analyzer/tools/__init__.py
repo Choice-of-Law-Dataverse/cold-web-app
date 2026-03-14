@@ -27,6 +27,7 @@ from .models import (
     ObiterDictaOutput,
     PILProvisionsOutput,
     RelevantFactsOutput,
+    StepResult,
     ThemeClassificationOutput,
 )
 from .obiter_dicta_extractor import extract_obiter_dicta
@@ -65,5 +66,6 @@ __all__ = [
     "ObiterDictaOutput",
     "PILProvisionsOutput",
     "RelevantFactsOutput",
+    "StepResult",
     "ThemeClassificationOutput",
 ]

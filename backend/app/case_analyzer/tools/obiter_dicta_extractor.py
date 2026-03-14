@@ -1,16 +1,19 @@
 import logging
 
 import logfire
-from agents import Agent, Runner
+from agents import Agent
 from agents.models.openai_responses import OpenAIResponsesModel
 
 from ..config import get_model, get_openai_client
+from ..guardrails import validate_obiter_dicta
 from ..prompts import get_prompt_module
+from ..runner import TEXT_REFERENCE, run_with_retry
 from ..utils import generate_system_prompt
 from .models import (
     ColIssueOutput,
     ColSectionOutput,
     ObiterDictaOutput,
+    StepResult,
     ThemeClassificationOutput,
 )
 
@@ -24,8 +27,8 @@ async def extract_obiter_dicta(
     jurisdiction: str | None,
     themes_output: ThemeClassificationOutput,
     col_issue_output: ColIssueOutput,
-) -> ObiterDictaOutput:
-    """Extract obiter dicta commentary for Common Law or India workflows."""
+    previous_response_id: str | None = None,
+) -> StepResult[ObiterDictaOutput]:
     with logfire.span("obiter_dicta"):
         prompt_module = get_prompt_module(legal_system, "analysis", jurisdiction)
         prompt_template = prompt_module.COURTS_POSITION_OBITER_DICTA_PROMPT
@@ -33,8 +36,9 @@ async def extract_obiter_dicta(
         themes = ", ".join(themes_output.themes)
         col_issue = col_issue_output.col_issue
 
+        effective_text = text if previous_response_id is None else TEXT_REFERENCE
         prompt = prompt_template.format(
-            text=text,
+            text=effective_text,
             col_section=str(col_section_output),
             classification=themes,
             col_issue=col_issue,
@@ -50,5 +54,10 @@ async def extract_obiter_dicta(
                 openai_client=get_openai_client(),
             ),
         )
-        run_result = await Runner.run(agent, prompt)
-        return run_result.final_output_as(ObiterDictaOutput)
+        return await run_with_retry(
+            agent,
+            prompt,
+            ObiterDictaOutput,
+            previous_response_id=previous_response_id,
+            validate=validate_obiter_dicta,
+        )

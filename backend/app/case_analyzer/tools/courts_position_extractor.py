@@ -1,16 +1,19 @@
 import logging
 
 import logfire
-from agents import Agent, Runner
+from agents import Agent
 from agents.models.openai_responses import OpenAIResponsesModel
 
 from ..config import get_model, get_openai_client
+from ..guardrails import validate_courts_position
 from ..prompts import get_prompt_module
+from ..runner import TEXT_REFERENCE, run_with_retry
 from ..utils import generate_system_prompt
 from .models import (
     ColIssueOutput,
     ColSectionOutput,
     CourtsPositionOutput,
+    StepResult,
     ThemeClassificationOutput,
 )
 
@@ -24,29 +27,17 @@ async def extract_courts_position(
     jurisdiction: str | None,
     themes_output: ThemeClassificationOutput,
     col_issue_output: ColIssueOutput,
-):
-    """
-    Extract court's position from court decision.
-
-    Args:
-        text: Full court decision text
-        col_section_output: Extracted Choice of Law sections
-        legal_system: Legal system type (e.g., "Civil-law jurisdiction")
-        jurisdiction: Precise jurisdiction (e.g., "Switzerland")
-        themes_output: Classified themes output
-        col_issue_output: Extracted Choice of Law issue
-
-    Returns:
-        CourtsPositionOutput: Extracted position with confidence and reasoning
-    """
+    previous_response_id: str | None = None,
+) -> StepResult[CourtsPositionOutput]:
     with logfire.span("courts_position"):
         COURTS_POSITION_PROMPT = get_prompt_module(legal_system, "analysis", jurisdiction).COURTS_POSITION_PROMPT
 
         themes = ", ".join(themes_output.themes)
         col_issue = col_issue_output.col_issue
 
+        effective_text = text if previous_response_id is None else TEXT_REFERENCE
         prompt = COURTS_POSITION_PROMPT.format(
-            col_issue=col_issue, text=text, col_section=str(col_section_output), classification=themes
+            col_issue=col_issue, text=effective_text, col_section=str(col_section_output), classification=themes
         )
         system_prompt = generate_system_prompt(legal_system, jurisdiction)
 
@@ -59,7 +50,10 @@ async def extract_courts_position(
                 openai_client=get_openai_client(),
             ),
         )
-        run_result = await Runner.run(agent, prompt)
-        result = run_result.final_output_as(CourtsPositionOutput)
-
-        return result
+        return await run_with_retry(
+            agent,
+            prompt,
+            CourtsPositionOutput,
+            previous_response_id=previous_response_id,
+            validate=validate_courts_position,
+        )

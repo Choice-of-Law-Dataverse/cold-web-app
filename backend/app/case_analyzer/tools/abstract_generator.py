@@ -1,11 +1,13 @@
 import logging
 
 import logfire
-from agents import Agent, Runner
+from agents import Agent
 from agents.models.openai_responses import OpenAIResponsesModel
 
 from ..config import get_model, get_openai_client
+from ..guardrails import validate_abstract
 from ..prompts import get_prompt_module
+from ..runner import TEXT_REFERENCE, run_with_retry
 from ..utils import generate_system_prompt
 from .models import (
     AbstractOutput,
@@ -15,6 +17,7 @@ from .models import (
     ObiterDictaOutput,
     PILProvisionsOutput,
     RelevantFactsOutput,
+    StepResult,
     ThemeClassificationOutput,
 )
 
@@ -32,25 +35,8 @@ async def extract_abstract(
     court_position_output: CourtsPositionOutput,
     obiter_dicta_output: ObiterDictaOutput | None = None,
     dissenting_opinions_output: DissentingOpinionsOutput | None = None,
-):
-    """
-    Generate abstract from court decision analysis.
-
-    Args:
-        text: Full court decision text
-        legal_system: Legal system type (e.g., "Civil-law jurisdiction")
-        jurisdiction: Precise jurisdiction (e.g., "Switzerland")
-        themes_output: Classified themes output
-        facts_output: Relevant facts output
-        pil_provisions_output: PIL provisions output
-        col_issue_output: Choice of Law issue output
-        court_position_output: Court's position output
-        obiter_dicta_output: Obiter dicta output (for Common Law jurisdictions)
-        dissenting_opinions_output: Dissenting opinions output (for Common Law jurisdictions)
-
-    Returns:
-        AbstractOutput: Generated abstract with confidence and reasoning
-    """
+    previous_response_id: str | None = None,
+) -> StepResult[AbstractOutput]:
     with logfire.span("abstract"):
         ABSTRACT_PROMPT = get_prompt_module(legal_system, "analysis", jurisdiction).ABSTRACT_PROMPT
 
@@ -60,8 +46,9 @@ async def extract_abstract(
         col_issue = col_issue_output.col_issue
         court_position = court_position_output.courts_position
 
+        effective_text = text if previous_response_id is None else TEXT_REFERENCE
         prompt_vars = {
-            "text": text,
+            "text": effective_text,
             "classification": themes,
             "facts": facts,
             "pil_provisions": pil_provisions,
@@ -86,7 +73,10 @@ async def extract_abstract(
                 openai_client=get_openai_client(),
             ),
         )
-        run_result = await Runner.run(agent, prompt)
-        result = run_result.final_output_as(AbstractOutput)
-
-        return result
+        return await run_with_retry(
+            agent,
+            prompt,
+            AbstractOutput,
+            previous_response_id=previous_response_id,
+            validate=validate_abstract,
+        )

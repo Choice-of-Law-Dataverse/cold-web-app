@@ -78,46 +78,52 @@ export async function streamSSE<T = Record<string, unknown>>(
     throw new Error("No response body");
   }
 
+  let buffer = "";
+
+  function processEvent(event: SSEEvent<T>) {
+    lastEvent = event;
+
+    if (event.step === "heartbeat") return;
+
+    onEvent?.(event);
+
+    if (event.status === "error") {
+      const errorMsg = event.error || "Operation failed";
+      onError?.(errorMsg);
+      throw new SSEApplicationError(errorMsg);
+    }
+
+    if (event.status === "completed" && !completedSteps.has(event.step)) {
+      completedSteps.add(event.step);
+      onStepComplete?.(event.step, event.data);
+
+      const label = stepLabels[event.step];
+      if (label) {
+        toast.add({
+          title: label,
+          description: "Completed",
+          color: "info",
+          icon: "i-heroicons-check-circle",
+          duration: 2000,
+        });
+      }
+    }
+  }
+
   while (true) {
     const { done, value } = await reader.read();
     if (done) break;
 
-    const chunk = decoder.decode(value);
-    const lines = chunk.split("\n");
+    buffer += decoder.decode(value, { stream: true });
 
-    for (const line of lines) {
+    const parts = buffer.split("\n");
+    buffer = parts.pop() ?? "";
+
+    for (const line of parts) {
       if (line.startsWith("data: ")) {
         try {
           const event = JSON.parse(line.slice(6)) as SSEEvent<T>;
-          lastEvent = event;
-
-          if (event.step === "heartbeat") {
-            continue;
-          }
-
-          onEvent?.(event);
-
-          if (event.status === "error") {
-            const errorMsg = event.error || "Operation failed";
-            onError?.(errorMsg);
-            throw new SSEApplicationError(errorMsg);
-          }
-
-          if (event.status === "completed" && !completedSteps.has(event.step)) {
-            completedSteps.add(event.step);
-            onStepComplete?.(event.step, event.data);
-
-            const label = stepLabels[event.step];
-            if (label) {
-              toast.add({
-                title: label,
-                description: "Completed",
-                color: "info",
-                icon: "i-heroicons-check-circle",
-                duration: 2000,
-              });
-            }
-          }
+          processEvent(event);
         } catch (e) {
           if (e instanceof SSEApplicationError) throw e;
           console.error("Failed to parse SSE data:", e);
