@@ -4,10 +4,6 @@ from typing import Any
 from pydantic.alias_generators import to_snake
 
 
-def _camel_to_snake(name: str) -> str:
-    return to_snake(name)
-
-
 def _is_jsonb_path(column: str) -> bool:
     return "." in column
 
@@ -28,7 +24,7 @@ def build_filter_clause(
         if col is None:
             continue
 
-        snake_col = _camel_to_snake(col)
+        snake_col = to_snake(col)
 
         conv_values = raw_val if isinstance(raw_val, list) else [raw_val]
 

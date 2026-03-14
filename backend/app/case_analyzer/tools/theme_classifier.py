@@ -35,7 +35,7 @@ async def classify_themes(
         PIL_THEME_PROMPT = get_prompt_module(legal_system, "theme", jurisdiction).PIL_THEME_PROMPT
 
         prompt = PIL_THEME_PROMPT.format(text=text, col_section=col_section, themes_table=THEMES_TABLE_STR)
-        system_prompt = generate_system_prompt(legal_system, jurisdiction, "theme")
+        system_prompt = generate_system_prompt(legal_system, jurisdiction)
 
         try:
             agent = Agent(

@@ -5,6 +5,7 @@ from typing import Any
 
 import sqlalchemy as sa
 
+from app.auth import extract_user_email
 from app.config import config
 from app.services.db_manager import suggestions_db_manager
 from app.services.suggestions_schema import SUGGESTION_TABLES, SUGGESTIONS_METADATA, entity_feedback
@@ -27,12 +28,9 @@ class SuggestionService:
         self.metadata = SUGGESTIONS_METADATA
         self.tables = SUGGESTION_TABLES
 
-    def _get_token_sub(self, user: dict[str, Any] | None) -> str | None:
-        """Extract email from Auth0 user payload and use as identifier."""
-        if not user:
-            return None
-        # Auth0 custom claims with namespace
-        return user.get("https://cold.global/email") or user.get("email") or user.get("sub")
+    @staticmethod
+    def _get_token_sub(user: dict[str, Any] | None) -> str | None:
+        return extract_user_email(user)
 
     @staticmethod
     def _to_jsonable(obj: Any) -> Any:

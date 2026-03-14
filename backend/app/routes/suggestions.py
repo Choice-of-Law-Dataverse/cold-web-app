@@ -3,7 +3,7 @@ from typing import Any
 
 from fastapi import APIRouter, BackgroundTasks, Depends, Header, HTTPException, Request, status
 
-from app.auth import require_editor_or_admin, require_user, verify_frontend_request
+from app.auth import extract_user_email, has_editor_access, require_editor_or_admin, require_user, verify_frontend_request
 from app.schemas.responses import PendingSuggestionItem, StatusMessage, SuggestionDetailItem
 from app.schemas.suggestions import (
     CourtDecisionSuggestion,
@@ -72,154 +72,71 @@ async def submit_suggestion(
         raise HTTPException(status_code=500, detail=str(e)) from e
 
 
-@router.post(
-    "/court-decisions",
-    summary="Submit a new Court Decision suggestion",
-    response_model=SuggestionResponse,
-    status_code=status.HTTP_201_CREATED,
-)
-async def submit_court_decision(
-    body: CourtDecisionSuggestion,
-    request: Request,
-    background_tasks: BackgroundTasks,
-    user: dict = Depends(require_user),
-    source: str | None = Header(None),
-    service: SuggestionService = Depends(get_suggestion_service),
-) -> SuggestionResponse:
-    try:
-        payload = {"category": "court_decision", **body.model_dump()}
-        new_id = service.save_suggestion(
-            payload=payload,
-            table="court_decisions",
-            client_ip=request.client.host if request.client else None,
-            user_agent=request.headers.get("User-Agent"),
-            source=source,
-            user=user,
-        )
-        background_tasks.add_task(send_new_suggestion_notification, "court_decisions", new_id, payload, user)
-        return SuggestionResponse(id=new_id)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e)) from e
+_TYPED_SUGGESTION_ROUTES: list[tuple[str, str, str, str, type]] = [
+    ("/court-decisions", "Court Decision", "court_decision", "court_decisions", CourtDecisionSuggestion),
+    (
+        "/domestic-instruments",
+        "Domestic Instrument",
+        "domestic_instrument",
+        "domestic_instruments",
+        DomesticInstrumentSuggestion,
+    ),
+    (
+        "/regional-instruments",
+        "Regional Instrument",
+        "regional_instrument",
+        "regional_instruments",
+        RegionalInstrumentSuggestion,
+    ),
+    (
+        "/international-instruments",
+        "International Instrument",
+        "international_instrument",
+        "international_instruments",
+        InternationalInstrumentSuggestion,
+    ),
+    ("/literature", "Literature", "literature", "literature", LiteratureSuggestion),
+]
 
 
-@router.post(
-    "/domestic-instruments",
-    summary="Submit a new Domestic Instrument suggestion",
-    response_model=SuggestionResponse,
-    status_code=status.HTTP_201_CREATED,
-)
-async def submit_domestic_instrument(
-    body: DomesticInstrumentSuggestion,
-    request: Request,
-    background_tasks: BackgroundTasks,
-    user: dict = Depends(require_user),
-    source: str | None = Header(None),
-    service: SuggestionService = Depends(get_suggestion_service),
-) -> SuggestionResponse:
-    try:
-        payload = {"category": "domestic_instrument", **body.model_dump()}
-        new_id = service.save_suggestion(
-            payload=payload,
-            table="domestic_instruments",
-            client_ip=request.client.host if request.client else None,
-            user_agent=request.headers.get("User-Agent"),
-            source=source,
-            user=user,
-        )
-        background_tasks.add_task(send_new_suggestion_notification, "domestic_instruments", new_id, payload, user)
-        return SuggestionResponse(id=new_id)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e)) from e
+def _make_typed_handler(category: str, table: str):  # noqa: ANN202
+    async def handler(
+        body: Any,
+        request: Request,
+        background_tasks: BackgroundTasks,
+        user: dict[str, Any] = Depends(require_user),
+        source: str | None = Header(None),
+        service: SuggestionService = Depends(get_suggestion_service),
+    ) -> SuggestionResponse:
+        try:
+            payload = {"category": category, **body.model_dump()}
+            new_id = service.save_suggestion(
+                payload=payload,
+                table=table,
+                client_ip=request.client.host if request.client else None,
+                user_agent=request.headers.get("User-Agent"),
+                source=source,
+                user=user,
+            )
+            background_tasks.add_task(send_new_suggestion_notification, table, new_id, payload, user)
+            return SuggestionResponse(id=new_id)
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=str(e)) from e
+
+    return handler
 
 
-@router.post(
-    "/regional-instruments",
-    summary="Submit a new Regional Instrument suggestion",
-    response_model=SuggestionResponse,
-    status_code=status.HTTP_201_CREATED,
-)
-async def submit_regional_instrument(
-    body: RegionalInstrumentSuggestion,
-    request: Request,
-    background_tasks: BackgroundTasks,
-    user: dict = Depends(require_user),
-    source: str | None = Header(None),
-    service: SuggestionService = Depends(get_suggestion_service),
-) -> SuggestionResponse:
-    try:
-        payload = {"category": "regional_instrument", **body.model_dump()}
-        new_id = service.save_suggestion(
-            payload=payload,
-            table="regional_instruments",
-            client_ip=request.client.host if request.client else None,
-            user_agent=request.headers.get("User-Agent"),
-            source=source,
-            user=user,
-        )
-        background_tasks.add_task(send_new_suggestion_notification, "regional_instruments", new_id, payload, user)
-        return SuggestionResponse(id=new_id)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e)) from e
-
-
-@router.post(
-    "/international-instruments",
-    summary="Submit a new International Instrument suggestion",
-    response_model=SuggestionResponse,
-    status_code=status.HTTP_201_CREATED,
-)
-async def submit_international_instrument(
-    body: InternationalInstrumentSuggestion,
-    request: Request,
-    background_tasks: BackgroundTasks,
-    user: dict = Depends(require_user),
-    source: str | None = Header(None),
-    service: SuggestionService = Depends(get_suggestion_service),
-) -> SuggestionResponse:
-    try:
-        payload = {"category": "international_instrument", **body.model_dump()}
-        new_id = service.save_suggestion(
-            payload=payload,
-            table="international_instruments",
-            client_ip=request.client.host if request.client else None,
-            user_agent=request.headers.get("User-Agent"),
-            source=source,
-            user=user,
-        )
-        background_tasks.add_task(send_new_suggestion_notification, "international_instruments", new_id, payload, user)
-        return SuggestionResponse(id=new_id)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e)) from e
-
-
-@router.post(
-    "/literature",
-    summary="Submit a new Literature suggestion",
-    response_model=SuggestionResponse,
-    status_code=status.HTTP_201_CREATED,
-)
-async def submit_literature(
-    body: LiteratureSuggestion,
-    request: Request,
-    background_tasks: BackgroundTasks,
-    user: dict = Depends(require_user),
-    source: str | None = Header(None),
-    service: SuggestionService = Depends(get_suggestion_service),
-) -> SuggestionResponse:
-    try:
-        payload = {"category": "literature", **body.model_dump()}
-        new_id = service.save_suggestion(
-            payload=payload,
-            table="literature",
-            client_ip=request.client.host if request.client else None,
-            user_agent=request.headers.get("User-Agent"),
-            source=source,
-            user=user,
-        )
-        background_tasks.add_task(send_new_suggestion_notification, "literature", new_id, payload, user)
-        return SuggestionResponse(id=new_id)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e)) from e
+for _path, _label, _category, _table, _body_type in _TYPED_SUGGESTION_ROUTES:
+    _handler = _make_typed_handler(_category, _table)
+    _handler.__annotations__["body"] = _body_type
+    router.add_api_route(
+        _path,
+        _handler,
+        methods=["POST"],
+        summary=f"Submit a new {_label} suggestion",
+        response_model=SuggestionResponse,
+        status_code=status.HTTP_201_CREATED,
+    )
 
 
 # Moderation endpoints
@@ -236,20 +153,6 @@ def _table_key(path_segment: str) -> str | None:
         "case-analyzer": "case_analyzer",
     }
     return mapping.get(path_segment)
-
-
-def _has_editor_access(user: dict | None) -> bool:
-    roles = user.get("https://cold.global/roles", []) if user else []
-    if isinstance(roles, str):
-        roles = [roles]
-    normalized = {role.lower() for role in roles if isinstance(role, str)}
-    return "editor" in normalized or "admin" in normalized
-
-
-def _extract_token_sub(user: dict | None) -> str | None:
-    if not user:
-        return None
-    return user.get("https://cold.global/email") or user.get("email") or user.get("sub")
 
 
 @router.get(
@@ -306,7 +209,7 @@ async def get_suggestion_detail(
             detail=f"Invalid category: {category}",
         )
 
-    is_moderator = _has_editor_access(user)
+    is_moderator = has_editor_access(user)
 
     if not is_moderator and table == "case_analyzer":
         raise HTTPException(
@@ -314,7 +217,7 @@ async def get_suggestion_detail(
             detail="Insufficient permissions for this category",
         )
 
-    token_sub = None if is_moderator else _extract_token_sub(user)
+    token_sub = None if is_moderator else extract_user_email(user)
     if not is_moderator and not token_sub:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
@@ -370,7 +273,7 @@ async def approve_suggestion(
         original_payload: dict[str, Any] = item.get("payload", {}) or {}
 
         # Get user email from Auth0 token
-        moderator_email = user.get("https://cold.global/email") or user.get("email") or user.get("sub", "unknown")
+        moderator_email = extract_user_email(user) or "unknown"
 
         if category == "case-analyzer":
             # Use existing case analyzer approval logic
@@ -442,7 +345,7 @@ async def reject_suggestion(
 
     try:
         # Get user email from Auth0 token
-        moderator_email = user.get("https://cold.global/email") or user.get("email") or user.get("sub", "unknown")
+        moderator_email = extract_user_email(user) or "unknown"
 
         service.mark_status(
             table,

@@ -14,8 +14,9 @@ The existing 'data' column is kept for backwards compatibility with old records.
 from __future__ import annotations
 
 import sqlalchemy as sa
-from alembic import op as alembic_op
 from sqlalchemy.dialects import postgresql
+
+from alembic import op as alembic_op
 
 revision = "202501111200"
 down_revision = "202501041200"

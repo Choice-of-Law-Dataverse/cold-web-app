@@ -1,3 +1,5 @@
+from typing import Any
+
 from app.config import config
 from app.services.database import Database
 
@@ -7,7 +9,7 @@ class LandingPageService:
         self.db = Database(config.SQL_CONN_STRING)
         self.schema = config.NOCODB_POSTGRES_SCHEMA
 
-    def get_jurisdictions(self):
+    def get_jurisdictions(self) -> list[dict[str, Any]]:
         """
         Returns list of jurisdictions with has_data flag:
         1 if there are answers other than 'No data' for the jurisdiction, 0 otherwise.
@@ -20,4 +22,4 @@ class LandingPageService:
         JOIN "Jurisdictions" j ON j.id = m."Jurisdictions_id"
         GROUP BY j."Alpha_3_Code"
         """
-        return self.db.execute_query(query)
+        return self.db.execute_query(query) or []

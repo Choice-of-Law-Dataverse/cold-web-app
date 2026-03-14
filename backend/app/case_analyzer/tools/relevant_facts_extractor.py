@@ -34,7 +34,7 @@ async def extract_relevant_facts(
         FACTS_PROMPT = get_prompt_module(legal_system, "analysis", jurisdiction).FACTS_PROMPT
 
         prompt = FACTS_PROMPT.format(text=text, col_section=str(col_section_output))
-        system_prompt = generate_system_prompt(legal_system, jurisdiction, "analysis")
+        system_prompt = generate_system_prompt(legal_system, jurisdiction)
 
         agent = Agent(
             name="RelevantFactsExtractor",

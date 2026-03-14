@@ -14,16 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 class Database:
-    def __init__(self, connection_string=None, max_retries=3, retry_delay=0.5):
-        """
-        Initialize the database module using the singleton DatabaseManager.
-
-        Parameters:
-        - connection_string: Database connection string (deprecated, uses singleton manager).
-        - max_retries: Maximum number of retries for fetching data.
-        - retry_delay: Delay between retries in seconds.
-        """
-        # Use the singleton database manager
+    def __init__(self, connection_string: str | None = None, max_retries: int = 3, retry_delay: float = 0.5):
         if not db_manager.is_initialized and connection_string:
             db_manager.initialize(connection_string)
 
@@ -33,12 +24,12 @@ class Database:
         self.max_retries = max_retries
         self.retry_delay = retry_delay
 
-    def _ensure_metadata(self):
+    def _ensure_metadata(self) -> None:
         """Lazily reflect metadata on first use."""
         if self.metadata is None:
             self.metadata = sa.MetaData()
 
-        if not self._metadata_reflected and self.engine:
+        if not self._metadata_reflected and self.engine and self.metadata is not None:
             try:
                 self.metadata.reflect(bind=self.engine)
                 self._metadata_reflected = True
@@ -47,25 +38,16 @@ class Database:
                 self.metadata = None
 
     def _retry_on_empty(self, func: Callable[..., Any], *args: Any, **kwargs: Any) -> Any:
-        """
-        Retry logic to handle cases where the database returns empty results.
-
-        Parameters:
-        - func: Function to call for fetching data.
-        - args, kwargs: Arguments to pass to the function.
-
-        Returns:
-        - The result from the function or an empty list if retries are exhausted.
-        """
+        """Retry when the database returns empty results, up to max_retries."""
         last_result: Any = None
         for _attempt in range(self.max_retries):
             last_result = func(*args, **kwargs)
-            if last_result:  # If data is found, return immediately
+            if last_result:
                 return last_result
-            time.sleep(self.retry_delay)  # Wait before retrying
-        return last_result  # Return the final result after all retries
+            time.sleep(self.retry_delay)
+        return last_result
 
-    def execute_query(self, query: str, params: dict[str, Any] | None = None):
+    def execute_query(self, query: str, params: dict[str, Any] | None = None) -> list[dict[str, Any]] | None:
         def fetch_query() -> list[dict[str, Any]] | None:
             with db_manager.get_session() as session:
                 try:
