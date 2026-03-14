@@ -3,6 +3,7 @@ import type {
   EditedAnalysisValues,
   AnalysisStepPayload,
   StoredAnalyzerSnapshot,
+  JurisdictionInfo,
 } from "~/types/analyzer";
 import { ANALYZER_FIELD_MAP, ANALYSIS_STEP_KEYS } from "~/types/analyzer";
 
@@ -222,7 +223,7 @@ export function getAnalyzerFieldText(
 
 export function buildCaseAnalyzerPayload(
   editedPayload: EditedAnalysisValues,
-  jurisdictionInfo: unknown,
+  jurisdictionInfo: JurisdictionInfo | null,
   analysisResults: Record<string, AnalysisStepPayload>,
   draftId: number,
 ): CaseAnalyzerSuggestionPayload {

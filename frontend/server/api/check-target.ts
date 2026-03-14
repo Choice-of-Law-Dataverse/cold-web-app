@@ -1,4 +1,9 @@
+import { validateOrigin } from "../utils/validateOrigin";
+
 export default defineEventHandler(async (event) => {
+  const config = useRuntimeConfig();
+  validateOrigin(event, config);
+
   const { url } = getQuery(event);
 
   if (!url || typeof url !== "string") {

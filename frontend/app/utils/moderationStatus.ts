@@ -19,7 +19,7 @@ export type BadgeColor =
   | "secondary";
 
 export function getStatusBadgeColor(status?: string | null): BadgeColor {
-  switch (status) {
+  switch (status as ModerationStatus) {
     case "pending":
       return "info";
     case "draft":
@@ -43,11 +43,8 @@ export function getStatusBadgeColor(status?: string | null): BadgeColor {
   }
 }
 
-/**
- * Get status label for moderation/admin views (shorter labels)
- */
 export function getStatusLabel(status?: string | null): string {
-  switch (status) {
+  switch (status as ModerationStatus) {
     case "pending":
       return "Pending";
     case "draft":
@@ -71,11 +68,8 @@ export function getStatusLabel(status?: string | null): string {
   }
 }
 
-/**
- * Get status label for user-facing views (more descriptive labels)
- */
-export function getStatusLabelForUser(status?: string): string {
-  switch (status) {
+export function getStatusLabelForUser(status?: string | null): string {
+  switch (status as ModerationStatus) {
     case "pending":
       return "Pending Review";
     case "draft":
@@ -95,18 +89,12 @@ export function getStatusLabelForUser(status?: string): string {
   }
 }
 
-/**
- * Check if a case analysis can be recovered/resumed
- */
 export function canRecoverAnalysis(status: string): boolean {
   return !["approved", "rejected", "pending"].includes(status);
 }
 
-/**
- * Get action text for user's analysis list
- */
 export function getAnalysisActionText(status: string): string {
-  switch (status) {
+  switch (status as ModerationStatus) {
     case "pending":
       return "In Review";
     case "approved":

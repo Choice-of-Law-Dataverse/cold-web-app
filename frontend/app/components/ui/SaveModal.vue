@@ -64,25 +64,19 @@ const props = defineProps<{
   pdfFile?: File | null;
   instrumentId?: string | number | null;
   link?: string;
-  submitterEmail?: string;
-  submitterComments?: string;
 }>();
 const emit = defineEmits<{
   "update:modelValue": [value: boolean];
   "update:email": [value: string];
   "update:comments": [value: string];
-  "update:submitter_email": [value: string];
-  "update:submitter_comments": [value: string];
   "update:saveModalErrors": [value: Record<string, string>];
   "update:link": [value: string];
   save: [];
-  "update:submitterEmail": [value: string];
-  "update:submitterComments": [value: string];
 }>();
 
 const modelValueProxy = ref(props.modelValue);
-const emailProxy = ref(props.submitterEmail ?? props.email);
-const commentsProxy = ref(props.submitterComments ?? props.comments);
+const emailProxy = ref(props.email);
+const commentsProxy = ref(props.comments);
 const saveModalErrorsProxy = ref<Record<string, string>>({
   ...props.saveModalErrors,
 });
@@ -99,24 +93,22 @@ watch(modelValueProxy, (val) => {
 });
 
 watch(
-  () => [props.submitterEmail, props.email],
-  ([newEmail, legacyEmail]) => {
-    emailProxy.value = (newEmail ?? legacyEmail) as string;
+  () => props.email,
+  (val) => {
+    emailProxy.value = val;
   },
 );
 watch(emailProxy, (val) => {
-  emit("update:submitterEmail", val);
   emit("update:email", val);
 });
 
 watch(
-  () => [props.submitterComments, props.comments],
-  ([newVal, legacyVal]) => {
-    commentsProxy.value = (newVal ?? legacyVal) as string;
+  () => props.comments,
+  (val) => {
+    commentsProxy.value = val;
   },
 );
 watch(commentsProxy, (val) => {
-  emit("update:submitterComments", val);
   emit("update:comments", val);
 });
 

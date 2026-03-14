@@ -49,59 +49,41 @@ export function parseProxyUrl(proxyUrl: string): string {
  * Example: [{"url":"https://...","title":"...","mimetype":"...","size":...,"icon":"...","id":"..."}]
  * Returns: /api/storage/nc/uploads/noco/...
  */
+function extractUrlFromPdfData(
+  data: PdfAttachment[] | PdfAttachment,
+): string | null {
+  if (Array.isArray(data) && data.length > 0) {
+    return data[0]?.url || null;
+  }
+  if (typeof data === "object" && data !== null && "url" in data) {
+    return (data as PdfAttachment).url || null;
+  }
+  return null;
+}
+
 export function getPdfProxyUrl(pdfField: unknown): string | null {
   if (!pdfField) return null;
 
-  let extractedUrl: string | null = null;
+  let parsed: PdfAttachment[] | PdfAttachment;
 
-  // Handle when pdfField is already an object (not a string)
   if (typeof pdfField === "object" && pdfField !== null) {
-    // Handle array format - take the first element
-    if (Array.isArray(pdfField) && pdfField.length > 0) {
-      extractedUrl = (pdfField[0] as PdfAttachment).url || null;
-    }
-    // Handle object format (backward compatibility)
-    else if (!Array.isArray(pdfField) && "url" in pdfField) {
-      extractedUrl = (pdfField as PdfAttachment).url || null;
-    }
-  }
-  // Handle when pdfField is a string that needs parsing
-  else if (typeof pdfField === "string") {
+    parsed = pdfField as PdfAttachment[] | PdfAttachment;
+  } else if (typeof pdfField === "string") {
     try {
-      // Try to fix Python dict format (single quotes) to JSON format (double quotes)
-      let jsonString = pdfField;
-      if (pdfField.includes("'")) {
-        jsonString = pdfField.replace(/'/g, '"');
-      }
-
-      const pdfData = JSON.parse(jsonString) as PdfAttachment[] | PdfAttachment;
-
-      // Handle array format - take the first element
-      if (Array.isArray(pdfData) && pdfData.length > 0) {
-        extractedUrl = pdfData[0]?.url || null;
-      }
-      // Handle object format (backward compatibility)
-      else if (
-        typeof pdfData === "object" &&
-        pdfData !== null &&
-        !Array.isArray(pdfData)
-      ) {
-        extractedUrl = pdfData.url || null;
-      }
-    } catch (e) {
-      console.error("Failed to parse PDF field:", e);
+      const jsonString = pdfField.includes("'")
+        ? pdfField.replace(/'/g, '"')
+        : pdfField;
+      parsed = JSON.parse(jsonString) as PdfAttachment[] | PdfAttachment;
+    } catch {
       return null;
     }
+  } else {
+    return null;
   }
 
-  if (extractedUrl) {
-    const storagePath = extractStoragePath(extractedUrl);
-    if (storagePath) {
-      const proxyUrl = buildProxyUrl(storagePath);
+  const extractedUrl = extractUrlFromPdfData(parsed);
+  if (!extractedUrl) return null;
 
-      return proxyUrl;
-    }
-  }
-
-  return null;
+  const storagePath = extractStoragePath(extractedUrl);
+  return storagePath ? buildProxyUrl(storagePath) : null;
 }

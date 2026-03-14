@@ -17,7 +17,7 @@ export function isPdfFile(file: File): boolean {
 /**
  * Read file as base64
  */
-export async function readFileAsBase64(file: File): Promise<string> {
+export function readFileAsBase64(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () => {

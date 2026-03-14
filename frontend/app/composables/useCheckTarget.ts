@@ -8,10 +8,10 @@ async function checkTarget(url: string): Promise<boolean> {
   return data;
 }
 
-export const useCheckTarget = (url: Ref<string>) => {
+export function useCheckTarget(url: Ref<string>) {
   return useQuery({
     queryKey: computed(() => ["verifyPdfLink", url.value]),
     queryFn: () => checkTarget(url.value),
     enabled: computed(() => !!url.value),
   });
-};
+}

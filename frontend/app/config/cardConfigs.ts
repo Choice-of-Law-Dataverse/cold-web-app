@@ -6,7 +6,20 @@
  * - gridConfig: Object defining the grid layout for the card
  */
 
-export const answerCardConfig = {
+import type { CardConfig } from "@/composables/useCardFields";
+
+interface GridCellConfig {
+  columnSpan: string;
+  startColumn: string;
+}
+
+interface CardConfigWithGrid extends CardConfig {
+  gridConfig?: Record<string, GridCellConfig>;
+}
+
+export const answerCardConfig: CardConfigWithGrid & {
+  getAnswerClass: (answer: string) => string;
+} = {
   keyLabelPairs: [
     {
       key: "question",
@@ -86,14 +99,14 @@ export const answerCardConfig = {
       startColumn: "md:col-start-8",
     },
   },
-  getAnswerClass: (answer) => {
+  getAnswerClass: (answer: string): string => {
     return answer === "Yes" || answer === "No"
       ? "result-value-large"
       : "result-value-medium";
   },
 };
 
-export const courtDecisionCardConfig = {
+export const courtDecisionCardConfig: CardConfigWithGrid = {
   keyLabelPairs: [
     {
       key: "caseTitle",
@@ -101,10 +114,10 @@ export const courtDecisionCardConfig = {
       emptyValueBehavior: {
         action: "display",
         fallback: "No case title available",
-        getFallback: (data) => {
-          const title = data.caseTitle;
+        getFallback: (data: Record<string, unknown>): string => {
+          const title = data.caseTitle as string | undefined;
           return !title || title.trim() === "NA"
-            ? data.caseCitation || "No case citation available"
+            ? (data.caseCitation as string) || "No case citation available"
             : title;
         },
       },
@@ -159,7 +172,7 @@ export const courtDecisionCardConfig = {
   },
 };
 
-export const legislationCardConfig = {
+export const legislationCardConfig: CardConfigWithGrid = {
   keyLabelPairs: [
     {
       key: "titleInEnglish",
@@ -203,8 +216,7 @@ export const legislationCardConfig = {
       startColumn: "md:col-start-8",
     },
   },
-  processData: (data) => {
-    if (!data) return null;
+  processData: (data: Record<string, unknown>): Record<string, unknown> => {
     return {
       ...data,
       themes: data.domesticLegalProvisionsThemes,
@@ -212,7 +224,7 @@ export const legislationCardConfig = {
   },
 };
 
-export const regionalInstrumentCardConfig = {
+export const regionalInstrumentCardConfig: CardConfigWithGrid = {
   keyLabelPairs: [
     {
       key: "abbreviation",
@@ -258,7 +270,7 @@ export const regionalInstrumentCardConfig = {
   },
 };
 
-export const internationalInstrumentCardConfig = {
+export const internationalInstrumentCardConfig: CardConfigWithGrid = {
   keyLabelPairs: [
     {
       key: "name",
@@ -292,7 +304,7 @@ export const internationalInstrumentCardConfig = {
   },
 };
 
-export const arbitralAwardCardConfig = {
+export const arbitralAwardCardConfig: CardConfig = {
   keyLabelPairs: [
     {
       key: "arbitralInstitutions",
@@ -315,7 +327,7 @@ export const arbitralAwardCardConfig = {
   },
 };
 
-export const arbitralRuleCardConfig = {
+export const arbitralRuleCardConfig: CardConfig = {
   keyLabelPairs: [
     {
       key: "arbitralInstitutions",
@@ -330,7 +342,7 @@ export const arbitralRuleCardConfig = {
   },
 };
 
-export const literatureCardConfig = {
+export const literatureCardConfig: CardConfigWithGrid = {
   keyLabelPairs: [
     {
       key: "title",
@@ -362,7 +374,8 @@ export const literatureCardConfig = {
       emptyValueBehavior: {
         action: "display",
         fallback: "No publication available",
-        shouldDisplay: (data) => data.itemType !== "book",
+        shouldDisplay: (data: Record<string, unknown>): boolean =>
+          data.itemType !== "book",
       },
     },
     {
@@ -371,7 +384,8 @@ export const literatureCardConfig = {
       emptyValueBehavior: {
         action: "display",
         fallback: "No publisher available",
-        shouldDisplay: (data) => data.itemType === "book",
+        shouldDisplay: (data: Record<string, unknown>): boolean =>
+          data.itemType === "book",
       },
     },
   ],
@@ -392,8 +406,7 @@ export const literatureCardConfig = {
       startColumn: "md:col-start-5",
     },
   },
-  processData: (data) => {
-    if (!data) return null;
+  processData: (data: Record<string, unknown>): Record<string, unknown> => {
     return {
       ...data,
       themes: data.themes,

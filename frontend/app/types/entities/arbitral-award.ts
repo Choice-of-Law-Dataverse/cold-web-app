@@ -1,4 +1,5 @@
 import type { components } from "@/types/api-schema";
+import { joinArbitralInstitutions } from "@/utils/entityHelpers";
 
 export type ArbitralAwardResponse =
   components["schemas"]["ArbitralAwardRecord"];
@@ -15,15 +16,11 @@ export function processArbitralAward(
 ): ArbitralAward {
   const derivedTitle = raw.caseNumber || String(raw.id || "");
 
-  const arbitralInstitution =
-    raw.relations.arbitralInstitutions
-      .map((inst) => inst.institution)
-      .filter((v): v is string => Boolean(v && String(v).trim()))
-      .join(", ") || undefined;
-
   return {
     ...raw,
     displayTitle: derivedTitle,
-    arbitralInstitution,
+    arbitralInstitution: joinArbitralInstitutions(
+      raw.relations.arbitralInstitutions,
+    ),
   };
 }

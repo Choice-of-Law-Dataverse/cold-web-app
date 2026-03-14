@@ -4,16 +4,7 @@ import type createClient from "openapi-fetch";
 import { useApiClient } from "@/composables/useApiClient";
 import type { TableName, TableDetailMap } from "@/types/api";
 import type { paths } from "@/types/api-schema";
-import { processDomesticInstrument } from "@/types/entities/domestic-instrument";
-import { processInternationalInstrument } from "@/types/entities/international-instrument";
-import { processRegionalInstrument } from "@/types/entities/regional-instrument";
-import { processCourtDecision } from "@/types/entities/court-decision";
 import { processQuestion } from "@/types/entities/question";
-import { processLiterature } from "@/types/entities/literature";
-import { processArbitralAward } from "@/types/entities/arbitral-award";
-import { processArbitralRule } from "@/types/entities/arbitral-rule";
-import { processJurisdiction } from "@/types/entities/jurisdiction";
-import { processSpecialist } from "@/types/entities/specialist";
 
 type ApiClient = ReturnType<typeof createClient<paths>>;
 
@@ -51,34 +42,10 @@ export function useRecordDetails<
   });
 }
 
-export function useDomesticInstrument(id: Ref<string | number>) {
-  return useRecordDetails(
-    "Domestic Instruments",
-    id,
-    processDomesticInstrument,
-  );
-}
-
-export function useInternationalInstrument(id: Ref<string | number>) {
-  return useRecordDetails(
-    "International Instruments",
-    id,
-    processInternationalInstrument,
-  );
-}
-
-export function useRegionalInstrument(id: Ref<string | number>) {
-  return useRecordDetails(
-    "Regional Instruments",
-    id,
-    processRegionalInstrument,
-  );
-}
-
-export function useCourtDecision(id: Ref<string | number>) {
-  return useRecordDetails("Court Decisions", id, processCourtDecision);
-}
-
+/**
+ * Fetches answer or question details based on ID format.
+ * IDs containing "_" (e.g., "CH_Q1") are Answers; others are Questions.
+ */
 export function useAnswer(id: Ref<string | number>) {
   const { client } = useApiClient();
   const table = computed(() =>
@@ -96,24 +63,4 @@ export function useAnswer(id: Ref<string | number>) {
     },
     enabled: computed(() => Boolean(id.value)),
   });
-}
-
-export function useLiterature(id: Ref<string | number>) {
-  return useRecordDetails("Literature", id, processLiterature);
-}
-
-export function useArbitralAward(id: Ref<string | number>) {
-  return useRecordDetails("Arbitral Awards", id, processArbitralAward);
-}
-
-export function useArbitralRule(id: Ref<string | number>) {
-  return useRecordDetails("Arbitral Rules", id, processArbitralRule);
-}
-
-export function useJurisdictionDetail(id: Ref<string | number>) {
-  return useRecordDetails("Jurisdictions", id, processJurisdiction);
-}
-
-export function useSpecialistDetail(id: Ref<string | number>) {
-  return useRecordDetails("Specialists", id, processSpecialist);
 }

@@ -10,7 +10,7 @@ import {
   extractErrorMessage,
 } from "~/utils/analyzerPayloadParser";
 import { useApiClient } from "@/composables/useApiClient";
-import { streamSSE, type SSEEvent } from "~/composables/useSSEStream";
+import { streamSSE, type SSEEvent } from "~/utils/sseStream";
 
 export interface DraftRecoveryData {
   draftId: number;
@@ -208,19 +208,23 @@ export function useCaseAnalyzer(
         },
       };
     } catch (err: unknown) {
-      const fetchError = err as {
-        statusCode?: number;
-        data?: { detail?: string };
-      };
+      const statusCode =
+        err && typeof err === "object" && "statusCode" in err
+          ? (err as { statusCode: number }).statusCode
+          : undefined;
+      const detail =
+        err && typeof err === "object" && "data" in err
+          ? (err as { data?: { detail?: string } }).data?.detail
+          : undefined;
 
       let errorMessage: string;
-      if (fetchError.statusCode === 400) {
+      if (statusCode === 400) {
         errorMessage =
-          fetchError.data?.detail ||
+          detail ||
           "This draft has already been submitted for review. Start a new analysis.";
-      } else if (fetchError.statusCode === 403) {
+      } else if (statusCode === 403) {
         errorMessage = "You can only access your own drafts.";
-      } else if (fetchError.statusCode === 404) {
+      } else if (statusCode === 404) {
         errorMessage = "Draft not found.";
       } else {
         errorMessage =
