@@ -12,7 +12,6 @@ with old records that stored status inside the data JSON.
 from __future__ import annotations
 
 import sqlalchemy as sa
-
 from alembic import op as alembic_op
 
 revision = "202501111300"
