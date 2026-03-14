@@ -35,10 +35,10 @@ import Footer from "@/components/layout/Footer.vue";
 import ErrorBoundary from "@/components/ui/ErrorBoundary.vue";
 import EntityDrawer from "@/components/entity/EntityDrawer.vue";
 import EventBanner from "@/components/layout/EventBanner.vue";
-import { useAnnouncer } from "@/composables/useAnnouncer";
+import { useScreenAnnouncer } from "@/composables/useScreenAnnouncer";
 import { useEntityDrawer } from "@/composables/useEntityDrawer";
 
-const { announcement } = useAnnouncer();
+const { announcement } = useScreenAnnouncer();
 const { isOpen: isDrawerOpen } = useEntityDrawer();
 // import { useNavigationDirection } from "@/composables/useNavigationDirection";
 

@@ -3,7 +3,9 @@
     <div class="flex w-full flex-col gap-0">
       <DetailRow :label="getLabel('question')">
         <div
-          :class="computeTextClasses('question', config.valueClassMap.question)"
+          :class="
+            computeTextClasses('question', config.valueClassMap.question ?? '')
+          "
         >
           {{ getValue("question") }}
         </div>
@@ -52,7 +54,7 @@
           :class="
             computeTextClasses(
               resultData.lastModified ? 'lastModified' : 'created',
-              config.valueClassMap.lastModified,
+              config.valueClassMap.lastModified ?? '',
             )
           "
         >

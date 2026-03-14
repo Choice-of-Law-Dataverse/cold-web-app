@@ -1,3 +1,10 @@
+class SSEApplicationError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "SSEApplicationError";
+  }
+}
+
 export type SSEEventStatus = "pending" | "in_progress" | "completed" | "error";
 
 export interface SSEEvent<T = Record<string, unknown>> {
@@ -84,27 +91,22 @@ export async function streamSSE<T = Record<string, unknown>>(
           const event = JSON.parse(line.slice(6)) as SSEEvent<T>;
           lastEvent = event;
 
-          // Skip heartbeat events
           if (event.step === "heartbeat") {
             continue;
           }
 
-          // Notify listener of every event
           onEvent?.(event);
 
-          // Handle error status
           if (event.status === "error") {
             const errorMsg = event.error || "Operation failed";
             onError?.(errorMsg);
-            throw new Error(errorMsg);
+            throw new SSEApplicationError(errorMsg);
           }
 
-          // Handle step completion
           if (event.status === "completed" && !completedSteps.has(event.step)) {
             completedSteps.add(event.step);
             onStepComplete?.(event.step, event.data);
 
-            // Show toast only for steps with labels (whitelist)
             const label = stepLabels[event.step];
             if (label) {
               toast.add({
@@ -117,16 +119,7 @@ export async function streamSSE<T = Record<string, unknown>>(
             }
           }
         } catch (e) {
-          // Re-throw intentional errors (from error status)
-          if (e instanceof Error && e.message !== "Operation failed") {
-            const isIntentionalError =
-              e.message.includes("failed") ||
-              e.message.includes("error") ||
-              e.message.includes("Error");
-            if (isIntentionalError) {
-              throw e;
-            }
-          }
+          if (e instanceof SSEApplicationError) throw e;
           console.error("Failed to parse SSE data:", e);
         }
       }

@@ -172,12 +172,7 @@ export type TypedFilter<T extends TableName> = {
   value: string | number | boolean;
 };
 
-export type FilterColumn =
-  | "jurisdictions"
-  | "themes"
-  | "tables"
-  | "type"
-  | string;
+export type FilterColumn = "jurisdictions" | "themes" | "tables" | "type";
 
 export interface SearchResponse {
   results: Record<string, unknown>[];

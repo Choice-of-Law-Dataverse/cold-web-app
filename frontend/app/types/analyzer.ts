@@ -1,4 +1,4 @@
-import type { SSEEventStatus } from "~/composables/useSSEStream";
+import type { SSEEventStatus } from "~/utils/sseStream";
 
 export interface JurisdictionInfo {
   legal_system_type: string;

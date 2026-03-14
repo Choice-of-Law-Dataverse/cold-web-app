@@ -1,7 +1,7 @@
 import { ref } from "vue";
 import type { JurisdictionInfo } from "~/types/analyzer";
 import { readFileAsBase64 } from "~/utils/fileUtils";
-import { streamSSE, type SSEEvent } from "~/composables/useSSEStream";
+import { streamSSE, type SSEEvent } from "~/utils/sseStream";
 
 interface UploadStepData {
   draft_id?: number;

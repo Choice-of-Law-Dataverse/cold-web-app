@@ -5,7 +5,7 @@ import type {
   EditedAnalysisValues,
   JurisdictionInfo,
 } from "~/types/analyzer";
-import type { SSEEventStatus } from "~/composables/useSSEStream";
+import type { SSEEventStatus } from "~/utils/sseStream";
 
 export function useAnalysisSteps() {
   // Steps ordered by workflow dependency chain

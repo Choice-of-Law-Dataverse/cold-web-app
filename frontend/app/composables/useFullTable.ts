@@ -126,15 +126,11 @@ export function useLeadingCases() {
   return useFullTable("Court Decisions", {
     filters: [{ column: "caseRank", value: 10 }],
     select: (data) => {
-      return data
-        .filter(
-          (entry) => entry.caseRank === "10" || Number(entry.caseRank) === 10,
-        )
-        .sort(
-          (a, b) =>
-            Number(formatYear(b.publicationDateIso || "")) -
-            Number(formatYear(a.publicationDateIso || "")),
-        );
+      return data.sort(
+        (a, b) =>
+          (formatYear(b.publicationDateIso) ?? 0) -
+          (formatYear(a.publicationDateIso) ?? 0),
+      );
     },
   });
 }
