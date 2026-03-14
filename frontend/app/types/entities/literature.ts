@@ -4,11 +4,11 @@ export type LiteratureResponse = components["schemas"]["LiteratureRecord"];
 export type LiteratureDetailResponse =
   components["schemas"]["LiteratureDetail"];
 
-export interface LiteratureDisplay {
+export type LiteratureDisplay = {
   id: string | number | null | undefined;
   displayTitle: string;
   isOupChapter: boolean;
-}
+};
 
 export type Literature = LiteratureDetailResponse & LiteratureDisplay;
 

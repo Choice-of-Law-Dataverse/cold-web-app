@@ -147,14 +147,14 @@ Each entity file exports three things:
 
 ### Config Directory (`config/`)
 
-| File             | Purpose                                                                                         |
-| ---------------- | ----------------------------------------------------------------------------------------------- |
-| `labels.ts`      | Field label maps per entity; exports field union types used by tooltips                         |
-| `tooltips.ts`    | Tooltip content per entity field, validated with `satisfies Partial<Record<FieldType, string>>` |
-| `navigation.ts`  | App navigation structure                                                                        |
-| `cardConfigs.js` | Card layout configurations                                                                      |
-| `assets.ts`      | Asset path helpers                                                                              |
-| `auth.ts`        | Auth0 configuration                                                                             |
+| File                | Purpose                                                                                         |
+| ------------------- | ----------------------------------------------------------------------------------------------- |
+| `entityRegistry.ts` | Central entity config: field order, label overrides, content components, processing functions   |
+| `tooltips.ts`       | Tooltip content per entity field, validated with `satisfies Partial<Record<FieldType, string>>` |
+| `navigation.ts`     | App navigation structure                                                                        |
+| `cardConfigs.js`    | Card layout configurations                                                                      |
+| `assets.ts`         | Asset path helpers                                                                              |
+| `auth.ts`           | Auth0 configuration                                                                             |
 
 ### Route Params
 
@@ -222,11 +222,11 @@ This requires the backend Python environment to be set up locally. The script im
 
 ## Common Tasks
 
-- **New detail page**: Add `pages/[entity]/[coldId].vue`, create entity type in `types/entities/`, add labels in `config/labels.ts`
+- **New detail page**: Add `pages/[entity]/[coldId].vue`, create entity type in `types/entities/`, register in `config/entityRegistry.ts`
 - **New component**: Add to `components/[feature]/` (PascalCase)
 - **New composable**: Add to `composables/` as `useFeatureName.ts`
 - **New entity type**: Add to `types/entities/`, export response/detail types and processor function, register in `types/api.ts` type maps
-- **Add field labels/tooltips**: Update `config/labels.ts` and optionally `config/tooltips.ts`
+- **Add field labels/tooltips**: Update `config/entityRegistry.ts` (labelOverrides) and optionally `config/tooltips.ts`
 - **Backend schema changed**: Run `pnpm run generate:api` to regenerate types
 
 See [README.md](README.md) for full documentation.

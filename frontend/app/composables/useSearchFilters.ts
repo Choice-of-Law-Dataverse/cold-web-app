@@ -10,7 +10,7 @@ function isObjectOption(value: unknown): value is FilterObjectOption {
   return typeof value === "object" && value !== null && "label" in value;
 }
 
-export const useSearchFilters = (initialFilters: LocationQuery = {}) => {
+export function useSearchFilters(initialFilters: LocationQuery = {}) {
   const currentJurisdictionFilter = ref<FilterOption[]>([]);
   const currentThemeFilter = ref<FilterOption[]>([]);
   const currentTypeFilter = ref<FilterOption[]>([]);
@@ -103,4 +103,4 @@ export const useSearchFilters = (initialFilters: LocationQuery = {}) => {
     resetFilters,
     syncFiltersFromQuery,
   };
-};
+}

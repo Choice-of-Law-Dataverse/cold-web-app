@@ -71,10 +71,13 @@ function getCardLink() {
     case "Court Decisions":
       return `/court-decision/${props.resultData.id}`;
     case "Domestic Instrument":
+    case "Domestic Instruments":
       return `/domestic-instrument/${props.resultData.id}`;
     case "Regional Instrument":
+    case "Regional Instruments":
       return `/regional-instrument/${props.resultData.id}`;
     case "International Instrument":
+    case "International Instruments":
       return `/international-instrument/${props.resultData.id}`;
     case "Arbitral Rule":
     case "Arbitral Rules":

@@ -1,13 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { mount } from "@vue/test-utils";
+import { defineComponent, h, ref } from "vue";
 import QuestionAnswerMap from "./QuestionAnswerMap.vue";
-import { ref } from "vue";
 import type {
   QuestionJurisdictionsData,
   Jurisdiction,
 } from "@/composables/useQuestionJurisdictions";
 
-// Mock the composables
 const mockQuestionData = ref<QuestionJurisdictionsData | null>(null);
 const mockIsLoading = ref(false);
 const mockError = ref<Error | null>(null);
@@ -19,6 +18,40 @@ vi.mock("@/composables/useQuestionJurisdictions", () => ({
     error: mockError,
   }),
 }));
+
+const UCardStub = defineComponent({
+  name: "UCard",
+  setup(_props, { slots }) {
+    return () =>
+      h("div", { class: "card-stub" }, [
+        slots.header
+          ? h("div", { class: "card-header" }, slots.header())
+          : null,
+        slots.default?.(),
+      ]);
+  },
+});
+
+const USelectStub = defineComponent({
+  name: "USelect",
+  props: ["modelValue", "items", "size", "icon", "class"],
+  emits: ["update:modelValue"],
+  setup(props, { emit }) {
+    return () =>
+      h(
+        "select",
+        {
+          class: "select-stub",
+          value: props.modelValue,
+          onChange: (e: Event) =>
+            emit("update:modelValue", (e.target as HTMLSelectElement).value),
+        },
+        (props.items || []).map((item: string) =>
+          h("option", { value: item, key: item }, item),
+        ),
+      );
+  },
+});
 
 function createJurisdiction(
   name: string,
@@ -50,6 +83,24 @@ function createQuestionData(
   return { questionTitle: "Test Question", answers, answerGroups };
 }
 
+const stubs = {
+  UCard: UCardStub,
+  USelect: USelectStub,
+};
+
+function mountComponent(questionSuffix = "/test-question") {
+  return mount(QuestionAnswerMap, {
+    props: { questionSuffix },
+    global: { stubs },
+  });
+}
+
+async function selectRegion(wrapper: ReturnType<typeof mount>, region: string) {
+  const select = wrapper.findComponent(USelectStub);
+  select.vm.$emit("update:modelValue", region);
+  await wrapper.vm.$nextTick();
+}
+
 describe("QuestionAnswerMap", () => {
   beforeEach(() => {
     mockQuestionData.value = null;
@@ -57,73 +108,30 @@ describe("QuestionAnswerMap", () => {
     mockError.value = null;
   });
 
-  it("renders all region buttons", () => {
-    const wrapper = mount(QuestionAnswerMap, {
-      props: {
-        questionSuffix: "/test-question",
-      },
-    });
-    expect(wrapper.text()).toContain("All");
-    expect(wrapper.text()).toContain("Asia & Pacific");
-    expect(wrapper.text()).toContain("Europe");
-    expect(wrapper.text()).toContain("Arab States");
-    expect(wrapper.text()).toContain("Africa");
-    expect(wrapper.text()).toContain("South & Latin America");
-    expect(wrapper.text()).toContain("North America");
-    expect(wrapper.text()).toContain("Middle East");
-  });
-
-  it("starts with 'All' region selected by default", () => {
-    const wrapper = mount(QuestionAnswerMap, {
-      props: {
-        questionSuffix: "/test-question",
-      },
-    });
-    const buttons = wrapper.findAll(".region-badge");
-    expect(buttons[0]?.classes()).toContain("region-badge-active");
-  });
-
-  it("changes selected region when clicking different region button", async () => {
-    const wrapper = mount(QuestionAnswerMap, {
-      props: {
-        questionSuffix: "/test-question",
-      },
-    });
-    const buttons = wrapper.findAll(".region-badge");
-    await buttons[1]?.trigger("click");
-    expect(buttons[1]?.classes()).toContain("region-badge-active");
+  it("renders the region select with 'All' as default", () => {
+    const wrapper = mountComponent();
+    const select = wrapper.findComponent(USelectStub);
+    expect(select.exists()).toBe(true);
+    expect(select.props("modelValue")).toBe("All");
   });
 
   it("shows loading state when data is loading", () => {
     mockIsLoading.value = true;
-    const wrapper = mount(QuestionAnswerMap, {
-      props: {
-        questionSuffix: "/test-question",
-      },
-    });
+    const wrapper = mountComponent();
     expect(wrapper.text()).toContain("Loading jurisdictions...");
   });
 
   it("shows error state when there is an error", () => {
     mockError.value = new Error("Failed to load");
-    const wrapper = mount(QuestionAnswerMap, {
-      props: {
-        questionSuffix: "/test-question",
-      },
-    });
+    const wrapper = mountComponent();
     expect(wrapper.text()).toContain("Error loading jurisdictions");
   });
 
   it("excludes 'No data', 'Nothing found', and 'No information' answers", () => {
-    // Note: These exclusions now happen in the composable, so we only include valid answers
     mockQuestionData.value = createQuestionData([
       { answer: "Yes", jurisdictions: [{ name: "France", code: "FRA" }] },
     ]);
-    const wrapper = mount(QuestionAnswerMap, {
-      props: {
-        questionSuffix: "/test-question",
-      },
-    });
+    const wrapper = mountComponent();
     expect(wrapper.text()).toContain("Yes");
     expect(wrapper.text()).not.toContain("No data");
     expect(wrapper.text()).not.toContain("Nothing found");
@@ -131,7 +139,6 @@ describe("QuestionAnswerMap", () => {
   });
 
   it("prioritizes Yes, No, Not applicable answers in order", () => {
-    // Note: Priority ordering now happens in the composable
     mockQuestionData.value = createQuestionData([
       { answer: "Yes", jurisdictions: [{ name: "Country4", code: "C04" }] },
       { answer: "No", jurisdictions: [{ name: "Country2", code: "C02" }] },
@@ -141,33 +148,22 @@ describe("QuestionAnswerMap", () => {
       },
       { answer: "Maybe", jurisdictions: [{ name: "Country1", code: "C01" }] },
     ]);
-    const wrapper = mount(QuestionAnswerMap, {
-      props: {
-        questionSuffix: "/test-question",
-      },
-    });
+    const wrapper = mountComponent();
     const detailRows = wrapper.findAllComponents({ name: "DetailRow" });
-    // First should be region selector, then answers
-    const firstAnswerRow = detailRows[1];
-    expect(firstAnswerRow?.props("label")).toBe("Yes");
+    expect(detailRows[0]?.props("label")).toBe("Yes");
   });
 
   it("sorts remaining answers alphabetically after priority answers", () => {
-    // Note: Sorting now happens in the composable
     mockQuestionData.value = createQuestionData([
       { answer: "Yes", jurisdictions: [{ name: "Country3", code: "C03" }] },
       { answer: "Apple", jurisdictions: [{ name: "Country2", code: "C02" }] },
       { answer: "Zebra", jurisdictions: [{ name: "Country1", code: "C01" }] },
     ]);
-    const wrapper = mount(QuestionAnswerMap, {
-      props: {
-        questionSuffix: "/test-question",
-      },
-    });
+    const wrapper = mountComponent();
     const detailRows = wrapper.findAllComponents({ name: "DetailRow" });
-    expect(detailRows[1]?.props("label")).toBe("Yes");
-    expect(detailRows[2]?.props("label")).toBe("Apple");
-    expect(detailRows[3]?.props("label")).toBe("Zebra");
+    expect(detailRows[0]?.props("label")).toBe("Yes");
+    expect(detailRows[1]?.props("label")).toBe("Apple");
+    expect(detailRows[2]?.props("label")).toBe("Zebra");
   });
 
   it("filters jurisdictions by selected region", async () => {
@@ -180,28 +176,18 @@ describe("QuestionAnswerMap", () => {
         ],
       },
     ]);
-    const wrapper = mount(QuestionAnswerMap, {
-      props: {
-        questionSuffix: "/test-question",
-      },
-    });
+    const wrapper = mountComponent();
 
-    // Initially "All" is selected, should show both jurisdictions
     expect(wrapper.text()).toContain("FRA");
     expect(wrapper.text()).toContain("JPN");
 
-    // Click Europe region
-    const buttons = wrapper.findAll(".region-badge");
-    const europeButton = buttons.find((btn) => btn.text() === "Europe");
-    await europeButton!.trigger("click");
+    await selectRegion(wrapper, "Europe");
 
-    // Should show only France now
     expect(wrapper.text()).toContain("FRA");
     expect(wrapper.text()).not.toContain("JPN");
   });
 
   it("sorts jurisdictions alphabetically within each answer group", () => {
-    // Note: Sorting now happens in the composable, so jurisdictions should already be sorted
     mockQuestionData.value = createQuestionData([
       {
         answer: "Yes",
@@ -212,13 +198,8 @@ describe("QuestionAnswerMap", () => {
         ],
       },
     ]);
-    const wrapper = mount(QuestionAnswerMap, {
-      props: {
-        questionSuffix: "/test-question",
-      },
-    });
+    const wrapper = mountComponent();
     const text = wrapper.text();
-    // Check that Argentina appears before Brazil and Brazil before Zambia in the text
     const argIndex = text.indexOf("ARG");
     const braIndex = text.indexOf("BRA");
     const zmbIndex = text.indexOf("ZMB");
@@ -236,19 +217,10 @@ describe("QuestionAnswerMap", () => {
         jurisdictions: [{ name: "France", code: "FRA", region: "Europe" }],
       },
     ]);
-    const wrapper = mount(QuestionAnswerMap, {
-      props: {
-        questionSuffix: "/test-question",
-      },
-    });
+    const wrapper = mountComponent();
 
-    // Select a region with no jurisdictions
-    const buttons = wrapper.findAll(".region-badge");
-    const africaButton = buttons.find((btn) => btn.text() === "Africa");
-    await africaButton!.trigger("click");
-    await wrapper.vm.$nextTick();
+    await selectRegion(wrapper, "Africa");
 
-    // Row should not be rendered when there are no jurisdictions
     expect(wrapper.text()).not.toContain("Yes");
   });
 
@@ -256,13 +228,8 @@ describe("QuestionAnswerMap", () => {
     mockQuestionData.value = createQuestionData([
       { answer: "Yes", jurisdictions: [{ name: "France", code: "FRA" }] },
     ]);
-    const wrapper = mount(QuestionAnswerMap, {
-      props: {
-        questionSuffix: "/test-question",
-      },
-    });
+    const wrapper = mountComponent();
     await wrapper.vm.$nextTick();
-    // Check that the question suffix is properly used in the template
     expect(wrapper.html()).toContain("FRA/test-question");
   });
 });

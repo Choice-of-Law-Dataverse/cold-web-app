@@ -137,7 +137,7 @@ describe("useCardFields", () => {
       });
       const classes = computeTextClasses("Title", "result-value-medium");
       expect(classes).toContain("result-value-medium");
-      expect(classes).toContain("text-sm leading-relaxed whitespace-pre-line");
+      expect(classes).toContain("text-sm leading-relaxed whitespace-normal");
     });
 
     it("adds text-gray-400 for empty display fields", () => {
@@ -164,7 +164,7 @@ describe("useCardFields", () => {
       });
       const classes = fieldClasses("Title");
       expect(classes).toContain("result-value-medium");
-      expect(classes).toContain("text-sm leading-relaxed whitespace-pre-line");
+      expect(classes).toContain("text-sm leading-relaxed whitespace-normal");
     });
 
     it("uses empty string when key not in valueClassMap", () => {

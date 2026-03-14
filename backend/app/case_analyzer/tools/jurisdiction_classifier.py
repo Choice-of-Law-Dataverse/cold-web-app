@@ -50,8 +50,8 @@ def load_jurisdictions():
     return jurisdictions
 
 
-def create_jurisdiction_list():
-    """Create a formatted list of jurisdictions for the LLM prompt."""
+def create_jurisdiction_list() -> str:
+    """Format jurisdictions as a newline-delimited string for LLM prompts."""
     jurisdictions = load_jurisdictions()
     jurisdiction_list = []
 

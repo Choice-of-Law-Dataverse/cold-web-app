@@ -96,7 +96,7 @@ import importedThemeOptions from "@/assets/themeOptions.json";
 import importedTypeOptions from "@/assets/typeOptions.json";
 import SearchFilters from "@/components/search-results/SearchFilters.vue";
 import { useJurisdictions } from "@/composables/useJurisdictions";
-import { useAnnouncer } from "@/composables/useAnnouncer";
+import { useScreenAnnouncer } from "@/composables/useScreenAnnouncer";
 import type { SearchFilters as SearchFiltersType } from "@/types/api";
 
 const props = withDefaults(
@@ -145,7 +145,7 @@ const resultLabel = computed(() =>
 );
 
 const { data: jurisdictions } = useJurisdictions();
-const { announce } = useAnnouncer();
+const { announce } = useScreenAnnouncer();
 
 watch(
   () => [props.totalMatches, props.loading],

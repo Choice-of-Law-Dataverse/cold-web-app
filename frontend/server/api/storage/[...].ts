@@ -1,11 +1,8 @@
 import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import * as logfire from "@pydantic/logfire-node";
+import { validateOrigin } from "../../utils/validateOrigin";
 
-/**
- * Extracts storage path from a proxy URL
- * Example: /api/storage/nc/uploads/noco/file.pdf -> nc/uploads/noco/file.pdf
- */
 function parseProxyUrl(proxyUrl: string): string {
   return proxyUrl.replace(/^\/api\/storage\//, "");
 }
@@ -13,35 +10,7 @@ function parseProxyUrl(proxyUrl: string): string {
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig();
 
-  const origin = getHeader(event, "origin");
-  const referer = getHeader(event, "referer");
-  const host = getHeader(event, "host");
-
-  const allowedOrigins = [
-    `https://${host}`,
-    `http://${host}`,
-    config.public.siteUrl,
-  ].filter(Boolean);
-
-  const isValidOrigin =
-    !origin ||
-    allowedOrigins.some(
-      (allowed) =>
-        origin === allowed || (referer && referer.startsWith(allowed)),
-    );
-
-  if (!isValidOrigin) {
-    logfire.warning("Storage request blocked - invalid origin", {
-      origin,
-      referer,
-      host,
-      allowedOrigins,
-    });
-    throw createError({
-      statusCode: 403,
-      message: "Forbidden: Invalid origin",
-    });
-  }
+  validateOrigin(event, config);
 
   // Extract the R2 storage path from the request
   // Expected format: /api/storage/nc/uploads/noco/...

@@ -1,6 +1,6 @@
 <template>
   <ResultCard :result-data="processedData ?? {}" card-type="Literature">
-    <div class="flex flex-col gap-0">
+    <div class="flex w-full flex-col gap-0">
       <DetailRow :label="getLabel('title')">
         <div :class="fieldClasses('title')">
           {{ getValue("title") }}

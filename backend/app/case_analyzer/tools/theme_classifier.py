@@ -26,7 +26,7 @@ async def classify_themes(
 
         effective_text = text if previous_response_id is None else TEXT_REFERENCE
         prompt = PIL_THEME_PROMPT.format(text=effective_text, col_section=col_section, themes_table=THEMES_TABLE_STR)
-        system_prompt = generate_system_prompt(legal_system, jurisdiction, "theme")
+        system_prompt = generate_system_prompt(legal_system, jurisdiction)
 
         try:
             agent = Agent(

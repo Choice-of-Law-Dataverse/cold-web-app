@@ -6,24 +6,14 @@
     <InlineError v-else-if="error" :error="error" />
     <div v-else-if="displayedItems.length" class="result-value-small">
       <div class="mb-2 flex flex-row flex-wrap gap-x-6 gap-y-2">
-        <NuxtLink
+        <EntityLink
           v-for="item in displayedItems"
           :key="item.id"
-          class="link-chip--neutral"
-          :to="item.id.startsWith('/') ? item.id : `${basePath}/${item.id}`"
-        >
-          {{ item.title }}
-          <span
-            v-if="item.badge"
-            class="related-item-badge"
-            :style="{
-              backgroundColor: `color-mix(in srgb, ${item.badge.color} 14%, white)`,
-              color: item.badge.color,
-            }"
-          >
-            {{ item.badge.label }}
-          </span>
-        </NuxtLink>
+          :id="item.id"
+          :title="item.title"
+          :base-path="basePath"
+          :badge="item.badge"
+        />
       </div>
       <ShowMoreLess
         v-if="items.length > 10"
@@ -35,7 +25,7 @@
       v-else-if="emptyValueBehavior.action === 'display'"
       class="result-value-small"
     >
-      —
+      &mdash;
     </p>
   </div>
 </template>
@@ -45,6 +35,7 @@ import { ref, computed } from "vue";
 import LoadingBar from "@/components/layout/LoadingBar.vue";
 import InlineError from "@/components/ui/InlineError.vue";
 import ShowMoreLess from "@/components/ui/ShowMoreLess.vue";
+import EntityLink from "@/components/ui/EntityLink.vue";
 import type { RelatedItem, EmptyValueBehavior } from "@/types/ui";
 
 const props = withDefaults(
@@ -60,8 +51,7 @@ const props = withDefaults(
     isLoading: false,
     error: undefined,
     emptyValueBehavior: () => ({
-      action: "display",
-      fallback: "No items available",
+      action: "hide" as const,
     }),
   },
 );
@@ -83,19 +73,3 @@ const displayedItems = computed(() => {
     : props.items;
 });
 </script>
-
-<style scoped>
-.related-item-badge {
-  display: inline-flex;
-  align-items: center;
-  border-radius: 9999px;
-  padding: 0.0625rem 0.4rem;
-  font-size: 0.625rem;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  line-height: 1.125rem;
-  white-space: nowrap;
-  margin-left: 0.25rem;
-  vertical-align: middle;
-}
-</style>

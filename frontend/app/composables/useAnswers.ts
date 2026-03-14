@@ -7,15 +7,15 @@ import type { paths } from "@/types/api-schema";
 
 type ApiClient = ReturnType<typeof createClient<paths>>;
 
-const processAnswerText = (answerText: string) => {
-  if (typeof answerText === "string" && answerText.includes(",")) {
+function processAnswerText(answerText: string) {
+  if (answerText.includes(",")) {
     return answerText
       .split(",")
-      .map((s: string) => s.trim())
+      .map((s) => s.trim())
       .join("; ");
   }
   return answerText;
-};
+}
 
 export { processAnswerText };
 

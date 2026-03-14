@@ -9,68 +9,42 @@ logger = logging.getLogger(__name__)
 
 
 class SearchService:
-    def __init__(self):
+    def __init__(self) -> None:
         self.db = Database(config.SQL_CONN_STRING)
+
+    _TABLE_TO_VIEW: dict[str, str] = {
+        "answers": "data_views.base_answers",
+        "hcch answers": "data_views.base_hcch_answers",
+        "court decisions": "data_views.base_court_decisions",
+        "domestic instruments": "data_views.base_domestic_instruments",
+        "domestic legal provisions": "data_views.base_domestic_legal_provisions",
+        "regional instruments": "data_views.base_regional_instruments",
+        "regional legal provisions": "data_views.base_regional_legal_provisions",
+        "international instruments": "data_views.base_international_instruments",
+        "international legal provisions": "data_views.base_international_legal_provisions",
+        "literature": "data_views.base_literature",
+        "arbitral awards": "data_views.base_arbitral_awards",
+        "arbitral award": "data_views.base_arbitral_awards",
+        "arbitration awards": "data_views.base_arbitral_awards",
+        "arbitration award": "data_views.base_arbitral_awards",
+        "arbitral institutions": "data_views.base_arbitral_institutions",
+        "arbitral institution": "data_views.base_arbitral_institutions",
+        "arbitration institutions": "data_views.base_arbitral_institutions",
+        "arbitration institution": "data_views.base_arbitral_institutions",
+        "arbitral rules": "data_views.base_arbitral_rules",
+        "arbitration rules": "data_views.base_arbitral_rules",
+        "arbitral provisions": "data_views.base_arbitral_provisions",
+        "arbitral provision": "data_views.base_arbitral_provisions",
+        "arbitration provisions": "data_views.base_arbitral_provisions",
+        "arbitration provision": "data_views.base_arbitral_provisions",
+        "jurisdictions": "data_views.base_jurisdictions",
+        "questions": "data_views.base_questions",
+    }
 
     def _complete_view_for_table(self, table: str) -> str:
         if not table:
             raise ValueError("No table provided")
-
-        normalized = table.strip().lower()
-
-        canonical = {
-            "answers": "Answers",
-            "hcch answers": "HCCH Answers",
-            "court decisions": "Court Decisions",
-            "domestic instruments": "Domestic Instruments",
-            "domestic legal provisions": "Domestic Legal Provisions",
-            "regional instruments": "Regional Instruments",
-            "regional legal provisions": "Regional Legal Provisions",
-            "international instruments": "International Instruments",
-            "international legal provisions": "International Legal Provisions",
-            "literature": "Literature",
-            "arbitral awards": "Arbitral Awards",
-            "arbitral award": "Arbitral Awards",
-            "arbitration awards": "Arbitral Awards",
-            "arbitration award": "Arbitral Awards",
-            "arbitral institutions": "Arbitral Institutions",
-            "arbitral institution": "Arbitral Institutions",
-            "arbitration institutions": "Arbitral Institutions",
-            "arbitration institution": "Arbitral Institutions",
-            "arbitral rules": "Arbitral Rules",
-            "arbitration rules": "Arbitral Rules",
-            "arbitral provisions": "Arbitral Provisions",
-            "arbitral provision": "Arbitral Provisions",
-            "arbitration provisions": "Arbitral Provisions",
-            "arbitration provision": "Arbitral Provisions",
-            "jurisdictions": "Jurisdictions",
-            "questions": "Questions",
-        }
-
-        table_key = canonical.get(normalized)
-        if not table_key:
-            raise ValueError(f"Unsupported table for full/filtered query: {table}")
-
-        mapping = {
-            "Answers": "data_views.base_answers",
-            "HCCH Answers": "data_views.base_hcch_answers",
-            "Court Decisions": "data_views.base_court_decisions",
-            "Domestic Instruments": "data_views.base_domestic_instruments",
-            "Domestic Legal Provisions": "data_views.base_domestic_legal_provisions",
-            "Regional Instruments": "data_views.base_regional_instruments",
-            "Regional Legal Provisions": "data_views.base_regional_legal_provisions",
-            "International Instruments": "data_views.base_international_instruments",
-            "International Legal Provisions": "data_views.base_international_legal_provisions",
-            "Literature": "data_views.base_literature",
-            "Arbitral Awards": "data_views.base_arbitral_awards",
-            "Arbitral Institutions": "data_views.base_arbitral_institutions",
-            "Arbitral Rules": "data_views.base_arbitral_rules",
-            "Arbitral Provisions": "data_views.base_arbitral_provisions",
-            "Jurisdictions": "data_views.base_jurisdictions",
-            "Questions": "data_views.base_questions",
-        }
-
-        view = mapping.get(table_key)
+        view = self._TABLE_TO_VIEW.get(table.strip().lower())
         if not view:
             raise ValueError(f"Unsupported table for full/filtered query: {table}")
         return view
@@ -123,60 +97,47 @@ class SearchService:
             "relations": row.get("relations") or {},
         }
 
-    def full_table(self, table, response_type: str = "parsed"):
+    @staticmethod
+    def _flatten_rows(rows: list[dict[str, Any]], table: str, response_type: str) -> list[dict[str, Any]]:
+        if response_type == "raw":
+            return [row.get("complete_record") or {} for row in rows]
+
+        results: list[dict[str, Any]] = []
+        for row in rows:
+            complete = row.get("complete_record") or {}
+            flat: dict[str, Any] = {"source_table": table, "id": row.get("record_id")}
+            for k, v in complete.items():
+                if k == "id":
+                    continue
+                flat[k] = v
+            if flat.get("cold_id"):
+                flat["id"] = flat["cold_id"]
+            else:
+                flat["cold_id"] = flat["id"]
+            if response_type == "both":
+                results.append({"parsed": flat, "raw": complete})
+            else:
+                results.append(flat)
+        return results
+
+    def full_table(self, table: str, response_type: str = "parsed") -> list[dict[str, Any]]:
         try:
             view = self._complete_view_for_table(table)
             sql = f"SELECT c.id AS record_id, to_jsonb(c.*) AS complete_record FROM {view} c"
             rows = self.db.execute_query(sql, {}) or []
-
-            if response_type == "raw":
-                return [row.get("complete_record") or {} for row in rows]
-
-            results: list[dict[str, Any]] = []
-            for row in rows:
-                complete = row.get("complete_record") or {}
-                flat: dict[str, Any] = {"source_table": table, "id": row.get("record_id")}
-                for k, v in complete.items():
-                    if k == "id":
-                        continue
-                    flat[k] = v
-                if flat.get("cold_id"):
-                    flat["id"] = flat["cold_id"]
-                if response_type == "both":
-                    results.append({"parsed": flat, "raw": complete})
-                else:
-                    results.append(flat)
-            return results
+            return self._flatten_rows(rows, table, response_type)
         except Exception as e:
             logger.error("Error querying full table %s: %s", table, e)
             return []
 
-    def filtered_table(self, table, filters, response_type: str = "parsed"):
+    def filtered_table(self, table: str, filters: list[Any], response_type: str = "parsed") -> list[dict[str, Any]]:
         try:
             view = self._complete_view_for_table(table)
             alias = "c"
             where_sql, params = build_filter_clause(alias, filters)
             sql = f"SELECT {alias}.id AS record_id, to_jsonb({alias}.*) AS complete_record FROM {view} {alias}{where_sql}"
             rows = self.db.execute_query(sql, params) or []
-
-            if response_type == "raw":
-                return [row.get("complete_record") or {} for row in rows]
-
-            results: list[dict[str, Any]] = []
-            for row in rows:
-                complete = row.get("complete_record") or {}
-                flat: dict[str, Any] = {"source_table": table, "id": row.get("record_id")}
-                for k, v in complete.items():
-                    if k == "id":
-                        continue
-                    flat[k] = v
-                if flat.get("cold_id"):
-                    flat["id"] = flat["cold_id"]
-                if response_type == "both":
-                    results.append({"parsed": flat, "raw": complete})
-                else:
-                    results.append(flat)
-            return results
+            return self._flatten_rows(rows, table, response_type)
         except Exception as e:
             logger.error(
                 "Error querying filtered table %s with filters %s: %s",
@@ -186,7 +147,7 @@ class SearchService:
             )
             return []
 
-    def _extract_filters(self, filters):
+    def _extract_filters(self, filters: list[Any]) -> tuple[list[str], list[str], list[str]]:
         tables = []
         jurisdictions = []
         themes = []
@@ -213,13 +174,13 @@ class SearchService:
 
     def full_text_search(
         self,
-        search_string,
-        filters=None,
-        page=1,
-        page_size=50,
-        sort_by_date=False,
+        search_string: str | None,
+        filters: list[Any] | None = None,
+        page: int = 1,
+        page_size: int = 50,
+        sort_by_date: bool = False,
         response_type: str = "parsed",
-    ):
+    ) -> dict[str, Any]:
         if filters is None:
             filters = []
         tables, jurisdictions, themes = self._extract_filters(filters)
@@ -276,6 +237,8 @@ class SearchService:
                     flat[key] = value
                 if flat.get("cold_id"):
                     flat["id"] = flat["cold_id"]
+                else:
+                    flat["cold_id"] = flat["id"]
                 parsed_results.append(flat)
 
             if response_type in ("raw", "both"):

@@ -26,7 +26,7 @@ async def extract_pil_provisions(
 
         effective_text = text if previous_response_id is None else TEXT_REFERENCE
         prompt = PIL_PROVISIONS_PROMPT.format(text=effective_text, col_section=str(col_section_output))
-        system_prompt = generate_system_prompt(legal_system, jurisdiction, "analysis")
+        system_prompt = generate_system_prompt(legal_system, jurisdiction)
 
         agent = Agent(
             name="PILProvisionsExtractor",

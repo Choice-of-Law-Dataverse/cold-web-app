@@ -204,7 +204,7 @@ import type {
   EditedAnalysisValues,
   JurisdictionOption,
 } from "~/types/analyzer";
-import type { SSEEventStatus } from "~/composables/useSSEStream";
+import type { SSEEventStatus } from "~/utils/sseStream";
 import AnalysisFormField from "@/components/case-analyzer/AnalysisFormField.vue";
 import DocumentDisplay from "@/components/case-analyzer/DocumentDisplay.vue";
 

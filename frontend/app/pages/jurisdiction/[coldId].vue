@@ -4,10 +4,8 @@
       table="Jurisdictions"
       :loading="isLoading"
       :error="error"
-      :data="data || {}"
-      :labels="jurisdictionLabels"
-      :tooltips="jurisdictionTooltips"
-      :formatted-jurisdiction="[data?.name as string]"
+      :data="data"
+      :formatted-jurisdiction="[data?.name ?? '']"
       :show-suggest-edit="true"
     >
       <DetailRow label="">
@@ -16,35 +14,7 @@
         </h1>
       </DetailRow>
 
-      <template #search-links>
-        <DetailRow label="Specialists" variant="specialist">
-          <RelatedItemsList :items="specialistItems" base-path="/specialist" />
-        </DetailRow>
-        <DetailRow label="Domestic Instruments" variant="instrument">
-          <RelatedItemsList
-            :items="domesticInstruments"
-            base-path="/domestic-instrument"
-          />
-        </DetailRow>
-        <DetailRow label="Court Decisions" variant="court-decision">
-          <RelatedItemsList
-            :items="courtDecisions"
-            base-path="/court-decision"
-          />
-        </DetailRow>
-
-        <DetailRow
-          :label="jurisdictionLabels.literature"
-          :tooltip="jurisdictionTooltips.literature"
-          variant="literature"
-        >
-          <RelatedItemsList
-            :items="allLiterature"
-            base-path="/literature"
-            :empty-value-behavior="{ action: 'hide' }"
-          />
-        </DetailRow>
-      </template>
+      <EntityContent v-if="data" base-path="/jurisdiction" :data="data" />
 
       <template #footer>
         <LastModified :date="data?.updatedAt" />
@@ -109,15 +79,12 @@
       </template>
     </ClientOnly>
 
-    <PageSeoMeta
-      :title-candidates="[data?.name as string]"
-      fallback="Country Report"
-    />
+    <PageSeoMeta :title-candidates="[data?.name]" fallback="Country Report" />
 
     <EntityFeedback
       entity-type="jurisdiction"
-      :entity-id="jurisdictionId"
-      :entity-title="data?.name as string"
+      :entity-id="coldId"
+      :entity-title="data?.name ?? undefined"
     />
   </div>
 </template>
@@ -127,53 +94,18 @@ import { computed, ref } from "vue";
 import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layout/BaseDetailLayout.vue";
 import DetailRow from "@/components/ui/DetailRow.vue";
+import EntityContent from "@/components/entity/EntityContent.vue";
 import JurisdictionComparisonTable from "@/components/jurisdiction/JurisdictionComparisonTable.vue";
-import RelatedItemsList from "@/components/ui/RelatedItemsList.vue";
 import LastModified from "@/components/ui/LastModified.vue";
 import LoadingBar from "@/components/layout/LoadingBar.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
 import EntityFeedback from "@/components/ui/EntityFeedback.vue";
-import { useJurisdictionDetail } from "@/composables/useRecordDetails";
-import { jurisdictionLabels } from "@/config/labels";
-import { jurisdictionTooltips } from "@/config/tooltips";
-import type { RelatedItem } from "@/types/ui";
+import { useEntityData } from "@/composables/useEntityData";
 
 const route = useRoute();
-const jurisdictionId = ref((route.params.coldId as string).toUpperCase());
+const coldId = ref((route.params.coldId as string).toUpperCase());
 
-const { isLoading, data, error } = useJurisdictionDetail(jurisdictionId);
-
-const specialistItems = computed<RelatedItem[]>(() =>
-  (data.value?.relations.specialists ?? []).map((s) => ({
-    id: s.coldId || String(s.id),
-    title: s.specialist || String(s.id),
-  })),
-);
-
-const courtDecisions = computed<RelatedItem[]>(() =>
-  (data.value?.relations.courtDecisions ?? []).map((cd) => ({
-    id: cd.coldId || String(cd.id),
-    title: cd.caseTitle || cd.caseCitation || String(cd.id),
-  })),
-);
-
-const domesticInstruments = computed<RelatedItem[]>(() =>
-  (data.value?.relations.domesticInstruments ?? []).map((di) => ({
-    id: di.coldId || String(di.id),
-    title:
-      di.titleInEnglish || di.officialTitle || di.abbreviation || String(di.id),
-  })),
-);
-
-const allLiterature = computed<RelatedItem[]>(() =>
-  (data.value?.relations.literature ?? []).map((lit) => ({
-    id: lit.coldId || String(lit.id),
-    title: lit.title || String(lit.id),
-    ...(lit.oupJdChapter
-      ? { badge: { label: "OUP", color: "var(--color-label-oup)" } }
-      : {}),
-  })),
-);
+const { data, isLoading, error } = useEntityData("/jurisdiction", coldId);
 
 const jurisdictionOption = computed(() => {
   if (!data.value) return null;

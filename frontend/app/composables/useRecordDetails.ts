@@ -1,19 +1,10 @@
-import { computed, type ComputedRef, type Ref } from "vue";
-import { useQuery, useQueries } from "@tanstack/vue-query";
+import { computed, type Ref } from "vue";
+import { useQuery } from "@tanstack/vue-query";
 import type createClient from "openapi-fetch";
 import { useApiClient } from "@/composables/useApiClient";
 import type { TableName, TableDetailMap } from "@/types/api";
 import type { paths } from "@/types/api-schema";
-import { processDomesticInstrument } from "@/types/entities/domestic-instrument";
-import { processInternationalInstrument } from "@/types/entities/international-instrument";
-import { processRegionalInstrument } from "@/types/entities/regional-instrument";
-import { processCourtDecision } from "@/types/entities/court-decision";
-import { type Question, processQuestion } from "@/types/entities/question";
-import { processLiterature } from "@/types/entities/literature";
-import { processArbitralAward } from "@/types/entities/arbitral-award";
-import { processArbitralRule } from "@/types/entities/arbitral-rule";
-import { processJurisdiction } from "@/types/entities/jurisdiction";
-import { processSpecialist } from "@/types/entities/specialist";
+import { processQuestion } from "@/types/entities/question";
 
 type ApiClient = ReturnType<typeof createClient<paths>>;
 
@@ -51,155 +42,25 @@ export function useRecordDetails<
   });
 }
 
-export function useRecordDetailsList<
-  T extends TableName,
-  TProcessed = TableDetailMap[T],
->(
-  table: T,
-  ids: Ref<Array<string | number>>,
-  process?: (raw: TableDetailMap[T]) => TProcessed,
-): {
-  data: ComputedRef<(TProcessed | undefined)[]>;
-  isLoading: ComputedRef<boolean>;
-  hasError: ComputedRef<boolean>;
-  error: ComputedRef<unknown>;
-} {
-  const { client } = useApiClient();
-
-  const queries = computed(() => {
-    const list = ids.value || [];
-    return list.map((id) => ({
-      queryKey: [table, id],
-      queryFn: () => fetchRecordDetails(client, table, id, process),
-      enabled: Boolean(id),
-    }));
-  });
-
-  const results = useQueries({ queries });
-
-  const data: ComputedRef<(TProcessed | undefined)[]> = computed(() =>
-    results.value.map((r) => r.data as TProcessed | undefined),
-  );
-  const isLoading = computed(() => results.value.some((r) => r.isLoading));
-  const hasError = computed(() => results.value.some((r) => r.isError));
-  const error = computed(() => results.value.find((r) => r.isError)?.error);
-
-  return { data, isLoading, hasError, error };
-}
-
-export function useDomesticInstrument(id: Ref<string | number>) {
-  return useRecordDetails(
-    "Domestic Instruments",
-    id,
-    processDomesticInstrument,
-  );
-}
-
-export function useInternationalInstrument(id: Ref<string | number>) {
-  return useRecordDetails(
-    "International Instruments",
-    id,
-    processInternationalInstrument,
-  );
-}
-
-export function useRegionalInstrument(id: Ref<string | number>) {
-  return useRecordDetails(
-    "Regional Instruments",
-    id,
-    processRegionalInstrument,
-  );
-}
-
-export function useCourtDecision(id: Ref<string | number>) {
-  return useRecordDetails("Court Decisions", id, processCourtDecision);
-}
-
+/**
+ * Fetches answer or question details based on ID format.
+ * IDs containing "_" (e.g., "CH_Q1") are Answers; others are Questions.
+ */
 export function useAnswer(id: Ref<string | number>) {
-  return useRecordDetails("Answers", id, processQuestion);
-}
-
-export function useLiterature(id: Ref<string | number>) {
-  return useRecordDetails("Literature", id, processLiterature);
-}
-
-export function useArbitralAward(id: Ref<string | number>) {
-  return useRecordDetails("Arbitral Awards", id, processArbitralAward);
-}
-
-export function useArbitralRule(id: Ref<string | number>) {
-  return useRecordDetails("Arbitral Rules", id, processArbitralRule);
-}
-
-export function useJurisdictionDetail(id: Ref<string | number>) {
-  return useRecordDetails("Jurisdictions", id, processJurisdiction);
-}
-
-export function useSpecialistDetail(id: Ref<string | number>) {
-  return useRecordDetails("Specialists", id, processSpecialist);
-}
-
-export function useCourtDecisionsList(ids: Ref<(string | number)[]>) {
-  return useRecordDetailsList("Court Decisions", ids, processCourtDecision);
-}
-
-export function useDomesticInstrumentsList(ids: Ref<(string | number)[]>) {
-  return useRecordDetailsList(
-    "Domestic Instruments",
-    ids,
-    processDomesticInstrument,
-  );
-}
-
-export function useRelatedQuestions(
-  jurisdictionCode: Ref<string>,
-  questions: Ref<string>,
-) {
-  const questionList = computed(() =>
-    questions.value
-      ? questions.value
-          .split(",")
-          .map((q) => q.trim())
-          .filter((q) => q)
-      : [],
+  const { client } = useApiClient();
+  const table = computed(() =>
+    String(id.value).includes("_") ? "Answers" : "Questions",
   );
 
-  const compositeIds = computed(() =>
-    jurisdictionCode.value && questionList.value.length
-      ? questionList.value.map((qid) => `${jurisdictionCode.value}_${qid}`)
-      : [],
-  );
-
-  const results = useRecordDetailsList(
-    "Answers",
-    compositeIds,
-    processQuestion,
-  );
-
-  const items = computed(() => {
-    const dataById = new Map<string, Question>();
-    for (let i = 0; i < compositeIds.value.length; i++) {
-      const record = results.data.value?.[i];
-      const compositeId = compositeIds.value[i];
-      if (record && compositeId) {
-        dataById.set(compositeId, record);
-      }
-    }
-
-    return questionList.value.map((qid) => {
-      const id = `${jurisdictionCode.value}_${qid}`;
-      const record = dataById.get(id);
-      return {
-        id,
-        title: record?.question || id,
-      };
-    });
+  return useQuery({
+    queryKey: computed(() => [table.value, id.value]),
+    queryFn: async () => {
+      const { data, error } = await client.POST("/search/details", {
+        body: { table: table.value, id: String(id.value) },
+      });
+      if (error) throw error;
+      return processQuestion(data as Parameters<typeof processQuestion>[0]);
+    },
+    enabled: computed(() => Boolean(id.value)),
   });
-
-  return {
-    items,
-    isLoading: results.isLoading,
-    hasError: results.hasError,
-    error: results.error,
-  };
 }

@@ -40,10 +40,10 @@ export function extractYear(
  */
 export function formatYear(
   dateString: string | null | undefined,
-): string | number {
-  if (!dateString) return "";
+): number | undefined {
+  if (!dateString) return undefined;
   const date = new Date(dateString);
-  return isNaN(date.getTime()) ? "" : date.getFullYear();
+  return isNaN(date.getTime()) ? undefined : date.getFullYear();
 }
 
 /**

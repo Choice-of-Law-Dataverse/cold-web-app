@@ -9,7 +9,7 @@ export type PendingSuggestion = PendingSuggestionItem | SuggestionDetailItem;
 
 export type { StatusMessage as ModerationResponse };
 
-export const useModerationApi = () => {
+export function useModerationApi() {
   const { client } = useApiClient();
 
   const listPendingSuggestions = async (
@@ -101,4 +101,4 @@ export const useModerationApi = () => {
     rejectSuggestion,
     deleteSuggestion,
   };
-};
+}

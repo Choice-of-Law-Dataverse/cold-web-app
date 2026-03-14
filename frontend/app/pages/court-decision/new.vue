@@ -157,7 +157,9 @@ import AnalysisStepTracker from "@/components/case-analyzer/AnalysisStepTracker.
 import PageHero from "@/components/ui/PageHero.vue";
 import AnalyzerIllustration from "@/components/case-analyzer/AnalyzerIllustration.vue";
 
-definePageMeta({});
+definePageMeta({
+  middleware: ["auth"],
+});
 
 useHead({ title: "AI Case Analyzer — CoLD" });
 

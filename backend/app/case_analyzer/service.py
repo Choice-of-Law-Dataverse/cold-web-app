@@ -13,6 +13,7 @@ from .consistency_checker import check_consistency
 from .runner import retry_with_feedback
 from .tools import (
     CaseCitationOutput,
+    ColIssueOutput,
     ColSectionOutput,
     CourtsPositionOutput,
     DissentingOpinionsOutput,
@@ -34,7 +35,6 @@ from .tools import (
     extract_pil_provisions,
     extract_relevant_facts,
 )
-from .tools.models import ColIssueOutput
 
 logger = logging.getLogger(__name__)
 
@@ -74,36 +74,30 @@ async def detect_jurisdiction(text: str) -> JurisdictionOutput:
 
 
 def _reconstruct_col_section(cached: dict[str, Any]) -> ColSectionOutput:
-    return ColSectionOutput(
-        col_sections=cached.get("col_sections", []),
-        confidence=cached.get("confidence", "medium"),
-        reasoning=cached.get("reasoning", "Restored from cache"),
-    )
+    return ColSectionOutput.model_validate(cached)
 
 
 def _reconstruct_theme_classification(cached: dict[str, Any]) -> ThemeClassificationOutput:
-    return ThemeClassificationOutput(
-        themes=cached.get("themes", []),
-        confidence=cached.get("confidence", "medium"),
-        reasoning=cached.get("reasoning", "Restored from cache"),
-    )
+    return ThemeClassificationOutput.model_validate(cached)
 
 
 def _reconstruct_col_issue(cached: dict[str, Any]) -> ColIssueOutput:
-    return ColIssueOutput(
-        col_issue=cached.get("col_issue", ""),
-        confidence=cached.get("confidence", "medium"),
-        reasoning=cached.get("reasoning", "Restored from cache"),
-    )
+    return ColIssueOutput.model_validate(cached)
 
 
 async def analyze_case_streaming(
     text: str,
-    jurisdiction_data: dict[str, Any],
+    jurisdiction_data: JurisdictionOutput,
     cached_results: dict[str, Any] | None = None,
 ) -> AsyncGenerator[dict[str, Any], None]:
-    legal_system = jurisdiction_data["legal_system_type"]
-    jurisdiction = jurisdiction_data["precise_jurisdiction"]
+    """
+    Execute complete case analysis workflow with streaming updates.
+
+    Yields intermediate results as they complete. If cached_results is provided,
+    steps with cached data are skipped and their cached results are yielded immediately.
+    """
+    legal_system = jurisdiction_data.legal_system_type
+    jurisdiction = jurisdiction_data.precise_jurisdiction
     run_common_law_branches = _requires_common_law_steps(legal_system, jurisdiction)
     cached = cached_results or {}
     last_response_id: str | None = None

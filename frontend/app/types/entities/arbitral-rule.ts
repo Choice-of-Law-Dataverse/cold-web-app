@@ -1,4 +1,5 @@
 import type { components } from "@/types/api-schema";
+import { joinArbitralInstitutions } from "@/utils/entityHelpers";
 
 export type ArbitralRuleResponse = components["schemas"]["ArbitralRuleRecord"];
 export type ArbitralRuleDetailResponse =
@@ -11,14 +12,10 @@ export type ArbitralRule = ArbitralRuleDetailResponse & {
 export function processArbitralRule(
   raw: ArbitralRuleDetailResponse,
 ): ArbitralRule {
-  const arbitralInstitution =
-    raw.relations.arbitralInstitutions
-      .map((inst) => inst.institution)
-      .filter((v): v is string => Boolean(v && String(v).trim()))
-      .join(", ") || undefined;
-
   return {
     ...raw,
-    arbitralInstitution,
+    arbitralInstitution: joinArbitralInstitutions(
+      raw.relations.arbitralInstitutions,
+    ),
   };
 }

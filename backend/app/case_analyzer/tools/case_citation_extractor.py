@@ -18,6 +18,7 @@ async def extract_case_citation(
     jurisdiction: str,
     previous_response_id: str | None = None,
 ) -> StepResult[CaseCitationOutput]:
+    """Extract case citation from court decision text."""
     with logfire.span("case_citation"):
         instructions = "Extract the case citation from the provided court decision text. Provide the citation in an academic format, including all necessary details such as case name, reporter, court, and year. If the citation is not explicitly mentioned in the text, infer it based on context. Ensure accuracy and clarity in the citation format. Tailor the citation style to the legal system and jurisdiction specified."
 

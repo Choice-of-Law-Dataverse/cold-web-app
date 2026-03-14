@@ -34,7 +34,7 @@ interface JurisdictionsData {
   coveredCountries: Set<string>;
 }
 
-function processJurisdiction(
+function processJurisdictionCoverage(
   record: JurisdictionWithAnswerCoverage,
 ): ProcessedJurisdiction {
   const coldId = record.coldId?.toUpperCase() || "";
@@ -60,7 +60,7 @@ async function fetchAndProcessJurisdictions(
 
   const jurisdictions = (data as JurisdictionWithAnswerCoverage[])
     .filter((record) => record.irrelevant !== true)
-    .map(processJurisdiction);
+    .map(processJurisdictionCoverage);
 
   const knownJurisdictionTerms = new Set<string>();
   const byName = new Map<string, ProcessedJurisdiction>();

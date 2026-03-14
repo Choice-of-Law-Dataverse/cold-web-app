@@ -5,11 +5,9 @@ Used by both routes/moderation.py and any API-based approval endpoints.
 
 import json
 import logging
-import os
+from pathlib import PurePosixPath
 from typing import Any
 from urllib.parse import urlparse
-
-from fastapi import HTTPException
 
 from app.config import config
 from app.services.azure_storage import download_blob_with_managed_identity
@@ -355,11 +353,10 @@ def resolve_jurisdiction_ids(
 ) -> list[int]:
     """Resolve jurisdiction string to NocoDB jurisdiction IDs."""
     jurisdiction_ids: list[int] = []
-    if court_decision_data.get("jurisdiction"):
+    jurisdiction_value = court_decision_data.get("jurisdiction")
+    if jurisdiction_value:
         try:
-            jurisdiction_value = court_decision_data.get("jurisdiction")
-            if jurisdiction_value is not None:
-                jurisdiction_ids = nocodb_service.list_jurisdictions(str(jurisdiction_value))
+            jurisdiction_ids = nocodb_service.list_jurisdictions(str(jurisdiction_value))
 
             if not jurisdiction_ids:
                 logger.warning(
@@ -369,7 +366,7 @@ def resolve_jurisdiction_ids(
         except Exception as e:
             logger.warning(
                 "Failed to resolve jurisdiction '%s': %s - record will be created without jurisdiction link",
-                court_decision_data.get("jurisdiction"),
+                jurisdiction_value,
                 str(e),
             )
     return jurisdiction_ids
@@ -428,7 +425,7 @@ def handle_pdf_upload(
         pdf_data = download_blob_with_managed_identity(pdf_url)
 
         parsed_url = urlparse(pdf_url)
-        filename = file_name or os.path.basename(parsed_url.path)
+        filename = file_name or PurePosixPath(parsed_url.path).name
         if not filename:
             filename = "document.pdf"
         elif not filename.endswith(".pdf"):
@@ -516,10 +513,7 @@ async def approve_case_analyzer(
     court_decision_data = writer.prepare_case_analyzer_for_court_decisions(normalized)
 
     if not config.NOCODB_BASE_URL or not config.NOCODB_API_TOKEN:
-        raise HTTPException(
-            status_code=500,
-            detail="NocoDB API credentials not configured",
-        )
+        raise ValueError("NocoDB API credentials not configured")
     nocodb_service = NocoDBService(
         base_url=config.NOCODB_BASE_URL,
         api_token=config.NOCODB_API_TOKEN,
@@ -532,10 +526,7 @@ async def approve_case_analyzer(
 
     if not merged_id:
         logger.error("Failed to get record ID from NocoDB response: %s", created_record)
-        raise HTTPException(
-            status_code=500,
-            detail="Failed to create record in NocoDB",
-        )
+        raise ValueError("Failed to create record in NocoDB")
 
     link_jurisdictions(nocodb_service, jurisdiction_ids, merged_id)
 

@@ -108,13 +108,16 @@
                 :disabled="shouldShowDash(row.answer)"
                 :delay-duration="300"
               >
-                <NuxtLink
-                  :to="row.answerLink"
+                <a
+                  :href="row.answerLink"
                   class="answer-button max-w-full truncate"
+                  @click="
+                    handleAnswerClick($event, jurisdictionCodes[0]!, row.id)
+                  "
                 >
                   <template v-if="shouldShowDash(row.answer)">—</template>
                   <span v-else class="truncate">{{ row.answer }}</span>
-                </NuxtLink>
+                </a>
               </UTooltip>
               <span v-else class="answer-button text-gray-400">—</span>
             </div>
@@ -240,9 +243,12 @@
                     :disabled="shouldShowDash(row.answers[jurisdiction.coldId])"
                     :delay-duration="300"
                   >
-                    <NuxtLink
-                      :to="getAnswerLink(jurisdiction.coldId, row.id)"
+                    <a
+                      :href="getAnswerLink(jurisdiction.coldId, row.id)"
                       class="answer-button"
+                      @click="
+                        handleAnswerClick($event, jurisdiction.coldId, row.id)
+                      "
                     >
                       <template
                         v-if="shouldShowDash(row.answers[jurisdiction.coldId])"
@@ -252,7 +258,7 @@
                       <span v-else class="line-clamp-2">{{
                         row.answers[jurisdiction.coldId]
                       }}</span>
-                    </NuxtLink>
+                    </a>
                   </UTooltip>
                   <span v-else class="text-gray-400">—</span>
                 </div>
@@ -296,12 +302,15 @@
                     />
                     <USkeleton class="h-4 w-16" />
                   </div>
-                  <NuxtLink
+                  <a
                     v-else-if="
                       jurisdiction.coldId && row.answers?.[jurisdiction.coldId]
                     "
-                    :to="getAnswerLink(jurisdiction.coldId, row.id)"
+                    :href="getAnswerLink(jurisdiction.coldId, row.id)"
                     class="answer-button !inline-flex max-w-[10rem] items-center gap-2"
+                    @click="
+                      handleAnswerClick($event, jurisdiction.coldId, row.id)
+                    "
                   >
                     <img
                       v-if="jurisdiction.avatar"
@@ -317,7 +326,7 @@
                     <span v-else class="min-w-0 truncate">{{
                       row.answers[jurisdiction.coldId]
                     }}</span>
-                  </NuxtLink>
+                  </a>
                   <span v-else class="text-gray-400">—</span>
                 </div>
               </div>
@@ -341,7 +350,20 @@ import { useJurisdictions } from "@/composables/useJurisdictions";
 import JurisdictionSelectMenu from "@/components/jurisdiction/JurisdictionSelectMenu.vue";
 import LoadingBar from "@/components/layout/LoadingBar.vue";
 import InlineError from "@/components/ui/InlineError.vue";
+import { useEntityDrawer } from "@/composables/useEntityDrawer";
 import type { JurisdictionOption } from "@/types/analyzer";
+
+const { openDrawer } = useEntityDrawer();
+
+function handleAnswerClick(
+  event: MouseEvent,
+  coldId: string,
+  questionId: string,
+) {
+  if (event.metaKey || event.ctrlKey) return;
+  event.preventDefault();
+  openDrawer(`${coldId}_${questionId}`, "Answers", "/question");
+}
 
 // Props - now only needs the primary jurisdiction
 const props = defineProps<{

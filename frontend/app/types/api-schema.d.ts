@@ -621,6 +621,8 @@ export interface components {
       sourceTable?: string | null;
       /** Id */
       id?: string | number | null;
+      /** Coldid */
+      coldId?: string | null;
       /** Rank */
       rank?: number | null;
       /** Answer */
@@ -753,6 +755,8 @@ export interface components {
       sourceTable?: string | null;
       /** Id */
       id?: string | number | null;
+      /** Coldid */
+      coldId?: string | null;
       /** Rank */
       rank?: number | null;
       /** Recordid */
@@ -883,6 +887,8 @@ export interface components {
       sourceTable?: string | null;
       /** Id */
       id?: string | number | null;
+      /** Coldid */
+      coldId?: string | null;
       /** Rank */
       rank?: number | null;
       /** Recordid */
@@ -989,6 +995,8 @@ export interface components {
       sourceTable?: string | null;
       /** Id */
       id?: string | number | null;
+      /** Coldid */
+      coldId?: string | null;
       /** Rank */
       rank?: number | null;
       /** Recordid */
@@ -1093,6 +1101,8 @@ export interface components {
       sourceTable?: string | null;
       /** Id */
       id?: string | number | null;
+      /** Coldid */
+      coldId?: string | null;
       /** Rank */
       rank?: number | null;
       /** Recordid */
@@ -1259,6 +1269,8 @@ export interface components {
       sourceTable?: string | null;
       /** Id */
       id?: string | number | null;
+      /** Coldid */
+      coldId?: string | null;
       /** Rank */
       rank?: number | null;
       /** Casecitation */
@@ -1581,6 +1593,8 @@ export interface components {
       sourceTable?: string | null;
       /** Id */
       id?: string | number | null;
+      /** Coldid */
+      coldId?: string | null;
       /** Rank */
       rank?: number | null;
       /** Idnumber */
@@ -1815,6 +1829,8 @@ export interface components {
       sourceTable?: string | null;
       /** Id */
       id?: string | number | null;
+      /** Coldid */
+      coldId?: string | null;
       /** Rank */
       rank?: number | null;
       /** Name */
@@ -2340,6 +2356,8 @@ export interface components {
       sourceTable?: string | null;
       /** Id */
       id?: string | number | null;
+      /** Coldid */
+      coldId?: string | null;
       /** Rank */
       rank?: number | null;
       /** Idnumber */
@@ -2517,10 +2535,10 @@ export interface components {
       sourceTable?: string | null;
       /** Id */
       id?: string | number | null;
-      /** Rank */
-      rank?: number | null;
       /** Coldid */
       coldId?: string | null;
+      /** Rank */
+      rank?: number | null;
       /** Titleoftheprovision */
       titleOfTheProvision?: string | null;
       /** Fulltext */
@@ -2707,10 +2725,10 @@ export interface components {
       sourceTable?: string | null;
       /** Id */
       id?: string | number | null;
-      /** Rank */
-      rank?: number | null;
       /** Coldid */
       coldId?: string | null;
+      /** Rank */
+      rank?: number | null;
       /** Name */
       name?: string | null;
       /** Alpha3Code */
@@ -2892,12 +2910,12 @@ export interface components {
       sourceTable?: string | null;
       /** Id */
       id?: string | number | null;
+      /** Coldid */
+      coldId?: string | null;
       /** Rank */
       rank?: number | null;
       /** Recordid */
       recordId?: string | null;
-      /** Coldid */
-      coldId?: string | null;
       /** Key */
       key?: string | null;
       /** Itemtype */
@@ -3195,6 +3213,8 @@ export interface components {
       sourceTable?: string | null;
       /** Id */
       id?: string | number | null;
+      /** Coldid */
+      coldId?: string | null;
       /** Rank */
       rank?: number | null;
       /** Question */
@@ -3239,6 +3259,8 @@ export interface components {
       sourceTable?: string | null;
       /** Id */
       id?: string | number | null;
+      /** Coldid */
+      coldId?: string | null;
       /** Rank */
       rank?: number | null;
     };
@@ -3300,6 +3322,8 @@ export interface components {
       sourceTable?: string | null;
       /** Id */
       id?: string | number | null;
+      /** Coldid */
+      coldId?: string | null;
       /** Rank */
       rank?: number | null;
       /** Idnumber */
@@ -3456,6 +3480,8 @@ export interface components {
       sourceTable?: string | null;
       /** Id */
       id?: string | number | null;
+      /** Coldid */
+      coldId?: string | null;
       /** Rank */
       rank?: number | null;
       /** Titleoftheprovision */

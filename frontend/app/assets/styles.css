@@ -78,6 +78,7 @@
 
 :root {
   --icon-arrow-right: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14'/%3E%3Cpath d='m12 5 7 7-7 7'/%3E%3C/svg%3E");
+  --icon-panel-right: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='18' height='18' x='3' y='3' rx='2'/%3E%3Cpath d='M15 3v18'/%3E%3C/svg%3E");
   --icon-search: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.3-4.3'/%3E%3C/svg%3E");
 
   --column-width: 88px;
@@ -89,6 +90,7 @@
   /* Nav heights - mobile defaults */
   --nav-height: 5rem;
   --nav-height-scrolled: 3.5rem;
+  --banner-height: 2.5rem;
 
   /* Gradient variables - reusable linear gradient definitions */
   /* Purple-Green gradients with white */
@@ -191,7 +193,9 @@
 /* Scroll margin for hash navigation with sticky header */
 /* Uses scrolled nav height since hash navigation typically happens after page load */
 [id] {
-  scroll-margin-top: calc(var(--nav-height-scrolled) + 1rem);
+  scroll-margin-top: calc(
+    var(--nav-height-scrolled) + var(--banner-height) + 1rem
+  );
 }
 
 /* Fonts ----------------------------------------------- */
@@ -693,6 +697,35 @@ li::marker {
   box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.06);
 }
 
+.label-specialist {
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  color: var(--color-cold-night);
+  letter-spacing: 0.05em;
+  display: inline-flex;
+  gap: 4px;
+  padding: 4px 10px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, #c2508a 8%, white),
+    color-mix(in srgb, #c2508a 4%, white)
+  );
+  border: 1px solid color-mix(in srgb, #c2508a 12%, transparent);
+  border-radius: 4px;
+  transition: all 0.15s ease;
+}
+
+.label-specialist:hover {
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, #c2508a 14%, white),
+    color-mix(in srgb, #c2508a 8%, white)
+  );
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.06);
+}
+
 .label-theme {
   font-size: 0.75rem;
   font-weight: 500;
@@ -730,6 +763,24 @@ li::marker {
   word-wrap: break-word;
   word-break: break-word;
   white-space: pre-wrap;
+}
+
+.result-value-large {
+  font-weight: 500;
+  color: var(--color-cold-night);
+  overflow-wrap: break-word;
+  font-size: 1rem;
+  line-height: 1.7;
+  white-space: normal;
+}
+
+.result-value-medium {
+  font-weight: 500;
+  color: var(--color-cold-night);
+  overflow-wrap: break-word;
+  font-size: 0.9375rem;
+  line-height: 1.7;
+  white-space: normal;
 }
 
 .result-value-small {
@@ -2101,9 +2152,6 @@ button.cold-toggle-btn[aria-pressed="true"] {
   -webkit-mask-size: contain;
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-position: center;
-  -webkit-mask-size: contain;
-  -webkit-mask-repeat: no-repeat;
-  -webkit-mask-position: center;
   opacity: 0;
   transition:
     width 0.2s ease,
@@ -2191,36 +2239,6 @@ button.cold-toggle-btn[aria-pressed="true"] {
 
 /* Active state */
 .nav-tab--active {
-  color: var(--color-cold-purple);
-  font-weight: 600;
-  border-bottom: 2px solid var(--color-cold-purple);
-}
-
-/* Legacy aliases for backwards compatibility */
-.region-badge {
-  cursor: pointer;
-  white-space: nowrap;
-  border-radius: 0.5rem 0.5rem 0 0;
-  padding: 0.625rem 1rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-  transition: all 150ms;
-  color: var(--color-cold-night);
-  position: relative;
-  margin-bottom: -2px;
-  border-bottom: 2px solid rgb(229 231 235);
-}
-
-.region-badge:hover {
-  background: var(--gradient-subtle);
-}
-
-.region-badge:focus-visible {
-  outline: 2px solid var(--color-cold-purple);
-  outline-offset: -2px;
-}
-
-.region-badge-active {
   color: var(--color-cold-purple);
   font-weight: 600;
   border-bottom: 2px solid var(--color-cold-purple);

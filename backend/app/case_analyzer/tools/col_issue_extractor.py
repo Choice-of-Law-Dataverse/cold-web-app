@@ -32,7 +32,7 @@ async def extract_col_issue(
         prompt = COL_ISSUE_PROMPT.format(
             text=effective_text, col_section=str(col_section_output), classification_definitions=themes_definitions
         )
-        system_prompt = generate_system_prompt(legal_system, jurisdiction, "analysis")
+        system_prompt = generate_system_prompt(legal_system, jurisdiction)
 
         agent = Agent(
             name="ColIssueExtractor",

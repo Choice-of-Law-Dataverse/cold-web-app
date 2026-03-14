@@ -2,10 +2,12 @@
   <div class="bg-cold-bg flex min-h-dvh flex-col">
     <a href="#main-content" class="skip-link">Skip to main content</a>
     <Nav />
+    <EventBanner />
 
     <main
       id="main-content"
-      class="main-content isolate flex-1 px-3 py-6 sm:px-6 sm:py-12"
+      class="main-content isolate flex-1 px-3 py-6 transition-[margin] duration-200 ease-in-out sm:px-6 sm:py-12"
+      :class="{ 'sm:mr-[24rem]': isDrawerOpen }"
     >
       <div class="max-w-container mx-auto w-full">
         <div class="flex flex-col gap-4 sm:gap-6">
@@ -22,6 +24,8 @@
     <div aria-live="polite" aria-atomic="true" class="sr-only">
       {{ announcement }}
     </div>
+
+    <EntityDrawer />
   </div>
 </template>
 
@@ -29,9 +33,13 @@
 import Nav from "@/components/layout/Nav.vue";
 import Footer from "@/components/layout/Footer.vue";
 import ErrorBoundary from "@/components/ui/ErrorBoundary.vue";
-import { useAnnouncer } from "@/composables/useAnnouncer";
+import EntityDrawer from "@/components/entity/EntityDrawer.vue";
+import EventBanner from "@/components/layout/EventBanner.vue";
+import { useScreenAnnouncer } from "@/composables/useScreenAnnouncer";
+import { useEntityDrawer } from "@/composables/useEntityDrawer";
 
-const { announcement } = useAnnouncer();
+const { announcement } = useScreenAnnouncer();
+const { isOpen: isDrawerOpen } = useEntityDrawer();
 // import { useNavigationDirection } from "@/composables/useNavigationDirection";
 
 // const { direction } = useNavigationDirection();
@@ -67,6 +75,6 @@ const { announcement } = useAnnouncer();
  * Formula: 100dvh - nav - main-margin - footer-margin
  */
 .main-content {
-  min-height: calc(100dvh - var(--nav-height) - 10rem);
+  min-height: calc(100dvh - var(--nav-height) - var(--banner-height) - 10rem);
 }
 </style>
