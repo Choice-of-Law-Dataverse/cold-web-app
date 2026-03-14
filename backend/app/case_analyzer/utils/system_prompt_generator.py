@@ -1,8 +1,4 @@
-# utils/system_prompt_generator.py
-"""
-Dynamic system prompt generator that creates jurisdiction-specific system prompts
-with optional jurisdiction summaries from jurisdictions.csv
-"""
+"""Jurisdiction-specific system prompt generator with optional summaries from jurisdictions.csv."""
 
 import csv
 import logging
@@ -11,16 +7,10 @@ from pathlib import Path
 logger = logging.getLogger(__name__)
 
 
-def load_jurisdiction_summaries():
-    """
-    Load jurisdiction summaries from jurisdictions.csv
-
-    Returns:
-        dict: Dictionary mapping jurisdiction names to their summaries
-    """
+def load_jurisdiction_summaries() -> dict[str, str]:
+    """Load jurisdiction summaries from jurisdictions.csv."""
     try:
-        # Get the path to jurisdictions.csv
-        current_dir = Path(__file__).parent.parent  # streamlit directory
+        current_dir = Path(__file__).parent.parent
         csv_path = current_dir / "data" / "jurisdictions.csv"
 
         if not csv_path.exists():
@@ -45,13 +35,8 @@ def load_jurisdiction_summaries():
         return {}
 
 
-def generate_base_system_prompt():
-    """
-    Generate the base system prompt with general instructions for legal analysis.
-
-    Returns:
-        str: Base system prompt
-    """
+def generate_base_system_prompt() -> str:
+    """Generate the base system prompt with general instructions for legal analysis."""
     return """You are an expert in private international law and choice of law analysis.
 
 CORE INSTRUCTIONS:
@@ -73,23 +58,14 @@ ANALYSIS STANDARDS:
 - Maintain objectivity and avoid interpretive speculation beyond what the court has stated"""
 
 
-def generate_jurisdiction_specific_prompt(jurisdiction_name=None, legal_system_type=None):
-    """
-    Generate a dynamic system prompt based on jurisdiction and legal system.
-
-    Args:
-        jurisdiction_name (str, optional): Specific jurisdiction name (e.g., "Germany", "United States")
-        legal_system_type (str, optional): Legal system type (e.g., "Civil-law jurisdiction", "Common-law jurisdiction")
-
-    Returns:
-        str: Complete system prompt with jurisdiction-specific context
-    """
-    # Start with base prompt
+def generate_jurisdiction_specific_prompt(
+    jurisdiction_name: str | None = None,
+    legal_system_type: str | None = None,
+) -> str:
+    """Generate a system prompt with jurisdiction-specific context appended to the base prompt."""
     system_prompt = generate_base_system_prompt()
 
-    # Add jurisdiction-specific context if available
     if jurisdiction_name and jurisdiction_name != "Unknown":
-        # Load jurisdiction summaries
         jurisdiction_summaries = load_jurisdiction_summaries()
 
         if jurisdiction_name in jurisdiction_summaries:
@@ -103,13 +79,11 @@ This case originates from {jurisdiction_name}. The following provides relevant c
 
 Use this contextual information to inform your analysis, but remember to base your conclusions on what is actually stated in the court decision text."""
         else:
-            # Even if no summary is available, mention the jurisdiction
             system_prompt += f"""
 
 JURISDICTION CONTEXT:
 This case originates from {jurisdiction_name}. Consider this jurisdictional context when analyzing the private international law elements of the decision."""
 
-    # Add legal system type context if available
     if legal_system_type and legal_system_type not in ["Unknown legal system", None]:
         system_prompt += f"""
 
@@ -119,45 +93,9 @@ This decision comes from a {legal_system_type.lower().replace("jurisdiction", "l
     return system_prompt
 
 
-def get_system_prompt_for_analysis(state):
-    """
-    Generate system prompt based on the current analysis state.
-
-    Args:
-        state (dict): Current analysis state containing jurisdiction information
-
-    Returns:
-        str: Appropriate system prompt for the current analysis
-    """
-    # Extract jurisdiction information from state
-    jurisdiction_name = None
-    legal_system_type = None
-
-    # Check different possible keys in state for jurisdiction info
-    if "precise_jurisdiction" in state:
-        jurisdiction_name = state["precise_jurisdiction"]
-    elif "jurisdiction_name" in state:
-        jurisdiction_name = state["jurisdiction_name"]
-
-    if "jurisdiction" in state:
-        legal_system_type = state["jurisdiction"]
-    elif "legal_system_type" in state:
-        legal_system_type = state["legal_system_type"]
-
-    # Generate the appropriate prompt
-    return generate_jurisdiction_specific_prompt(jurisdiction_name, legal_system_type)
-
-
-def generate_system_prompt(legal_system_type, specific_jurisdiction, phase):
-    """
-    Generate system prompt based on explicit parameters.
-
-    Args:
-        legal_system_type (str): Legal system type (e.g., "Civil-law jurisdiction")
-        specific_jurisdiction (str): Specific jurisdiction (e.g., "Switzerland")
-        phase (str): Analysis phase (e.g., "col_section", "theme", "analysis")
-
-    Returns:
-        str: Appropriate system prompt for the analysis
-    """
+def generate_system_prompt(
+    legal_system_type: str | None = None,
+    specific_jurisdiction: str | None = None,
+) -> str:
+    """Generate system prompt based on legal system type and jurisdiction."""
     return generate_jurisdiction_specific_prompt(specific_jurisdiction, legal_system_type)

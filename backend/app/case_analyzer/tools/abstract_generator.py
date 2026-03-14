@@ -75,7 +75,7 @@ async def extract_abstract(
             prompt_vars.update({"obiter_dicta": obiter_dicta, "dissenting_opinions": dissenting_opinions})
 
         prompt = ABSTRACT_PROMPT.format(**prompt_vars)
-        system_prompt = generate_system_prompt(legal_system, jurisdiction, "analysis")
+        system_prompt = generate_system_prompt(legal_system, jurisdiction)
 
         agent = Agent(
             name="AbstractGenerator",

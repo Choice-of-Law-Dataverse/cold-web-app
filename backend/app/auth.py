@@ -1,4 +1,5 @@
 import logging
+from typing import Any
 
 import jwt
 from fastapi import Header, HTTPException, status
@@ -26,7 +27,7 @@ def get_jwks_client() -> PyJWKClient:
     return _jwks_client
 
 
-def verify_auth0_token(token: str) -> dict:
+def verify_auth0_token(token: str) -> dict[str, Any]:
     """
     Verify an Auth0 JWT token.
 
@@ -69,7 +70,7 @@ def verify_auth0_token(token: str) -> dict:
         ) from e
 
 
-def verify_frontend_request(x_api_key: str = Header(None, alias="X-API-Key")):
+def verify_frontend_request(x_api_key: str = Header(None, alias="X-API-Key")) -> None:
     """
     Verify that the request comes from the authorized frontend.
 
@@ -80,9 +81,8 @@ def verify_frontend_request(x_api_key: str = Header(None, alias="X-API-Key")):
     Required for all API requests.
     """
     if not config.API_KEY:
-        # If not configured, allow all requests (development mode)
         logger.warning("API_KEY not configured - allowing all requests")
-        return True
+        return
 
     if not x_api_key:
         raise HTTPException(
@@ -97,10 +97,8 @@ def verify_frontend_request(x_api_key: str = Header(None, alias="X-API-Key")):
             detail="Invalid API key",
         )
 
-    return True
 
-
-def require_user(authorization: str = Header(None)) -> dict:
+def require_user(authorization: str = Header(None)) -> dict[str, Any]:
     """
     Required user authentication via Auth0.
 
@@ -134,7 +132,7 @@ def require_user(authorization: str = Header(None)) -> dict:
     return verify_auth0_token(token)
 
 
-def optional_user(authorization: str = Header(None)) -> dict | None:
+def optional_user(authorization: str = Header(None)) -> dict[str, Any] | None:
     """Return user payload if a valid Bearer token is present, None otherwise."""
     if not authorization:
         return None
@@ -149,7 +147,29 @@ def optional_user(authorization: str = Header(None)) -> dict | None:
         return None
 
 
-def require_editor_or_admin(authorization: str = Header(None)) -> dict:
+ROLES_CLAIM = "https://cold.global/roles"
+EMAIL_CLAIM = "https://cold.global/email"
+
+
+def has_editor_access(user: dict[str, Any] | None) -> bool:
+    """Check if user has editor or admin role without raising."""
+    if not user:
+        return False
+    roles = user.get(ROLES_CLAIM, [])
+    if isinstance(roles, str):
+        roles = [roles]
+    normalized = {role.lower() for role in roles if isinstance(role, str)}
+    return "editor" in normalized or "admin" in normalized
+
+
+def extract_user_email(user: dict[str, Any] | None) -> str | None:
+    """Extract user email from Auth0 JWT payload."""
+    if not user:
+        return None
+    return user.get(EMAIL_CLAIM) or user.get("email") or user.get("sub")
+
+
+def require_editor_or_admin(authorization: str = Header(None)) -> dict[str, Any]:
     """
     Require user to have editor or admin role.
 
@@ -161,7 +181,7 @@ def require_editor_or_admin(authorization: str = Header(None)) -> dict:
     """
     user = require_user(authorization)
 
-    roles = user.get("https://cold.global/roles", [])
+    roles = user.get(ROLES_CLAIM, [])
 
     if not isinstance(roles, list):
         roles = [roles] if roles else []

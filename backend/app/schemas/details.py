@@ -5,7 +5,7 @@ from app.schemas.records import coerce_bools_to_str
 from app.schemas.relations import EntityRelations
 
 
-class _DetailBase(BaseModel):
+class DetailBase(BaseModel):
     model_config = ConfigDict(
         alias_generator=to_camel,
         populate_by_name=True,
@@ -24,7 +24,7 @@ class _DetailBase(BaseModel):
     updated_by: str | None = None
 
 
-class AnswerDetail(_DetailBase):
+class AnswerDetail(DetailBase):
     answer: str | None = None
     more_information: str | None = None
     to_review: str | None = None
@@ -33,20 +33,20 @@ class AnswerDetail(_DetailBase):
     question_cold_id: str | None = None
 
 
-class HcchAnswerDetail(_DetailBase):
+class HcchAnswerDetail(DetailBase):
     adapted_question: str | None = None
     position: str | None = None
     question_cold_id: str | None = None
 
 
-class QuestionDetail(_DetailBase):
+class QuestionDetail(DetailBase):
     question: str | None = None
     question_number: str | None = None
     primary_theme: str | None = None
     answering_options: str | None = None
 
 
-class JurisdictionDetail(_DetailBase):
+class JurisdictionDetail(DetailBase):
     name: str | None = None
     type: str | None = None
     region: str | None = None
@@ -58,7 +58,7 @@ class JurisdictionDetail(_DetailBase):
     done: bool | None = None
 
 
-class CourtDecisionDetail(_DetailBase):
+class CourtDecisionDetail(DetailBase):
     id_number: str | None = None
     case_citation: str | None = None
     case_title: str | None = None
@@ -82,7 +82,7 @@ class CourtDecisionDetail(_DetailBase):
     jurisdictions_alpha_3_code: str | None = None
 
 
-class DomesticInstrumentDetail(_DetailBase):
+class DomesticInstrumentDetail(DetailBase):
     id_number: str | None = None
     title_in_english: str | None = None
     official_title: str | None = None
@@ -100,7 +100,7 @@ class DomesticInstrumentDetail(_DetailBase):
     jurisdictions_alpha_3_code: str | None = None
 
 
-class DomesticLegalProvisionDetail(_DetailBase):
+class DomesticLegalProvisionDetail(DetailBase):
     article: str | None = None
     full_text_of_the_provision_original_language: str | None = None
     full_text_of_the_provision_english_translation: str | None = None
@@ -108,7 +108,7 @@ class DomesticLegalProvisionDetail(_DetailBase):
     domestic_instrument_cold_id: str | None = None
 
 
-class RegionalInstrumentDetail(_DetailBase):
+class RegionalInstrumentDetail(DetailBase):
     id_number: str | None = None
     title: str | None = None
     abbreviation: str | None = None
@@ -117,14 +117,14 @@ class RegionalInstrumentDetail(_DetailBase):
     attachment: str | None = None
 
 
-class RegionalLegalProvisionDetail(_DetailBase):
+class RegionalLegalProvisionDetail(DetailBase):
     provision: str | None = None
     title_of_the_provision: str | None = None
     full_text: str | None = None
     instrument_cold_id: str | None = None
 
 
-class InternationalInstrumentDetail(_DetailBase):
+class InternationalInstrumentDetail(DetailBase):
     id_number: str | None = None
     name: str | None = None
     date: str | None = None
@@ -132,7 +132,7 @@ class InternationalInstrumentDetail(_DetailBase):
     attachment: str | None = None
 
 
-class InternationalLegalProvisionDetail(_DetailBase):
+class InternationalLegalProvisionDetail(DetailBase):
     provision: str | None = None
     title_of_the_provision: str | None = None
     full_text: str | None = None
@@ -140,7 +140,7 @@ class InternationalLegalProvisionDetail(_DetailBase):
     instrument_cold_id: str | None = None
 
 
-class LiteratureDetail(_DetailBase):
+class LiteratureDetail(DetailBase):
     id_number: str | None = None
     item_type: str | None = None
     publication_year: str | None = None
@@ -184,7 +184,7 @@ class LiteratureDetail(_DetailBase):
     jurisdiction_summary: str | None = None
 
 
-class ArbitralAwardDetail(_DetailBase):
+class ArbitralAwardDetail(DetailBase):
     id_number: str | None = None
     case_number: str | None = None
     context: str | None = None
@@ -195,19 +195,19 @@ class ArbitralAwardDetail(_DetailBase):
     source: str | None = None
 
 
-class ArbitralInstitutionDetail(_DetailBase):
+class ArbitralInstitutionDetail(DetailBase):
     institution: str | None = None
     abbreviation: str | None = None
 
 
-class ArbitralRuleDetail(_DetailBase):
+class ArbitralRuleDetail(DetailBase):
     id_number: str | None = None
     set_of_rules: str | None = None
     in_force_from: str | None = None
     official_source_url: str | None = None
 
 
-class ArbitralProvisionDetail(_DetailBase):
+class ArbitralProvisionDetail(DetailBase):
     article: str | None = None
     full_text_original_language: str | None = None
     full_text_english_translation: str | None = None
@@ -216,7 +216,7 @@ class ArbitralProvisionDetail(_DetailBase):
     arbitral_rules_cold_id: str | None = None
 
 
-class SpecialistDetail(_DetailBase):
+class SpecialistDetail(DetailBase):
     specialist: str | None = None
     affiliation: str | None = None
     contact: str | None = None
@@ -242,10 +242,10 @@ AnyDetail = (
     | ArbitralRuleDetail
     | ArbitralProvisionDetail
     | SpecialistDetail
-    | _DetailBase
+    | DetailBase
 )
 
-TABLE_DETAIL_MODELS: dict[str, type[_DetailBase]] = {
+TABLE_DETAIL_MODELS: dict[str, type[DetailBase]] = {
     "Answers": AnswerDetail,
     "HCCH Answers": HcchAnswerDetail,
     "Questions": QuestionDetail,

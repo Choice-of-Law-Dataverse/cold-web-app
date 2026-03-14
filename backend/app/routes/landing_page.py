@@ -29,4 +29,4 @@ def get_jurisdictions(
     landing_page_service: LandingPageService = Depends(get_landing_page_service),
 ) -> list[LandingPageJurisdiction]:
     results = landing_page_service.get_jurisdictions()
-    return results
+    return [LandingPageJurisdiction(**r) for r in results]

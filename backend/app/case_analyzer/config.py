@@ -7,16 +7,18 @@ from agents import set_tracing_export_api_key
 
 from app.config import config
 
-set_tracing_export_api_key(config.OPENAI_API_KEY if config.OPENAI_API_KEY is not None else "")
-
 logger = logging.getLogger(__name__)
 
-_openai_client = None
+_openai_client: openai.AsyncOpenAI | None = None
+_tracing_configured = False
 
 
-def get_openai_client():
+def get_openai_client() -> openai.AsyncOpenAI:
     """Get singleton AsyncOpenAI client for agents."""
-    global _openai_client
+    global _openai_client, _tracing_configured
+    if not _tracing_configured:
+        set_tracing_export_api_key(config.OPENAI_API_KEY or "")
+        _tracing_configured = True
     if _openai_client is None:
         _openai_client = openai.AsyncOpenAI(api_key=config.OPENAI_API_KEY)
     return _openai_client

@@ -39,7 +39,7 @@ async def extract_dissenting_opinions(
             classification=themes,
             col_issue=col_issue,
         )
-        system_prompt = generate_system_prompt(legal_system, jurisdiction, "analysis")
+        system_prompt = generate_system_prompt(legal_system, jurisdiction)
 
         agent = Agent(
             name="DissentingOpinionsExtractor",

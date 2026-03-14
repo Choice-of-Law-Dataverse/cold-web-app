@@ -4,12 +4,11 @@ import requests
 from app.config import config
 
 
-class GPT:
-    def __init__(self):
+class QueryClassifier:
+    def __init__(self) -> None:
         self.openai_api_key = config.OPENAI_API_KEY
 
-    # Define the function that sends a request to OpenAI API
-    def classify_user_query(self, user_query):
+    def classify_user_query(self, user_query: str) -> str | dict[str, str]:
         # API endpoint
         url = "https://api.openai.com/v1/chat/completions"
 

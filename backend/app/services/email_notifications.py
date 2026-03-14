@@ -3,6 +3,7 @@ from typing import Any
 
 import resend
 
+from app.auth import extract_user_email
 from app.config import config
 
 logger = logging.getLogger(__name__)
@@ -78,12 +79,6 @@ def _build_moderation_url(category: str, suggestion_id: int) -> str:
     return f"https://cold.global/moderation/{slug}/{suggestion_id}"
 
 
-def _extract_user_email(user: dict[str, Any] | None) -> str | None:
-    if not user:
-        return None
-    return user.get("https://cold.global/email") or user.get("email") or user.get("sub")
-
-
 def send_new_suggestion_notification(
     category: str,
     suggestion_id: int,
@@ -106,7 +101,7 @@ def send_new_suggestion_notification(
     label = CATEGORY_LABELS.get(category, category)
     summary = _extract_summary(category, payload)
     moderation_url = _build_moderation_url(category, suggestion_id)
-    submitter_email = payload.get("submitter_email") or _extract_user_email(user) or "Not provided"
+    submitter_email = payload.get("submitter_email") or extract_user_email(user) or "Not provided"
     submitter_comments = payload.get("submitter_comments")
 
     subject = f"[CoLD] {action}: {label}"

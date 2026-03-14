@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from pydantic.alias_generators import to_camel
 
 from app.auth import verify_frontend_request
-from app.schemas.details import TABLE_DETAIL_MODELS, AnyDetail, _DetailBase
+from app.schemas.details import TABLE_DETAIL_MODELS, AnyDetail, DetailBase
 from app.schemas.records import AnyRecord, validate_record
 from app.schemas.requests import (
     CuratedDetailsRequest,
@@ -118,7 +118,7 @@ def handle_entity_detail(
         raise HTTPException(status_code=400, detail=str(e)) from e
     if not result:
         raise HTTPException(status_code=404, detail=f"No record found for {body.id} in {body.table}")
-    model = TABLE_DETAIL_MODELS.get(result.get("source_table", ""), _DetailBase)
+    model = TABLE_DETAIL_MODELS.get(result.get("source_table", ""), DetailBase)
     return model.model_validate(result)
 
 

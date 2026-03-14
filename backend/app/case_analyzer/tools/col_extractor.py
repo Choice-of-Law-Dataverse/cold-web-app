@@ -34,7 +34,7 @@ async def extract_col_section(
 
         prompt = COL_SECTION_PROMPT.format(text=text)
 
-        system_prompt = generate_system_prompt(legal_system, jurisdiction, "col_section")
+        system_prompt = generate_system_prompt(legal_system, jurisdiction)
 
         agent = Agent(
             name="ColSectionExtractor",

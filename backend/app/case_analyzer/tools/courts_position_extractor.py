@@ -48,7 +48,7 @@ async def extract_courts_position(
         prompt = COURTS_POSITION_PROMPT.format(
             col_issue=col_issue, text=text, col_section=str(col_section_output), classification=themes
         )
-        system_prompt = generate_system_prompt(legal_system, jurisdiction, "analysis")
+        system_prompt = generate_system_prompt(legal_system, jurisdiction)
 
         agent = Agent(
             name="CourtsPositionExtractor",
