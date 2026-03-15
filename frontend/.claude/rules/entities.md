@@ -9,5 +9,6 @@ Each entity file exports three things:
 3. **Processor function** (e.g., `processCourtDecision`) — transforms raw API response into display-ready form
 
 New entities must also be registered in:
+
 - `types/api.ts` type maps (`TableResponseMap`, `TableDetailMap`, `TableProcessedMap`)
 - `config/entityRegistry.ts`

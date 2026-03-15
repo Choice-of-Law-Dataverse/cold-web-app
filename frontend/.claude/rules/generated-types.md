@@ -5,6 +5,7 @@ paths: ["app/types/api-schema.d.ts", "app/types/openapi.json"]
 These files are auto-generated. Do not edit manually.
 
 Regenerate after any backend route/schema/Pydantic model change:
+
 ```bash
 cd frontend && pnpm run generate:api
 ```
