@@ -34,13 +34,37 @@ import { ref, onMounted, onUnmounted } from "vue";
 
 const isScrolled = ref(false);
 
+const SCROLL_THRESHOLD_ON = 48;
+const SCROLL_THRESHOLD_OFF = 16;
+let isScrollTicking = false;
+
+function updateScrollState(): void {
+  const scrollY = window.scrollY;
+
+  if (isScrolled.value) {
+    if (scrollY <= SCROLL_THRESHOLD_OFF) {
+      isScrolled.value = false;
+    }
+  } else if (scrollY >= SCROLL_THRESHOLD_ON) {
+    isScrolled.value = true;
+  }
+}
+
 function handleScroll(): void {
-  isScrolled.value = window.scrollY > 20;
+  if (isScrollTicking) {
+    return;
+  }
+
+  isScrollTicking = true;
+  window.requestAnimationFrame(() => {
+    updateScrollState();
+    isScrollTicking = false;
+  });
 }
 
 onMounted(() => {
   window.addEventListener("scroll", handleScroll, { passive: true });
-  handleScroll();
+  updateScrollState();
 });
 
 onUnmounted(() => {

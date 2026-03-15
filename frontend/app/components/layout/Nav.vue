@@ -62,8 +62,32 @@ const isMobile = ref(false);
 const isScrolled = ref(false);
 const navMenu = ref<InstanceType<typeof NavMenu> | null>(null);
 
+const SCROLL_THRESHOLD_ON = 48;
+const SCROLL_THRESHOLD_OFF = 16;
+let isScrollTicking = false;
+
+function updateScrollState(): void {
+  const scrollY = window.scrollY;
+
+  if (isScrolled.value) {
+    if (scrollY <= SCROLL_THRESHOLD_OFF) {
+      isScrolled.value = false;
+    }
+  } else if (scrollY >= SCROLL_THRESHOLD_ON) {
+    isScrolled.value = true;
+  }
+}
+
 function handleScroll(): void {
-  isScrolled.value = window.scrollY > 20;
+  if (isScrollTicking) {
+    return;
+  }
+
+  isScrollTicking = true;
+  window.requestAnimationFrame(() => {
+    updateScrollState();
+    isScrollTicking = false;
+  });
 }
 
 function checkScreenSize(): void {
@@ -86,7 +110,7 @@ onMounted(() => {
   checkScreenSize();
   window.addEventListener("resize", checkScreenSize);
   window.addEventListener("scroll", handleScroll, { passive: true });
-  handleScroll();
+  updateScrollState();
 
   const q = route.query.q;
   if (typeof q === "string") {

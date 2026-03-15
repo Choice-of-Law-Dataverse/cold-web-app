@@ -244,7 +244,9 @@
     color: var(--color-cold-purple);
     text-decoration: none;
     font-weight: 400;
-    transition: all 0.2s ease;
+    transition:
+      color 0.2s ease,
+      text-decoration-color 0.2s ease;
     position: relative;
   }
 
@@ -370,7 +372,10 @@ li::marker {
   text-align: left;
   font-weight: 500;
   box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  transition: all 150ms;
+  transition:
+    box-shadow 150ms ease,
+    background 150ms ease,
+    transform 150ms ease;
   background: var(--gradient-subtle);
 }
 
@@ -424,7 +429,10 @@ li::marker {
   border-radius: 0.5rem;
   text-align: left;
   box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  transition: all 150ms;
+  transition:
+    box-shadow 150ms ease,
+    background 150ms ease,
+    color 150ms ease;
   background: var(--gradient-subtle);
   gap: 0.5rem;
   padding: 0.25rem 0.5rem;
@@ -934,7 +942,12 @@ textarea,
   font-weight: 500;
   display: inline-flex;
   align-items: center;
-  transition: all 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    background 0.15s ease,
+    color 0.15s ease,
+    transform 0.15s ease;
 }
 
 .cold-input-btn-base:hover {
@@ -972,7 +985,12 @@ button.cold-date-trigger {
   font-weight: 500;
   display: inline-flex;
   align-items: center;
-  transition: all 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    background 0.15s ease,
+    color 0.15s ease,
+    transform 0.15s ease;
   justify-content: flex-start;
 }
 
@@ -1034,7 +1052,12 @@ button.cold-toggle-btn {
   font-weight: 500;
   display: inline-flex;
   align-items: center;
-  transition: all 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    background 0.15s ease,
+    color 0.15s ease,
+    transform 0.15s ease;
   justify-content: center;
 }
 
@@ -1569,7 +1592,10 @@ button.cold-toggle-btn[aria-pressed="true"] {
   text-align: left;
   font-weight: 500;
   box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  transition: all 150ms;
+  transition:
+    box-shadow 150ms ease,
+    background 150ms ease,
+    transform 150ms ease;
   background: var(--gradient-subtle);
   gap: 0.75rem;
   padding: 0.75rem 1rem;
@@ -1636,7 +1662,9 @@ button.cold-toggle-btn[aria-pressed="true"] {
 /* Shared hover row pattern - for detail rows, question rows, comparison rows */
 .hover-row {
   border-radius: 0.5rem;
-  transition: all 150ms;
+  transition:
+    box-shadow 150ms ease,
+    background 150ms ease;
 }
 
 .hover-row:hover {
@@ -1647,7 +1675,9 @@ button.cold-toggle-btn[aria-pressed="true"] {
 /* Variant with slightly more opacity for emphasis */
 .hover-row--emphasis {
   border-radius: 0.5rem;
-  transition: all 150ms;
+  transition:
+    box-shadow 150ms ease,
+    background 150ms ease;
 }
 
 .hover-row--emphasis:hover {
@@ -1734,7 +1764,10 @@ button.cold-toggle-btn[aria-pressed="true"] {
 .hover-flag img {
   border-radius: 2px;
   box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
-  transition: all 0.15s ease;
+  transition:
+    box-shadow 0.15s ease,
+    filter 0.15s ease,
+    transform 0.15s ease;
 }
 
 .hover-flag:hover {
