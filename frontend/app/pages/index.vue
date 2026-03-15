@@ -111,16 +111,14 @@
           title="Available Arbitral Awards"
           button-text="See all"
           button-link="/arbitral-award"
-          table-name="Questions"
-          :override-number="74"
+          table-name="Arbitral Awards"
         />
 
         <NumberCard
           title="Available Arbitral Rules"
           button-text="See all"
           button-link="/arbitral-rule"
-          table-name="Questions"
-          :override-number="37"
+          table-name="Arbitral Rules"
         />
       </div>
     </div>
