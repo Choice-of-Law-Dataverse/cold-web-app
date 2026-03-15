@@ -60,15 +60,8 @@
 
 <script setup lang="ts">
 import type { Component } from "vue";
-import ResultCard from "@/components/search-results/ResultCard.vue";
-import LegislationCard from "@/components/search-results/LegislationCard.vue";
-import RegionalInstrumentCard from "@/components/search-results/RegionalInstrumentCard.vue";
-import InternationalInstrumentCard from "@/components/search-results/InternationalInstrumentCard.vue";
-import LiteratureCard from "@/components/search-results/LiteratureCard.vue";
-import CourtDecisionCard from "@/components/search-results/CourtDecisionCard.vue";
-import AnswerCard from "@/components/search-results/AnswerCard.vue";
-import ArbitralAwardCard from "@/components/search-results/ArbitralAwardCard.vue";
-import ArbitralRuleCard from "@/components/search-results/ArbitralRuleCard.vue";
+import SearchResultCardContent from "@/components/search-results/SearchResultCardContent.vue";
+import AnswerSearchCard from "@/components/search-results/AnswerSearchCard.vue";
 import NoSearchResults from "@/components/search-results/NoSearchResults.vue";
 import EmptySearchState from "@/components/search-results/EmptySearchState.vue";
 import LoadingCard from "@/components/layout/LoadingCard.vue";
@@ -84,17 +77,10 @@ defineEmits<{
   (e: "load-more"): void;
 }>();
 
-const resultComponentMap: Record<string, Component> = {
-  "Domestic Instruments": LegislationCard,
-  "Regional Instruments": RegionalInstrumentCard,
-  "International Instruments": InternationalInstrumentCard,
-  "Court Decisions": CourtDecisionCard,
-  Answers: AnswerCard,
-  Literature: LiteratureCard,
-  "Arbitral Awards": ArbitralAwardCard,
-  "Arbitral Rules": ArbitralRuleCard,
+const customCards: Record<string, Component> = {
+  Answers: AnswerSearchCard,
 };
 
 const getResultComponent = (sourceTable: string) =>
-  resultComponentMap[sourceTable] || ResultCard;
+  customCards[sourceTable] || SearchResultCardContent;
 </script>

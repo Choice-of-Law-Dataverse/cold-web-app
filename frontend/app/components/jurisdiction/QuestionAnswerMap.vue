@@ -18,19 +18,21 @@
           />
           <UButton
             to="/learn/methodology"
-            variant="outline"
-            color="neutral"
+            color="primary"
+            variant="ghost"
             size="xs"
-            icon="i-material-symbols:school-outline"
+            leading-icon="i-material-symbols:school-outline"
+            trailing-icon="i-material-symbols:arrow-forward"
           >
             Methodology
           </UButton>
           <UButton
             to="/learn/glossary"
-            variant="outline"
-            color="neutral"
+            color="primary"
+            variant="ghost"
             size="xs"
-            icon="i-material-symbols:dictionary-outline"
+            leading-icon="i-material-symbols:dictionary-outline"
+            trailing-icon="i-material-symbols:arrow-forward"
           >
             Glossary
           </UButton>

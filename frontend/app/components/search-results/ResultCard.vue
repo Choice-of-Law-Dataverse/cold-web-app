@@ -1,9 +1,10 @@
 <template>
   <div class="result-card-container col-span-12">
-    <NuxtLink
+    <a
       v-if="cardType !== 'Loading'"
-      :to="getCardLink()"
+      :href="cardLink"
       class="card-link-wrapper"
+      @click="handleCardClick"
     >
       <UCard
         class="result-card"
@@ -24,14 +25,13 @@
           />
         </template>
 
-        <!-- Gradient divider between header and content -->
         <div class="gradient-top-border" />
 
         <div class="flex px-6 py-5">
           <slot />
         </div>
       </UCard>
-    </NuxtLink>
+    </a>
     <UCard v-else class="result-card">
       <template #header>
         <USkeleton
@@ -47,8 +47,11 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from "vue";
 import { UCard } from "#components";
 import BaseCardHeader from "@/components/ui/CardHeader.vue";
+import { getBasePathForCard, getEntityConfig } from "@/config/entityRegistry";
+import { useEntityDrawer } from "@/composables/useEntityDrawer";
 
 const props = withDefaults(
   defineProps<{
@@ -64,32 +67,25 @@ const props = withDefaults(
   },
 );
 
-function getCardLink() {
-  switch (props.cardType) {
-    case "Answers":
-      return `/question/${props.resultData.id}`;
-    case "Court Decisions":
-      return `/court-decision/${props.resultData.id}`;
-    case "Domestic Instrument":
-    case "Domestic Instruments":
-      return `/domestic-instrument/${props.resultData.id}`;
-    case "Regional Instrument":
-    case "Regional Instruments":
-      return `/regional-instrument/${props.resultData.id}`;
-    case "International Instrument":
-    case "International Instruments":
-      return `/international-instrument/${props.resultData.id}`;
-    case "Arbitral Rule":
-    case "Arbitral Rules":
-      return `/arbitral-rule/${props.resultData.id}`;
-    case "Arbitral Award":
-    case "Arbitral Awards":
-      return `/arbitral-award/${props.resultData.id}`;
-    case "Literature":
-      return `/literature/${props.resultData.id}`;
-    default:
-      return "#";
-  }
+const { openDrawer } = useEntityDrawer();
+
+const cardLink = computed(() => {
+  const basePath = getBasePathForCard(props.cardType);
+  if (basePath && props.resultData.id)
+    return `${basePath}/${props.resultData.id}`;
+  return "#";
+});
+
+function handleCardClick(event: MouseEvent) {
+  if (event.metaKey || event.ctrlKey) return;
+  event.preventDefault();
+
+  const basePath = getBasePathForCard(props.cardType);
+  if (!basePath || !props.resultData.id) return;
+  const config = getEntityConfig(basePath);
+  if (!config) return;
+
+  openDrawer(String(props.resultData.id), config.table, basePath);
 }
 </script>
 
@@ -114,8 +110,7 @@ function getCardLink() {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-/* Trigger arrow bounce animation on card hover */
-.card-link-wrapper:hover :deep(.arrow-icon) {
+.card-link-wrapper:hover :deep(.icon-action__icon) {
   animation: bounce-right 0.4s ease-out;
 }
 </style>

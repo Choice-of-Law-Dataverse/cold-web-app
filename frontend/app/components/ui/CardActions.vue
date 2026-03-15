@@ -41,8 +41,11 @@
         </div>
       </template>
       <template v-else-if="showOpenLink">
-        <div class="arrow-container">
-          <UIcon name="i-material-symbols:arrow-forward" class="arrow-icon" />
+        <div class="icon-action" @click.prevent.stop="navigateToDetail">
+          <UIcon
+            name="i-material-symbols:arrow-forward"
+            class="icon-action__icon"
+          />
         </div>
       </template>
     </template>
@@ -51,7 +54,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, defineAsyncComponent } from "vue";
+import { ref, computed, defineAsyncComponent } from "vue";
+import { getBasePathForCard } from "@/config/entityRegistry";
 
 const LazyCiteModal = defineAsyncComponent(
   () => import("@/components/ui/CiteModal.vue"),
@@ -60,16 +64,30 @@ const LazyCiteModal = defineAsyncComponent(
 const props = withDefaults(
   defineProps<{
     resultData: Record<string, unknown>;
+    cardType?: string;
     showSuggestEdit?: boolean;
     showOpenLink?: boolean;
     headerMode?: string;
   }>(),
   {
+    cardType: "",
     showSuggestEdit: true,
     showOpenLink: true,
     headerMode: "default",
   },
 );
+
+const detailPath = computed(() => {
+  if (!props.cardType) return undefined;
+  const basePath = getBasePathForCard(props.cardType);
+  const id = props.resultData.id;
+  if (basePath && id) return `${basePath}/${id}`;
+  return undefined;
+});
+
+function navigateToDetail() {
+  if (detailPath.value) navigateTo(detailPath.value);
+}
 
 defineEmits<{
   "open-save-modal": [];
@@ -124,16 +142,23 @@ function printPage() {
   gap: 0.75rem;
 }
 
-.arrow-container {
+.icon-action {
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0.25rem;
+  cursor: pointer;
+  border-radius: 0.25rem;
 }
 
-.arrow-icon {
+.icon-action__icon {
   font-size: 1.5rem;
   color: var(--color-cold-purple);
-  transition: transform 0.3s ease;
+  transition: transform 0.2s ease;
+}
+
+.icon-action:hover .icon-action__icon,
+.icon-action:focus-visible .icon-action__icon {
+  transform: scale(1.2);
 }
 </style>
