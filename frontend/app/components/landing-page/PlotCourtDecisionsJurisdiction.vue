@@ -142,7 +142,9 @@ function handleBarHover(index: number, isHovering: boolean) {
     color-mix(in srgb, var(--color-cold-purple) 15%, rgb(241 245 249)),
     color-mix(in srgb, var(--color-cold-green) 12%, rgb(241 245 249))
   );
-  transition: all 0.15s ease;
+  transition:
+    width 0.15s ease,
+    background 0.15s ease;
   display: flex;
   align-items: center;
   justify-content: space-between;

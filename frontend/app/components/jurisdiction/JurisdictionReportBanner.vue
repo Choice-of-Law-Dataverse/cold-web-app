@@ -6,8 +6,7 @@
   >
     <!-- Subtle animated gradient overlay -->
     <div
-      class="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100"
-      style="animation: shimmer 2s infinite; background-size: 200% 100%"
+      class="shimmer-overlay absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100"
     />
 
     <div class="relative flex items-center justify-between">
@@ -104,6 +103,22 @@ const jurisdictionReportLink = computed(() => {
   }
   100% {
     background-position: 200% 0;
+  }
+}
+
+.shimmer-overlay {
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+  animation-play-state: paused;
+}
+
+.group:hover .shimmer-overlay {
+  animation-play-state: running;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shimmer-overlay {
+    animation: none;
   }
 }
 </style>
