@@ -11,17 +11,21 @@
     }"
   >
     <template #content>
-      <div class="flex h-full flex-col">
-        <div class="flex flex-col gap-2 px-6 pt-4 pb-3">
-          <div class="flex items-center justify-end gap-1">
-            <UButton
-              v-if="canGoBack"
-              icon="i-lucide-arrow-left"
-              variant="ghost"
-              color="neutral"
-              size="md"
-              @click="goBack"
-            />
+      <div class="flex h-full flex-col overflow-hidden">
+        <div
+          class="flex items-center justify-between rounded-tl-xl px-4 pt-2 pb-1"
+          style="background: var(--gradient-subtle)"
+        >
+          <UButton
+            v-if="canGoBack"
+            icon="i-lucide-arrow-left"
+            variant="ghost"
+            color="neutral"
+            size="md"
+            @click="goBack"
+          />
+          <div v-else />
+          <div class="flex items-center gap-1">
             <UButton
               v-if="hasDetailPage"
               :to="fullPagePath"
@@ -42,6 +46,8 @@
               @click="closeDrawer"
             />
           </div>
+        </div>
+        <div class="px-6 pt-3 pb-3">
           <CardTags
             :formatted-jurisdiction="headerJurisdictions"
             :legal-family="headerLegalFamily"
@@ -53,7 +59,7 @@
 
         <div class="gradient-top-border" />
 
-        <div class="flex-1 overflow-y-auto">
+        <div class="flex-1 overflow-x-hidden overflow-y-auto">
           <div v-if="isLoading" class="p-6">
             <LoadingBar />
           </div>
@@ -211,7 +217,5 @@ const questionSuffix = computed(() => {
 :deep(.tags-container) {
   white-space: normal;
   gap: 0.375rem 0;
-  justify-content: flex-end;
-  flex: unset;
 }
 </style>
