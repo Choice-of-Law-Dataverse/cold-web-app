@@ -12,45 +12,43 @@
   >
     <template #content>
       <div class="flex h-full flex-col">
-        <div class="flex items-center justify-between gap-3 px-6 py-5">
-          <div class="flex min-w-0 items-center gap-2">
+        <div class="flex flex-col gap-2 px-6 pt-4 pb-3">
+          <div class="flex items-center justify-end gap-1">
             <UButton
               v-if="canGoBack"
               icon="i-lucide-arrow-left"
               variant="ghost"
               color="neutral"
-              size="xs"
+              size="md"
               @click="goBack"
             />
-            <CardTags
-              :formatted-jurisdiction="headerJurisdictions"
-              :legal-family="headerLegalFamily"
-              :source-table-label="headerSourceTable"
-              :label-color-class="headerLabelColor"
-              :formatted-theme="[]"
-            />
-          </div>
-          <div class="flex shrink-0 items-center gap-1">
             <UButton
               v-if="hasDetailPage"
               :to="fullPagePath"
-              leading-icon="i-lucide-external-link"
-              trailing-icon="i-lucide-external-link"
-              variant="outline"
-              color="neutral"
+              leading-icon="i-lucide-maximize"
+              trailing-icon="i-material-symbols:arrow-forward"
+              color="primary"
+              variant="ghost"
               size="xs"
               @click="closeDrawer"
             >
-              Open
+              Full page
             </UButton>
             <UButton
               icon="i-lucide-x"
               variant="ghost"
               color="neutral"
-              size="sm"
+              size="md"
               @click="closeDrawer"
             />
           </div>
+          <CardTags
+            :formatted-jurisdiction="headerJurisdictions"
+            :legal-family="headerLegalFamily"
+            :source-table-label="headerSourceTable"
+            :label-color-class="headerLabelColor"
+            :formatted-theme="[]"
+          />
         </div>
 
         <div class="gradient-top-border" />
@@ -107,6 +105,7 @@ import InlineError from "@/components/ui/InlineError.vue";
 import JurisdictionDrawerQA from "@/components/jurisdiction/JurisdictionDrawerQA.vue";
 import DrawerAnswerMap from "@/components/jurisdiction/DrawerAnswerMap.vue";
 import CardTags from "@/components/ui/CardTags.vue";
+import { getLabelColorClassByVariant } from "@/config/entityRegistry";
 
 const contentComponents: Record<string, Component> = {
   CourtDecisionContent,
@@ -173,12 +172,9 @@ const headerJurisdictions = computed<string[]>(() => {
 
 const headerSourceTable = computed(() => config.value?.singularLabel ?? "");
 
-const headerLabelColor = computed(() => {
-  const variant = config.value?.variant;
-  if (!variant) return "";
-  if (variant === "jurisdiction") return "hidden";
-  return `label-${variant}`;
-});
+const headerLabelColor = computed(() =>
+  getLabelColorClassByVariant(config.value?.variant ?? ""),
+);
 
 const headerLegalFamily = computed<string[]>(() => {
   const data = entityData.value;
@@ -215,5 +211,7 @@ const questionSuffix = computed(() => {
 :deep(.tags-container) {
   white-space: normal;
   gap: 0.375rem 0;
+  justify-content: flex-end;
+  flex: unset;
 }
 </style>

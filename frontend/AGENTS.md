@@ -149,10 +149,9 @@ Each entity file exports three things:
 
 | File                | Purpose                                                                                         |
 | ------------------- | ----------------------------------------------------------------------------------------------- |
-| `entityRegistry.ts` | Central entity config: field order, label overrides, content components, processing functions   |
+| `entityRegistry.ts` | Central entity config: field order, label overrides, search card configs, processing functions  |
 | `tooltips.ts`       | Tooltip content per entity field, validated with `satisfies Partial<Record<FieldType, string>>` |
 | `navigation.ts`     | App navigation structure                                                                        |
-| `cardConfigs.js`    | Card layout configurations                                                                      |
 | `assets.ts`         | Asset path helpers                                                                              |
 | `auth.ts`           | Auth0 configuration                                                                             |
 

@@ -46,6 +46,7 @@ export function useEntityDrawer() {
 
   function closeDrawer() {
     isOpen.value = false;
+    entity.value = null;
     history.value = [];
   }
 

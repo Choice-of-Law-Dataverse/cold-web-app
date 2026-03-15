@@ -130,6 +130,32 @@ export const RELATION_RENDERERS: Record<string, RelationRendererConfig> = {
   },
 };
 
+export interface SearchCardFieldImage {
+  dataKey: string;
+  src: string;
+  alt: string;
+  class?: string;
+}
+
+export interface SearchCardField {
+  key: string;
+  label?: string;
+  fallback?: (data: Record<string, unknown>) => string;
+  format?: "date" | "year";
+  inlineImage?: SearchCardFieldImage;
+}
+
+export interface SearchCardPdf {
+  sourceFields: string[];
+  folderName: string;
+}
+
+export interface SearchCardConfig {
+  fields: SearchCardField[];
+  pdf?: SearchCardPdf;
+  processData?: (data: Record<string, unknown>) => Record<string, unknown>;
+}
+
 export interface EntityConfig {
   table: TableName;
   singularLabel: string;
@@ -142,6 +168,7 @@ export interface EntityConfig {
   excludeRelations?: string[];
   hasDetailPage?: boolean;
   variant?: string;
+  searchCard?: SearchCardConfig;
 }
 
 type RelationItem = Record<string, unknown>;
@@ -216,6 +243,26 @@ export const entityRegistry: Record<string, EntityConfig> = {
     process: processCourtDecision,
     contentComponentId: "CourtDecisionContent",
     variant: "court-decision",
+    searchCard: {
+      fields: [
+        {
+          key: "caseTitle",
+          fallback: (data: Record<string, unknown>) =>
+            String(data.caseCitation || ""),
+        },
+        {
+          key: "publicationDateIso",
+          label: "Date",
+          format: "year",
+        },
+        { key: "instance" },
+        { key: "choiceOfLawIssue" },
+      ],
+      pdf: {
+        sourceFields: ["officialSourcePdf", "sourcePdf"],
+        folderName: "court-decisions",
+      },
+    },
   },
   "/question": {
     table: "Answers",
@@ -236,6 +283,13 @@ export const entityRegistry: Record<string, EntityConfig> = {
     contentComponentId: "QuestionContent",
     excludeRelations: ["questions"],
     variant: "question",
+    searchCard: {
+      fields: [
+        { key: "question" },
+        { key: "answer" },
+        { key: "moreInformation" },
+      ],
+    },
   },
   "/literature": {
     table: "Literature",
@@ -260,6 +314,23 @@ export const entityRegistry: Record<string, EntityConfig> = {
     process: processLiterature,
     contentComponentId: "LiteratureContent",
     variant: "literature",
+    searchCard: {
+      fields: [
+        {
+          key: "title",
+          inlineImage: {
+            dataKey: "openAccess",
+            src: "https://choiceoflaw.blob.core.windows.net/assets/Open_Access_logo_PLoS_transparent.svg",
+            alt: "Open Access Logo",
+            class: "ml-1 inline-flex w-3",
+          },
+        },
+        { key: "author" },
+        { key: "publicationYear", label: "Date" },
+        { key: "publicationTitle" },
+        { key: "publisher" },
+      ],
+    },
   },
   "/domestic-instrument": {
     table: "Domestic Instruments",
@@ -287,6 +358,21 @@ export const entityRegistry: Record<string, EntityConfig> = {
     process: processDomesticInstrument,
     contentComponentId: "DomesticInstrumentContent",
     variant: "instrument",
+    searchCard: {
+      fields: [
+        { key: "titleInEnglish", label: "Name" },
+        { key: "date" },
+        { key: "abbreviation" },
+      ],
+      pdf: {
+        sourceFields: ["officialSourcePdf", "sourcePdf"],
+        folderName: "domestic-instruments",
+      },
+      processData: (data: Record<string, unknown>) => ({
+        ...data,
+        themes: data.domesticLegalProvisionsThemes,
+      }),
+    },
   },
   "/regional-instrument": {
     table: "Regional Instruments",
@@ -299,6 +385,17 @@ export const entityRegistry: Record<string, EntityConfig> = {
     process: processRegionalInstrument,
     contentComponentId: "RegionalInstrumentContent",
     variant: "instrument",
+    searchCard: {
+      fields: [
+        { key: "abbreviation" },
+        { key: "date", format: "date" },
+        { key: "title" },
+      ],
+      pdf: {
+        sourceFields: ["attachment"],
+        folderName: "regional-instruments",
+      },
+    },
   },
   "/international-instrument": {
     table: "International Instruments",
@@ -309,6 +406,16 @@ export const entityRegistry: Record<string, EntityConfig> = {
     process: processInternationalInstrument,
     contentComponentId: "InternationalInstrumentContent",
     variant: "instrument",
+    searchCard: {
+      fields: [
+        { key: "name", label: "Title" },
+        { key: "date", format: "date" },
+      ],
+      pdf: {
+        sourceFields: ["officialSourcePdf", "sourcePdf", "attachment"],
+        folderName: "international-instruments",
+      },
+    },
   },
   "/arbitral-rule": {
     table: "Arbitral Rules",
@@ -321,6 +428,13 @@ export const entityRegistry: Record<string, EntityConfig> = {
     titleKey: "setOfRules",
     process: processArbitralRule,
     variant: "arbitration",
+    searchCard: {
+      fields: [
+        { key: "setOfRules" },
+        { key: "arbitralInstitutions" },
+        { key: "inForceFrom", format: "date" },
+      ],
+    },
   },
   "/arbitral-institution": {
     table: "Arbitral Institutions",
@@ -351,6 +465,16 @@ export const entityRegistry: Record<string, EntityConfig> = {
     titleKey: "caseNumber",
     process: processArbitralAward,
     variant: "arbitration",
+    searchCard: {
+      fields: [
+        {
+          key: "arbitralInstitutions",
+        },
+        {
+          key: "awardSummary",
+        },
+      ],
+    },
   },
   "/hcch-answer": {
     table: "HCCH Answers",
@@ -419,4 +543,56 @@ export const entityRegistry: Record<string, EntityConfig> = {
 
 export function getEntityConfig(basePath: string): EntityConfig | undefined {
   return entityRegistry[basePath];
+}
+
+const tableToBasePath = new Map<string, string>();
+const labelToBasePath = new Map<string, string>();
+
+for (const [basePath, config] of Object.entries(entityRegistry)) {
+  tableToBasePath.set(config.table, basePath);
+  labelToBasePath.set(config.singularLabel, basePath);
+}
+
+export function getEntityConfigByTable(
+  table: string,
+): EntityConfig | undefined {
+  const basePath = tableToBasePath.get(table);
+  return basePath ? entityRegistry[basePath] : undefined;
+}
+
+export function getBasePathForCard(cardType: string): string | undefined {
+  return tableToBasePath.get(cardType) ?? labelToBasePath.get(cardType);
+}
+
+const VARIANT_TO_LABEL_CLASS: Record<string, string> = {
+  "court-decision": "label-court-decision",
+  question: "label-question",
+  instrument: "label-instrument",
+  arbitration: "label-arbitration",
+  literature: "label-literature",
+  jurisdiction: "hidden",
+  specialist: "label-specialist",
+};
+
+export function getLabelColorClass(cardType: string): string {
+  const basePath = getBasePathForCard(cardType);
+  const config = basePath ? entityRegistry[basePath] : undefined;
+  if (!config?.variant) return "";
+  return VARIANT_TO_LABEL_CLASS[config.variant] ?? "";
+}
+
+export function getSingularLabel(cardType: string): string {
+  const basePath = getBasePathForCard(cardType);
+  const config = basePath ? entityRegistry[basePath] : undefined;
+  return config?.singularLabel ?? cardType;
+}
+
+export function getTableName(cardType: string): string {
+  const basePath = getBasePathForCard(cardType);
+  const config = basePath ? entityRegistry[basePath] : undefined;
+  return config?.table ?? cardType;
+}
+
+export function getLabelColorClassByVariant(variant: string): string {
+  return VARIANT_TO_LABEL_CLASS[variant] ?? "";
 }

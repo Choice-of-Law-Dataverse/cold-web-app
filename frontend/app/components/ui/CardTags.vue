@@ -91,7 +91,7 @@
           v-else
           :to="
             '/search?type=' +
-            encodeURIComponent(getSourceTablePlural(sourceTableLabel)).replace(
+            encodeURIComponent(getTableName(sourceTableLabel)).replace(
               /%20/g,
               '+',
             )
@@ -119,6 +119,7 @@ import { ref, onMounted, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import JurisdictionFlag from "@/components/ui/JurisdictionFlag.vue";
 import { useJurisdictionLookup } from "@/composables/useJurisdictions";
+import { getBasePathForCard, getTableName } from "@/config/entityRegistry";
 
 const props = withDefaults(
   defineProps<{
@@ -169,19 +170,8 @@ watch(
 );
 
 function typeToNewPath(label: string): string {
-  const slug =
-    label === "Court Decision"
-      ? "court-decision"
-      : label === "Domestic Instrument"
-        ? "domestic-instrument"
-        : label === "Regional Instrument"
-          ? "regional-instrument"
-          : label === "International Instrument"
-            ? "international-instrument"
-            : label === "Question"
-              ? "question"
-              : "literature";
-  return `/${slug}/new`;
+  const basePath = getBasePathForCard(label) ?? "/literature";
+  return `${basePath}/new`;
 }
 
 watch(selectedType, (val, old) => {
@@ -189,17 +179,6 @@ watch(selectedType, (val, old) => {
     router.push(typeToNewPath(val));
   }
 });
-
-function getSourceTablePlural(label: string): string {
-  if (label === "Court Decision") return "Court Decisions";
-  if (label === "Domestic Instrument") return "Domestic Instruments";
-  if (label === "Regional Instrument") return "Regional Instruments";
-  if (label === "International Instrument") return "International Instruments";
-  if (label === "Question") return "Questions";
-  if (label === "Arbitral Rule") return "Arbitral Rules";
-  if (label === "Arbitral Award") return "Arbitral Awards";
-  return label;
-}
 </script>
 
 <style scoped>

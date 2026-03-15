@@ -23,6 +23,13 @@ export function parseJurisdictionString(jurisdictionString: string): string[] {
     return [];
   }
 
+  if (trimmed.includes(" | ")) {
+    return trimmed
+      .split(" | ")
+      .map((part) => part.trim())
+      .filter((part) => part);
+  }
+
   if (trimmed.includes(" and ")) {
     return trimmed
       .split(" and ")

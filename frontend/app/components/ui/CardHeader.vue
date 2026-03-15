@@ -1,6 +1,6 @@
 <template>
   <div
-    :key="`${formattedJurisdiction.join()}-${formattedTheme.join()}-${legalFamily.join()}`"
+    :key="`${resolvedJurisdiction.join()}-${resolvedTheme.join()}-${legalFamily.join()}`"
     class="header-container flex flex-wrap items-center justify-between gap-3"
   >
     <template v-if="cardType === 'Loading'" />
@@ -20,8 +20,8 @@
       </div>
 
       <CardTags
-        :formatted-jurisdiction="formattedJurisdiction"
-        :formatted-theme="formattedTheme"
+        :formatted-jurisdiction="resolvedJurisdiction"
+        :formatted-theme="resolvedTheme"
         :legal-family="legalFamily"
         :source-table-label="adjustedSourceTable"
         :label-color-class="labelColorClass"
@@ -30,6 +30,7 @@
 
       <CardActions
         :result-data="resultData"
+        :card-type="formattedSourceTable"
         :show-suggest-edit="showSuggestEdit"
         :show-open-link="showOpenLink"
         :header-mode="headerMode"
@@ -42,6 +43,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { parseJurisdictionString } from "@/utils/jurisdictionParser";
+import { getSingularLabel, getLabelColorClass } from "@/config/entityRegistry";
 import CardTags from "@/components/ui/CardTags.vue";
 import CardActions from "@/components/ui/CardActions.vue";
 
@@ -70,7 +72,7 @@ const props = withDefaults(
   },
 );
 
-const formattedJurisdiction = computed(() => {
+const resolvedJurisdiction = computed(() => {
   if (props.formattedJurisdiction.length > 0) {
     return props.formattedJurisdiction;
   }
@@ -97,65 +99,24 @@ const formattedSourceTable = computed(() => {
   return props.cardType || String(props.resultData?.sourceTable ?? "");
 });
 
-const adjustedSourceTable = computed(() => {
-  switch (formattedSourceTable.value) {
-    case "Court Decisions":
-      return "Court Decision";
-    case "Answers":
-      return "Question";
-    case "Domestic Instrument":
-      return "Domestic Instrument";
-    case "Regional Instrument":
-      return "Regional Instrument";
-    case "International Instrument":
-      return "International Instrument";
-    case "Literature":
-      return "Literature";
-    case "Arbitral Rule":
-      return "Arbitral Rule";
-    case "Arbitral Award":
-      return "Arbitral Award";
-    case "Jurisdiction":
-    case "Jurisdictions":
-      return "Jurisdiction";
-    default:
-      return formattedSourceTable.value || "";
-  }
-});
+const adjustedSourceTable = computed(() =>
+  getSingularLabel(formattedSourceTable.value),
+);
 
-const labelColorClass = computed(() => {
-  switch (formattedSourceTable.value) {
-    case "Court Decisions":
-    case "Court Decision":
-      return "label-court-decision";
-    case "Answers":
-    case "Question":
-      return "label-question";
-    case "Domestic Instrument":
-    case "Regional Instrument":
-    case "International Instrument":
-      return "label-instrument";
-    case "Arbitral Rule":
-    case "Arbitral Award":
-      return "label-arbitration";
-    case "Literature":
-      return "label-literature";
-    case "Jurisdiction":
-      return "hidden";
-    default:
-      return "";
-  }
-});
+const labelColorClass = computed(() =>
+  getLabelColorClass(formattedSourceTable.value),
+);
 
-const formattedTheme = computed(() => {
+const resolvedTheme = computed(() => {
   if (props.formattedTheme.length > 0) {
     return props.formattedTheme;
   }
 
   if (props.cardType === "Literature" && props.resultData.themes) {
     return String(props.resultData.themes)
-      .split(",")
-      .map((theme: string) => theme.trim());
+      .split(/[,|]/)
+      .map((theme: string) => theme.trim())
+      .filter(Boolean);
   }
 
   const themes =
@@ -168,8 +129,9 @@ const formattedTheme = computed(() => {
   return [
     ...new Set(
       String(themes)
-        .split(",")
-        .map((theme: string) => theme.trim()),
+        .split(/[,|]/)
+        .map((theme: string) => theme.trim())
+        .filter(Boolean),
     ),
   ];
 });

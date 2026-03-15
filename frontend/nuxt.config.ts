@@ -41,6 +41,14 @@ export default defineNuxtConfig({
     plugins: [tailwindcss() as any],
     // Suppress OpenTelemetry 'this' keyword warnings (ESM compatibility)
     optimizeDeps: {
+      include: [
+        "@vue/devtools-core",
+        "@vue/devtools-kit",
+        "@tanstack/vue-query-devtools",
+        "@tanstack/vue-query",
+        "mitt",
+        "openapi-fetch",
+      ],
       exclude: ["@opentelemetry/api"],
     },
     build: {
