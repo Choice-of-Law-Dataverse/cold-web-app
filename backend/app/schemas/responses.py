@@ -4,8 +4,8 @@ from typing import Any
 from pydantic import BaseModel, ConfigDict, Field
 from pydantic.alias_generators import to_camel
 
-from app.schemas.records import AnyRecord, RecordBase
 from app.schemas.requests import FTSFilterOption
+from app.schemas.search_result import AnySearchResult
 
 
 class FullTextSearchResponse(BaseModel):
@@ -16,12 +16,7 @@ class FullTextSearchResponse(BaseModel):
     total_matches: int
     page: int
     page_size: int
-    results: list[AnyRecord]
-
-
-class CuratedDetailsRecord(RecordBase):
-    cold_id: str | None = None
-    hop1_relations: dict[str, list[dict[str, Any]] | None] | None = None
+    results: list[AnySearchResult]
 
 
 class JurisdictionCoverage(BaseModel):

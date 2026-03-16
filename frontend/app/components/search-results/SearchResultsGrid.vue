@@ -65,9 +65,10 @@ import AnswerSearchCard from "@/components/search-results/AnswerSearchCard.vue";
 import NoSearchResults from "@/components/search-results/NoSearchResults.vue";
 import EmptySearchState from "@/components/search-results/EmptySearchState.vue";
 import LoadingCard from "@/components/layout/LoadingCard.vue";
+import type { AnySearchResult } from "@/types/search";
 
 defineProps<{
-  results: Record<string, unknown>[];
+  results: AnySearchResult[];
   loading: boolean;
   canLoadMore: boolean;
   hasQuery: boolean;

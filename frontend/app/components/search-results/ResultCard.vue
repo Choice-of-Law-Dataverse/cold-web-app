@@ -52,16 +52,17 @@ import { UCard } from "#components";
 import BaseCardHeader from "@/components/ui/CardHeader.vue";
 import { getBasePathForCard, getEntityConfig } from "@/config/entityRegistry";
 import { useEntityDrawer } from "@/composables/useEntityDrawer";
+import type { AnySearchResult } from "@/types/search";
 
 const props = withDefaults(
   defineProps<{
-    resultData?: Record<string, unknown>;
+    resultData?: AnySearchResult;
     cardType: string;
     formattedTheme?: string[];
     formattedJurisdiction?: string[];
   }>(),
   {
-    resultData: () => ({}),
+    resultData: () => ({}) as AnySearchResult,
     formattedTheme: () => [],
     formattedJurisdiction: () => [],
   },

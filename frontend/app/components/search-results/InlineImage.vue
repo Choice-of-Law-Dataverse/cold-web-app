@@ -1,18 +1,26 @@
 <template>
-  <span v-if="field.inlineImage && displayData[field.inlineImage.dataKey]">
+  <span v-if="showImage">
     <img
-      :class="field.inlineImage.class"
-      :src="field.inlineImage.src"
-      :alt="field.inlineImage.alt"
+      :class="field.inlineImage!.class"
+      :src="field.inlineImage!.src"
+      :alt="field.inlineImage!.alt"
     />
   </span>
 </template>
 
 <script setup lang="ts">
+import { computed } from "vue";
 import type { SearchCardField } from "@/config/entityRegistry";
+import type { AnySearchResult } from "@/types/search";
 
-defineProps<{
+const props = defineProps<{
   field: SearchCardField;
-  displayData: Record<string, unknown>;
+  displayData: AnySearchResult;
 }>();
+
+const showImage = computed(() => {
+  if (!props.field.inlineImage) return false;
+  const key = props.field.inlineImage.dataKey;
+  return Boolean(props.displayData[key as keyof typeof props.displayData]);
+});
 </script>

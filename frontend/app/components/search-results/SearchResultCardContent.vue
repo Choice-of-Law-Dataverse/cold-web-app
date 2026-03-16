@@ -21,7 +21,7 @@
             <template #actions>
               <PdfLink
                 :pdf-field="resolvedPdfField"
-                :record-id="displayData.id as string"
+                :record-id="String(displayData.id)"
                 :folder-name="pdfConfig.folderName"
               />
             </template>
@@ -52,17 +52,22 @@ import {
 } from "@/config/entityRegistry";
 import { camelCaseToLabel } from "@/utils/camelCaseToLabel";
 import { formatDate, extractYear } from "@/utils/format";
+import type { AnySearchResult, AnySearchResultKey } from "@/types/search";
 
 const props = defineProps<{
-  resultData: Record<string, unknown>;
+  resultData: AnySearchResult;
   cardType: string;
 }>();
+
+function field(data: AnySearchResult, key: AnySearchResultKey): unknown {
+  return data[key as keyof typeof data];
+}
 
 const entityConfig = computed(() => getEntityConfigByTable(props.cardType));
 const searchCard = computed(() => entityConfig.value?.searchCard);
 const pdfConfig = computed(() => searchCard.value?.pdf);
 
-const displayData = computed<Record<string, unknown>>(() => {
+const displayData = computed<AnySearchResult>(() => {
   if (searchCard.value?.processData) {
     return searchCard.value.processData(props.resultData);
   }
@@ -71,24 +76,24 @@ const displayData = computed<Record<string, unknown>>(() => {
 
 const visibleFields = computed(() => {
   if (!searchCard.value) return [];
-  return searchCard.value.fields.filter((field) => {
-    const value = getFieldValue(field);
+  return searchCard.value.fields.filter((f) => {
+    const value = getFieldValue(f);
     return value && value !== "NA" && value !== "";
   });
 });
 
-function getFieldValue(field: SearchCardField): unknown {
-  const value = displayData.value[field.key];
-  if ((!value || value === "NA") && field.fallback) {
-    return field.fallback(props.resultData);
+function getFieldValue(f: SearchCardField): unknown {
+  const value = field(displayData.value, f.key);
+  if ((!value || value === "NA") && f.fallback) {
+    return f.fallback(props.resultData);
   }
   return value;
 }
 
-function getFieldLabel(field: SearchCardField): string {
-  if (field.label) return field.label;
+function getFieldLabel(f: SearchCardField): string {
+  if (f.label) return f.label;
   const overrides = entityConfig.value?.labelOverrides ?? {};
-  return overrides[field.key] ?? camelCaseToLabel(field.key);
+  return overrides[f.key] ?? camelCaseToLabel(f.key);
 }
 
 function getFieldClasses(index: number): string[] {
@@ -96,20 +101,19 @@ function getFieldClasses(index: number): string[] {
   return [sizeClass, "text-sm leading-relaxed whitespace-normal"];
 }
 
-function formatFieldValue(field: SearchCardField): string {
-  const value = getFieldValue(field);
+function formatFieldValue(f: SearchCardField): string {
+  const value = getFieldValue(f);
   if (value === null || value === undefined || value === "") return "";
-  if (field.format === "year")
-    return extractYear(String(value)) ?? String(value);
-  if (field.format === "date")
-    return formatDate(String(value)) ?? String(value);
+  if (f.format === "year") return extractYear(String(value)) ?? String(value);
+  if (f.format === "date") return formatDate(String(value)) ?? String(value);
   return String(value);
 }
 
 const resolvedPdfField = computed(() => {
   if (!pdfConfig.value) return undefined;
-  for (const fieldName of pdfConfig.value.sourceFields) {
-    if (props.resultData[fieldName]) return props.resultData[fieldName];
+  for (const key of pdfConfig.value.sourceFields) {
+    const val = field(props.resultData, key);
+    if (val) return val;
   }
   return undefined;
 });

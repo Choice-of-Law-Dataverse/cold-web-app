@@ -21,9 +21,10 @@ import { computed } from "vue";
 import SearchResultsHeader from "@/components/search-results/SearchResultsHeader.vue";
 import SearchResultsGrid from "@/components/search-results/SearchResultsGrid.vue";
 import type { SearchFilters } from "@/types/api";
+import type { AnySearchResult } from "@/types/search";
 
 interface SearchData {
-  tables: Record<string, unknown>[];
+  tables: AnySearchResult[];
 }
 
 const props = withDefaults(
@@ -49,7 +50,7 @@ const emit = defineEmits<{
   "load-more": [];
 }>();
 
-const allResults = computed((): Record<string, unknown>[] => {
+const allResults = computed((): AnySearchResult[] => {
   if (!props.data?.tables) return [];
   return props.data.tables;
 });

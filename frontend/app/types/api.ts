@@ -1,4 +1,5 @@
 import type { components } from "./api-schema";
+import type { AnySearchResult as AnySearchResultType } from "./search";
 import type { AnswerResponse, AnswerDetailResponse } from "./entities/answer";
 import type {
   ArbitralAward,
@@ -174,8 +175,10 @@ export type TypedFilter<T extends TableName> = {
 
 export type FilterColumn = "jurisdictions" | "themes" | "tables" | "type";
 
+export type { AnySearchResult } from "./search";
+
 export interface SearchResponse {
-  results: Record<string, unknown>[];
+  results: AnySearchResultType[];
   totalMatches: number;
 }
 
