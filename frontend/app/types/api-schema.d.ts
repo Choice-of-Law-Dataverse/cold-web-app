@@ -638,21 +638,27 @@ export interface components {
     };
     /** AnswerSearchResult */
     AnswerSearchResult: {
-      sourceTable?: string | null;
       id?: string | number | null;
       coldId?: string | null;
+      sourceTable?: string | null;
+      createdAt?: string | null;
+      updatedAt?: string | null;
+      createdBy?: string | null;
+      updatedBy?: string | null;
+      answer?: string | null;
+      moreInformation?: string | null;
+      toReview?: string | null;
+      oupBookQuote?: string | null;
+      jurisdictionsAlpha3Code?: string | null;
+      questionColdId?: string | null;
       rank?: number | null;
       resultDate?: string | null;
       jurisdictions?: string | null;
       themes?: string | null;
-      answer?: string | null;
       question?: string | null;
-      moreInformation?: string | null;
-      oupBookQuote?: string | null;
       courtDecisionsLink?: string | null;
       lastModified?: string | null;
       created?: string | null;
-      jurisdictionsAlpha3Code?: string | null;
       questionsThemeCode?: string | null;
     };
     /** ArbitralAwardDetail */
@@ -750,18 +756,27 @@ export interface components {
     };
     /** ArbitralAwardSearchResult */
     ArbitralAwardSearchResult: {
-      sourceTable?: string | null;
       id?: string | number | null;
       coldId?: string | null;
+      sourceTable?: string | null;
+      createdAt?: string | null;
+      updatedAt?: string | null;
+      createdBy?: string | null;
+      updatedBy?: string | null;
+      idNumber?: string | null;
+      caseNumber?: string | null;
+      context?: string | null;
+      awardSummary?: string | null;
+      year?: string | null;
+      natureOfTheAward?: string | null;
+      seatTown?: string | null;
+      source?: string | null;
       rank?: number | null;
       resultDate?: string | null;
       jurisdictions?: string | null;
       themes?: string | null;
-      caseNumber?: string | null;
       arbitralInstitutions?: string | null;
       arbitralInstitutionsAbbrev?: string | null;
-      awardSummary?: string | null;
-      year?: string | null;
       jurisdictionsAlpha3Code?: string | null;
     };
     /** ArbitralInstitutionDetail */
@@ -831,15 +846,19 @@ export interface components {
     };
     /** ArbitralInstitutionSearchResult */
     ArbitralInstitutionSearchResult: {
-      sourceTable?: string | null;
       id?: string | number | null;
       coldId?: string | null;
+      sourceTable?: string | null;
+      createdAt?: string | null;
+      updatedAt?: string | null;
+      createdBy?: string | null;
+      updatedBy?: string | null;
+      institution?: string | null;
+      abbreviation?: string | null;
       rank?: number | null;
       resultDate?: string | null;
       jurisdictions?: string | null;
       themes?: string | null;
-      institution?: string | null;
-      abbreviation?: string | null;
     };
     /** ArbitralProvisionDetail */
     ArbitralProvisionDetail: {
@@ -913,14 +932,23 @@ export interface components {
     };
     /** ArbitralProvisionSearchResult */
     ArbitralProvisionSearchResult: {
-      sourceTable?: string | null;
       id?: string | number | null;
       coldId?: string | null;
+      sourceTable?: string | null;
+      createdAt?: string | null;
+      updatedAt?: string | null;
+      createdBy?: string | null;
+      updatedBy?: string | null;
+      article?: string | null;
+      fullTextOriginalLanguage?: string | null;
+      fullTextEnglishTranslation?: string | null;
+      arbitrationMethodType?: string | null;
+      nonStateLawAllowedInAoc?: string | null;
+      arbitralRulesColdId?: string | null;
       rank?: number | null;
       resultDate?: string | null;
       jurisdictions?: string | null;
       themes?: string | null;
-      article?: string | null;
       arbitralInstitutions?: string | null;
       arbitralRules?: string | null;
     };
@@ -997,16 +1025,22 @@ export interface components {
     };
     /** ArbitralRuleSearchResult */
     ArbitralRuleSearchResult: {
-      sourceTable?: string | null;
       id?: string | number | null;
       coldId?: string | null;
+      sourceTable?: string | null;
+      createdAt?: string | null;
+      updatedAt?: string | null;
+      createdBy?: string | null;
+      updatedBy?: string | null;
+      idNumber?: string | null;
+      setOfRules?: string | null;
+      inForceFrom?: string | null;
+      officialSourceUrl?: string | null;
       rank?: number | null;
       resultDate?: string | null;
       jurisdictions?: string | null;
       themes?: string | null;
-      setOfRules?: string | null;
       arbitralInstitutions?: string | null;
-      inForceFrom?: string | null;
     };
     /**
      * ClassifyQueryRequest
@@ -1141,21 +1175,39 @@ export interface components {
     };
     /** CourtDecisionSearchResult */
     CourtDecisionSearchResult: {
-      sourceTable?: string | null;
       id?: string | number | null;
       coldId?: string | null;
+      sourceTable?: string | null;
+      createdAt?: string | null;
+      updatedAt?: string | null;
+      createdBy?: string | null;
+      updatedBy?: string | null;
+      idNumber?: string | null;
+      caseCitation?: string | null;
+      caseTitle?: string | null;
+      instance?: string | null;
+      date?: string | null;
+      abstract?: string | null;
+      caseRank?: string | null;
+      englishTranslation?: string | null;
+      choiceOfLawIssue?: string | null;
+      courtSPosition?: string | null;
+      translatedExcerpt?: string | null;
+      relevantFacts?: string | null;
+      dateOfJudgment?: string | null;
+      pilProvisions?: string | null;
+      originalText?: string | null;
+      quote?: string | null;
+      textOfTheRelevantLegalProvisions?: string | null;
+      officialSourceUrl?: string | null;
+      officialSourcePdf?: string | null;
+      publicationDateIso?: string | null;
+      jurisdictionsAlpha3Code?: string | null;
       rank?: number | null;
       resultDate?: string | null;
       jurisdictions?: string | null;
       themes?: string | null;
-      caseTitle?: string | null;
-      caseCitation?: string | null;
-      publicationDateIso?: string | null;
-      instance?: string | null;
-      choiceOfLawIssue?: string | null;
-      officialSourcePdf?: string | null;
       sourcePdf?: string | null;
-      jurisdictionsAlpha3Code?: string | null;
     };
     /**
      * CourtDecisionSuggestion
@@ -1363,19 +1415,33 @@ export interface components {
     };
     /** DomesticInstrumentSearchResult */
     DomesticInstrumentSearchResult: {
-      sourceTable?: string | null;
       id?: string | number | null;
       coldId?: string | null;
+      sourceTable?: string | null;
+      createdAt?: string | null;
+      updatedAt?: string | null;
+      createdBy?: string | null;
+      updatedBy?: string | null;
+      idNumber?: string | null;
+      titleInEnglish?: string | null;
+      officialTitle?: string | null;
+      date?: string | null;
+      status?: string | null;
+      abbreviation?: string | null;
+      relevantProvisions?: string | null;
+      fullTextOfTheProvisions?: string | null;
+      publicationDate?: string | null;
+      entryIntoForce?: string | null;
+      sourceUrl?: string | null;
+      sourcePdf?: string | null;
+      compatibleWithTheHcchPrinciples?: boolean | null;
+      compatibleWithTheUncitralModelLaw?: boolean | null;
+      jurisdictionsAlpha3Code?: string | null;
       rank?: number | null;
       resultDate?: string | null;
       jurisdictions?: string | null;
       themes?: string | null;
-      titleInEnglish?: string | null;
-      date?: string | null;
-      abbreviation?: string | null;
       officialSourcePdf?: string | null;
-      sourcePdf?: string | null;
-      jurisdictionsAlpha3Code?: string | null;
       domesticLegalProvisionsThemes?: string | null;
     };
     /**
@@ -1503,14 +1569,22 @@ export interface components {
     };
     /** DomesticLegalProvisionSearchResult */
     DomesticLegalProvisionSearchResult: {
-      sourceTable?: string | null;
       id?: string | number | null;
       coldId?: string | null;
+      sourceTable?: string | null;
+      createdAt?: string | null;
+      updatedAt?: string | null;
+      createdBy?: string | null;
+      updatedBy?: string | null;
+      article?: string | null;
+      fullTextOfTheProvisionOriginalLanguage?: string | null;
+      fullTextOfTheProvisionEnglishTranslation?: string | null;
+      rankingDisplayOrder?: string | null;
+      domesticInstrumentColdId?: string | null;
       rank?: number | null;
       resultDate?: string | null;
       jurisdictions?: string | null;
       themes?: string | null;
-      article?: string | null;
       legislationTitle?: string | null;
       name?: string | null;
     };
@@ -1884,18 +1958,24 @@ export interface components {
     };
     /** InternationalInstrumentSearchResult */
     InternationalInstrumentSearchResult: {
-      sourceTable?: string | null;
       id?: string | number | null;
       coldId?: string | null;
+      sourceTable?: string | null;
+      createdAt?: string | null;
+      updatedAt?: string | null;
+      createdBy?: string | null;
+      updatedBy?: string | null;
+      idNumber?: string | null;
+      name?: string | null;
+      date?: string | null;
+      url?: string | null;
+      attachment?: string | null;
       rank?: number | null;
       resultDate?: string | null;
       jurisdictions?: string | null;
       themes?: string | null;
-      name?: string | null;
-      date?: string | null;
       officialSourcePdf?: string | null;
       sourcePdf?: string | null;
-      attachment?: string | null;
     };
     /**
      * InternationalInstrumentSuggestion
@@ -1999,15 +2079,22 @@ export interface components {
     };
     /** InternationalLegalProvisionSearchResult */
     InternationalLegalProvisionSearchResult: {
-      sourceTable?: string | null;
       id?: string | number | null;
       coldId?: string | null;
+      sourceTable?: string | null;
+      createdAt?: string | null;
+      updatedAt?: string | null;
+      createdBy?: string | null;
+      updatedBy?: string | null;
+      provision?: string | null;
+      titleOfTheProvision?: string | null;
+      fullText?: string | null;
+      rankingDisplayOrder?: string | null;
+      instrumentColdId?: string | null;
       rank?: number | null;
       resultDate?: string | null;
       jurisdictions?: string | null;
       themes?: string | null;
-      titleOfTheProvision?: string | null;
-      provision?: string | null;
       instrument?: string | null;
     };
     /**
@@ -2123,18 +2210,27 @@ export interface components {
     };
     /** JurisdictionSearchResult */
     JurisdictionSearchResult: {
-      sourceTable?: string | null;
       id?: string | number | null;
       coldId?: string | null;
+      sourceTable?: string | null;
+      createdAt?: string | null;
+      updatedAt?: string | null;
+      createdBy?: string | null;
+      updatedBy?: string | null;
+      name?: string | null;
+      type?: string | null;
+      region?: string | null;
+      northSouthDivide?: string | null;
+      jurisdictionalDifferentiator?: string | null;
+      legalFamily?: string | null;
+      jurisdictionSummary?: string | null;
+      irrelevant?: boolean | null;
+      done?: boolean | null;
       rank?: number | null;
       resultDate?: string | null;
       jurisdictions?: string | null;
       themes?: string | null;
-      name?: string | null;
       alpha3Code?: string | null;
-      region?: string | null;
-      legalFamily?: string | null;
-      jurisdictionSummary?: string | null;
     };
     /** LandingPageJurisdiction */
     LandingPageJurisdiction: {
@@ -2292,20 +2388,58 @@ export interface components {
     };
     /** LiteratureSearchResult */
     LiteratureSearchResult: {
-      sourceTable?: string | null;
       id?: string | number | null;
       coldId?: string | null;
+      sourceTable?: string | null;
+      createdAt?: string | null;
+      updatedAt?: string | null;
+      createdBy?: string | null;
+      updatedBy?: string | null;
+      idNumber?: string | null;
+      itemType?: string | null;
+      publicationYear?: string | null;
+      author?: string | null;
+      title?: string | null;
+      publicationTitle?: string | null;
+      abstractNote?: string | null;
+      isbn?: string | null;
+      issn?: string | null;
+      doi?: string | null;
+      url?: string | null;
+      date?: string | null;
+      dateAdded?: string | null;
+      dateModified?: string | null;
+      publisher?: string | null;
+      language?: string | null;
+      extra?: string | null;
+      manualTags?: string | null;
+      editor?: string | null;
+      issue?: string | null;
+      volume?: string | null;
+      pages?: string | null;
+      libraryCatalog?: string | null;
+      accessDate?: string | null;
+      openAccess?: string | null;
+      openAccessUrl?: string | null;
+      journalAbbreviation?: string | null;
+      shortTitle?: string | null;
+      place?: string | null;
+      numPages?: string | null;
+      type?: string | null;
+      oupJdChapter?: string | null;
+      contributor?: string | null;
+      automaticTags?: string | null;
+      number?: string | null;
+      series?: string | null;
+      seriesNumber?: string | null;
+      seriesEditor?: string | null;
+      edition?: string | null;
+      callNumber?: string | null;
+      jurisdictionSummary?: string | null;
       rank?: number | null;
       resultDate?: string | null;
       jurisdictions?: string | null;
       themes?: string | null;
-      title?: string | null;
-      author?: string | null;
-      publicationYear?: string | null;
-      publicationTitle?: string | null;
-      publisher?: string | null;
-      openAccess?: string | null;
-      oupJdChapter?: string | null;
     };
     /**
      * LiteratureSuggestion
@@ -2429,15 +2563,21 @@ export interface components {
     };
     /** QuestionSearchResult */
     QuestionSearchResult: {
-      sourceTable?: string | null;
       id?: string | number | null;
       coldId?: string | null;
+      sourceTable?: string | null;
+      createdAt?: string | null;
+      updatedAt?: string | null;
+      createdBy?: string | null;
+      updatedBy?: string | null;
+      question?: string | null;
+      questionNumber?: string | null;
+      primaryTheme?: string | null;
+      answeringOptions?: string | null;
       rank?: number | null;
       resultDate?: string | null;
       jurisdictions?: string | null;
       themes?: string | null;
-      question?: string | null;
-      questionNumber?: string | null;
       themeCode?: string | null;
     };
     /** RecordBase */
@@ -2521,17 +2661,23 @@ export interface components {
     };
     /** RegionalInstrumentSearchResult */
     RegionalInstrumentSearchResult: {
-      sourceTable?: string | null;
       id?: string | number | null;
       coldId?: string | null;
+      sourceTable?: string | null;
+      createdAt?: string | null;
+      updatedAt?: string | null;
+      createdBy?: string | null;
+      updatedBy?: string | null;
+      idNumber?: string | null;
+      title?: string | null;
+      abbreviation?: string | null;
+      date?: string | null;
+      url?: string | null;
+      attachment?: string | null;
       rank?: number | null;
       resultDate?: string | null;
       jurisdictions?: string | null;
       themes?: string | null;
-      abbreviation?: string | null;
-      date?: string | null;
-      title?: string | null;
-      attachment?: string | null;
     };
     /**
      * RegionalInstrumentSuggestion
@@ -2628,22 +2774,27 @@ export interface components {
     };
     /** RegionalLegalProvisionSearchResult */
     RegionalLegalProvisionSearchResult: {
-      sourceTable?: string | null;
       id?: string | number | null;
       coldId?: string | null;
+      sourceTable?: string | null;
+      createdAt?: string | null;
+      updatedAt?: string | null;
+      createdBy?: string | null;
+      updatedBy?: string | null;
+      provision?: string | null;
+      titleOfTheProvision?: string | null;
+      fullText?: string | null;
+      instrumentColdId?: string | null;
       rank?: number | null;
       resultDate?: string | null;
       jurisdictions?: string | null;
       themes?: string | null;
-      titleOfTheProvision?: string | null;
-      provision?: string | null;
       instrument?: string | null;
     };
     /** SearchResultBase */
     SearchResultBase: {
-      sourceTable?: string | null;
       id?: string | number | null;
-      coldId?: string | null;
+      sourceTable?: string | null;
       rank?: number | null;
       resultDate?: string | null;
       jurisdictions?: string | null;
