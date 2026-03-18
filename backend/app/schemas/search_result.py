@@ -1,209 +1,104 @@
 from typing import Any
 
-from pydantic import BaseModel, ConfigDict, create_model
-from pydantic.alias_generators import to_camel
+from pydantic import ConfigDict
 
-from app.schemas.details import (
-    AnswerDetail,
-    ArbitralAwardDetail,
-    ArbitralInstitutionDetail,
-    ArbitralProvisionDetail,
-    ArbitralRuleDetail,
-    CourtDecisionDetail,
-    DomesticInstrumentDetail,
-    DomesticLegalProvisionDetail,
-    InternationalInstrumentDetail,
-    InternationalLegalProvisionDetail,
-    JurisdictionDetail,
-    LiteratureDetail,
-    QuestionDetail,
-    RegionalInstrumentDetail,
-    RegionalLegalProvisionDetail,
+from app.schemas.entities import (
+    AnswerBase,
+    ArbitralAwardBase,
+    ArbitralInstitutionBase,
+    ArbitralProvisionBase,
+    ArbitralRuleBase,
+    CourtDecisionBase,
+    DomesticInstrumentBase,
+    DomesticLegalProvisionBase,
+    EntityBase,
+    InternationalInstrumentBase,
+    InternationalLegalProvisionBase,
+    JurisdictionBase,
+    LiteratureBase,
+    QuestionBase,
+    RegionalInstrumentBase,
+    RegionalLegalProvisionBase,
 )
-from app.schemas.records import coerce_bools_to_str
 
 
-class SearchResultBase(BaseModel):
-    model_config = ConfigDict(
-        alias_generator=to_camel,
-        populate_by_name=True,
-        extra="ignore",
-        coerce_numbers_to_str=True,
-    )
+class SearchResultBase(EntityBase):
+    model_config = ConfigDict(extra="ignore")
 
-    _coerce_bools_to_str = coerce_bools_to_str
-
-    source_table: str | None = None
-    id: str | int | None = None
-    cold_id: str | None = None
     rank: float | None = None
     result_date: str | None = None
     jurisdictions: str | None = None
     themes: str | None = None
 
 
-_OPT_STR = (str | None, None)
+class AnswerSearchResult(SearchResultBase, AnswerBase):
+    question: str | None = None
+    court_decisions_link: str | None = None
+    last_modified: str | None = None
+    created: str | None = None
+    questions_theme_code: str | None = None
 
 
-def _pick(
-    model_name: str,
-    detail: type[BaseModel],
-    *fields: str,
-    **extras: tuple[Any, Any],
-) -> type[SearchResultBase]:
-    picked: dict[str, Any] = {}
-    for field_name in fields:
-        info = detail.model_fields[field_name]
-        picked[field_name] = (info.annotation, info.default)
-    picked.update(extras)
-    return create_model(model_name, __base__=SearchResultBase, **picked)  # type: ignore[return-value]
+class CourtDecisionSearchResult(SearchResultBase, CourtDecisionBase):
+    source_pdf: str | None = None
 
 
-AnswerSearchResult = _pick(
-    "AnswerSearchResult",
-    AnswerDetail,
-    "answer",
-    "more_information",
-    "oup_book_quote",
-    "jurisdictions_alpha_3_code",
-    question=_OPT_STR,
-    court_decisions_link=_OPT_STR,
-    last_modified=_OPT_STR,
-    created=_OPT_STR,
-    questions_theme_code=_OPT_STR,
-)
+class DomesticInstrumentSearchResult(SearchResultBase, DomesticInstrumentBase):
+    official_source_pdf: str | None = None
+    domestic_legal_provisions_themes: str | None = None
 
-CourtDecisionSearchResult = _pick(
-    "CourtDecisionSearchResult",
-    CourtDecisionDetail,
-    "case_title",
-    "case_citation",
-    "publication_date_iso",
-    "instance",
-    "choice_of_law_issue",
-    "official_source_pdf",
-    "jurisdictions_alpha_3_code",
-    source_pdf=_OPT_STR,
-)
 
-DomesticInstrumentSearchResult = _pick(
-    "DomesticInstrumentSearchResult",
-    DomesticInstrumentDetail,
-    "title_in_english",
-    "date",
-    "abbreviation",
-    "source_pdf",
-    "jurisdictions_alpha_3_code",
-    official_source_pdf=_OPT_STR,
-    domestic_legal_provisions_themes=_OPT_STR,
-)
+class RegionalInstrumentSearchResult(SearchResultBase, RegionalInstrumentBase):
+    pass
 
-RegionalInstrumentSearchResult = _pick(
-    "RegionalInstrumentSearchResult",
-    RegionalInstrumentDetail,
-    "abbreviation",
-    "date",
-    "title",
-    "attachment",
-)
 
-InternationalInstrumentSearchResult = _pick(
-    "InternationalInstrumentSearchResult",
-    InternationalInstrumentDetail,
-    "name",
-    "date",
-    "attachment",
-    official_source_pdf=_OPT_STR,
-    source_pdf=_OPT_STR,
-)
+class InternationalInstrumentSearchResult(SearchResultBase, InternationalInstrumentBase):
+    official_source_pdf: str | None = None
+    source_pdf: str | None = None
 
-LiteratureSearchResult = _pick(
-    "LiteratureSearchResult",
-    LiteratureDetail,
-    "title",
-    "author",
-    "publication_year",
-    "publication_title",
-    "publisher",
-    "open_access",
-    "oup_jd_chapter",
-)
 
-ArbitralAwardSearchResult = _pick(
-    "ArbitralAwardSearchResult",
-    ArbitralAwardDetail,
-    "case_number",
-    "award_summary",
-    "year",
-    arbitral_institutions=_OPT_STR,
-    arbitral_institutions_abbrev=_OPT_STR,
-    jurisdictions_alpha_3_code=_OPT_STR,
-)
+class LiteratureSearchResult(SearchResultBase, LiteratureBase):
+    pass
 
-ArbitralRuleSearchResult = _pick(
-    "ArbitralRuleSearchResult",
-    ArbitralRuleDetail,
-    "set_of_rules",
-    "in_force_from",
-    arbitral_institutions=_OPT_STR,
-)
 
-ArbitralInstitutionSearchResult = _pick(
-    "ArbitralInstitutionSearchResult",
-    ArbitralInstitutionDetail,
-    "institution",
-    "abbreviation",
-)
+class ArbitralAwardSearchResult(SearchResultBase, ArbitralAwardBase):
+    arbitral_institutions: str | None = None
+    arbitral_institutions_abbrev: str | None = None
+    jurisdictions_alpha_3_code: str | None = None
 
-ArbitralProvisionSearchResult = _pick(
-    "ArbitralProvisionSearchResult",
-    ArbitralProvisionDetail,
-    "article",
-    arbitral_institutions=_OPT_STR,
-    arbitral_rules=_OPT_STR,
-)
 
-DomesticLegalProvisionSearchResult = _pick(
-    "DomesticLegalProvisionSearchResult",
-    DomesticLegalProvisionDetail,
-    "article",
-    legislation_title=_OPT_STR,
-    name=_OPT_STR,
-)
+class ArbitralRuleSearchResult(SearchResultBase, ArbitralRuleBase):
+    arbitral_institutions: str | None = None
 
-InternationalLegalProvisionSearchResult = _pick(
-    "InternationalLegalProvisionSearchResult",
-    InternationalLegalProvisionDetail,
-    "title_of_the_provision",
-    "provision",
-    instrument=_OPT_STR,
-)
 
-RegionalLegalProvisionSearchResult = _pick(
-    "RegionalLegalProvisionSearchResult",
-    RegionalLegalProvisionDetail,
-    "title_of_the_provision",
-    "provision",
-    instrument=_OPT_STR,
-)
+class ArbitralInstitutionSearchResult(SearchResultBase, ArbitralInstitutionBase):
+    pass
 
-JurisdictionSearchResult = _pick(
-    "JurisdictionSearchResult",
-    JurisdictionDetail,
-    "name",
-    "region",
-    "legal_family",
-    "jurisdiction_summary",
-    alpha_3_code=_OPT_STR,
-)
 
-QuestionSearchResult = _pick(
-    "QuestionSearchResult",
-    QuestionDetail,
-    "question",
-    "question_number",
-    theme_code=_OPT_STR,
-)
+class ArbitralProvisionSearchResult(SearchResultBase, ArbitralProvisionBase):
+    arbitral_institutions: str | None = None
+    arbitral_rules: str | None = None
+
+
+class DomesticLegalProvisionSearchResult(SearchResultBase, DomesticLegalProvisionBase):
+    legislation_title: str | None = None
+    name: str | None = None
+
+
+class InternationalLegalProvisionSearchResult(SearchResultBase, InternationalLegalProvisionBase):
+    instrument: str | None = None
+
+
+class RegionalLegalProvisionSearchResult(SearchResultBase, RegionalLegalProvisionBase):
+    instrument: str | None = None
+
+
+class JurisdictionSearchResult(SearchResultBase, JurisdictionBase):
+    alpha_3_code: str | None = None
+
+
+class QuestionSearchResult(SearchResultBase, QuestionBase):
+    theme_code: str | None = None
 
 
 TABLE_SEARCH_MODELS: dict[str, type[SearchResultBase]] = {
