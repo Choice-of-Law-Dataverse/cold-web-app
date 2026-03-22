@@ -4,55 +4,22 @@
   >
     <div class="animate-fade-scale-in col-span-12">
       <div
-        class="hero-gradient flex flex-col items-center justify-between gap-4 rounded-2xl px-3 py-6 md:flex-row md:px-8 md:py-14"
+        class="hero-gradient flex flex-col gap-6 rounded-2xl px-3 py-6 md:flex-row md:items-center md:justify-between md:gap-10 md:px-8 md:py-10"
       >
-        <div class="flex flex-col gap-4">
+        <div class="flex flex-col gap-3 md:flex-1">
           <h1
-            class="hero-title mb-2 text-[36px] leading-[1.05] font-bold text-pretty sm:mb-4 sm:text-[56px] md:text-[81px]"
+            class="hero-title text-[36px] leading-[1.05] font-bold text-pretty sm:text-[56px] md:text-[64px]"
           >
             Choice of Law Dataverse
           </h1>
 
-          <div
-            class="flex w-full flex-col justify-between gap-4 sm:flex-row sm:items-start"
-          >
-            <div class="flex flex-col gap-4">
-              <h2
-                class="hero-subtitle text-xl font-medium text-pretty md:text-left"
-              >
-                <span>
-                  Navigate private international law issues with precision.
+          <h2 class="hero-subtitle text-lg font-medium text-pretty">
+            Navigate private international law issues with precision.
+            <NuxtLink class="hero-link" to="/about" variant="link">
+              What&nbsp;is&nbsp;CoLD?
+            </NuxtLink>
+          </h2>
 
-                  <NuxtLink class="hero-link" to="/about" variant="link">
-                    <span>Read&nbsp;more</span>
-                  </NuxtLink>
-                </span>
-              </h2>
-              <div class="flex flex-wrap gap-3">
-                <UButton
-                  to="/search"
-                  size="lg"
-                  class="hero-cta"
-                  icon="i-material-symbols:search"
-                >
-                  Start Exploring
-                </UButton>
-                <UButton
-                  to="/court-decision/new"
-                  size="lg"
-                  variant="outline"
-                  class="hero-cta-secondary"
-                  icon="i-material-symbols:category-search-outline"
-                >
-                  Analyze Case
-                </UButton>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div
-          class="hidden min-w-[100px] items-center justify-center gap-3 sm:flex-col md:flex lg:flex-row"
-        >
           <UTooltip
             text="Winner of Swiss National ORD Prize 2025 for Legal Sciences"
           >
@@ -60,24 +27,61 @@
               href="https://ord.swiss-academies.ch/news/swiss-national-ord-prize-2025-for-legal-and-environmental-sciences"
               target="_blank"
               rel="noopener noreferrer"
-              class="transition-transform hover:scale-105"
+              class="hero-badge"
             >
               <img
                 src="https://choiceoflaw.blob.core.windows.net/assets/Prix-ORD-DEF_2025.png"
                 alt="Swiss National ORD Prize 2025"
-                style="width: 95px; height: 100px"
+                class="hero-badge-img"
               />
+              <span class="hero-badge-text">Swiss National ORD Prize 2025</span>
             </a>
           </UTooltip>
+        </div>
+
+        <div class="hero-actions-col">
+          <div class="hero-jurisdiction-picker">
+            <div class="hero-picker-input">
+              <JurisdictionSelectMenu
+                v-if="jurisdictions"
+                :jurisdictions="jurisdictions"
+                placeholder="Open a jurisdiction report..."
+                @jurisdiction-selected="navigateToJurisdiction"
+              />
+              <USkeleton
+                v-else-if="isLoadingJurisdictions"
+                class="h-10 w-full rounded-lg"
+              />
+            </div>
+          </div>
+
+          <NuxtLink to="/search" class="hero-action">
+            <Icon name="i-material-symbols:search" class="hero-action-icon" />
+            <span>
+              <span class="hero-action-title">Search the database</span>
+              <span class="hero-action-desc"
+                >Court decisions, instruments, and literature</span
+              >
+            </span>
+          </NuxtLink>
+
+          <NuxtLink to="/court-decision/new" class="hero-action">
+            <Icon
+              name="i-material-symbols:category-search-outline"
+              class="hero-action-icon"
+            />
+            <span>
+              <span class="hero-action-title">Analyze a case</span>
+              <span class="hero-action-desc"
+                >AI-assisted court decision analysis</span
+              >
+            </span>
+          </NuxtLink>
         </div>
       </div>
     </div>
 
     <div class="animate-fade-up animate-delay-1 col-span-12">
-      <CountrySelectMenu />
-    </div>
-
-    <div class="animate-fade-up animate-delay-2 col-span-12">
       <JurisdictionMap />
     </div>
 
@@ -254,7 +258,7 @@
 import PopularSearches from "@/components/landing-page/PopularSearches.vue";
 import TopLiteratureThemes from "@/components/landing-page/TopLiteratureThemes.vue";
 import JurisdictionMap from "@/components/landing-page/JurisdictionMap.vue";
-import CountrySelectMenu from "@/components/landing-page/TempJurisdictionPicker.vue";
+import JurisdictionSelectMenu from "@/components/jurisdiction/JurisdictionSelectMenu.vue";
 import ConnectCard from "@/components/landing-page/ConnectCard.vue";
 import NumberCard from "@/components/landing-page/NumberCard.vue";
 import CompareJurisdictionsCard from "@/components/landing-page/CompareJurisdictionsCard.vue";
@@ -263,11 +267,25 @@ import { externalLinks } from "@/utils/externalLinks";
 import RecentDomesticInstruments from "@/components/landing-page/RecentDomesticInstruments.vue";
 import SuccessfulLegalTransplantations from "@/components/landing-page/SuccessfulLegalTransplantations.vue";
 import LeadingCases from "@/components/landing-page/LeadingCases.vue";
-import { useHead, useRuntimeConfig } from "#imports";
+import { useHead, useRuntimeConfig, useRouter } from "#imports";
 import PlotCourtDecisionsJurisdiction from "@/components/landing-page/PlotCourtDecisionsJurisdiction.vue";
+import { useJurisdictions } from "@/composables/useJurisdictions";
+import type { JurisdictionOption } from "@/types/analyzer";
 
 const links = externalLinks;
 const config = useRuntimeConfig();
+const router = useRouter();
+
+const { data: jurisdictions, isLoading: isLoadingJurisdictions } =
+  useJurisdictions();
+
+const navigateToJurisdiction = async (
+  jurisdiction: JurisdictionOption | undefined,
+) => {
+  if (jurisdiction?.coldId) {
+    await router.push(`/jurisdiction/${jurisdiction.coldId.toUpperCase()}`);
+  }
+};
 
 useHead({
   title: "Choice of Law Dataverse — CoLD",
@@ -297,6 +315,7 @@ h2 {
 }
 
 .hero-title {
+  font-family: "DM Sans", sans-serif;
   background: linear-gradient(
     135deg,
     var(--color-cold-night),
@@ -322,5 +341,93 @@ h2 {
 .hero-link:hover {
   color: color-mix(in srgb, var(--color-cold-purple) 85%, #000);
   text-decoration: underline;
+}
+
+.hero-actions-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+  max-width: 340px;
+  flex-shrink: 0;
+}
+
+.hero-jurisdiction-picker {
+  width: 100%;
+}
+
+.hero-picker-input :deep([data-slot="root"]) {
+  background: white;
+  border-radius: 0.5rem;
+  box-shadow:
+    0 2px 6px 0 rgb(0 0 0 / 0.08),
+    0 1px 2px -1px rgb(0 0 0 / 0.04);
+}
+
+.hero-action {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  background: color-mix(in srgb, white 60%, transparent);
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+
+.hero-action:hover {
+  background: white;
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.06);
+}
+
+.hero-action-icon {
+  flex-shrink: 0;
+  font-size: 1.125rem;
+  color: var(--color-cold-purple);
+}
+
+.hero-action-title {
+  display: block;
+  font-family: "DM Sans", sans-serif;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--color-cold-night);
+  line-height: 1.3;
+}
+
+.hero-action-desc {
+  display: block;
+  font-family: "DM Sans", sans-serif;
+  font-size: 0.6875rem;
+  font-weight: 400;
+  color: var(--color-cold-slate);
+  line-height: 1.3;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+  text-decoration: none;
+  opacity: 0.75;
+  transition: opacity 0.15s ease;
+}
+
+.hero-badge:hover {
+  opacity: 1;
+}
+
+.hero-badge-img {
+  width: 36px;
+  height: 38px;
+}
+
+.hero-badge-text {
+  font-family: "DM Sans", sans-serif;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-cold-slate);
+  letter-spacing: 0.02em;
 }
 </style>
