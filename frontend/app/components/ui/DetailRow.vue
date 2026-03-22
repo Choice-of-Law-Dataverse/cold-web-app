@@ -60,6 +60,7 @@ defineProps({
     padding: 1rem 1.5rem;
     margin: 0 -1.5rem;
   }
+}
 
 .detail-row::before {
   content: "";
