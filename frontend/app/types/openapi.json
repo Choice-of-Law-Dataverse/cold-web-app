@@ -2075,9 +2075,6 @@
               }
             ]
           },
-          "id": {
-            "type": "integer"
-          },
           "coldId": {
             "anyOf": [
               {
@@ -2087,6 +2084,9 @@
                 "type": "null"
               }
             ]
+          },
+          "id": {
+            "type": "integer"
           },
           "sourceTable": {
             "type": "string"
@@ -2549,6 +2549,16 @@
               }
             ]
           },
+          "coldId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "id": {
             "anyOf": [
               {
@@ -2556,16 +2566,6 @@
               },
               {
                 "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "coldId": {
-            "anyOf": [
-              {
-                "type": "string"
               },
               {
                 "type": "null"
@@ -2708,9 +2708,6 @@
               }
             ]
           },
-          "id": {
-            "type": "integer"
-          },
           "coldId": {
             "anyOf": [
               {
@@ -2720,6 +2717,9 @@
                 "type": "null"
               }
             ]
+          },
+          "id": {
+            "type": "integer"
           },
           "sourceTable": {
             "type": "string"
@@ -3274,6 +3274,16 @@
               }
             ]
           },
+          "coldId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "id": {
             "anyOf": [
               {
@@ -3281,16 +3291,6 @@
               },
               {
                 "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "coldId": {
-            "anyOf": [
-              {
-                "type": "string"
               },
               {
                 "type": "null"
@@ -3403,9 +3403,6 @@
               }
             ]
           },
-          "id": {
-            "type": "integer"
-          },
           "coldId": {
             "anyOf": [
               {
@@ -3415,6 +3412,9 @@
                 "type": "null"
               }
             ]
+          },
+          "id": {
+            "type": "integer"
           },
           "sourceTable": {
             "type": "string"
@@ -3767,6 +3767,16 @@
               }
             ]
           },
+          "coldId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "id": {
             "anyOf": [
               {
@@ -3774,16 +3784,6 @@
               },
               {
                 "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "coldId": {
-            "anyOf": [
-              {
-                "type": "string"
               },
               {
                 "type": "null"
@@ -3856,9 +3856,6 @@
               }
             ]
           },
-          "id": {
-            "type": "integer"
-          },
           "coldId": {
             "anyOf": [
               {
@@ -3868,6 +3865,9 @@
                 "type": "null"
               }
             ]
+          },
+          "id": {
+            "type": "integer"
           },
           "sourceTable": {
             "type": "string"
@@ -4270,6 +4270,16 @@
               }
             ]
           },
+          "coldId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "id": {
             "anyOf": [
               {
@@ -4277,16 +4287,6 @@
               },
               {
                 "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "coldId": {
-            "anyOf": [
-              {
-                "type": "string"
               },
               {
                 "type": "null"
@@ -4389,9 +4389,6 @@
               }
             ]
           },
-          "id": {
-            "type": "integer"
-          },
           "coldId": {
             "anyOf": [
               {
@@ -4401,6 +4398,9 @@
                 "type": "null"
               }
             ]
+          },
+          "id": {
+            "type": "integer"
           },
           "sourceTable": {
             "type": "string"
@@ -4786,6 +4786,16 @@
               }
             ]
           },
+          "coldId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "id": {
             "anyOf": [
               {
@@ -4793,16 +4803,6 @@
               },
               {
                 "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "coldId": {
-            "anyOf": [
-              {
-                "type": "string"
               },
               {
                 "type": "null"
@@ -4980,9 +4980,6 @@
               }
             ]
           },
-          "id": {
-            "type": "integer"
-          },
           "coldId": {
             "anyOf": [
               {
@@ -4992,6 +4989,9 @@
                 "type": "null"
               }
             ]
+          },
+          "id": {
+            "type": "integer"
           },
           "sourceTable": {
             "type": "string"
@@ -5794,6 +5794,16 @@
               }
             ]
           },
+          "coldId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "id": {
             "anyOf": [
               {
@@ -5801,16 +5811,6 @@
               },
               {
                 "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "coldId": {
-            "anyOf": [
-              {
-                "type": "string"
               },
               {
                 "type": "null"
@@ -6162,9 +6162,6 @@
       },
       "DetailBase": {
         "properties": {
-          "id": {
-            "type": "integer"
-          },
           "coldId": {
             "anyOf": [
               {
@@ -6174,6 +6171,9 @@
                 "type": "null"
               }
             ]
+          },
+          "id": {
+            "type": "integer"
           },
           "sourceTable": {
             "type": "string"
@@ -6297,9 +6297,6 @@
               }
             ]
           },
-          "id": {
-            "type": "integer"
-          },
           "coldId": {
             "anyOf": [
               {
@@ -6309,6 +6306,9 @@
                 "type": "null"
               }
             ]
+          },
+          "id": {
+            "type": "integer"
           },
           "sourceTable": {
             "type": "string"
@@ -6971,6 +6971,16 @@
               }
             ]
           },
+          "coldId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "id": {
             "anyOf": [
               {
@@ -6978,16 +6988,6 @@
               },
               {
                 "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "coldId": {
-            "anyOf": [
-              {
-                "type": "string"
               },
               {
                 "type": "null"
@@ -7245,9 +7245,6 @@
               }
             ]
           },
-          "id": {
-            "type": "integer"
-          },
           "coldId": {
             "anyOf": [
               {
@@ -7257,6 +7254,9 @@
                 "type": "null"
               }
             ]
+          },
+          "id": {
+            "type": "integer"
           },
           "sourceTable": {
             "type": "string"
@@ -7682,6 +7682,16 @@
               }
             ]
           },
+          "coldId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "id": {
             "anyOf": [
               {
@@ -7689,16 +7699,6 @@
               },
               {
                 "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "coldId": {
-            "anyOf": [
-              {
-                "type": "string"
               },
               {
                 "type": "null"
@@ -8481,9 +8481,6 @@
       },
       "HcchAnswerDetail": {
         "properties": {
-          "id": {
-            "type": "integer"
-          },
           "coldId": {
             "anyOf": [
               {
@@ -8493,6 +8490,9 @@
                 "type": "null"
               }
             ]
+          },
+          "id": {
+            "type": "integer"
           },
           "sourceTable": {
             "type": "string"
@@ -8666,9 +8666,6 @@
               }
             ]
           },
-          "id": {
-            "type": "integer"
-          },
           "coldId": {
             "anyOf": [
               {
@@ -8678,6 +8675,9 @@
                 "type": "null"
               }
             ]
+          },
+          "id": {
+            "type": "integer"
           },
           "sourceTable": {
             "type": "string"
@@ -9210,6 +9210,16 @@
               }
             ]
           },
+          "coldId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "id": {
             "anyOf": [
               {
@@ -9217,16 +9227,6 @@
               },
               {
                 "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "coldId": {
-            "anyOf": [
-              {
-                "type": "string"
               },
               {
                 "type": "null"
@@ -9390,9 +9390,6 @@
               }
             ]
           },
-          "id": {
-            "type": "integer"
-          },
           "coldId": {
             "anyOf": [
               {
@@ -9402,6 +9399,9 @@
                 "type": "null"
               }
             ]
+          },
+          "id": {
+            "type": "integer"
           },
           "sourceTable": {
             "type": "string"
@@ -9837,6 +9837,16 @@
               }
             ]
           },
+          "coldId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "id": {
             "anyOf": [
               {
@@ -9844,16 +9854,6 @@
               },
               {
                 "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "coldId": {
-            "anyOf": [
-              {
-                "type": "string"
               },
               {
                 "type": "null"
@@ -10035,9 +10035,6 @@
               }
             ]
           },
-          "id": {
-            "type": "integer"
-          },
           "coldId": {
             "anyOf": [
               {
@@ -10047,6 +10044,9 @@
                 "type": "null"
               }
             ]
+          },
+          "id": {
+            "type": "integer"
           },
           "sourceTable": {
             "type": "string"
@@ -10503,6 +10503,16 @@
               }
             ]
           },
+          "coldId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "id": {
             "anyOf": [
               {
@@ -10510,16 +10520,6 @@
               },
               {
                 "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "coldId": {
-            "anyOf": [
-              {
-                "type": "string"
               },
               {
                 "type": "null"
@@ -10675,9 +10675,6 @@
               }
             ]
           },
-          "id": {
-            "type": "integer"
-          },
           "coldId": {
             "anyOf": [
               {
@@ -10687,6 +10684,9 @@
                 "type": "null"
               }
             ]
+          },
+          "id": {
+            "type": "integer"
           },
           "sourceTable": {
             "type": "string"
@@ -11885,6 +11885,16 @@
               }
             ]
           },
+          "coldId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "id": {
             "anyOf": [
               {
@@ -11892,16 +11902,6 @@
               },
               {
                 "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "coldId": {
-            "anyOf": [
-              {
-                "type": "string"
               },
               {
                 "type": "null"
@@ -12241,9 +12241,6 @@
               }
             ]
           },
-          "id": {
-            "type": "integer"
-          },
           "coldId": {
             "anyOf": [
               {
@@ -12253,6 +12250,9 @@
                 "type": "null"
               }
             ]
+          },
+          "id": {
+            "type": "integer"
           },
           "sourceTable": {
             "type": "string"
@@ -12578,6 +12578,16 @@
               }
             ]
           },
+          "coldId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "id": {
             "anyOf": [
               {
@@ -12585,16 +12595,6 @@
               },
               {
                 "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "coldId": {
-            "anyOf": [
-              {
-                "type": "string"
               },
               {
                 "type": "null"
@@ -12756,9 +12756,6 @@
               }
             ]
           },
-          "id": {
-            "type": "integer"
-          },
           "coldId": {
             "anyOf": [
               {
@@ -12768,6 +12765,9 @@
                 "type": "null"
               }
             ]
+          },
+          "id": {
+            "type": "integer"
           },
           "sourceTable": {
             "type": "string"
@@ -13190,6 +13190,16 @@
               }
             ]
           },
+          "coldId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "id": {
             "anyOf": [
               {
@@ -13197,16 +13207,6 @@
               },
               {
                 "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "coldId": {
-            "anyOf": [
-              {
-                "type": "string"
               },
               {
                 "type": "null"
@@ -13376,9 +13376,6 @@
               }
             ]
           },
-          "id": {
-            "type": "integer"
-          },
           "coldId": {
             "anyOf": [
               {
@@ -13388,6 +13385,9 @@
                 "type": "null"
               }
             ]
+          },
+          "id": {
+            "type": "integer"
           },
           "sourceTable": {
             "type": "string"
@@ -13750,6 +13750,16 @@
               }
             ]
           },
+          "coldId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "id": {
             "anyOf": [
               {
@@ -13757,16 +13767,6 @@
               },
               {
                 "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "coldId": {
-            "anyOf": [
-              {
-                "type": "string"
               },
               {
                 "type": "null"
@@ -13839,6 +13839,16 @@
       },
       "SearchResultBase": {
         "properties": {
+          "coldId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "id": {
             "anyOf": [
               {
@@ -13846,16 +13856,6 @@
               },
               {
                 "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "coldId": {
-            "anyOf": [
-              {
-                "type": "string"
               },
               {
                 "type": "null"
@@ -13931,9 +13931,6 @@
       },
       "SpecialistDetail": {
         "properties": {
-          "id": {
-            "type": "integer"
-          },
           "coldId": {
             "anyOf": [
               {
@@ -13943,6 +13940,9 @@
                 "type": "null"
               }
             ]
+          },
+          "id": {
+            "type": "integer"
           },
           "sourceTable": {
             "type": "string"

@@ -1,4 +1,3 @@
-# pyright: reportIncompatibleVariableOverride=false
 from app.schemas.entities import (
     AnswerBase,
     ArbitralAwardBase,
@@ -21,8 +20,8 @@ from app.schemas.relations import EntityRelations
 
 
 class DetailBase(EntityBase):
-    id: int  # type: ignore[reportGeneralTypeIssues]
-    source_table: str  # type: ignore[reportGeneralTypeIssues]
+    id: int
+    source_table: str
     relations: EntityRelations = EntityRelations()
     created_at: str | None = None
     updated_at: str | None = None

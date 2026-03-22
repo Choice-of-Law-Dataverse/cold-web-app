@@ -13,9 +13,7 @@ class EntityBase(BaseModel):
 
     _coerce_bools_to_str = coerce_bools_to_str
 
-    id: str | int | None = None
     cold_id: str | None = None
-    source_table: str | None = None
 
 
 class AnswerBase(BaseModel):

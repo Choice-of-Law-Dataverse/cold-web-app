@@ -25,6 +25,8 @@ from app.schemas.entities import (
 class SearchResultBase(EntityBase):
     model_config = ConfigDict(extra="ignore")
 
+    id: str | int | None = None
+    source_table: str | None = None
     rank: float | None = None
     result_date: str | None = None
     jurisdictions: str | None = None
@@ -139,7 +141,7 @@ AnySearchResult = (
 )
 
 
-def validate_search_result(data: dict[str, Any]) -> AnySearchResult:
+def validate_search_result(data: dict[str, Any]) -> SearchResultBase:
     source_table = data.get("source_table") or data.get("sourceTable") or ""
     model = TABLE_SEARCH_MODELS.get(source_table, SearchResultBase)
-    return model(**data)  # type: ignore[return-value]
+    return model(**data)

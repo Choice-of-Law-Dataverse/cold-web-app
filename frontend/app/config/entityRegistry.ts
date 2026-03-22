@@ -248,8 +248,8 @@ export const entityRegistry: Record<string, EntityConfig> = {
       fields: [
         {
           key: "caseTitle",
-          fallback: (data: Record<string, unknown>) =>
-            String(data.caseCitation || ""),
+          fallback: (data: AnySearchResult) =>
+            String(("caseCitation" in data && data.caseCitation) || ""),
         },
         {
           key: "publicationDateIso",

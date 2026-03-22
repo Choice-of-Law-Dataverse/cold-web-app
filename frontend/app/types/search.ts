@@ -51,3 +51,10 @@ export type AnySearchResult =
 
 type KeysOf<T> = T extends unknown ? keyof T : never;
 export type AnySearchResultKey = KeysOf<AnySearchResult> & string;
+
+export function searchResultField(
+  data: AnySearchResult,
+  key: AnySearchResultKey,
+): unknown {
+  return data[key as keyof typeof data];
+}

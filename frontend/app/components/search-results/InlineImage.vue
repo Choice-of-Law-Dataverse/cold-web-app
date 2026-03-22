@@ -11,7 +11,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import type { SearchCardField } from "@/config/entityRegistry";
-import type { AnySearchResult } from "@/types/search";
+import { searchResultField, type AnySearchResult } from "@/types/search";
 
 const props = defineProps<{
   field: SearchCardField;
@@ -20,7 +20,8 @@ const props = defineProps<{
 
 const showImage = computed(() => {
   if (!props.field.inlineImage) return false;
-  const key = props.field.inlineImage.dataKey;
-  return Boolean(props.displayData[key as keyof typeof props.displayData]);
+  return Boolean(
+    searchResultField(props.displayData, props.field.inlineImage.dataKey),
+  );
 });
 </script>

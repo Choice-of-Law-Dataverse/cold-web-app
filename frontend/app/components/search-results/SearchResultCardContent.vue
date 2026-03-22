@@ -52,16 +52,12 @@ import {
 } from "@/config/entityRegistry";
 import { camelCaseToLabel } from "@/utils/camelCaseToLabel";
 import { formatDate, extractYear } from "@/utils/format";
-import type { AnySearchResult, AnySearchResultKey } from "@/types/search";
+import { searchResultField, type AnySearchResult } from "@/types/search";
 
 const props = defineProps<{
   resultData: AnySearchResult;
   cardType: string;
 }>();
-
-function field(data: AnySearchResult, key: AnySearchResultKey): unknown {
-  return data[key as keyof typeof data];
-}
 
 const entityConfig = computed(() => getEntityConfigByTable(props.cardType));
 const searchCard = computed(() => entityConfig.value?.searchCard);
@@ -83,7 +79,7 @@ const visibleFields = computed(() => {
 });
 
 function getFieldValue(f: SearchCardField): unknown {
-  const value = field(displayData.value, f.key);
+  const value = searchResultField(displayData.value, f.key);
   if ((!value || value === "NA") && f.fallback) {
     return f.fallback(props.resultData);
   }
@@ -112,7 +108,7 @@ function formatFieldValue(f: SearchCardField): string {
 const resolvedPdfField = computed(() => {
   if (!pdfConfig.value) return undefined;
   for (const key of pdfConfig.value.sourceFields) {
-    const val = field(props.resultData, key);
+    const val = searchResultField(props.resultData, key);
     if (val) return val;
   }
   return undefined;

@@ -569,8 +569,8 @@ export interface components {
       moreInformation?: string | null;
       oupBookQuote?: string | null;
       jurisdictionsAlpha3Code?: string | null;
-      id: number;
       coldId?: string | null;
+      id: number;
       sourceTable: string;
       /**
        * @default {
@@ -642,8 +642,8 @@ export interface components {
       moreInformation?: string | null;
       oupBookQuote?: string | null;
       jurisdictionsAlpha3Code?: string | null;
-      id?: string | number | null;
       coldId?: string | null;
+      id?: string | number | null;
       sourceTable?: string | null;
       rank?: number | null;
       resultDate?: string | null;
@@ -660,8 +660,8 @@ export interface components {
       caseNumber?: string | null;
       awardSummary?: string | null;
       year?: string | null;
-      id: number;
       coldId?: string | null;
+      id: number;
       sourceTable: string;
       /**
        * @default {
@@ -753,8 +753,8 @@ export interface components {
       caseNumber?: string | null;
       awardSummary?: string | null;
       year?: string | null;
-      id?: string | number | null;
       coldId?: string | null;
+      id?: string | number | null;
       sourceTable?: string | null;
       rank?: number | null;
       resultDate?: string | null;
@@ -768,8 +768,8 @@ export interface components {
     ArbitralInstitutionDetail: {
       institution?: string | null;
       abbreviation?: string | null;
-      id: number;
       coldId?: string | null;
+      id: number;
       sourceTable: string;
       /**
        * @default {
@@ -833,8 +833,8 @@ export interface components {
     ArbitralInstitutionSearchResult: {
       institution?: string | null;
       abbreviation?: string | null;
-      id?: string | number | null;
       coldId?: string | null;
+      id?: string | number | null;
       sourceTable?: string | null;
       rank?: number | null;
       resultDate?: string | null;
@@ -844,8 +844,8 @@ export interface components {
     /** ArbitralProvisionDetail */
     ArbitralProvisionDetail: {
       article?: string | null;
-      id: number;
       coldId?: string | null;
+      id: number;
       sourceTable: string;
       /**
        * @default {
@@ -914,8 +914,8 @@ export interface components {
     /** ArbitralProvisionSearchResult */
     ArbitralProvisionSearchResult: {
       article?: string | null;
-      id?: string | number | null;
       coldId?: string | null;
+      id?: string | number | null;
       sourceTable?: string | null;
       rank?: number | null;
       resultDate?: string | null;
@@ -928,8 +928,8 @@ export interface components {
     ArbitralRuleDetail: {
       setOfRules?: string | null;
       inForceFrom?: string | null;
-      id: number;
       coldId?: string | null;
+      id: number;
       sourceTable: string;
       /**
        * @default {
@@ -999,8 +999,8 @@ export interface components {
     ArbitralRuleSearchResult: {
       setOfRules?: string | null;
       inForceFrom?: string | null;
-      id?: string | number | null;
       coldId?: string | null;
+      id?: string | number | null;
       sourceTable?: string | null;
       rank?: number | null;
       resultDate?: string | null;
@@ -1038,8 +1038,8 @@ export interface components {
       choiceOfLawIssue?: string | null;
       officialSourcePdf?: string | null;
       jurisdictionsAlpha3Code?: string | null;
-      id: number;
       coldId?: string | null;
+      id: number;
       sourceTable: string;
       /**
        * @default {
@@ -1148,8 +1148,8 @@ export interface components {
       choiceOfLawIssue?: string | null;
       officialSourcePdf?: string | null;
       jurisdictionsAlpha3Code?: string | null;
-      id?: string | number | null;
       coldId?: string | null;
+      id?: string | number | null;
       sourceTable?: string | null;
       rank?: number | null;
       resultDate?: string | null;
@@ -1235,8 +1235,8 @@ export interface components {
     };
     /** DetailBase */
     DetailBase: {
-      id: number;
       coldId?: string | null;
+      id: number;
       sourceTable: string;
       /**
        * @default {
@@ -1272,8 +1272,8 @@ export interface components {
       abbreviation?: string | null;
       sourcePdf?: string | null;
       jurisdictionsAlpha3Code?: string | null;
-      id: number;
       coldId?: string | null;
+      id: number;
       sourceTable: string;
       /**
        * @default {
@@ -1368,8 +1368,8 @@ export interface components {
       abbreviation?: string | null;
       sourcePdf?: string | null;
       jurisdictionsAlpha3Code?: string | null;
-      id?: string | number | null;
       coldId?: string | null;
+      id?: string | number | null;
       sourceTable?: string | null;
       rank?: number | null;
       resultDate?: string | null;
@@ -1432,8 +1432,8 @@ export interface components {
     /** DomesticLegalProvisionDetail */
     DomesticLegalProvisionDetail: {
       article?: string | null;
-      id: number;
       coldId?: string | null;
+      id: number;
       sourceTable: string;
       /**
        * @default {
@@ -1504,8 +1504,8 @@ export interface components {
     /** DomesticLegalProvisionSearchResult */
     DomesticLegalProvisionSearchResult: {
       article?: string | null;
-      id?: string | number | null;
       coldId?: string | null;
+      id?: string | number | null;
       sourceTable?: string | null;
       rank?: number | null;
       resultDate?: string | null;
@@ -1759,8 +1759,8 @@ export interface components {
     };
     /** HcchAnswerDetail */
     HcchAnswerDetail: {
-      id: number;
       coldId?: string | null;
+      id: number;
       sourceTable: string;
       /**
        * @default {
@@ -1804,8 +1804,8 @@ export interface components {
       name?: string | null;
       date?: string | null;
       attachment?: string | null;
-      id: number;
       coldId?: string | null;
+      id: number;
       sourceTable: string;
       /**
        * @default {
@@ -1887,8 +1887,8 @@ export interface components {
       name?: string | null;
       date?: string | null;
       attachment?: string | null;
-      id?: string | number | null;
       coldId?: string | null;
+      id?: string | number | null;
       sourceTable?: string | null;
       rank?: number | null;
       resultDate?: string | null;
@@ -1928,8 +1928,8 @@ export interface components {
     InternationalLegalProvisionDetail: {
       titleOfTheProvision?: string | null;
       provision?: string | null;
-      id: number;
       coldId?: string | null;
+      id: number;
       sourceTable: string;
       /**
        * @default {
@@ -2001,8 +2001,8 @@ export interface components {
     InternationalLegalProvisionSearchResult: {
       titleOfTheProvision?: string | null;
       provision?: string | null;
-      id?: string | number | null;
       coldId?: string | null;
+      id?: string | number | null;
       sourceTable?: string | null;
       rank?: number | null;
       resultDate?: string | null;
@@ -2039,8 +2039,8 @@ export interface components {
       region?: string | null;
       legalFamily?: string | null;
       jurisdictionSummary?: string | null;
-      id: number;
       coldId?: string | null;
+      id: number;
       sourceTable: string;
       /**
        * @default {
@@ -2127,8 +2127,8 @@ export interface components {
       region?: string | null;
       legalFamily?: string | null;
       jurisdictionSummary?: string | null;
-      id?: string | number | null;
       coldId?: string | null;
+      id?: string | number | null;
       sourceTable?: string | null;
       rank?: number | null;
       resultDate?: string | null;
@@ -2150,8 +2150,8 @@ export interface components {
       publisher?: string | null;
       openAccess?: string | null;
       oupJdChapter?: string | null;
-      id: number;
       coldId?: string | null;
+      id: number;
       sourceTable: string;
       /**
        * @default {
@@ -2299,8 +2299,8 @@ export interface components {
       publisher?: string | null;
       openAccess?: string | null;
       oupJdChapter?: string | null;
-      id?: string | number | null;
       coldId?: string | null;
+      id?: string | number | null;
       sourceTable?: string | null;
       rank?: number | null;
       resultDate?: string | null;
@@ -2369,8 +2369,8 @@ export interface components {
     QuestionDetail: {
       question?: string | null;
       questionNumber?: string | null;
-      id: number;
       coldId?: string | null;
+      id: number;
       sourceTable: string;
       /**
        * @default {
@@ -2431,8 +2431,8 @@ export interface components {
     QuestionSearchResult: {
       question?: string | null;
       questionNumber?: string | null;
-      id?: string | number | null;
       coldId?: string | null;
+      id?: string | number | null;
       sourceTable?: string | null;
       rank?: number | null;
       resultDate?: string | null;
@@ -2453,8 +2453,8 @@ export interface components {
       abbreviation?: string | null;
       date?: string | null;
       attachment?: string | null;
-      id: number;
       coldId?: string | null;
+      id: number;
       sourceTable: string;
       /**
        * @default {
@@ -2525,8 +2525,8 @@ export interface components {
       abbreviation?: string | null;
       date?: string | null;
       attachment?: string | null;
-      id?: string | number | null;
       coldId?: string | null;
+      id?: string | number | null;
       sourceTable?: string | null;
       rank?: number | null;
       resultDate?: string | null;
@@ -2564,8 +2564,8 @@ export interface components {
     RegionalLegalProvisionDetail: {
       titleOfTheProvision?: string | null;
       provision?: string | null;
-      id: number;
       coldId?: string | null;
+      id: number;
       sourceTable: string;
       /**
        * @default {
@@ -2630,8 +2630,8 @@ export interface components {
     RegionalLegalProvisionSearchResult: {
       titleOfTheProvision?: string | null;
       provision?: string | null;
-      id?: string | number | null;
       coldId?: string | null;
+      id?: string | number | null;
       sourceTable?: string | null;
       rank?: number | null;
       resultDate?: string | null;
@@ -2641,8 +2641,8 @@ export interface components {
     };
     /** SearchResultBase */
     SearchResultBase: {
-      id?: string | number | null;
       coldId?: string | null;
+      id?: string | number | null;
       sourceTable?: string | null;
       rank?: number | null;
       resultDate?: string | null;
@@ -2656,8 +2656,8 @@ export interface components {
     };
     /** SpecialistDetail */
     SpecialistDetail: {
-      id: number;
       coldId?: string | null;
+      id: number;
       sourceTable: string;
       /**
        * @default {
