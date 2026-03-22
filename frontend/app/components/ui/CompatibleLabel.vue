@@ -1,5 +1,5 @@
 <template>
-  <span class="label-question inline-flex w-[126px] items-center">
+  <span class="label-compatible inline-flex w-[126px] items-center">
     <UIcon name="i-material-symbols:balance" class="icon-fixed mr-2" />
     {{ label }}
   </span>
@@ -15,7 +15,15 @@ defineProps({
 </script>
 
 <style scoped>
-.label-question {
+.label-compatible {
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  gap: 4px;
+  padding: 4px 10px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  border-radius: 4px;
   color: var(--color-cold-night);
   background-color: var(--color-cold-green-alpha-10);
   border: 1px solid var(--color-cold-green);

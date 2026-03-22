@@ -49,9 +49,10 @@ withDefaults(
 }
 
 .section-subtitle {
-  font-size: 1rem;
+  font-size: 0.8125rem;
   font-family: "DM Sans", sans-serif;
-  color: var(--color-cold-night-alpha);
+  color: var(--color-cold-slate);
   line-height: 1.5;
+  letter-spacing: 0.04em;
 }
 </style>

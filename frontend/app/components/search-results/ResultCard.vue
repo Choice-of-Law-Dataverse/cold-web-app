@@ -106,7 +106,7 @@ function handleCardClick(event: MouseEvent) {
     box-shadow 0.2s ease,
     transform 0.2s ease;
   cursor: pointer;
-  background: #fefdfb;
+  background: white;
 }
 
 .card-link-wrapper:hover .result-card {

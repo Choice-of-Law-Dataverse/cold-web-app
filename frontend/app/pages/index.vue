@@ -2,7 +2,7 @@
   <div
     class="grid grid-cols-1 gap-x-4 gap-y-12 md:grid-cols-12 md:gap-x-6 md:gap-y-16"
   >
-    <div class="animate-fade-up col-span-12">
+    <div class="animate-fade-scale-in col-span-12">
       <div
         class="hero-gradient flex flex-col items-center justify-between gap-4 rounded-2xl px-3 py-6 md:flex-row md:px-8 md:py-14"
       >
@@ -82,7 +82,7 @@
     </div>
 
     <!-- Explore Data Section -->
-    <div class="animate-fade-up animate-delay-3 col-span-12">
+    <div class="animate-fade-in animate-delay-3 col-span-12">
       <SectionHeader
         title="Explore Our Data"
         subtitle="Browse thousands of court decisions, instruments, and legal resources"

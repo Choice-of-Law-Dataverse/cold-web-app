@@ -140,7 +140,7 @@ onUnmounted(() => {
 
 a:hover .number-card {
   @apply shadow-md;
-  transform: translateY(-2px);
+  transform: translateY(-1px);
 }
 
 .card-title {

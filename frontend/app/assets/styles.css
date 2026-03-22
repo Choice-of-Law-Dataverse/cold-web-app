@@ -180,6 +180,15 @@
     var(--color-cold-purple) 33%,
     transparent
   );
+
+  --label-color-question: var(--color-cold-teal);
+  --label-color-court-decision: #d97056;
+  --label-color-instrument: var(--color-cold-green);
+  --label-color-literature: #d4a84b;
+  --label-color-oup-chapter: #4dc3fa;
+  --label-color-arbitration: #7b8cde;
+  --label-color-specialist: #c2508a;
+  --label-color-theme: var(--color-cold-purple);
 }
 
 /* Desktop nav heights */
@@ -537,209 +546,13 @@ li::marker {
   transition: all 0.15s ease;
 }
 
-.label-question {
-  font-size: 0.75rem;
-  font-weight: 500;
-  text-transform: uppercase;
-  color: var(--color-cold-night);
-  letter-spacing: 0.05em;
-  display: inline-flex;
-  gap: 4px;
-  padding: 4px 10px;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--color-cold-teal) 8%, white),
-    color-mix(in srgb, var(--color-cold-teal) 4%, white)
-  );
-  border: 1px solid color-mix(in srgb, var(--color-cold-teal) 12%, transparent);
-  border-radius: 4px;
-  transition: all 0.15s ease;
-}
-
-.label-question:hover {
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--color-cold-teal) 14%, white),
-    color-mix(in srgb, var(--color-cold-teal) 8%, white)
-  );
-  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.06);
-}
-
-.label-court-decision {
-  font-size: 0.75rem;
-  font-weight: 500;
-  text-transform: uppercase;
-  color: var(--color-cold-night);
-  letter-spacing: 0.05em;
-  display: inline-flex;
-  gap: 4px;
-  padding: 4px 10px;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, #d97056 8%, white),
-    color-mix(in srgb, #d97056 4%, white)
-  );
-  border: 1px solid color-mix(in srgb, #d97056 12%, transparent);
-  border-radius: 4px;
-  transition: all 0.15s ease;
-}
-
-.label-court-decision:hover {
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, #d97056 14%, white),
-    color-mix(in srgb, #d97056 8%, white)
-  );
-  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.06);
-}
-
-.label-instrument {
-  font-size: 0.75rem;
-  font-weight: 500;
-  text-transform: uppercase;
-  color: var(--color-cold-night);
-  letter-spacing: 0.05em;
-  display: inline-flex;
-  gap: 4px;
-  padding: 4px 10px;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--color-cold-green) 8%, white),
-    color-mix(in srgb, var(--color-cold-green) 4%, white)
-  );
-  border: 1px solid color-mix(in srgb, var(--color-cold-green) 12%, transparent);
-  border-radius: 4px;
-  transition: all 0.15s ease;
-}
-
-.label-instrument:hover {
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--color-cold-green) 14%, white),
-    color-mix(in srgb, var(--color-cold-green) 8%, white)
-  );
-  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.06);
-}
-
-.label-literature {
-  font-size: 0.75rem;
-  font-weight: 500;
-  text-transform: uppercase;
-  color: var(--color-cold-night);
-  letter-spacing: 0.05em;
-  display: inline-flex;
-  gap: 4px;
-  padding: 4px 10px;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, #d4a84b 8%, white),
-    color-mix(in srgb, #d4a84b 4%, white)
-  );
-  border: 1px solid color-mix(in srgb, #d4a84b 12%, transparent);
-  border-radius: 4px;
-  transition: all 0.15s ease;
-}
-
-.label-literature:hover {
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, #d4a84b 14%, white),
-    color-mix(in srgb, #d4a84b 8%, white)
-  );
-  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.06);
-}
-
-.label-oup-chapter {
-  font-size: 0.75rem;
-  font-weight: 500;
-  text-transform: uppercase;
-  color: var(--color-cold-night);
-  letter-spacing: 0.05em;
-  display: inline-flex;
-  gap: 4px;
-  padding: 4px 10px;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, #4dc3fa 8%, white),
-    color-mix(in srgb, #4dc3fa 4%, white)
-  );
-  border: 1px solid color-mix(in srgb, #4dc3fa 12%, transparent);
-  border-radius: 4px;
-  transition: all 0.15s ease;
-}
-
-.label-oup-chapter:hover {
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, #4dc3fa 14%, white),
-    color-mix(in srgb, #4dc3fa 8%, white)
-  );
-  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.06);
-}
-
-.label-arbitration {
-  font-size: 0.75rem;
-  font-weight: 500;
-  text-transform: uppercase;
-  color: var(--color-cold-night);
-  letter-spacing: 0.05em;
-  display: inline-flex;
-  gap: 4px;
-  padding: 4px 10px;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, #7b8cde 8%, white),
-    color-mix(in srgb, #7b8cde 4%, white)
-  );
-  border: 1px solid color-mix(in srgb, #7b8cde 12%, transparent);
-  border-radius: 4px;
-  transition: all 0.15s ease;
-}
-
-.label-arbitration:hover {
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, #7b8cde 14%, white),
-    color-mix(in srgb, #7b8cde 8%, white)
-  );
-  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.06);
-}
-
-.label-specialist {
-  font-size: 0.75rem;
-  font-weight: 500;
-  text-transform: uppercase;
-  color: var(--color-cold-night);
-  letter-spacing: 0.05em;
-  display: inline-flex;
-  gap: 4px;
-  padding: 4px 10px;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, #c2508a 8%, white),
-    color-mix(in srgb, #c2508a 4%, white)
-  );
-  border: 1px solid color-mix(in srgb, #c2508a 12%, transparent);
-  border-radius: 4px;
-  transition: all 0.15s ease;
-}
-
-.label-specialist:hover {
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, #c2508a 14%, white),
-    color-mix(in srgb, #c2508a 8%, white)
-  );
-  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.06);
-}
-
+.label-question,
+.label-court-decision,
+.label-instrument,
+.label-literature,
+.label-oup-chapter,
+.label-arbitration,
+.label-specialist,
 .label-theme {
   font-size: 0.75rem;
   font-weight: 500;
@@ -752,22 +565,53 @@ li::marker {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   background: linear-gradient(
     135deg,
-    color-mix(in srgb, var(--color-cold-purple) 8%, white),
-    color-mix(in srgb, var(--color-cold-purple) 4%, white)
+    color-mix(in srgb, var(--label-color) 8%, white),
+    color-mix(in srgb, var(--label-color) 4%, white)
   );
-  border: 1px solid
-    color-mix(in srgb, var(--color-cold-purple) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--label-color) 12%, transparent);
   border-radius: 4px;
   transition: all 0.15s ease;
 }
 
+.label-question:hover,
+.label-court-decision:hover,
+.label-instrument:hover,
+.label-literature:hover,
+.label-oup-chapter:hover,
+.label-arbitration:hover,
+.label-specialist:hover,
 .label-theme:hover {
   background: linear-gradient(
     135deg,
-    color-mix(in srgb, var(--color-cold-purple) 14%, white),
-    color-mix(in srgb, var(--color-cold-purple) 8%, white)
+    color-mix(in srgb, var(--label-color) 14%, white),
+    color-mix(in srgb, var(--label-color) 8%, white)
   );
   box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.06);
+}
+
+.label-question {
+  --label-color: var(--label-color-question);
+}
+.label-court-decision {
+  --label-color: var(--label-color-court-decision);
+}
+.label-instrument {
+  --label-color: var(--label-color-instrument);
+}
+.label-literature {
+  --label-color: var(--label-color-literature);
+}
+.label-oup-chapter {
+  --label-color: var(--label-color-oup-chapter);
+}
+.label-arbitration {
+  --label-color: var(--label-color-arbitration);
+}
+.label-specialist {
+  --label-color: var(--label-color-specialist);
+}
+.label-theme {
+  --label-color: var(--label-color-theme);
 }
 
 /* Results */
@@ -901,9 +745,9 @@ li::marker {
 .hero-gradient {
   background: linear-gradient(
     135deg,
-    color-mix(in srgb, var(--color-cold-purple) 8%, white),
-    color-mix(in srgb, var(--color-cold-green) 5%, white) 60%,
-    color-mix(in srgb, var(--color-cold-teal) 3%, white)
+    color-mix(in srgb, var(--color-cold-purple) 14%, white),
+    color-mix(in srgb, var(--color-cold-green) 9%, white) 60%,
+    color-mix(in srgb, var(--color-cold-teal) 6%, white)
   );
   position: relative;
 }
@@ -946,8 +790,36 @@ li::marker {
   }
 }
 
+@keyframes fade-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 .animate-fade-up {
   animation: fade-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-fade-scale-in {
+  animation: fade-scale-in 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-fade-in {
+  animation: fade-in 0.5s ease both;
 }
 
 .animate-delay-1 {
@@ -970,7 +842,9 @@ li::marker {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .animate-fade-up {
+  .animate-fade-up,
+  .animate-fade-scale-in,
+  .animate-fade-in {
     animation: none;
     opacity: 1;
     transform: none;
@@ -1636,6 +1510,7 @@ button.cold-toggle-btn[aria-pressed="true"] {
 
 /* Landing page shared styles */
 .card-title {
+  font-family: "DM Sans", sans-serif;
   font-size: 1.125rem;
   font-weight: 600;
   line-height: 1.4;
@@ -1887,324 +1762,6 @@ button.cold-toggle-btn[aria-pressed="true"] {
     135deg,
     color-mix(in srgb, var(--color-cold-purple) 18%, white),
     color-mix(in srgb, var(--color-cold-purple) 12%, white)
-  );
-}
-
-/* Entity-type variants */
-.link-chip--court-decision {
-  display: inline-flex;
-  align-items: center;
-  text-wrap: pretty;
-  border-radius: 9999px;
-  padding: 0.375rem 0.75rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-  transition: all 150ms;
-  margin-left: -0.75rem;
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, #d97056 8%, white),
-    color-mix(in srgb, #d97056 4%, white)
-  );
-  color: var(--color-cold-night);
-  border: 1px solid color-mix(in srgb, #d97056 12%, transparent);
-}
-
-.link-chip--court-decision:hover {
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, #d97056 14%, white),
-    color-mix(in srgb, #d97056 8%, white)
-  );
-  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.06);
-}
-
-.link-chip--court-decision:focus-visible {
-  outline: 2px solid #d97056;
-  outline-offset: 2px;
-}
-
-.link-chip--court-decision:active {
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, #d97056 18%, white),
-    color-mix(in srgb, #d97056 12%, white)
-  );
-}
-
-.link-chip--question {
-  display: inline-flex;
-  align-items: center;
-  text-wrap: pretty;
-  border-radius: 9999px;
-  padding: 0.375rem 0.75rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-  transition: all 150ms;
-  margin-left: -0.75rem;
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--color-cold-teal) 8%, white),
-    color-mix(in srgb, var(--color-cold-teal) 4%, white)
-  );
-  color: var(--color-cold-night);
-  border: 1px solid color-mix(in srgb, var(--color-cold-teal) 12%, transparent);
-}
-
-.link-chip--question:hover {
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--color-cold-teal) 14%, white),
-    color-mix(in srgb, var(--color-cold-teal) 8%, white)
-  );
-  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.06);
-}
-
-.link-chip--question:focus-visible {
-  outline: 2px solid var(--color-cold-teal);
-  outline-offset: 2px;
-}
-
-.link-chip--question:active {
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--color-cold-teal) 18%, white),
-    color-mix(in srgb, var(--color-cold-teal) 12%, white)
-  );
-}
-
-.link-chip--instrument {
-  display: inline-flex;
-  align-items: center;
-  text-wrap: pretty;
-  border-radius: 9999px;
-  padding: 0.375rem 0.75rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-  transition: all 150ms;
-  margin-left: -0.75rem;
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--color-cold-green) 8%, white),
-    color-mix(in srgb, var(--color-cold-green) 4%, white)
-  );
-  color: var(--color-cold-night);
-  border: 1px solid color-mix(in srgb, var(--color-cold-green) 12%, transparent);
-}
-
-.link-chip--instrument:hover {
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--color-cold-green) 14%, white),
-    color-mix(in srgb, var(--color-cold-green) 8%, white)
-  );
-  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.06);
-}
-
-.link-chip--instrument:focus-visible {
-  outline: 2px solid var(--color-cold-green);
-  outline-offset: 2px;
-}
-
-.link-chip--instrument:active {
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--color-cold-green) 18%, white),
-    color-mix(in srgb, var(--color-cold-green) 12%, white)
-  );
-}
-
-.link-chip--literature {
-  display: inline-flex;
-  align-items: center;
-  text-wrap: pretty;
-  border-radius: 9999px;
-  padding: 0.375rem 0.75rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-  transition: all 150ms;
-  margin-left: -0.75rem;
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, #d4a84b 8%, white),
-    color-mix(in srgb, #d4a84b 4%, white)
-  );
-  color: var(--color-cold-night);
-  border: 1px solid color-mix(in srgb, #d4a84b 12%, transparent);
-}
-
-.link-chip--literature:hover {
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, #d4a84b 14%, white),
-    color-mix(in srgb, #d4a84b 8%, white)
-  );
-  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.06);
-}
-
-.link-chip--literature:focus-visible {
-  outline: 2px solid #d4a84b;
-  outline-offset: 2px;
-}
-
-.link-chip--literature:active {
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, #d4a84b 18%, white),
-    color-mix(in srgb, #d4a84b 12%, white)
-  );
-}
-
-.link-chip--oup-chapter {
-  display: inline-flex;
-  align-items: center;
-  text-wrap: pretty;
-  border-radius: 9999px;
-  padding: 0.375rem 0.75rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-  transition: all 150ms;
-  margin-left: -0.75rem;
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, #4dc3fa 8%, white),
-    color-mix(in srgb, #4dc3fa 4%, white)
-  );
-  color: var(--color-cold-night);
-  border: 1px solid color-mix(in srgb, #4dc3fa 12%, transparent);
-}
-
-.link-chip--oup-chapter:hover {
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, #4dc3fa 14%, white),
-    color-mix(in srgb, #4dc3fa 8%, white)
-  );
-  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.06);
-}
-
-.link-chip--oup-chapter:focus-visible {
-  outline: 2px solid #4dc3fa;
-  outline-offset: 2px;
-}
-
-.link-chip--oup-chapter:active {
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, #4dc3fa 18%, white),
-    color-mix(in srgb, #4dc3fa 12%, white)
-  );
-}
-
-.link-chip--arbitration {
-  display: inline-flex;
-  align-items: center;
-  text-wrap: pretty;
-  border-radius: 9999px;
-  padding: 0.375rem 0.75rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-  transition: all 150ms;
-  margin-left: -0.75rem;
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, #7b8cde 8%, white),
-    color-mix(in srgb, #7b8cde 4%, white)
-  );
-  color: var(--color-cold-night);
-  border: 1px solid color-mix(in srgb, #7b8cde 12%, transparent);
-}
-
-.link-chip--arbitration:hover {
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, #7b8cde 14%, white),
-    color-mix(in srgb, #7b8cde 8%, white)
-  );
-  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.06);
-}
-
-.link-chip--arbitration:focus-visible {
-  outline: 2px solid #7b8cde;
-  outline-offset: 2px;
-}
-
-.link-chip--arbitration:active {
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, #7b8cde 18%, white),
-    color-mix(in srgb, #7b8cde 12%, white)
-  );
-}
-
-.link-chip--jurisdiction {
-  display: inline-flex;
-  align-items: center;
-  text-wrap: pretty;
-  border-radius: 9999px;
-  padding: 0.375rem 0.75rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-  transition: all 150ms;
-  margin-left: -0.75rem;
-  background: linear-gradient(
-    135deg,
-    color-mix(
-      in srgb,
-      color-mix(in srgb, var(--color-cold-purple) 33%, transparent) 8%,
-      white
-    ),
-    color-mix(
-      in srgb,
-      color-mix(in srgb, var(--color-cold-purple) 33%, transparent) 4%,
-      white
-    )
-  );
-  color: var(--color-cold-night);
-  border: 1px solid
-    color-mix(
-      in srgb,
-      color-mix(in srgb, var(--color-cold-purple) 33%, transparent) 12%,
-      transparent
-    );
-}
-
-.link-chip--jurisdiction:hover {
-  background: linear-gradient(
-    135deg,
-    color-mix(
-      in srgb,
-      color-mix(in srgb, var(--color-cold-purple) 33%, transparent) 14%,
-      white
-    ),
-    color-mix(
-      in srgb,
-      color-mix(in srgb, var(--color-cold-purple) 33%, transparent) 8%,
-      white
-    )
-  );
-  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.06);
-}
-
-.link-chip--jurisdiction:focus-visible {
-  outline: 2px solid
-    color-mix(in srgb, var(--color-cold-purple) 33%, transparent);
-  outline-offset: 2px;
-}
-
-.link-chip--jurisdiction:active {
-  background: linear-gradient(
-    135deg,
-    color-mix(
-      in srgb,
-      color-mix(in srgb, var(--color-cold-purple) 33%, transparent) 18%,
-      white
-    ),
-    color-mix(
-      in srgb,
-      color-mix(in srgb, var(--color-cold-purple) 33%, transparent) 12%,
-      white
-    )
   );
 }
 
@@ -2501,6 +2058,17 @@ button.cold-toggle-btn[aria-pressed="true"] {
   background: var(--gradient-border-horizontal);
 }
 
+.footer-container::after {
+  content: "";
+  position: absolute;
+  inset: 3px 0 0 0;
+  pointer-events: none;
+  opacity: 0.25;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 256px 256px;
+}
+
 .footer-title {
   color: white;
   font-weight: 700;
@@ -2628,7 +2196,7 @@ button.cold-toggle-btn[aria-pressed="true"] {
 }
 
 .hero-cta:hover {
-  transform: translateY(-2px);
+  transform: translateY(-1px);
   box-shadow:
     0 10px 15px -3px rgb(0 0 0 / 0.1),
     0 4px 6px -4px rgb(0 0 0 / 0.1);
@@ -2643,7 +2211,7 @@ button.cold-toggle-btn[aria-pressed="true"] {
 
 .hero-cta-secondary:hover {
   background: color-mix(in srgb, var(--color-cold-purple) 8%, transparent);
-  transform: translateY(-2px);
+  transform: translateY(-1px);
 }
 
 /* Connect Card Button ----------------------------------------------- */
