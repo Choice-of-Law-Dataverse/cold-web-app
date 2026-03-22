@@ -4,15 +4,15 @@
   >
     <div class="animate-fade-scale-in col-span-12">
       <div
-        class="hero-gradient flex flex-col gap-6 rounded-2xl px-3 py-6 md:flex-row md:items-center md:justify-between md:gap-10 md:px-8 md:py-10"
+        class="hero-gradient hero-grid rounded-2xl px-3 py-6 md:px-8 md:py-10"
       >
-        <div class="flex flex-col gap-3 md:flex-1">
-          <h1
-            class="hero-title text-[36px] leading-[1.05] font-bold text-pretty sm:text-[56px] md:text-[64px]"
-          >
-            Choice of Law Dataverse
-          </h1>
+        <h1
+          class="hero-title hero-grid-title text-[36px] leading-[1.05] font-bold text-pretty sm:text-[56px] md:text-[64px]"
+        >
+          Choice of Law Dataverse
+        </h1>
 
+        <div class="hero-grid-row2">
           <h2 class="hero-subtitle text-lg font-medium text-pretty">
             Navigate private international law issues with precision.
             <NuxtLink class="hero-link" to="/about" variant="link">
@@ -39,21 +39,12 @@
           </UTooltip>
         </div>
 
-        <div class="hero-actions-col">
-          <div class="hero-jurisdiction-picker">
-            <div class="hero-picker-input">
-              <JurisdictionSelectMenu
-                v-if="jurisdictions"
-                :jurisdictions="jurisdictions"
-                placeholder="Open a jurisdiction report..."
-                @jurisdiction-selected="navigateToJurisdiction"
-              />
-              <USkeleton
-                v-else-if="isLoadingJurisdictions"
-                class="h-10 w-full rounded-lg"
-              />
-            </div>
-          </div>
+        <div class="hero-grid-actions">
+          <HeroJurisdictionPicker
+            v-if="jurisdictions"
+            :jurisdictions="jurisdictions"
+            @jurisdiction-selected="navigateToJurisdiction"
+          />
 
           <NuxtLink to="/search" class="hero-action">
             <Icon name="i-material-symbols:search" class="hero-action-icon" />
@@ -258,7 +249,7 @@
 import PopularSearches from "@/components/landing-page/PopularSearches.vue";
 import TopLiteratureThemes from "@/components/landing-page/TopLiteratureThemes.vue";
 import JurisdictionMap from "@/components/landing-page/JurisdictionMap.vue";
-import JurisdictionSelectMenu from "@/components/jurisdiction/JurisdictionSelectMenu.vue";
+import HeroJurisdictionPicker from "@/components/landing-page/HeroJurisdictionPicker.vue";
 import ConnectCard from "@/components/landing-page/ConnectCard.vue";
 import NumberCard from "@/components/landing-page/NumberCard.vue";
 import CompareJurisdictionsCard from "@/components/landing-page/CompareJurisdictionsCard.vue";
@@ -276,8 +267,7 @@ const links = externalLinks;
 const config = useRuntimeConfig();
 const router = useRouter();
 
-const { data: jurisdictions, isLoading: isLoadingJurisdictions } =
-  useJurisdictions();
+const { data: jurisdictions } = useJurisdictions();
 
 const navigateToJurisdiction = async (
   jurisdiction: JurisdictionOption | undefined,
@@ -343,25 +333,54 @@ h2 {
   text-decoration: underline;
 }
 
-.hero-actions-col {
+.hero-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto;
+    column-gap: 2.5rem;
+    row-gap: 0.75rem;
+  }
+
+  .hero-grid-title {
+    grid-column: 1;
+    grid-row: 1;
+    align-self: end;
+  }
+
+  .hero-grid-row2 {
+    grid-column: 1;
+    grid-row: 2;
+    align-self: center;
+  }
+
+  .hero-grid-actions {
+    grid-column: 2;
+    grid-row: 1 / 3;
+    align-self: center;
+  }
+}
+
+.hero-grid-row2 {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.hero-grid-actions {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
   width: 100%;
   max-width: 340px;
   flex-shrink: 0;
-}
-
-.hero-jurisdiction-picker {
-  width: 100%;
-}
-
-.hero-picker-input :deep([data-slot="root"]) {
-  background: white;
-  border-radius: 0.5rem;
-  box-shadow:
-    0 2px 6px 0 rgb(0 0 0 / 0.08),
-    0 1px 2px -1px rgb(0 0 0 / 0.04);
 }
 
 .hero-action {
@@ -407,8 +426,7 @@ h2 {
 .hero-badge {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  margin-top: 0.25rem;
+  gap: 0.625rem;
   text-decoration: none;
   opacity: 0.75;
   transition: opacity 0.15s ease;
@@ -419,13 +437,13 @@ h2 {
 }
 
 .hero-badge-img {
-  width: 36px;
-  height: 38px;
+  width: 64px;
+  height: 67px;
 }
 
 .hero-badge-text {
   font-family: "DM Sans", sans-serif;
-  font-size: 0.75rem;
+  font-size: 0.8125rem;
   font-weight: 500;
   color: var(--color-cold-slate);
   letter-spacing: 0.02em;
