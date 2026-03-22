@@ -4,7 +4,7 @@
   >
     <NuxtLink
       to="/about/endorsements"
-      class="label-question"
+      class="label-hcch"
       style="display: inline-flex; text-decoration: none"
     >
       <UIcon
@@ -17,9 +17,19 @@
 </template>
 
 <style scoped>
-.label-question {
+.label-hcch {
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: inline-flex;
+  gap: 4px;
+  padding: 4px 10px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  border-radius: 4px;
   color: var(--color-cold-night);
   background-color: var(--color-cold-green);
   border: 1px solid var(--color-cold-night);
+  transition: all 0.15s ease;
 }
 </style>

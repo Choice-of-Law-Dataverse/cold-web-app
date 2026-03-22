@@ -150,20 +150,35 @@ defineExpose({ showMenu });
   color: var(--color-cold-night);
   text-decoration: none;
   font-weight: 600;
+  font-family: "DM Sans", sans-serif;
+  position: relative;
+}
+
+:deep(.custom-nav-links)::after {
+  content: "";
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--color-cold-purple);
+  transition: width 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+:deep(.custom-nav-links.active)::after {
+  width: 100%;
+}
+
+:deep(.custom-nav-links:hover)::after {
+  width: 100%;
 }
 
 :deep(.custom-nav-links.active) {
-  text-decoration: underline;
-  text-underline-offset: 6px;
-  text-decoration-thickness: 2px;
-  text-decoration-color: var(--color-cold-purple);
+  text-decoration: none;
 }
 
 :deep(.custom-nav-links:hover) {
-  text-decoration: underline;
-  text-underline-offset: 6px;
-  text-decoration-thickness: 2px;
-  text-decoration-color: var(--color-cold-purple);
+  text-decoration: none;
 }
 
 @media (max-width: 639px) {

@@ -119,18 +119,19 @@ const isRelativeLink = computed(() => {
   @apply inline-flex rounded-2xl p-5 transition-all duration-200;
   background: linear-gradient(
     135deg,
-    color-mix(in srgb, var(--color-cold-green) 8%, transparent),
-    color-mix(in srgb, var(--color-cold-teal) 6%, transparent)
+    color-mix(in srgb, var(--color-cold-purple) 10%, transparent),
+    color-mix(in srgb, var(--color-cold-green) 14%, transparent)
   );
-  color: var(--color-cold-green);
+  color: var(--color-cold-purple);
 }
 
 .icon-link:hover .icon-wrapper {
   background: linear-gradient(
     135deg,
-    color-mix(in srgb, var(--color-cold-green) 12%, transparent),
-    color-mix(in srgb, var(--color-cold-teal) 10%, transparent)
+    color-mix(in srgb, var(--color-cold-purple) 16%, transparent),
+    color-mix(in srgb, var(--color-cold-green) 20%, transparent)
   );
+  transform: scale(1.05);
 }
 
 .icon-image {

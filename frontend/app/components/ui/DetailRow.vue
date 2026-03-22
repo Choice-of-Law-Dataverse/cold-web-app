@@ -51,13 +51,13 @@ defineProps({
 <style scoped>
 .detail-row {
   position: relative;
-  padding: 0.75rem 1rem;
+  padding: 1rem 1rem;
   margin: 0 -1rem;
   border-radius: 2px;
   transition: background 0.15s ease;
 
   @media (min-width: 640px) {
-    padding: 0.75rem 1.5rem;
+    padding: 1rem 1.5rem;
     margin: 0 -1.5rem;
   }
 }

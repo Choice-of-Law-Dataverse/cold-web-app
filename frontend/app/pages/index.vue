@@ -2,57 +2,24 @@
   <div
     class="grid grid-cols-1 gap-x-4 gap-y-12 md:grid-cols-12 md:gap-x-6 md:gap-y-16"
   >
-    <div class="col-span-12">
+    <div class="animate-fade-scale-in col-span-12">
       <div
-        class="hero-gradient flex flex-col items-center justify-between gap-4 rounded-2xl px-3 py-4 md:flex-row md:px-6 md:py-12"
+        class="hero-gradient hero-grid rounded-2xl px-3 py-6 md:px-8 md:py-10"
       >
-        <div class="flex flex-col gap-4">
-          <h1
-            class="hero-title mb-2 text-[40px] leading-[1.1] font-bold text-pretty sm:mb-4 sm:text-[56px] md:text-[81px]"
-          >
-            Choice of Law Dataverse
-          </h1>
-
-          <div
-            class="flex w-full flex-col justify-between gap-4 sm:flex-row sm:items-start"
-          >
-            <div class="flex flex-col gap-4">
-              <h2
-                class="hero-subtitle text-xl font-medium text-pretty md:text-left"
-              >
-                <span>
-                  Navigate private international law issues with precision.
-
-                  <NuxtLink class="hero-link" to="/about" variant="link">
-                    <span>Read&nbsp;more</span>
-                  </NuxtLink>
-                </span>
-              </h2>
-              <div class="flex flex-wrap gap-3">
-                <UButton
-                  to="/search"
-                  size="lg"
-                  class="hero-cta"
-                  icon="i-material-symbols:search"
-                >
-                  Start Exploring
-                </UButton>
-                <UButton
-                  to="/court-decision/new"
-                  size="lg"
-                  variant="outline"
-                  class="hero-cta-secondary"
-                  icon="i-material-symbols:category-search-outline"
-                >
-                  Analyze Case
-                </UButton>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div
-          class="hidden min-w-[100px] items-center justify-center gap-3 sm:flex-col md:flex lg:flex-row"
+        <h1
+          class="hero-title hero-grid-title text-[36px] leading-[1.05] font-bold text-pretty sm:text-[56px] md:text-[64px]"
         >
+          Choice of Law Dataverse
+        </h1>
+
+        <div class="hero-grid-row2">
+          <h2 class="hero-subtitle text-lg font-medium text-pretty">
+            Navigate private international law issues with precision.
+            <NuxtLink class="hero-link" to="/about" variant="link">
+              What&nbsp;is&nbsp;CoLD?
+            </NuxtLink>
+          </h2>
+
           <UTooltip
             text="Winner of Swiss National ORD Prize 2025 for Legal Sciences"
           >
@@ -60,29 +27,57 @@
               href="https://ord.swiss-academies.ch/news/swiss-national-ord-prize-2025-for-legal-and-environmental-sciences"
               target="_blank"
               rel="noopener noreferrer"
-              class="transition-transform hover:scale-105"
+              class="hero-badge"
             >
               <img
                 src="https://choiceoflaw.blob.core.windows.net/assets/Prix-ORD-DEF_2025.png"
                 alt="Swiss National ORD Prize 2025"
-                style="width: 95px; height: 100px"
+                class="hero-badge-img"
               />
+              <span class="hero-badge-text">Swiss National ORD Prize 2025</span>
             </a>
           </UTooltip>
+        </div>
+
+        <div class="hero-grid-actions">
+          <HeroJurisdictionPicker
+            v-if="jurisdictions"
+            :jurisdictions="jurisdictions"
+            @jurisdiction-selected="navigateToJurisdiction"
+          />
+
+          <NuxtLink to="/search" class="hero-action">
+            <Icon name="i-material-symbols:search" class="hero-action-icon" />
+            <span>
+              <span class="hero-action-title">Search the database</span>
+              <span class="hero-action-desc"
+                >Court decisions, instruments, and literature</span
+              >
+            </span>
+          </NuxtLink>
+
+          <NuxtLink to="/court-decision/new" class="hero-action">
+            <Icon
+              name="i-material-symbols:category-search-outline"
+              class="hero-action-icon"
+            />
+            <span>
+              <span class="hero-action-title">Analyze a case</span>
+              <span class="hero-action-desc"
+                >AI-assisted court decision analysis</span
+              >
+            </span>
+          </NuxtLink>
         </div>
       </div>
     </div>
 
-    <div class="col-span-12">
-      <CountrySelectMenu />
-    </div>
-
-    <div class="col-span-12">
+    <div class="animate-fade-up animate-delay-1 col-span-12">
       <JurisdictionMap />
     </div>
 
     <!-- Explore Data Section -->
-    <div class="col-span-12">
+    <div class="animate-fade-in animate-delay-3 col-span-12">
       <SectionHeader
         title="Explore Our Data"
         subtitle="Browse thousands of court decisions, instruments, and legal resources"
@@ -91,7 +86,7 @@
     </div>
 
     <!-- Number Cards Grid -->
-    <div class="col-span-12">
+    <div class="animate-fade-up animate-delay-4 col-span-12">
       <div class="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
         <NumberCard
           title="Available Court Decisions"
@@ -157,6 +152,7 @@
         title="Featured Content"
         subtitle="Recent additions and popular searches in private international law"
         icon="i-material-symbols:star-outline"
+        align="left"
       />
     </div>
 
@@ -253,7 +249,7 @@
 import PopularSearches from "@/components/landing-page/PopularSearches.vue";
 import TopLiteratureThemes from "@/components/landing-page/TopLiteratureThemes.vue";
 import JurisdictionMap from "@/components/landing-page/JurisdictionMap.vue";
-import CountrySelectMenu from "@/components/landing-page/TempJurisdictionPicker.vue";
+import HeroJurisdictionPicker from "@/components/landing-page/HeroJurisdictionPicker.vue";
 import ConnectCard from "@/components/landing-page/ConnectCard.vue";
 import NumberCard from "@/components/landing-page/NumberCard.vue";
 import CompareJurisdictionsCard from "@/components/landing-page/CompareJurisdictionsCard.vue";
@@ -262,11 +258,24 @@ import { externalLinks } from "@/utils/externalLinks";
 import RecentDomesticInstruments from "@/components/landing-page/RecentDomesticInstruments.vue";
 import SuccessfulLegalTransplantations from "@/components/landing-page/SuccessfulLegalTransplantations.vue";
 import LeadingCases from "@/components/landing-page/LeadingCases.vue";
-import { useHead, useRuntimeConfig } from "#imports";
+import { useHead, useRuntimeConfig, useRouter } from "#imports";
 import PlotCourtDecisionsJurisdiction from "@/components/landing-page/PlotCourtDecisionsJurisdiction.vue";
+import { useJurisdictions } from "@/composables/useJurisdictions";
+import type { JurisdictionOption } from "@/types/analyzer";
 
 const links = externalLinks;
 const config = useRuntimeConfig();
+const router = useRouter();
+
+const { data: jurisdictions } = useJurisdictions();
+
+const navigateToJurisdiction = async (
+  jurisdiction: JurisdictionOption | undefined,
+) => {
+  if (jurisdiction?.coldId) {
+    await router.push(`/jurisdiction/${jurisdiction.coldId.toUpperCase()}`);
+  }
+};
 
 useHead({
   title: "Choice of Law Dataverse — CoLD",
@@ -296,6 +305,7 @@ h2 {
 }
 
 .hero-title {
+  font-family: "DM Sans", sans-serif;
   background: linear-gradient(
     135deg,
     var(--color-cold-night),
@@ -321,5 +331,121 @@ h2 {
 .hero-link:hover {
   color: color-mix(in srgb, var(--color-cold-purple) 85%, #000);
   text-decoration: underline;
+}
+
+.hero-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto;
+    column-gap: 2.5rem;
+    row-gap: 0.75rem;
+  }
+
+  .hero-grid-title {
+    grid-column: 1;
+    grid-row: 1;
+    align-self: end;
+  }
+
+  .hero-grid-row2 {
+    grid-column: 1;
+    grid-row: 2;
+    align-self: center;
+  }
+
+  .hero-grid-actions {
+    grid-column: 2;
+    grid-row: 1 / 3;
+    align-self: center;
+  }
+}
+
+.hero-grid-row2 {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.hero-grid-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+  max-width: 340px;
+  flex-shrink: 0;
+}
+
+.hero-action {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  background: color-mix(in srgb, white 60%, transparent);
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+
+.hero-action:hover {
+  background: white;
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.06);
+}
+
+.hero-action-icon {
+  flex-shrink: 0;
+  font-size: 1.125rem;
+  color: var(--color-cold-purple);
+}
+
+.hero-action-title {
+  display: block;
+  font-family: "DM Sans", sans-serif;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--color-cold-night);
+  line-height: 1.3;
+}
+
+.hero-action-desc {
+  display: block;
+  font-family: "DM Sans", sans-serif;
+  font-size: 0.6875rem;
+  font-weight: 400;
+  color: var(--color-cold-slate);
+  line-height: 1.3;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+  text-decoration: none;
+  opacity: 0.75;
+  transition: opacity 0.15s ease;
+}
+
+.hero-badge:hover {
+  opacity: 1;
+}
+
+.hero-badge-img {
+  width: 64px;
+  height: 67px;
+}
+
+.hero-badge-text {
+  font-family: "DM Sans", sans-serif;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--color-cold-slate);
+  letter-spacing: 0.02em;
 }
 </style>

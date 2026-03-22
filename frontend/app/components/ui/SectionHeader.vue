@@ -1,5 +1,8 @@
 <template>
-  <div class="section-header">
+  <div
+    class="section-header"
+    :class="{ 'section-header--left': align === 'left' }"
+  >
     <h2 class="section-title">
       <Icon v-if="icon" :name="icon" class="section-icon" />
       {{ title }}
@@ -9,16 +12,24 @@
 </template>
 
 <script setup lang="ts">
-defineProps<{
-  title: string;
-  subtitle?: string;
-  icon?: string;
-}>();
+withDefaults(
+  defineProps<{
+    title: string;
+    subtitle?: string;
+    icon?: string;
+    align?: "center" | "left";
+  }>(),
+  { align: "center" },
+);
 </script>
 
 <style scoped>
 .section-header {
   text-align: center;
+}
+
+.section-header--left {
+  text-align: left;
 }
 
 .section-title {
@@ -38,8 +49,10 @@ defineProps<{
 }
 
 .section-subtitle {
-  font-size: 1rem;
-  color: var(--color-cold-night-alpha);
+  font-size: 0.8125rem;
+  font-family: "DM Sans", sans-serif;
+  color: var(--color-cold-slate);
   line-height: 1.5;
+  letter-spacing: 0.04em;
 }
 </style>

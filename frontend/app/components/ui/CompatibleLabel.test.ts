@@ -24,7 +24,7 @@ describe("CompatibleLabel", () => {
 
   it("applies correct CSS classes", () => {
     const wrapper = mount(CompatibleLabel);
-    expect(wrapper.find(".label-question").exists()).toBe(true);
-    expect(wrapper.classes()).toContain("label-question");
+    expect(wrapper.find(".label-compatible").exists()).toBe(true);
+    expect(wrapper.classes()).toContain("label-compatible");
   });
 });
