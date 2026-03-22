@@ -2,13 +2,13 @@
   <div
     class="grid grid-cols-1 gap-x-4 gap-y-12 md:grid-cols-12 md:gap-x-6 md:gap-y-16"
   >
-    <div class="col-span-12">
+    <div class="animate-fade-up col-span-12">
       <div
-        class="hero-gradient flex flex-col items-center justify-between gap-4 rounded-2xl px-3 py-4 md:flex-row md:px-6 md:py-12"
+        class="hero-gradient flex flex-col items-center justify-between gap-4 rounded-2xl px-3 py-6 md:flex-row md:px-8 md:py-14"
       >
         <div class="flex flex-col gap-4">
           <h1
-            class="hero-title mb-2 text-[40px] leading-[1.1] font-bold text-pretty sm:mb-4 sm:text-[56px] md:text-[81px]"
+            class="hero-title mb-2 text-[36px] leading-[1.05] font-bold text-pretty sm:mb-4 sm:text-[56px] md:text-[81px]"
           >
             Choice of Law Dataverse
           </h1>
@@ -73,16 +73,16 @@
       </div>
     </div>
 
-    <div class="col-span-12">
+    <div class="animate-fade-up animate-delay-1 col-span-12">
       <CountrySelectMenu />
     </div>
 
-    <div class="col-span-12">
+    <div class="animate-fade-up animate-delay-2 col-span-12">
       <JurisdictionMap />
     </div>
 
     <!-- Explore Data Section -->
-    <div class="col-span-12">
+    <div class="animate-fade-up animate-delay-3 col-span-12">
       <SectionHeader
         title="Explore Our Data"
         subtitle="Browse thousands of court decisions, instruments, and legal resources"
@@ -91,7 +91,7 @@
     </div>
 
     <!-- Number Cards Grid -->
-    <div class="col-span-12">
+    <div class="animate-fade-up animate-delay-4 col-span-12">
       <div class="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
         <NumberCard
           title="Available Court Decisions"
@@ -157,6 +157,7 @@
         title="Featured Content"
         subtitle="Recent additions and popular searches in private international law"
         icon="i-material-symbols:star-outline"
+        align="left"
       />
     </div>
 

@@ -116,6 +116,20 @@ export default defineNuxtConfig({
   colorMode: {
     preference: "light",
   },
+  fonts: {
+    families: [
+      {
+        name: "DM Serif Display",
+        provider: "google",
+        weights: [400],
+      },
+      {
+        name: "DM Sans",
+        provider: "google",
+        weights: [300, 400, 500, 600, 700],
+      },
+    ],
+  },
   css: ["@/assets/styles.css"],
   app: {
     head: {

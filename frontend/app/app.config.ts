@@ -94,7 +94,7 @@ export default defineAppConfig({
     },
     card: {
       slots: {
-        root: "rounded-lg overflow-hidden relative bg-white border-0 ring-0",
+        root: "rounded-lg overflow-hidden relative bg-[#fefdfb] border-0 ring-0",
       },
     },
   },

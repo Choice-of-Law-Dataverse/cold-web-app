@@ -176,6 +176,9 @@ nav {
 nav.nav-scrolled {
   min-height: var(--nav-height-scrolled);
   max-height: var(--nav-height-scrolled);
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
 nav.nav-scrolled .nav-inner {

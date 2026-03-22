@@ -102,12 +102,18 @@ function handleCardClick(event: MouseEvent) {
 
 .result-card {
   margin-bottom: 24px;
-  transition: box-shadow 0.2s ease;
+  transition:
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
   cursor: pointer;
+  background: #fefdfb;
 }
 
 .card-link-wrapper:hover .result-card {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.08),
+    inset 0 0 0 1px rgba(111, 77, 250, 0.06);
+  transform: translateY(-1px);
 }
 
 .card-link-wrapper:hover :deep(.icon-action__icon) {

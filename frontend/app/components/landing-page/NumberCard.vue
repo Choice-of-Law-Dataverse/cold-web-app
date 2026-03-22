@@ -1,13 +1,13 @@
 <template>
   <NuxtLink :to="buttonLink" class="block h-full">
-    <UCard class="number-card h-full">
+    <UCard ref="cardRef" class="number-card h-full">
       <div class="flex h-full flex-col justify-between">
         <h2 class="card-title mb-4 text-center">
           {{ title }}
         </h2>
         <div class="number-container">
           <span v-if="!loading && !error" class="number-display">
-            {{ number ?? props.overrideNumber ?? 0 }}
+            {{ displayNumber }}
           </span>
           <span v-else-if="loading">
             <span
@@ -32,7 +32,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref, watch, onMounted, onUnmounted } from "vue";
 import { useNumberCount } from "~/composables/useNumberCount";
 import type { TableName } from "@/types/api";
 
@@ -55,6 +55,80 @@ const {
       : props.tableName,
   ),
 );
+
+const displayNumber = ref(0);
+const cardRef = ref<{ $el?: HTMLElement } | null>(null);
+const hasAnimated = ref(false);
+
+function animateCount(target: number) {
+  if (hasAnimated.value) {
+    displayNumber.value = target;
+    return;
+  }
+  hasAnimated.value = true;
+  const duration = 1200;
+  const start = performance.now();
+  const from = 0;
+
+  function step(now: number) {
+    const elapsed = now - start;
+    const progress = Math.min(elapsed / duration, 1);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    displayNumber.value = Math.round(from + (target - from) * eased);
+    if (progress < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+const targetValue = computed(() => {
+  const raw = number.value ?? props.overrideNumber;
+  if (raw == null) return 0;
+  return typeof raw === "string" ? parseInt(raw, 10) || 0 : raw;
+});
+
+let observer: IntersectionObserver | null = null;
+
+onMounted(() => {
+  const prefersReduced = window.matchMedia(
+    "(prefers-reduced-motion: reduce)",
+  ).matches;
+  if (prefersReduced) {
+    hasAnimated.value = true;
+    watch(
+      targetValue,
+      (v) => {
+        displayNumber.value = v;
+      },
+      { immediate: true },
+    );
+    return;
+  }
+
+  observer = new IntersectionObserver(
+    (entries) => {
+      if (entries[0]?.isIntersecting && targetValue.value > 0) {
+        animateCount(targetValue.value);
+        observer?.disconnect();
+      }
+    },
+    { threshold: 0.3 },
+  );
+  const el = cardRef.value?.$el;
+  if (el) observer.observe(el);
+
+  watch(targetValue, (v) => {
+    if (hasAnimated.value) {
+      displayNumber.value = v;
+    } else if (cardRef.value?.$el && observer) {
+      observer.disconnect();
+      observer.observe(cardRef.value.$el);
+    }
+  });
+});
+
+onUnmounted(() => {
+  observer?.disconnect();
+});
 </script>
 
 <style scoped>

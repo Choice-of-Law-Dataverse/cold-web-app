@@ -96,28 +96,28 @@
   /* Purple-Green gradients with white */
   --gradient-subtle: linear-gradient(
     135deg,
-    color-mix(in srgb, var(--color-cold-purple) 2%, white),
-    color-mix(in srgb, var(--color-cold-green) 1%, white)
-  );
-  --gradient-subtle-hover: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--color-cold-purple) 3%, white),
+    color-mix(in srgb, var(--color-cold-purple) 4%, white),
     color-mix(in srgb, var(--color-cold-green) 2%, white)
   );
-  --gradient-subtle-emphasis: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--color-cold-purple) 4%, white),
-    color-mix(in srgb, var(--color-cold-green) 3%, white)
-  );
-  --gradient-medium: linear-gradient(
+  --gradient-subtle-hover: linear-gradient(
     135deg,
     color-mix(in srgb, var(--color-cold-purple) 6%, white),
     color-mix(in srgb, var(--color-cold-green) 4%, white)
   );
-  --gradient-medium-hover: linear-gradient(
+  --gradient-subtle-emphasis: linear-gradient(
     135deg,
     color-mix(in srgb, var(--color-cold-purple) 10%, white),
+    color-mix(in srgb, var(--color-cold-green) 6%, white)
+  );
+  --gradient-medium: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--color-cold-purple) 12%, white),
     color-mix(in srgb, var(--color-cold-green) 8%, white)
+  );
+  --gradient-medium-hover: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--color-cold-purple) 16%, white),
+    color-mix(in srgb, var(--color-cold-green) 12%, white)
   );
 
   /* Purple-Green gradients with transparent (for badges/regions) */
@@ -236,8 +236,14 @@
   }
 
   body {
-    font-family: "Inter", sans-serif;
+    font-family: "DM Sans", sans-serif;
     color: var(--color-cold-night);
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: "DM Serif Display", Georgia, serif;
   }
 
   a {
@@ -866,7 +872,7 @@ li::marker {
   position: absolute;
   z-index: 1000;
   background: white;
-  font-family: "Inter", Arial, sans-serif;
+  font-family: "DM Sans", Arial, sans-serif;
   padding-right: 12px;
   padding-bottom: 6px;
 }
@@ -891,9 +897,27 @@ li::marker {
   color: var(--color-cold-purple);
 }
 
-/* Hero gradient - subtle purple→green→white */
+/* Hero gradient - bold purple→green with grain overlay */
 .hero-gradient {
-  background: var(--gradient-subtle-emphasis);
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--color-cold-purple) 8%, white),
+    color-mix(in srgb, var(--color-cold-green) 5%, white) 60%,
+    color-mix(in srgb, var(--color-cold-teal) 3%, white)
+  );
+  position: relative;
+}
+
+.hero-gradient::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  opacity: 0.3;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 256px 256px;
 }
 
 /* Gradient top border accent for special cards */
@@ -908,6 +932,48 @@ li::marker {
   }
   100% {
     background-position: 200% 0%;
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-up {
+  animation: fade-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-delay-1 {
+  animation-delay: 75ms;
+}
+.animate-delay-2 {
+  animation-delay: 150ms;
+}
+.animate-delay-3 {
+  animation-delay: 225ms;
+}
+.animate-delay-4 {
+  animation-delay: 300ms;
+}
+.animate-delay-5 {
+  animation-delay: 375ms;
+}
+.animate-delay-6 {
+  animation-delay: 450ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-up {
+    animation: none;
+    opacity: 1;
+    transform: none;
   }
 }
 
@@ -2422,6 +2488,17 @@ button.cold-toggle-btn[aria-pressed="true"] {
 .footer-container {
   background: var(--gradient-footer);
   color: white;
+  position: relative;
+}
+
+.footer-container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--gradient-border-horizontal);
 }
 
 .footer-title {
@@ -2431,8 +2508,10 @@ button.cold-toggle-btn[aria-pressed="true"] {
 
 .footer-heading {
   color: white;
-  font-size: 1rem;
-  font-weight: 700;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
 
 .footer-border {

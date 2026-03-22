@@ -51,15 +51,21 @@ defineProps({
 <style scoped>
 .detail-row {
   position: relative;
-  padding: 0.75rem 1rem;
+  padding: 1rem 1rem;
   margin: 0 -1rem;
   border-radius: 2px;
+  border-bottom: 1px solid
+    color-mix(in srgb, var(--color-cold-gray) 50%, transparent);
   transition: background 0.15s ease;
 
   @media (min-width: 640px) {
-    padding: 0.75rem 1.5rem;
+    padding: 1rem 1.5rem;
     margin: 0 -1.5rem;
   }
+}
+
+.detail-row:last-child {
+  border-bottom: none;
 }
 
 .detail-row::before {
