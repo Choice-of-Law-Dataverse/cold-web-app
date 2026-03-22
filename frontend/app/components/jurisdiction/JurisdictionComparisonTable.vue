@@ -7,9 +7,9 @@
     }"
   >
     <template #header>
-      <div class="flex justify-between">
+      <div class="flex items-center justify-between">
         <h3 class="comparison-title">Comparison</h3>
-        <span class="flex flex-wrap gap-2">
+        <span class="flex flex-wrap gap-1.5">
           <UButton
             to="/learn/methodology"
             color="primary"
@@ -43,9 +43,7 @@
           <div
             class="flex flex-col items-stretch gap-4 md:flex-row md:items-center"
           >
-            <h4 class="text-left text-base md:whitespace-nowrap">
-              Add comparison with
-            </h4>
+            <h4 class="comparison-label">Add comparison with</h4>
 
             <!-- Loading state -->
             <div v-if="jurisdictionsLoading" class="flex items-center gap-2">
@@ -86,19 +84,19 @@
           :error="questionsError || answersError"
         />
 
-        <div v-else-if="isSingleJurisdiction" class="divide-y divide-gray-100">
+        <div v-else-if="isSingleJurisdiction" class="question-list">
           <div
             v-for="row in rows"
             :id="`question-${row.id}`"
             :key="row.id"
-            class="question-row hover-row--emphasis flex flex-col gap-2 px-2 py-4 md:flex-row md:items-center md:gap-4"
-            :style="{ paddingLeft: `${row.level * 2}em` }"
+            class="question-row flex flex-col gap-2 py-3.5 md:flex-row md:items-center md:gap-4"
+            :style="{ paddingLeft: `calc(1.5rem + ${row.level * 2}em)` }"
           >
             <div
               class="min-w-0 flex-1 text-sm whitespace-pre-line"
               :class="{ 'font-semibold': isBoldQuestion(row.id) }"
             >
-              <span class="inline-block max-w-[72ch]">{{ row.question }}</span>
+              <span class="inline-block max-w-[68ch]">{{ row.question }}</span>
             </div>
 
             <div class="flex shrink-0 items-center md:w-[200px] md:justify-end">
@@ -164,10 +162,10 @@
           >
             <div class="comparison-grid" :style="{ gridTemplateColumns }">
               <div
-                class="comparison-header-cell sticky top-0 bg-white py-3 font-semibold"
+                class="comparison-header-cell sticky top-0 bg-white py-3"
                 :class="isScrollable ? 'sticky-col-1' : ''"
               >
-                Question
+                <span class="comparison-header-label">Question</span>
               </div>
               <div
                 v-for="(jurisdiction, index) in jurisdictions"
@@ -266,13 +264,13 @@
             </div>
           </div>
 
-          <div class="block divide-y divide-gray-100 md:hidden">
+          <div class="question-list block md:hidden">
             <div
               v-for="row in rows"
               :id="`question-${row.id}`"
               :key="row.id"
-              class="question-row px-2 py-4"
-              :style="{ paddingLeft: `${row.level * 2}em` }"
+              class="question-row py-3.5"
+              :style="{ paddingLeft: `calc(1.5rem + ${row.level * 2}em)` }"
             >
               <div
                 class="mb-3 text-sm whitespace-pre-line"
@@ -604,20 +602,28 @@ const rows = computed(() => {
 <style scoped>
 @reference "tailwindcss";
 
+.comparison-label {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--color-cold-night-alpha);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.question-list {
+  margin: 0 -1.5rem;
+}
+
 .question-row {
-  margin: 0 -1rem;
-  padding-left: 1rem;
-  padding-right: 1rem;
-  border-radius: 2px;
+  padding-right: 1.5rem;
+  border-radius: 0;
   transition: background 0.15s ease;
 }
 
 .question-row:hover {
-  background: linear-gradient(
-    315deg,
-    color-mix(in srgb, var(--color-cold-purple) 2%, white),
-    color-mix(in srgb, var(--color-cold-green) 1%, white)
-  );
+  background: var(--gradient-subtle-hover);
 }
 
 .comparison-grid {
@@ -626,11 +632,18 @@ const rows = computed(() => {
 }
 
 .comparison-header-cell {
-  padding-inline: 0.25rem;
-  border-bottom: 2px solid
-    color-mix(in srgb, var(--color-cold-purple) 10%, transparent);
-  box-shadow: 0 2px 4px 0 rgb(0 0 0 / 0.05);
+  padding-inline: 0.5rem;
+  border-bottom: 1.5px solid
+    color-mix(in srgb, var(--color-cold-purple) 12%, transparent);
   z-index: 5;
+}
+
+.comparison-header-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-cold-night-alpha);
 }
 
 .comparison-row {
@@ -642,15 +655,11 @@ const rows = computed(() => {
 }
 
 .comparison-row:hover {
-  background: linear-gradient(
-    315deg,
-    color-mix(in srgb, var(--color-cold-purple) 2%, white),
-    color-mix(in srgb, var(--color-cold-green) 1%, white)
-  );
+  background: var(--gradient-subtle-hover);
 }
 
 .comparison-cell {
-  padding: 0.75rem 0.25rem;
+  padding: 0.75rem 0.5rem;
   border-bottom: 1px solid var(--color-gray-100, #f3f4f6);
   min-width: 0;
   overflow: hidden;
@@ -706,7 +715,7 @@ const rows = computed(() => {
 }
 
 .answer-button {
-  @apply rounded-lg px-2 py-1 text-sm font-medium shadow-sm transition-all duration-150;
+  @apply rounded-md px-2.5 py-1 text-sm font-medium shadow-sm transition-all duration-150;
   display: inline-block;
   min-width: 3.5rem;
   max-width: 100%;
