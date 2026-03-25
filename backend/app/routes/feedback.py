@@ -2,7 +2,7 @@ import logging
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Request, status
 
-from app.auth import extract_user_email, optional_user, require_editor_or_admin, verify_frontend_request
+from app.auth import extract_user_identity, optional_user, require_editor_or_admin, verify_frontend_request
 from app.schemas.feedback import FeedbackDetail, FeedbackPendingItem, FeedbackResponse, FeedbackSubmit, FeedbackUpdate
 from app.schemas.responses import StatusMessage
 from app.services.email_notifications import send_feedback_notification
@@ -34,7 +34,7 @@ async def submit_feedback(
     user: dict | None = Depends(optional_user),
     service: SuggestionService = Depends(get_feedback_service),
 ) -> FeedbackResponse:
-    token_sub = extract_user_email(user)
+    token_sub = extract_user_identity(user)
     try:
         new_id = service.save_entity_feedback(
             entity_type=body.entity_type,

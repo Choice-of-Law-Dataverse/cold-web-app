@@ -7,26 +7,24 @@ export function validateOrigin(
 ): void {
   const origin = getHeader(event, "origin");
   const referer = getHeader(event, "referer");
-  const host = getHeader(event, "host");
 
-  const allowedOrigins = [
-    `https://${host}`,
-    `http://${host}`,
-    config.public.siteUrl,
-  ].filter(Boolean);
+  if (!origin) {
+    throw createError({
+      statusCode: 403,
+      message: "Forbidden: Missing origin",
+    });
+  }
 
-  const isValidOrigin =
-    !origin ||
-    allowedOrigins.some(
-      (allowed) =>
-        origin === allowed || (referer && referer.startsWith(allowed)),
-    );
+  const allowedOrigins = [config.public.siteUrl].filter(Boolean);
+
+  const isValidOrigin = allowedOrigins.some(
+    (allowed) => origin === allowed || (referer && referer.startsWith(allowed)),
+  );
 
   if (!isValidOrigin) {
     logfire.warning("Request blocked - invalid origin", {
       origin,
       referer,
-      host,
       allowedOrigins,
     });
     throw createError({

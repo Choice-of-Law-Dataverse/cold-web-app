@@ -98,7 +98,7 @@ def handle_full_text_search(
         sort_by_date,
         response_type=response_type,
     )
-    validated_results = [validate_search_result(_camel_keys(r)) for r in raw.pop("results", [])]
+    validated_results = [validate_search_result(r) for r in raw.pop("results", [])]
     return FullTextSearchResponse(results=validated_results, **raw)
 
 

@@ -59,14 +59,16 @@ def verify_auth0_token(token: str) -> dict[str, Any]:
         return payload
 
     except jwt.InvalidTokenError as e:
+        logger.warning("Invalid token: %s", e)
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=f"Invalid token: {str(e)}",
+            detail="Invalid token",
         ) from e
     except Exception as e:
+        logger.warning("Token verification failed: %s", e)
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=f"Token verification failed: {str(e)}",
+            detail="Token verification failed",
         ) from e
 
 
@@ -81,8 +83,10 @@ def verify_frontend_request(x_api_key: str = Header(None, alias="X-API-Key")) ->
     Required for all API requests.
     """
     if not config.API_KEY:
-        logger.warning("API_KEY not configured - allowing all requests")
-        return
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Server misconfiguration",
+        )
 
     if not x_api_key:
         raise HTTPException(
@@ -91,7 +95,7 @@ def verify_frontend_request(x_api_key: str = Header(None, alias="X-API-Key")) ->
         )
 
     if x_api_key != config.API_KEY:
-        logger.warning(f"Invalid API key attempt: {x_api_key[:8]}...")
+        logger.warning("Invalid API key attempt (length=%d)", len(x_api_key))
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Invalid API key",
@@ -162,8 +166,8 @@ def has_editor_access(user: dict[str, Any] | None) -> bool:
     return "editor" in normalized or "admin" in normalized
 
 
-def extract_user_email(user: dict[str, Any] | None) -> str | None:
-    """Extract user email from Auth0 JWT payload."""
+def extract_user_identity(user: dict[str, Any] | None) -> str | None:
+    """Extract user identity (email preferred, falls back to sub claim) from Auth0 JWT payload."""
     if not user:
         return None
     return user.get(EMAIL_CLAIM) or user.get("email") or user.get("sub")

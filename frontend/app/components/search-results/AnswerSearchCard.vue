@@ -84,7 +84,7 @@ const relatedCasesCount = computed(() => {
 });
 
 const relatedDecisionsLink = computed(
-  () => `question/${props.resultData.id}#related-court-decisions`,
+  () => `/question/${props.resultData.id}#related-court-decisions`,
 );
 
 const hasMoreInformation = computed(

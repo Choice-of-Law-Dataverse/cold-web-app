@@ -14,11 +14,21 @@ export interface SSEEvent<T = Record<string, unknown>> {
   error?: string;
 }
 
+export interface ToastHandle {
+  add: (opts: {
+    title: string;
+    description: string;
+    color: string;
+    icon: string;
+    duration: number;
+  }) => void;
+}
+
 export interface SSEStreamOptions<T> {
   url: string;
   method?: "GET" | "POST";
   body?: unknown;
-  /** Steps with labels will show toast notifications on completion (whitelist) */
+  toast?: ToastHandle;
   stepLabels?: Record<string, string>;
   onEvent?: (event: SSEEvent<T>) => void;
   onStepComplete?: (step: string, data?: T) => void;
@@ -41,13 +51,12 @@ export async function streamSSE<T = Record<string, unknown>>(
     url,
     method = "POST",
     body,
+    toast,
     stepLabels = {},
     onEvent,
     onStepComplete,
     onError,
   } = options;
-
-  const toast = useToast();
   const completedSteps = new Set<string>();
   let lastEvent: SSEEvent<T> | null = null;
 
@@ -60,15 +69,7 @@ export async function streamSSE<T = Record<string, unknown>>(
   });
 
   if (!response.ok) {
-    const errorText = await response.text();
-    let errorMessage = "Request failed";
-    try {
-      const errorJson = JSON.parse(errorText);
-      errorMessage = errorJson.detail || errorJson.message || errorMessage;
-    } catch {
-      if (errorText) errorMessage = errorText;
-    }
-    throw new Error(errorMessage);
+    throw new Error("Request failed");
   }
 
   const reader = response.body?.getReader();
@@ -98,7 +99,7 @@ export async function streamSSE<T = Record<string, unknown>>(
       onStepComplete?.(event.step, event.data);
 
       const label = stepLabels[event.step];
-      if (label) {
+      if (label && toast) {
         toast.add({
           title: label,
           description: "Completed",
@@ -126,7 +127,6 @@ export async function streamSSE<T = Record<string, unknown>>(
           processEvent(event);
         } catch (e) {
           if (e instanceof SSEApplicationError) throw e;
-          console.error("Failed to parse SSE data:", e);
         }
       }
     }

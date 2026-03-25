@@ -1,9 +1,12 @@
 import logging
+import re
 from typing import Any
 
 from app.config import config
 from app.services.database import Database
 from app.services.filter_builder import build_filter_clause
+
+_SAFE_IDENTIFIER = re.compile(r"^[a-z_][a-z0-9_.]*$")
 
 logger = logging.getLogger(__name__)
 
@@ -45,7 +48,7 @@ class SearchService:
         if not table:
             raise ValueError("No table provided")
         view = self._TABLE_TO_VIEW.get(table.strip().lower())
-        if not view:
+        if not view or not _SAFE_IDENTIFIER.match(view):
             raise ValueError(f"Unsupported table for full/filtered query: {table}")
         return view
 

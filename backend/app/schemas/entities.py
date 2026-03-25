@@ -16,26 +16,32 @@ class EntityBase(BaseModel):
     cold_id: str | None = None
 
 
-class AnswerBase(BaseModel):
+class _FieldMixin(EntityBase):
+    """Internal mixin — not for direct instantiation outside the MI chain."""
+
+    cold_id: str | None = None
+
+
+class AnswerBase(_FieldMixin):
     answer: str | None = None
     more_information: str | None = None
     oup_book_quote: str | None = None
     jurisdictions_alpha_3_code: str | None = None
 
 
-class QuestionBase(BaseModel):
+class QuestionBase(_FieldMixin):
     question: str | None = None
     question_number: str | None = None
 
 
-class JurisdictionBase(BaseModel):
+class JurisdictionBase(_FieldMixin):
     name: str | None = None
     region: str | None = None
     legal_family: str | None = None
     jurisdiction_summary: str | None = None
 
 
-class CourtDecisionBase(BaseModel):
+class CourtDecisionBase(_FieldMixin):
     case_title: str | None = None
     case_citation: str | None = None
     publication_date_iso: str | None = None
@@ -45,7 +51,7 @@ class CourtDecisionBase(BaseModel):
     jurisdictions_alpha_3_code: str | None = None
 
 
-class DomesticInstrumentBase(BaseModel):
+class DomesticInstrumentBase(_FieldMixin):
     title_in_english: str | None = None
     date: str | None = None
     abbreviation: str | None = None
@@ -53,34 +59,34 @@ class DomesticInstrumentBase(BaseModel):
     jurisdictions_alpha_3_code: str | None = None
 
 
-class DomesticLegalProvisionBase(BaseModel):
+class DomesticLegalProvisionBase(_FieldMixin):
     article: str | None = None
 
 
-class RegionalInstrumentBase(BaseModel):
+class RegionalInstrumentBase(_FieldMixin):
     title: str | None = None
     abbreviation: str | None = None
     date: str | None = None
     attachment: str | None = None
 
 
-class RegionalLegalProvisionBase(BaseModel):
+class RegionalLegalProvisionBase(_FieldMixin):
     title_of_the_provision: str | None = None
     provision: str | None = None
 
 
-class InternationalInstrumentBase(BaseModel):
+class InternationalInstrumentBase(_FieldMixin):
     name: str | None = None
     date: str | None = None
     attachment: str | None = None
 
 
-class InternationalLegalProvisionBase(BaseModel):
+class InternationalLegalProvisionBase(_FieldMixin):
     title_of_the_provision: str | None = None
     provision: str | None = None
 
 
-class LiteratureBase(BaseModel):
+class LiteratureBase(_FieldMixin):
     title: str | None = None
     author: str | None = None
     publication_year: str | None = None
@@ -90,21 +96,21 @@ class LiteratureBase(BaseModel):
     oup_jd_chapter: str | None = None
 
 
-class ArbitralAwardBase(BaseModel):
+class ArbitralAwardBase(_FieldMixin):
     case_number: str | None = None
     award_summary: str | None = None
     year: str | None = None
 
 
-class ArbitralRuleBase(BaseModel):
+class ArbitralRuleBase(_FieldMixin):
     set_of_rules: str | None = None
     in_force_from: str | None = None
 
 
-class ArbitralInstitutionBase(BaseModel):
+class ArbitralInstitutionBase(_FieldMixin):
     institution: str | None = None
     abbreviation: str | None = None
 
 
-class ArbitralProvisionBase(BaseModel):
+class ArbitralProvisionBase(_FieldMixin):
     article: str | None = None

@@ -1,6 +1,8 @@
+import logging
 from typing import Any
 
 from pydantic import ConfigDict
+from pydantic.alias_generators import to_camel
 
 from app.schemas.entities import (
     AnswerBase,
@@ -21,9 +23,16 @@ from app.schemas.entities import (
     RegionalLegalProvisionBase,
 )
 
+logger = logging.getLogger(__name__)
+
 
 class SearchResultBase(EntityBase):
-    model_config = ConfigDict(extra="ignore")
+    model_config = ConfigDict(
+        alias_generator=to_camel,
+        populate_by_name=True,
+        coerce_numbers_to_str=True,
+        extra="ignore",
+    )
 
     id: str | int | None = None
     source_table: str | None = None
@@ -103,8 +112,15 @@ class QuestionSearchResult(SearchResultBase, QuestionBase):
     theme_code: str | None = None
 
 
+class HcchAnswerSearchResult(SearchResultBase):
+    adapted_question: str | None = None
+    position: str | None = None
+    question_cold_id: str | None = None
+
+
 TABLE_SEARCH_MODELS: dict[str, type[SearchResultBase]] = {
     "Answers": AnswerSearchResult,
+    "HCCH Answers": HcchAnswerSearchResult,
     "Court Decisions": CourtDecisionSearchResult,
     "Domestic Instruments": DomesticInstrumentSearchResult,
     "Regional Instruments": RegionalInstrumentSearchResult,
@@ -123,6 +139,7 @@ TABLE_SEARCH_MODELS: dict[str, type[SearchResultBase]] = {
 
 AnySearchResult = (
     AnswerSearchResult
+    | HcchAnswerSearchResult
     | CourtDecisionSearchResult
     | DomesticInstrumentSearchResult
     | RegionalInstrumentSearchResult
@@ -142,6 +159,9 @@ AnySearchResult = (
 
 
 def validate_search_result(data: dict[str, Any]) -> SearchResultBase:
-    source_table = data.get("source_table") or data.get("sourceTable") or ""
-    model = TABLE_SEARCH_MODELS.get(source_table, SearchResultBase)
+    source_table = data.get("sourceTable") or data.get("source_table") or ""
+    model = TABLE_SEARCH_MODELS.get(source_table)
+    if model is None:
+        logger.warning("Unknown source_table %r — falling back to SearchResultBase", source_table)
+        model = SearchResultBase
     return model(**data)

@@ -5,7 +5,7 @@ from typing import Any
 
 import sqlalchemy as sa
 
-from app.auth import extract_user_email
+from app.auth import extract_user_identity
 from app.config import config
 from app.schemas.feedback import FeedbackModerationStatus
 from app.services.db_manager import suggestions_db_manager
@@ -77,7 +77,7 @@ class SuggestionService:
         source: str | None = None,
         user: dict[str, Any] | None = None,
     ) -> int:
-        token_sub = extract_user_email(user)
+        token_sub = extract_user_identity(user)
         target = self.tables.get(table)
         if target is None:
             raise ValueError(f"Unknown suggestions table '{table}'")

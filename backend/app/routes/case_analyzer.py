@@ -9,7 +9,7 @@ import logfire
 from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import StreamingResponse
 
-from app.auth import extract_user_email, require_user, verify_frontend_request
+from app.auth import extract_user_identity, require_user, verify_frontend_request
 from app.case_analyzer import (
     JurisdictionOutput,
     analyze_case_streaming,
@@ -523,7 +523,7 @@ async def submit_for_approval(
             )
 
         # Verify ownership - the user submitting should be the one who created the draft
-        token_sub = extract_user_email(user)
+        token_sub = extract_user_identity(user)
         record_email = record.get("user_email")
         if token_sub and record_email and token_sub != record_email:
             logger.warning(
@@ -556,7 +556,7 @@ async def list_my_analyses(
     user: dict = Depends(require_user),
     service: SuggestionService = Depends(get_suggestion_service),
 ) -> list[UserAnalysisSummary]:
-    user_email = extract_user_email(user)
+    user_email = extract_user_identity(user)
     if not user_email:
         raise HTTPException(status_code=401, detail="Unable to identify user")
 
@@ -582,7 +582,7 @@ async def get_draft_for_recovery(
         raise HTTPException(status_code=404, detail="Draft not found")
 
     # Verify ownership
-    token_sub = extract_user_email(user)
+    token_sub = extract_user_identity(user)
     record_email = record.get("user_email")
     if token_sub and record_email and token_sub != record_email:
         raise HTTPException(status_code=403, detail="You can only access your own drafts")

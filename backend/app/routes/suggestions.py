@@ -3,7 +3,7 @@ from typing import Any
 
 from fastapi import APIRouter, BackgroundTasks, Depends, Header, HTTPException, Request, status
 
-from app.auth import extract_user_email, has_editor_access, require_editor_or_admin, require_user, verify_frontend_request
+from app.auth import extract_user_identity, has_editor_access, require_editor_or_admin, require_user, verify_frontend_request
 from app.schemas.responses import PendingSuggestionItem, StatusMessage, SuggestionDetailItem
 from app.schemas.suggestions import (
     CourtDecisionSuggestion,
@@ -69,7 +69,8 @@ async def submit_suggestion(
         background_tasks.add_task(send_new_suggestion_notification, "generic", new_id, payload, user)
         return SuggestionResponse(id=new_id)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e)) from e
+        logger.exception("Failed to save suggestion")
+        raise HTTPException(status_code=500, detail="Failed to save suggestion") from e
 
 
 _TYPED_SUGGESTION_ROUTES: list[tuple[str, str, str, str, type]] = [
@@ -121,7 +122,7 @@ def _make_typed_handler(category: str, table: str):  # noqa: ANN202
             background_tasks.add_task(send_new_suggestion_notification, table, new_id, payload, user)
             return SuggestionResponse(id=new_id)
         except Exception as e:
-            raise HTTPException(status_code=500, detail=str(e)) from e
+            raise HTTPException(status_code=500, detail="Failed to save suggestion") from e
 
     return handler
 
@@ -184,7 +185,7 @@ async def list_pending_suggestions(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to fetch pending suggestions: {str(e)}",
+            detail="Failed to fetch pending suggestions",
         ) from e
 
 
@@ -217,7 +218,7 @@ async def get_suggestion_detail(
             detail="Insufficient permissions for this category",
         )
 
-    token_sub = None if is_moderator else extract_user_email(user)
+    token_sub = None if is_moderator else extract_user_identity(user)
     if not is_moderator and not token_sub:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
@@ -239,7 +240,7 @@ async def get_suggestion_detail(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to fetch suggestion: {str(e)}",
+            detail="Failed to fetch suggestion",
         ) from e
 
 
@@ -273,7 +274,7 @@ async def approve_suggestion(
         original_payload: dict[str, Any] = item.get("payload", {}) or {}
 
         # Get user email from Auth0 token
-        moderator_email = extract_user_email(user) or "unknown"
+        moderator_email = extract_user_identity(user) or "unknown"
 
         if category == "case-analyzer":
             # Use existing case analyzer approval logic
@@ -320,7 +321,7 @@ async def approve_suggestion(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to approve suggestion: {str(e)}",
+            detail="Failed to approve suggestion",
         ) from e
 
 
@@ -345,7 +346,7 @@ async def reject_suggestion(
 
     try:
         # Get user email from Auth0 token
-        moderator_email = extract_user_email(user) or "unknown"
+        moderator_email = extract_user_identity(user) or "unknown"
 
         service.mark_status(
             table,
@@ -360,7 +361,7 @@ async def reject_suggestion(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to reject suggestion: {str(e)}",
+            detail="Failed to reject suggestion",
         ) from e
 
 
@@ -397,5 +398,5 @@ async def delete_suggestion(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to delete suggestion: {str(e)}",
+            detail="Failed to delete suggestion",
         ) from e
