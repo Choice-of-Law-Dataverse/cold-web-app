@@ -101,6 +101,7 @@ import LoadingBar from "@/components/layout/LoadingBar.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
 import EntityFeedback from "@/components/ui/EntityFeedback.vue";
 import { useEntityData } from "@/composables/useEntityData";
+import { flagUrl } from "@/config/assets";
 
 const route = useRoute();
 const coldId = ref((route.params.coldId as string).toUpperCase());
@@ -109,10 +110,12 @@ const { data, isLoading, error } = useEntityData("/jurisdiction", coldId);
 
 const jurisdictionOption = computed(() => {
   if (!data.value) return null;
+  const id = data.value.coldId || "";
   return {
     name: data.value.name || "",
     label: data.value.name || "",
-    coldId: data.value.coldId || "",
+    coldId: id,
+    avatar: id ? flagUrl(id) : undefined,
   };
 });
 </script>
