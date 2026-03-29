@@ -1,6 +1,8 @@
 ---
-paths: ["alembic_views/**/*.py"]
+paths: ["alembic_views/**/*.py", "alembic_suggestions/**/*.py"]
 ---
+
+Never run or create migrations. Leave these to the developer.
 
 SQL views are managed by Alembic migrations in `alembic_views/`.
 
