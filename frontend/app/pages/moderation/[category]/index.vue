@@ -162,6 +162,7 @@ import { getStatusBadgeColor, getStatusLabel } from "@/utils/moderationStatus";
 import { formatDateLong } from "@/utils/format";
 import JurisdictionFlag from "@/components/ui/JurisdictionFlag.vue";
 import { useJurisdictionLookup } from "@/composables/useJurisdictions";
+import { coerceValueToString } from "@/utils/analyzerPayloadParser";
 definePageMeta({
   middleware: ["moderation"],
 });
@@ -187,24 +188,7 @@ const {
   },
 );
 
-const extractValue = (raw: unknown): string => {
-  if (!raw) return "";
-  if (typeof raw === "string") return raw;
-  if (Array.isArray(raw)) return raw[0] ? String(raw[0]) : "";
-  if (typeof raw === "object") {
-    const obj = raw as Record<string, unknown>;
-    for (const key of Object.keys(obj)) {
-      if (
-        key !== "reasoning" &&
-        key !== "confidence" &&
-        typeof obj[key] === "string"
-      ) {
-        return obj[key] as string;
-      }
-    }
-  }
-  return String(raw);
-};
+const extractValue = (raw: unknown): string => coerceValueToString(raw) ?? "";
 
 const getSuggestionTitle = (suggestion: PendingSuggestion): string => {
   if ("caseCitation" in suggestion && suggestion.caseCitation) {

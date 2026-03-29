@@ -292,6 +292,7 @@ import { getStatusBadgeColor, getStatusLabel } from "@/utils/moderationStatus";
 import { formatDateLong } from "@/utils/format";
 import DetailRow from "@/components/ui/DetailRow.vue";
 import { ANALYZER_FIELD_MAP } from "@/types/analyzer";
+import { extractStringFromPayload } from "@/utils/analyzerPayloadParser";
 import { getEntityConfig } from "@/config/entityRegistry";
 import { useEntityDrawer } from "@/composables/useEntityDrawer";
 
@@ -434,48 +435,18 @@ const filteredPayload = computed(() => {
 
 const analyzerFields = computed(() => {
   if (!suggestion.value?.payload) return [];
-  const payload = suggestion.value.payload;
+  const payload = suggestion.value.payload as Record<string, unknown>;
   const results: { label: string; value: string }[] = [];
 
   for (const [, config] of Object.entries(ANALYZER_FIELD_MAP)) {
-    let extracted = "";
-
-    for (const key of config.keys) {
-      const raw = payload[key];
-      if (raw === null || raw === undefined) continue;
-
-      if (typeof raw === "string") {
-        extracted = raw;
-        break;
-      }
-
-      if (typeof raw === "object" && !Array.isArray(raw)) {
-        const obj = raw as Record<string, unknown>;
-        for (const nk of config.nestedKeys || []) {
-          if (obj[nk] !== null && obj[nk] !== undefined) {
-            const val = obj[nk];
-            if (Array.isArray(val)) {
-              extracted = val.join(config.joinWith || ", ");
-            } else {
-              extracted = String(val);
-            }
-            break;
-          }
-        }
-        if (extracted) break;
-      }
-
-      if (Array.isArray(raw)) {
-        extracted = raw.join(config.joinWith || ", ");
-        break;
-      }
-    }
-
+    const extracted = extractStringFromPayload(
+      payload,
+      config.keys,
+      config.nestedKeys ?? [],
+      config.joinWith,
+    );
     if (extracted) {
-      results.push({
-        label: config.label,
-        value: extracted,
-      });
+      results.push({ label: config.label, value: extracted });
     }
   }
 
