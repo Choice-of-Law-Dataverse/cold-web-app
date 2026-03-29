@@ -132,20 +132,34 @@
                 />
                 {{ suggestion.source }}
               </span>
-              <span v-if="suggestion.createdAt" class="meta-item">
-                <UIcon name="i-heroicons-clock-16-solid" class="h-3.5 w-3.5" />
-                {{ formatDateLong(suggestion.createdAt) }}
-              </span>
             </div>
           </div>
 
-          <UBadge
-            :color="getStatusBadgeColor(suggestion.moderationStatus)"
-            variant="subtle"
-            size="xs"
-          >
-            {{ getStatusLabel(suggestion.moderationStatus) }}
-          </UBadge>
+          <div class="flex shrink-0 flex-col items-end gap-1.5">
+            <UBadge
+              :color="getStatusBadgeColor(suggestion.moderationStatus)"
+              variant="subtle"
+              size="xs"
+            >
+              {{ getStatusLabel(suggestion.moderationStatus) }}
+            </UBadge>
+            <UButton
+              v-if="suggestion.payload?.edit_entity_id"
+              color="neutral"
+              variant="ghost"
+              size="xs"
+              leading-icon="i-heroicons-eye-16-solid"
+              trailing-icon="i-heroicons-eye-16-solid"
+              class="view-original-btn"
+              @click="openOriginalEntity(suggestion, $event)"
+            >
+              Original
+            </UButton>
+            <span v-if="suggestion.createdAt" class="meta-item">
+              <UIcon name="i-heroicons-clock-16-solid" class="h-3.5 w-3.5" />
+              {{ formatDateLong(suggestion.createdAt) }}
+            </span>
+          </div>
         </div>
       </div>
     </div>
@@ -160,6 +174,8 @@ import { getStatusBadgeColor, getStatusLabel } from "@/utils/moderationStatus";
 import { formatDateLong } from "@/utils/format";
 import JurisdictionFlag from "@/components/ui/JurisdictionFlag.vue";
 import { useJurisdictionLookup } from "@/composables/useJurisdictions";
+import { getEntityConfig } from "@/config/entityRegistry";
+import { useEntityDrawer } from "@/composables/useEntityDrawer";
 
 definePageMeta({
   middleware: ["moderation"],
@@ -172,6 +188,28 @@ const isCaseAnalyzer = computed(() => category.value === "case-analyzer");
 
 const { listPendingSuggestions } = useModerationApi();
 const { getJurisdictionISO } = useJurisdictionLookup();
+const { openDrawer } = useEntityDrawer();
+
+const getCategoryEntityRoute = (cat: string): string => {
+  const mapping: Record<string, string> = {
+    "court-decisions": "court-decision",
+    "domestic-instruments": "domestic-instrument",
+    "regional-instruments": "regional-instrument",
+    "international-instruments": "international-instrument",
+    literature: "literature",
+  };
+  return mapping[cat] ?? cat;
+};
+
+const openOriginalEntity = (suggestion: PendingSuggestion, event: Event) => {
+  event.stopPropagation();
+  const editId = suggestion.payload?.edit_entity_id;
+  if (!editId) return;
+  const basePath = `/${getCategoryEntityRoute(category.value)}`;
+  const config = getEntityConfig(basePath);
+  if (!config) return;
+  openDrawer(String(editId), config.table, basePath, true);
+};
 
 const {
   data: suggestions,
@@ -367,5 +405,14 @@ h3 {
   gap: 0.25rem;
   font-size: 0.75rem;
   color: var(--color-cold-slate);
+}
+
+.view-original-btn {
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.suggestion-row:hover .view-original-btn {
+  opacity: 1;
 }
 </style>

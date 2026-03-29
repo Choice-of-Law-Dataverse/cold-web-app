@@ -216,7 +216,16 @@ class SuggestionService:
                 .limit(limit)
             )
             rows = session.execute(query).mappings().all()
-            return [dict(r) for r in rows]
+            results = []
+            for r in rows:
+                row_dict = dict(r)
+                email = row_dict.pop("token_sub", None)
+                payload = row_dict.get("payload") or {}
+                if not email and isinstance(payload, dict):
+                    email = payload.get("submitter_email")
+                row_dict["user_email"] = email
+                results.append(row_dict)
+            return results
 
     def get_suggestion_by_id(
         self,

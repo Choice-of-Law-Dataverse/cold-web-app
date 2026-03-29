@@ -39,24 +39,27 @@
     />
 
     <div v-else-if="suggestion">
-      <UAlert
-        v-if="isEditSuggestion"
-        color="warning"
-        variant="subtle"
-        icon="i-heroicons-pencil-square"
-        title="Edit of existing record"
-        class="mb-6"
-      >
-        <template #description>
-          This suggestion proposes changes to an existing record.
-          <NuxtLink
-            :to="`/${getCategoryEntityRoute(category)}/${suggestion.payload?.edit_entity_id}`"
-            class="font-medium underline hover:opacity-80"
-          >
-            View original record
-          </NuxtLink>
-        </template>
-      </UAlert>
+      <div v-if="isEditSuggestion" class="edit-banner mb-6">
+        <div class="flex items-center gap-2">
+          <UIcon
+            name="i-heroicons-pencil-square-16-solid"
+            class="h-4 w-4 shrink-0 text-amber-600"
+          />
+          <span class="text-cold-night text-sm font-medium">
+            Edit of existing record
+          </span>
+        </div>
+        <UButton
+          variant="outline"
+          color="neutral"
+          size="xs"
+          leading-icon="i-heroicons-eye-16-solid"
+          trailing-icon="i-heroicons-eye-16-solid"
+          @click="openOriginalEntity"
+        >
+          View original
+        </UButton>
+      </div>
 
       <UCard
         :ui="{
@@ -289,6 +292,8 @@ import { getStatusBadgeColor, getStatusLabel } from "@/utils/moderationStatus";
 import { formatDateLong } from "@/utils/format";
 import DetailRow from "@/components/ui/DetailRow.vue";
 import { ANALYZER_FIELD_MAP } from "@/types/analyzer";
+import { getEntityConfig } from "@/config/entityRegistry";
+import { useEntityDrawer } from "@/composables/useEntityDrawer";
 
 definePageMeta({
   middleware: ["moderation"],
@@ -306,6 +311,17 @@ const {
   rejectSuggestion,
   deleteSuggestion,
 } = useModerationApi();
+
+const { openDrawer } = useEntityDrawer();
+
+const openOriginalEntity = () => {
+  const editId = suggestion.value?.payload?.edit_entity_id;
+  if (!editId) return;
+  const basePath = `/${getCategoryEntityRoute(category.value)}`;
+  const config = getEntityConfig(basePath);
+  if (!config) return;
+  openDrawer(String(editId), config.table, basePath, true);
+};
 
 const {
   data: suggestion,
@@ -561,6 +577,17 @@ h1,
 h2,
 h3 {
   font-family: "DM Sans", sans-serif;
+}
+
+.edit-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.625rem 1rem;
+  border: 1px solid #fde68a;
+  border-radius: 8px;
+  background: #fffbeb;
 }
 
 .action-bar {

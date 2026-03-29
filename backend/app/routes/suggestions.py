@@ -99,9 +99,9 @@ _TYPED_SUGGESTION_ROUTES: list[tuple[str, str, str, str, type]] = [
 ]
 
 
-def _make_typed_handler(category: str, table: str):  # noqa: ANN202
+def _make_typed_handler(category: str, table: str, body_type: type):  # noqa: ANN202
     async def handler(
-        body: Any,
+        body: body_type,  # type: ignore[valid-type]
         request: Request,
         background_tasks: BackgroundTasks,
         user: dict[str, Any] = Depends(require_user),
@@ -127,8 +127,7 @@ def _make_typed_handler(category: str, table: str):  # noqa: ANN202
 
 
 for _path, _label, _category, _table, _body_type in _TYPED_SUGGESTION_ROUTES:
-    _handler = _make_typed_handler(_category, _table)
-    _handler.__annotations__["body"] = _body_type
+    _handler = _make_typed_handler(_category, _table, _body_type)
     router.add_api_route(
         _path,
         _handler,
