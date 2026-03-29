@@ -1,9 +1,17 @@
 """Pydantic models for case analyzer outputs and classification."""
 
+import re
 from dataclasses import dataclass
-from typing import Literal
+from typing import Literal, Self
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
+
+_REPETITION_RE = re.compile(r"(.{5,80}?)\1{3,}\s*$")
+
+
+def _strip_repetitive_suffix(text: str) -> str:
+    """Remove trailing repetitive garbage from LLM output (e.g. 'PMID: N/A.' looped)."""
+    return _REPETITION_RE.sub("", text).rstrip()
 
 
 @dataclass
@@ -19,6 +27,16 @@ class ConfidenceReasoningModel(BaseModel):
         description="Confidence level in the analysis: 'low', 'medium', or 'high'"
     )
     reasoning: str = Field(description="Explanation supporting the analysis")
+
+    @model_validator(mode="after")
+    def _sanitize_strings(self) -> Self:
+        for name in self.__class__.model_fields:
+            value = getattr(self, name)
+            if isinstance(value, str):
+                setattr(self, name, _strip_repetitive_suffix(value))
+            elif isinstance(value, list):
+                setattr(self, name, [_strip_repetitive_suffix(v) if isinstance(v, str) else v for v in value])
+        return self
 
 
 class ColSectionOutput(ConfidenceReasoningModel):
