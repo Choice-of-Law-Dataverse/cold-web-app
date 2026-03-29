@@ -143,18 +143,6 @@
             >
               {{ getStatusLabel(suggestion.moderationStatus) }}
             </UBadge>
-            <UButton
-              v-if="suggestion.payload?.edit_entity_id"
-              color="neutral"
-              variant="ghost"
-              size="xs"
-              leading-icon="i-heroicons-eye-16-solid"
-              trailing-icon="i-heroicons-eye-16-solid"
-              class="view-original-btn"
-              @click="openOriginalEntity(suggestion, $event)"
-            >
-              Original
-            </UButton>
             <span v-if="suggestion.createdAt" class="meta-item">
               <UIcon name="i-heroicons-clock-16-solid" class="h-3.5 w-3.5" />
               {{ formatDateLong(suggestion.createdAt) }}
