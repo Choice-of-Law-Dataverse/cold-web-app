@@ -162,9 +162,6 @@ import { getStatusBadgeColor, getStatusLabel } from "@/utils/moderationStatus";
 import { formatDateLong } from "@/utils/format";
 import JurisdictionFlag from "@/components/ui/JurisdictionFlag.vue";
 import { useJurisdictionLookup } from "@/composables/useJurisdictions";
-import { getEntityConfig } from "@/config/entityRegistry";
-import { useEntityDrawer } from "@/composables/useEntityDrawer";
-
 definePageMeta({
   middleware: ["moderation"],
 });
@@ -176,28 +173,6 @@ const isCaseAnalyzer = computed(() => category.value === "case-analyzer");
 
 const { listPendingSuggestions } = useModerationApi();
 const { getJurisdictionISO } = useJurisdictionLookup();
-const { openDrawer } = useEntityDrawer();
-
-const getCategoryEntityRoute = (cat: string): string => {
-  const mapping: Record<string, string> = {
-    "court-decisions": "court-decision",
-    "domestic-instruments": "domestic-instrument",
-    "regional-instruments": "regional-instrument",
-    "international-instruments": "international-instrument",
-    literature: "literature",
-  };
-  return mapping[cat] ?? cat;
-};
-
-const openOriginalEntity = (suggestion: PendingSuggestion, event: Event) => {
-  event.stopPropagation();
-  const editId = suggestion.payload?.edit_entity_id;
-  if (!editId) return;
-  const basePath = `/${getCategoryEntityRoute(category.value)}`;
-  const config = getEntityConfig(basePath);
-  if (!config) return;
-  openDrawer(String(editId), config.table, basePath, true);
-};
 
 const {
   data: suggestions,
@@ -393,14 +368,5 @@ h3 {
   gap: 0.25rem;
   font-size: 0.75rem;
   color: var(--color-cold-slate);
-}
-
-.view-original-btn {
-  opacity: 0;
-  transition: opacity 0.15s ease;
-}
-
-.suggestion-row:hover .view-original-btn {
-  opacity: 1;
 }
 </style>

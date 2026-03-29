@@ -432,26 +432,12 @@ const filteredPayload = computed(() => {
   return filtered;
 });
 
-const ANALYZER_LABELS: Record<string, string> = {
-  caseCitation: "Case Citation",
-  jurisdiction: "Jurisdiction",
-  choiceOfLawSections: "Choice of Law Sections",
-  themes: "Themes",
-  caseAbstract: "Abstract",
-  caseRelevantFacts: "Relevant Facts",
-  casePILProvisions: "PIL Provisions",
-  caseChoiceofLawIssue: "Choice of Law Issue",
-  caseCourtsPosition: "Court's Position",
-  caseObiterDicta: "Obiter Dicta",
-  caseDissentingOpinions: "Dissenting Opinions",
-};
-
 const analyzerFields = computed(() => {
   if (!suggestion.value?.payload) return [];
   const payload = suggestion.value.payload;
   const results: { label: string; value: string }[] = [];
 
-  for (const [fieldName, config] of Object.entries(ANALYZER_FIELD_MAP)) {
+  for (const [, config] of Object.entries(ANALYZER_FIELD_MAP)) {
     let extracted = "";
 
     for (const key of config.keys) {
@@ -487,7 +473,7 @@ const analyzerFields = computed(() => {
 
     if (extracted) {
       results.push({
-        label: ANALYZER_LABELS[fieldName] || fieldName,
+        label: config.label,
         value: extracted,
       });
     }
