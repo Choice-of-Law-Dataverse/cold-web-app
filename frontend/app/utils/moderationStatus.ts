@@ -39,7 +39,7 @@ export function getStatusBadgeColor(status?: string | null): BadgeColor {
     case "dismissed":
       return "neutral";
     default:
-      return "neutral";
+      return "info";
   }
 }
 
@@ -64,7 +64,7 @@ export function getStatusLabel(status?: string | null): string {
     case "dismissed":
       return "Dismissed";
     default:
-      return status || "Unknown";
+      return status || "Pending";
   }
 }
 

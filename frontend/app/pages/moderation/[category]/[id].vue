@@ -1,25 +1,34 @@
 <template>
   <div class="py-12">
-    <div class="mb-8 flex items-center justify-between">
-      <h1 class="text-3xl font-bold">
-        {{ categoryLabel }} — Entry #{{ suggestionId }}
-      </h1>
-      <UBadge
-        v-if="suggestion?.moderation_status"
-        :color="getStatusBadgeColor(suggestion.moderationStatus)"
-        variant="subtle"
-        size="lg"
+    <div class="mb-8 flex items-center gap-3">
+      <NuxtLink
+        :to="`/moderation/${category}`"
+        class="border-cold-gray text-cold-slate hover:border-cold-purple hover:text-cold-purple flex h-8 w-8 items-center justify-center rounded-lg border transition-colors"
       >
-        {{ getStatusLabel(suggestion.moderationStatus) }}
-      </UBadge>
+        <UIcon name="i-heroicons-arrow-left-16-solid" class="h-4 w-4" />
+      </NuxtLink>
+      <div class="min-w-0 flex-1">
+        <div class="flex items-center gap-3">
+          <h1
+            class="text-cold-night truncate text-2xl font-bold tracking-tight"
+          >
+            {{ categoryLabel }} #{{ suggestionId }}
+          </h1>
+          <UBadge
+            v-if="suggestion?.moderationStatus"
+            :color="getStatusBadgeColor(suggestion.moderationStatus)"
+            variant="subtle"
+          >
+            {{ getStatusLabel(suggestion.moderationStatus) }}
+          </UBadge>
+        </div>
+      </div>
     </div>
 
-    <!-- Loading state -->
-    <div v-if="pending" class="flex justify-center py-12">
+    <div v-if="pending" class="flex justify-center py-16">
       <UIcon name="i-heroicons-arrow-path" class="h-8 w-8 animate-spin" />
     </div>
 
-    <!-- Error state -->
     <UAlert
       v-else-if="error"
       color="error"
@@ -29,37 +38,39 @@
       class="mb-4"
     />
 
-    <!-- Suggestion detail -->
     <div v-else-if="suggestion">
-      <!-- Edit suggestion banner -->
-      <UAlert
-        v-if="isEditSuggestion"
-        color="warning"
-        variant="subtle"
-        icon="i-heroicons-pencil-square"
-        title="Edit of existing record"
-        class="mb-6"
+      <div v-if="isEditSuggestion" class="edit-banner mb-6">
+        <div class="flex items-center gap-2">
+          <UIcon
+            name="i-heroicons-pencil-square-16-solid"
+            class="h-4 w-4 shrink-0 text-amber-600"
+          />
+          <span class="text-cold-night text-sm font-medium">
+            Edit of existing record
+          </span>
+        </div>
+        <UButton
+          variant="outline"
+          color="neutral"
+          size="xs"
+          leading-icon="i-heroicons-eye-16-solid"
+          trailing-icon="i-heroicons-eye-16-solid"
+          @click="openOriginalEntity"
+        >
+          View original
+        </UButton>
+      </div>
+
+      <UCard
+        :ui="{
+          body: '!p-0',
+          header: 'border-b-0 px-6 py-5',
+        }"
+        class="mb-8"
       >
-        <template #description>
-          This suggestion proposes changes to an existing record.
-          <NuxtLink
-            :to="`/${getCategoryEntityRoute(category)}/${suggestion.payload?.edit_entity_id}`"
-            class="font-medium underline hover:opacity-80"
-          >
-            View original record
-          </NuxtLink>
-        </template>
-      </UAlert>
+        <div class="gradient-top-border" />
 
-      <!-- Metadata card -->
-      <UCard class="mb-6" :ui="{ body: 'p-0' }">
-        <template #header>
-          <h2 class="px-6 py-4 text-xl font-semibold">
-            Submission Information
-          </h2>
-        </template>
-
-        <div class="flex flex-col gap-4 px-6 py-8">
+        <div class="flex flex-col gap-2 px-4 py-4 sm:px-6 sm:py-6">
           <DetailRow
             v-if="
               suggestion.username || suggestion.userEmail || suggestion.tokenSub
@@ -82,45 +93,51 @@
           <DetailRow label="ID">
             {{ suggestion.id }}
           </DetailRow>
-        </div>
-      </UCard>
 
-      <!-- Data fields card -->
-      <UCard class="mb-6" :ui="{ body: 'p-0' }">
-        <template #header>
-          <h2 class="px-6 py-4 text-xl font-semibold">Submitted Data</h2>
-        </template>
-
-        <div class="flex flex-col gap-4 px-6 py-8">
-          <DetailRow
-            v-for="(value, key) in filteredPayload"
-            :key="key"
-            :label="formatFieldName(key)"
-          >
-            <template v-if="isLongText(value)">
+          <template v-if="isCaseAnalyzer && analyzerFields.length > 0">
+            <DetailRow
+              v-for="field in analyzerFields"
+              :key="field.label"
+              :label="field.label"
+            >
               <p class="result-value-small whitespace-pre-wrap">
+                {{ field.value }}
+              </p>
+            </DetailRow>
+          </template>
+          <template v-else>
+            <DetailRow
+              v-for="(value, key) in filteredPayload"
+              :key="key"
+              :label="formatFieldName(key)"
+            >
+              <p
+                v-if="isLongText(value)"
+                class="result-value-small whitespace-pre-wrap"
+              >
                 {{ formatValue(value) }}
               </p>
-            </template>
-            <template v-else>
-              <p class="result-value-small">{{ formatValue(value) }}</p>
-            </template>
-          </DetailRow>
+              <p v-else class="result-value-small">
+                {{ formatValue(value) }}
+              </p>
+            </DetailRow>
+          </template>
         </div>
       </UCard>
 
-      <!-- Action buttons -->
-      <div class="flex items-center gap-4">
-        <!-- Approve/Reject - only show for pending status -->
-        <template v-if="isPending">
+      <div class="action-bar">
+        <template v-if="isActionable">
           <UButton
             v-if="!isEditSuggestion"
             color="success"
             size="lg"
             :loading="approving"
             :disabled="rejecting || deleting"
-            @click="handleApprove"
+            @click="showApproveConfirm = true"
           >
+            <template #leading>
+              <UIcon name="i-heroicons-check-16-solid" class="h-4 w-4" />
+            </template>
             Approve
           </UButton>
           <UAlert
@@ -135,51 +152,52 @@
           <UButton
             color="error"
             size="lg"
-            variant="outline"
+            variant="subtle"
             :loading="rejecting"
             :disabled="approving || deleting"
             @click="handleReject"
           >
+            <template #leading>
+              <UIcon name="i-heroicons-x-mark-16-solid" class="h-4 w-4" />
+            </template>
             Reject
           </UButton>
         </template>
 
-        <!-- Read-only notice for non-pending items -->
         <UAlert
-          v-else-if="suggestion?.moderation_status"
+          v-else-if="suggestion?.moderationStatus"
           variant="subtle"
           icon="i-heroicons-eye"
           title="Read-only View"
-          :description="`This submission is in '${getStatusLabel(suggestion.moderationStatus)}' status and cannot be approved or rejected.`"
+          :description="`This submission has been ${getStatusLabel(suggestion.moderationStatus).toLowerCase()}.`"
           class="flex-1"
         />
 
-        <!-- Delete button - always available for case-analyzer -->
-        <UButton
-          v-if="isCaseAnalyzer"
-          color="error"
-          size="lg"
-          variant="ghost"
-          :loading="deleting"
-          :disabled="approving || rejecting"
-          @click="showDeleteConfirm = true"
-        >
-          <template #leading>
-            <UIcon name="i-heroicons-trash" class="h-4 w-4" />
-          </template>
-          Delete
-        </UButton>
+        <div v-if="isCaseAnalyzer" class="ml-auto">
+          <UButton
+            color="error"
+            size="lg"
+            variant="ghost"
+            :loading="deleting"
+            :disabled="approving || rejecting"
+            @click="showDeleteConfirm = true"
+          >
+            <template #leading>
+              <UIcon name="i-heroicons-trash" class="h-4 w-4" />
+            </template>
+            Delete
+          </UButton>
+        </div>
       </div>
     </div>
 
-    <!-- Success modal -->
     <UModal v-model:open="showSuccessModal">
       <template #content>
         <UCard>
           <template #header>
             <h3 class="text-lg font-semibold">Success</h3>
           </template>
-          <p class="text-gray-700">{{ successMessage }}</p>
+          <p class="text-cold-slate">{{ successMessage }}</p>
           <template #footer>
             <div class="flex justify-end">
               <UButton @click="goToList"> Back to List </UButton>
@@ -189,14 +207,13 @@
       </template>
     </UModal>
 
-    <!-- Error modal -->
     <UModal v-model:open="showErrorModal">
       <template #content>
         <UCard>
           <template #header>
             <h3 class="text-lg font-semibold text-red-600">Error</h3>
           </template>
-          <p class="text-gray-700">{{ errorMessage }}</p>
+          <p class="text-cold-slate">{{ errorMessage }}</p>
           <template #footer>
             <div class="flex justify-end">
               <UButton @click="showErrorModal = false"> Close </UButton>
@@ -206,14 +223,45 @@
       </template>
     </UModal>
 
-    <!-- Delete confirmation modal -->
+    <UModal v-model:open="showApproveConfirm">
+      <template #content>
+        <UCard>
+          <template #header>
+            <h3 class="text-lg font-semibold">Confirm Approval</h3>
+          </template>
+          <p class="text-cold-slate">
+            Are you sure you want to approve this submission? It will be
+            published to the database.
+          </p>
+          <template #footer>
+            <div class="flex justify-end gap-2">
+              <UButton
+                variant="ghost"
+                color="neutral"
+                @click="showApproveConfirm = false"
+              >
+                Cancel
+              </UButton>
+              <UButton
+                color="success"
+                :loading="approving"
+                @click="handleApprove"
+              >
+                Approve
+              </UButton>
+            </div>
+          </template>
+        </UCard>
+      </template>
+    </UModal>
+
     <UModal v-model:open="showDeleteConfirm">
       <template #content>
         <UCard>
           <template #header>
             <h3 class="text-lg font-semibold text-red-600">Confirm Delete</h3>
           </template>
-          <p class="text-gray-700">
+          <p class="text-cold-slate">
             Are you sure you want to permanently delete this analysis? This
             action cannot be undone.
           </p>
@@ -243,6 +291,10 @@ import { useModerationApi } from "@/composables/useModerationApi";
 import { getStatusBadgeColor, getStatusLabel } from "@/utils/moderationStatus";
 import { formatDateLong } from "@/utils/format";
 import DetailRow from "@/components/ui/DetailRow.vue";
+import { ANALYZER_FIELD_MAP } from "@/types/analyzer";
+import { extractStringFromPayload } from "@/utils/analyzerPayloadParser";
+import { getEntityConfig } from "@/config/entityRegistry";
+import { useEntityDrawer } from "@/composables/useEntityDrawer";
 
 definePageMeta({
   middleware: ["moderation"],
@@ -261,6 +313,17 @@ const {
   deleteSuggestion,
 } = useModerationApi();
 
+const { openDrawer } = useEntityDrawer();
+
+const openOriginalEntity = () => {
+  const editId = suggestion.value?.payload?.edit_entity_id;
+  if (!editId) return;
+  const basePath = `/${getCategoryEntityRoute(category.value)}`;
+  const config = getEntityConfig(basePath);
+  if (!config) return;
+  openDrawer(String(editId), config.table, basePath, true);
+};
+
 const {
   data: suggestion,
   pending,
@@ -268,6 +331,7 @@ const {
 } = await useAsyncData(
   `suggestion-${category.value}-${suggestionId.value}`,
   () => getSuggestionDetail(category.value, suggestionId.value),
+  { server: false },
 );
 
 const approving = ref(false);
@@ -275,17 +339,18 @@ const rejecting = ref(false);
 const deleting = ref(false);
 const showSuccessModal = ref(false);
 const showErrorModal = ref(false);
+const showApproveConfirm = ref(false);
 const showDeleteConfirm = ref(false);
 const successMessage = ref("");
 const errorMessage = ref("");
 
 const isCaseAnalyzer = computed(() => category.value === "case-analyzer");
 
-// Check if the suggestion is in pending status
-const isPending = computed(() => {
+const isActionable = computed(() => {
   const status = suggestion.value?.moderationStatus;
-  // Consider null/undefined as pending (legacy records) or explicit "pending"
-  return !status || status === "pending";
+  if (!status || status === "pending") return true;
+  if (isCaseAnalyzer.value && status === "completed") return true;
+  return false;
 });
 
 const isEditSuggestion = computed(
@@ -333,7 +398,6 @@ const filteredPayload = computed(() => {
   const filtered: Record<string, unknown> = {};
   const payload = suggestion.value.payload;
 
-  // For case analyzer, collect fields with _edited versions (legacy format)
   const editedFields = new Set<string>();
   if (category.value === "case-analyzer") {
     for (const key of Object.keys(payload)) {
@@ -358,10 +422,6 @@ const filteredPayload = computed(() => {
         continue;
       }
 
-      if (key === "full_text") {
-        continue;
-      }
-
       if (editedFields.has(key)) {
         continue;
       }
@@ -371,6 +431,26 @@ const filteredPayload = computed(() => {
   }
 
   return filtered;
+});
+
+const analyzerFields = computed(() => {
+  if (!suggestion.value?.payload) return [];
+  const payload = suggestion.value.payload as Record<string, unknown>;
+  const results: { label: string; value: string }[] = [];
+
+  for (const [, config] of Object.entries(ANALYZER_FIELD_MAP)) {
+    const extracted = extractStringFromPayload(
+      payload,
+      config.keys,
+      config.nestedKeys ?? [],
+      config.joinWith,
+    );
+    if (extracted) {
+      results.push({ label: config.label, value: extracted });
+    }
+  }
+
+  return results;
 });
 
 const formatFieldName = (key: string): string => {
@@ -391,6 +471,7 @@ const isLongText = (value: unknown): boolean => {
 };
 
 const handleApprove = async () => {
+  showApproveConfirm.value = false;
   approving.value = true;
   try {
     const result = await approveSuggestion(category.value, suggestionId.value);
@@ -447,3 +528,32 @@ const goToList = () => {
   navigateTo(`/moderation/${category.value}`);
 };
 </script>
+
+<style scoped>
+h1,
+h2,
+h3 {
+  font-family: "DM Sans", sans-serif;
+}
+
+.edit-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.625rem 1rem;
+  border: 1px solid #fde68a;
+  border-radius: 8px;
+  background: #fffbeb;
+}
+
+.action-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.25rem 1.5rem;
+  border: 1px solid var(--color-cold-gray);
+  border-radius: 12px;
+  background: var(--gradient-subtle);
+}
+</style>

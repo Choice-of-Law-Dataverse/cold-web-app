@@ -9,6 +9,7 @@ import {
   buildCaseAnalyzerPayload,
   extractErrorMessage,
 } from "~/utils/analyzerPayloadParser";
+import { ANALYZER_STEP_LABELS } from "~/types/analyzer";
 import { useApiClient } from "@/composables/useApiClient";
 import { streamSSE, type SSEEvent } from "~/utils/sseStream";
 
@@ -19,19 +20,6 @@ export interface DraftRecoveryData {
   jurisdictionInfo: JurisdictionInfo | null;
   analyzerData: Record<string, AnalysisStepPayload>;
 }
-
-const stepLabels: Record<string, string> = {
-  col_extraction: "Choice of Law Extraction",
-  theme_classification: "Theme Classification",
-  case_citation: "Case Citation",
-  relevant_facts: "Relevant Facts",
-  pil_provisions: "PIL Provisions",
-  col_issue: "Choice of Law Issue",
-  courts_position: "Court's Position",
-  obiter_dicta: "Obiter Dicta",
-  dissenting_opinions: "Dissenting Opinions",
-  abstract: "Abstract",
-};
 
 export function useCaseAnalyzer(
   analysisSteps: Ref<AnalysisStep[]>,
@@ -62,7 +50,7 @@ export function useCaseAnalyzer(
           jurisdiction: jurisdictionInfo,
           resume,
         },
-        stepLabels,
+        stepLabels: ANALYZER_STEP_LABELS,
         onEvent: (event: SSEEvent<AnalysisStepPayload>) => {
           const step = stepsMap.value.get(event.step);
           if (step) {

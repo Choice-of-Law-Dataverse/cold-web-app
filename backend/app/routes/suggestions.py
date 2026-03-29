@@ -4,7 +4,7 @@ from typing import Any
 from fastapi import APIRouter, BackgroundTasks, Depends, Header, HTTPException, Request, status
 
 from app.auth import extract_user_email, has_editor_access, require_editor_or_admin, require_user, verify_frontend_request
-from app.schemas.responses import PendingSuggestionItem, StatusMessage, SuggestionDetailItem
+from app.schemas.responses import ModerationSummaryItem, PendingSuggestionItem, StatusMessage, SuggestionDetailItem
 from app.schemas.suggestions import (
     CourtDecisionSuggestion,
     DomesticInstrumentSuggestion,
@@ -99,9 +99,9 @@ _TYPED_SUGGESTION_ROUTES: list[tuple[str, str, str, str, type]] = [
 ]
 
 
-def _make_typed_handler(category: str, table: str):  # noqa: ANN202
+def _make_typed_handler(category: str, table: str, body_type: type):  # noqa: ANN202
     async def handler(
-        body: Any,
+        body: body_type,  # type: ignore[valid-type]
         request: Request,
         background_tasks: BackgroundTasks,
         user: dict[str, Any] = Depends(require_user),
@@ -127,8 +127,7 @@ def _make_typed_handler(category: str, table: str):  # noqa: ANN202
 
 
 for _path, _label, _category, _table, _body_type in _TYPED_SUGGESTION_ROUTES:
-    _handler = _make_typed_handler(_category, _table)
-    _handler.__annotations__["body"] = _body_type
+    _handler = _make_typed_handler(_category, _table, _body_type)
     router.add_api_route(
         _path,
         _handler,
@@ -142,17 +141,56 @@ for _path, _label, _category, _table, _body_type in _TYPED_SUGGESTION_ROUTES:
 # Moderation endpoints
 
 
+_CATEGORIES: dict[str, tuple[str, str]] = {
+    "case_analyzer": ("case-analyzer", "Case Analyzer"),
+    "court_decisions": ("court-decisions", "Court Decisions"),
+    "domestic_instruments": ("domestic-instruments", "Domestic Instruments"),
+    "regional_instruments": ("regional-instruments", "Regional Instruments"),
+    "international_instruments": ("international-instruments", "International Instruments"),
+    "literature": ("literature", "Literature"),
+    "feedback": ("feedback", "Entity Feedback"),
+}
+
+_SLUG_TO_TABLE: dict[str, str] = {slug: table for table, (slug, _) in _CATEGORIES.items()}
+
+
 def _table_key(path_segment: str) -> str | None:
     """Map category path segment to internal table name."""
-    mapping = {
-        "court-decisions": "court_decisions",
-        "domestic-instruments": "domestic_instruments",
-        "regional-instruments": "regional_instruments",
-        "international-instruments": "international_instruments",
-        "literature": "literature",
-        "case-analyzer": "case_analyzer",
-    }
-    return mapping.get(path_segment)
+    return _SLUG_TO_TABLE.get(path_segment)
+
+
+@router.get(
+    "/moderation/summary",
+    summary="Get pending counts for all moderation categories",
+    description="Requires editor or admin role. Returns pending suggestion counts per category.",
+)
+async def moderation_summary(
+    _: dict[str, Any] = Depends(require_editor_or_admin),
+    service: SuggestionService = Depends(get_suggestion_service),
+) -> list[ModerationSummaryItem]:
+    try:
+        counts = service.count_pending_by_category()
+        return [
+            ModerationSummaryItem(
+                category=meta[0],
+                label=meta[1],
+                pending_count=counts.get(table, 0),
+            )
+            for table, meta in _CATEGORIES.items()
+            if table != "feedback"
+        ] + [
+            ModerationSummaryItem(
+                category="feedback",
+                label="Entity Feedback",
+                pending_count=counts.get("feedback", 0),
+            )
+        ]
+    except Exception as e:
+        logger.exception("Failed to fetch moderation summary")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to fetch moderation summary",
+        ) from e
 
 
 @router.get(
@@ -163,7 +201,7 @@ def _table_key(path_segment: str) -> str | None:
 async def list_pending_suggestions(
     category: str,
     show_all: bool = False,
-    _: dict = Depends(require_editor_or_admin),
+    _: dict[str, Any] = Depends(require_editor_or_admin),
     service: SuggestionService = Depends(get_suggestion_service),
 ) -> list[PendingSuggestionItem]:
     table = _table_key(category)
@@ -263,12 +301,26 @@ async def approve_suggestion(
         )
 
     try:
-        item = service.get_suggestion_by_id(table, suggestion_id, pending_only=True)
-        if not item:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Suggestion not found or not pending",
-            )
+        if category == "case-analyzer":
+            item = service.get_suggestion_by_id(table, suggestion_id)
+            if not item:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Suggestion not found",
+                )
+            item_status = item.get("moderation_status")
+            if item_status in {"approved", "rejected"}:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=f"Suggestion already {item_status}",
+                )
+        else:
+            item = service.get_suggestion_by_id(table, suggestion_id, pending_only=True)
+            if not item:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Suggestion not found or not pending",
+                )
 
         original_payload: dict[str, Any] = item.get("payload", {}) or {}
 
@@ -276,7 +328,6 @@ async def approve_suggestion(
         moderator_email = extract_user_email(user) or "unknown"
 
         if category == "case-analyzer":
-            # Use existing case analyzer approval logic
             writer = MainDBWriter()
             await approve_case_analyzer(service, writer, table, suggestion_id, original_payload, item, moderator_email)
         else:
@@ -372,7 +423,7 @@ async def reject_suggestion(
 async def delete_suggestion(
     category: str,
     suggestion_id: int,
-    _: dict = Depends(require_editor_or_admin),
+    _: dict[str, Any] = Depends(require_editor_or_admin),
     service: SuggestionService = Depends(get_suggestion_service),
 ) -> StatusMessage:
     """Delete a suggestion permanently."""

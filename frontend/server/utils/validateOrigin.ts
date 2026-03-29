@@ -15,12 +15,20 @@ export function validateOrigin(
     config.public.siteUrl,
   ].filter(Boolean);
 
-  const isValidOrigin =
-    !origin ||
-    allowedOrigins.some(
-      (allowed) =>
-        origin === allowed || (referer && referer.startsWith(allowed)),
-    );
+  const sourceHeader = origin || referer;
+  if (!sourceHeader) {
+    logfire.warning("Request blocked - no origin or referer header", {
+      host,
+    });
+    throw createError({
+      statusCode: 403,
+      message: "Forbidden: Missing origin",
+    });
+  }
+
+  const isValidOrigin = allowedOrigins.some(
+    (allowed) => origin === allowed || (referer && referer.startsWith(allowed)),
+  );
 
   if (!isValidOrigin) {
     logfire.warning("Request blocked - invalid origin", {
