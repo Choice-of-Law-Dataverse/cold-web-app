@@ -70,7 +70,7 @@ async def retry_with_feedback[T: ConfidenceReasoningModel](
     correction_prompt: str,
     previous_response_id: str,
 ) -> StepResult[T]:
-    model_key = STEP_MODEL_MAP.get(step_name, "gpt-5-nano")
+    model_key = STEP_MODEL_MAP.get(step_name, "gpt-5.4-nano")
     agent = Agent(
         name=f"{output_type.__name__}ConsistencyRetry",
         instructions="You are re-analyzing your previous output based on consistency feedback. Correct the identified issues while preserving accurate parts of your analysis.",
