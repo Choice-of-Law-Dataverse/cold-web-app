@@ -255,6 +255,7 @@ class SuggestionService:
                 source_col = _optional_column("source")
                 status_col = _optional_column("moderation_status")
                 submitted_data_col = _optional_column("submitted_data")
+                analyzer_col = _optional_column("analyzer")
 
                 query = sa.select(*cols).where(target.c.id == suggestion_id)
                 if token_sub:
@@ -301,8 +302,17 @@ class SuggestionService:
                         except Exception:
                             submitted_data = None
 
-                # Use submitted_data as payload if available (new format), otherwise legacy data
-                payload: Any = submitted_data if submitted_data else legacy_data
+                # Parse analyzer data
+                raw_analyzer = row.get("analyzer") if analyzer_col is not None else None
+                analyzer_data: dict | None = self._parse_json(raw_analyzer)
+
+                # Priority: submitted_data > analyzer > legacy data
+                if submitted_data:
+                    payload: Any = submitted_data
+                elif analyzer_data:
+                    payload = analyzer_data
+                else:
+                    payload = legacy_data
 
                 result = {
                     "id": row["id"],
@@ -750,9 +760,14 @@ class SuggestionService:
             for r in rows:
                 submitted = self._parse_json(r["submitted_data"])
                 legacy_data = self._parse_json(r["data"]) or {}
+                analyzer_data = self._parse_json(r["analyzer"]) or {}
 
-                # Use submitted_data if available, else legacy
-                display_data = submitted if submitted else legacy_data
+                if submitted:
+                    display_data = submitted
+                elif analyzer_data:
+                    display_data = analyzer_data
+                else:
+                    display_data = legacy_data
 
                 results.append(
                     {
@@ -763,7 +778,7 @@ class SuggestionService:
                         "model": r["model"],
                         "case_citation": r["case_citation"],
                         "payload": display_data,
-                        "data": legacy_data,  # Include original data for pdf_url, file_name
+                        "data": legacy_data,
                         "submitted_data": submitted,
                         "analyzer": self._parse_json(r["analyzer"]) or {},
                         "moderation_status": r["moderation_status"],
@@ -804,9 +819,14 @@ class SuggestionService:
             for r in rows:
                 submitted = self._parse_json(r["submitted_data"])
                 legacy_data = self._parse_json(r["data"]) or {}
+                analyzer_data = self._parse_json(r["analyzer"]) or {}
 
-                # Use submitted_data if available, else legacy
-                display_data = submitted if submitted else legacy_data
+                if submitted:
+                    display_data = submitted
+                elif analyzer_data:
+                    display_data = analyzer_data
+                else:
+                    display_data = legacy_data
 
                 results.append(
                     {
@@ -819,7 +839,7 @@ class SuggestionService:
                         "payload": display_data,
                         "data": legacy_data,
                         "submitted_data": submitted,
-                        "analyzer": self._parse_json(r["analyzer"]) or {},
+                        "analyzer": analyzer_data,
                         "moderation_status": r["moderation_status"],
                     }
                 )
@@ -1002,6 +1022,48 @@ class SuggestionService:
             if not row:
                 return None
             return dict(row)
+
+    def count_pending_by_category(self) -> dict[str, int]:
+        counts: dict[str, int] = {}
+        with suggestions_db_manager.get_session() as session:
+            pending_queries: list[sa.Select] = []  # type: ignore[type-arg]
+            pending_labels: list[str] = []
+
+            for table_name, target in self.tables.items():
+                if table_name == "generic":
+                    continue
+                if table_name == "case_analyzer":
+                    pending_queries.append(
+                        sa.select(sa.func.count())
+                        .select_from(target)
+                        .where(target.c.moderation_status == FeedbackModerationStatus.PENDING)
+                    )
+                else:
+                    pending_queries.append(
+                        sa.select(sa.func.count())
+                        .select_from(target)
+                        .where(
+                            sa.and_(
+                                target.c.moderation_status.is_(None),
+                                ~target.c.payload.has_key("moderation_status"),  # type: ignore[attr-defined]
+                            )
+                        )
+                    )
+                pending_labels.append(table_name)
+
+            pending_queries.append(
+                sa.select(sa.func.count())
+                .select_from(entity_feedback)
+                .where(entity_feedback.c.moderation_status == FeedbackModerationStatus.PENDING)
+            )
+            pending_labels.append("feedback")
+
+            combined = sa.union_all(*pending_queries)
+            rows = session.execute(combined).fetchall()
+            for label, row in zip(pending_labels, rows, strict=True):
+                counts[label] = row[0]
+
+        return counts
 
     def update_feedback_status(self, feedback_id: int, status: str) -> bool:
         valid = set(FeedbackModerationStatus)

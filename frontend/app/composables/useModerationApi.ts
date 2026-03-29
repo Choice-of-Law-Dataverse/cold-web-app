@@ -7,10 +7,24 @@ type SuggestionDetailItem = components["schemas"]["SuggestionDetailItem"];
 
 export type PendingSuggestion = PendingSuggestionItem | SuggestionDetailItem;
 
+export interface ModerationSummaryItem {
+  category: string;
+  label: string;
+  pendingCount: number;
+}
+
 export type { StatusMessage as ModerationResponse };
 
 export function useModerationApi() {
   const { client } = useApiClient();
+
+  const getModerationSummary = async (): Promise<ModerationSummaryItem[]> => {
+    const { data, error } = await client.GET(
+      "/suggestions/moderation/summary" as never,
+    );
+    if (error || !data) throw error ?? new Error("Failed to fetch summary");
+    return data as ModerationSummaryItem[];
+  };
 
   const listPendingSuggestions = async (
     category: string,
@@ -95,6 +109,7 @@ export function useModerationApi() {
   };
 
   return {
+    getModerationSummary,
     listPendingSuggestions,
     getSuggestionDetail,
     approveSuggestion,

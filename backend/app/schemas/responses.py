@@ -86,6 +86,14 @@ class LandingPageJurisdiction(BaseModel):
     has_data: int
 
 
+class ModerationSummaryItem(BaseModel):
+    model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
+
+    category: str
+    label: str
+    pending_count: int
+
+
 class StatusMessage(BaseModel):
     model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
 

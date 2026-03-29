@@ -1,6 +1,6 @@
 <template>
   <div class="py-12">
-    <div v-if="pending" class="flex justify-center py-12">
+    <div v-if="pending" class="flex justify-center py-16">
       <UIcon name="i-heroicons-arrow-path" class="h-8 w-8 animate-spin" />
     </div>
 
@@ -14,28 +14,46 @@
     />
 
     <template v-else-if="feedback">
-      <div class="mb-8 flex items-center justify-between">
-        <h1 class="text-3xl font-bold">Feedback #{{ feedbackId }}</h1>
-        <UBadge
-          :color="getStatusBadgeColor(feedback.moderationStatus)"
-          variant="subtle"
-          size="lg"
+      <div class="mb-8 flex items-center gap-3">
+        <NuxtLink
+          to="/moderation/feedback"
+          class="border-cold-gray text-cold-slate hover:border-cold-purple hover:text-cold-purple flex h-8 w-8 items-center justify-center rounded-lg border transition-colors"
         >
-          {{ getStatusLabel(feedback.moderationStatus) }}
-        </UBadge>
+          <UIcon name="i-heroicons-arrow-left-16-solid" class="h-4 w-4" />
+        </NuxtLink>
+        <div class="min-w-0 flex-1">
+          <div class="flex items-center gap-3">
+            <h1
+              class="text-cold-night truncate text-2xl font-bold tracking-tight"
+            >
+              Feedback #{{ feedbackId }}
+            </h1>
+            <UBadge
+              :color="getStatusBadgeColor(feedback.moderationStatus)"
+              variant="subtle"
+            >
+              {{ getStatusLabel(feedback.moderationStatus) }}
+            </UBadge>
+          </div>
+        </div>
       </div>
 
-      <UCard class="mb-6" :ui="{ body: 'p-0' }">
-        <template #header>
-          <h2 class="px-6 py-4 text-xl font-semibold">Entity</h2>
-        </template>
-        <div class="flex flex-col gap-4 px-6 py-8">
-          <DetailRow label="Type">
+      <UCard
+        :ui="{
+          body: '!p-0',
+          header: 'border-b-0 px-6 py-5',
+        }"
+        class="mb-8"
+      >
+        <div class="gradient-top-border" />
+
+        <div class="flex flex-col gap-2 px-4 py-4 sm:px-6 sm:py-6">
+          <DetailRow label="Entity Type">
             <p class="result-value-small">
               {{ entityTypeLabel(feedback.entityType) }}
             </p>
           </DetailRow>
-          <DetailRow label="Title">
+          <DetailRow label="Entity">
             <NuxtLink
               :to="`/${feedback.entityType.replace(/_/g, '-')}/${feedback.entityId}`"
               class="text-cold-purple hover:underline"
@@ -43,15 +61,7 @@
               {{ feedback.entityTitle || feedback.entityId }}
             </NuxtLink>
           </DetailRow>
-        </div>
-      </UCard>
-
-      <UCard class="mb-6" :ui="{ body: 'p-0' }">
-        <template #header>
-          <h2 class="px-6 py-4 text-xl font-semibold">Feedback</h2>
-        </template>
-        <div class="flex flex-col gap-4 px-6 py-8">
-          <DetailRow label="Type">
+          <DetailRow label="Feedback Type">
             <UBadge color="info" variant="subtle">
               {{ feedbackTypeLabel(feedback.feedbackType) }}
             </UBadge>
@@ -72,25 +82,28 @@
         </div>
       </UCard>
 
-      <div
-        v-if="feedback.moderationStatus === 'pending'"
-        class="flex items-center gap-4"
-      >
+      <div v-if="feedback.moderationStatus === 'pending'" class="action-bar">
         <UButton
           color="success"
           size="lg"
           :loading="updating"
           @click="handleStatus('reviewed')"
         >
+          <template #leading>
+            <UIcon name="i-heroicons-check-16-solid" class="h-4 w-4" />
+          </template>
           Mark as Reviewed
         </UButton>
         <UButton
           color="neutral"
           size="lg"
-          variant="outline"
+          variant="subtle"
           :loading="updating"
           @click="handleStatus('dismissed')"
         >
+          <template #leading>
+            <UIcon name="i-heroicons-x-mark-16-solid" class="h-4 w-4" />
+          </template>
           Dismiss
         </UButton>
       </div>
@@ -120,8 +133,10 @@ const {
   data: feedback,
   pending,
   error,
-} = await useAsyncData(`feedback-${feedbackId.value}`, () =>
-  getDetail(feedbackId.value),
+} = await useAsyncData(
+  `feedback-${feedbackId.value}`,
+  () => getDetail(feedbackId.value),
+  { server: false },
 );
 
 const updating = ref(false);
@@ -148,3 +163,21 @@ async function handleStatus(status: "reviewed" | "dismissed") {
   }
 }
 </script>
+
+<style scoped>
+h1,
+h2,
+h3 {
+  font-family: "DM Sans", sans-serif;
+}
+
+.action-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.25rem 1.5rem;
+  border: 1px solid var(--color-cold-gray);
+  border-radius: 12px;
+  background: var(--gradient-subtle);
+}
+</style>
