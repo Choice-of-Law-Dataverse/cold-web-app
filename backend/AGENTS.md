@@ -19,6 +19,7 @@ make dev  # http://localhost:8000
 - **Add a route**: Create in `app/routes/` and register in `app/main.py`
 - **Add a schema**: Create Pydantic model in `app/schemas/`
 - **Add dependencies**: `uv add <package>` (not pip install)
+- **Migrations**: Never run or create migrations. Leave these to the developer.
 
 ## Common Issues
 

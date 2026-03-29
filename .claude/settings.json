@@ -1,0 +1,20 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "command": "filepath=$(echo \"$TOOL_INPUT\" | grep -o '\"file_path\":\\s*\"[^\"]*\"' | head -1 | sed 's/.*\"file_path\":\\s*\"//;s/\"$//'); case \"$filepath\" in */frontend/*) cd frontend && npx prettier --write \"$filepath\" 2>/dev/null;; */backend/*.py) cd backend && uv run ruff format \"$filepath\" 2>/dev/null && uv run ruff check --fix \"$filepath\" 2>/dev/null;; esac; exit 0"
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "command": "echo \"$TOOL_INPUT\" | grep -q '\"file_path\".*\\.env\"' && echo 'BLOCKED: do not edit .env files — use .blueprint.env for templates' && exit 1; exit 0"
+      },
+      {
+        "matcher": "Bash",
+        "command": "echo \"$TOOL_INPUT\" | grep -qiE '(alembic\\s+(upgrade|downgrade|stamp)|psql|pg_dump|pg_restore|dropdb|createdb|DROP\\s|DELETE\\s+FROM|TRUNCATE|ALTER\\s+TABLE|INSERT\\s+INTO|UPDATE\\s+.*SET)' && echo 'BLOCKED: direct database operations are not allowed — only prod DB exists' && exit 1; exit 0"
+      }
+    ]
+  }
+}
