@@ -74,15 +74,27 @@ async def detect_jurisdiction(text: str) -> JurisdictionOutput:
 
 
 def _reconstruct_col_section(cached: dict[str, Any]) -> ColSectionOutput:
-    return ColSectionOutput.model_validate(cached)
+    return ColSectionOutput(
+        col_sections=cached.get("col_sections", []),
+        confidence=cached.get("confidence", "medium"),
+        reasoning=cached.get("reasoning", "Restored from cache"),
+    )
 
 
 def _reconstruct_theme_classification(cached: dict[str, Any]) -> ThemeClassificationOutput:
-    return ThemeClassificationOutput.model_validate(cached)
+    return ThemeClassificationOutput(
+        themes=cached.get("themes", []),
+        confidence=cached.get("confidence", "medium"),
+        reasoning=cached.get("reasoning", "Restored from cache"),
+    )
 
 
 def _reconstruct_col_issue(cached: dict[str, Any]) -> ColIssueOutput:
-    return ColIssueOutput.model_validate(cached)
+    return ColIssueOutput(
+        col_issue=cached.get("col_issue", ""),
+        confidence=cached.get("confidence", "medium"),
+        reasoning=cached.get("reasoning", "Restored from cache"),
+    )
 
 
 async def analyze_case_streaming(

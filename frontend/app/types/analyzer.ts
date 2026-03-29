@@ -32,6 +32,7 @@ export interface EditedAnalysisValues {
 }
 
 export interface AnalyzerFieldConfig {
+  label: string;
   keys: string[];
   nestedKeys?: string[];
   joinWith?: string;
@@ -96,51 +97,75 @@ export const ANALYZER_FIELD_MAP: Record<
   AnalyzerFieldConfig
 > = {
   caseCitation: {
+    label: "Case Citation",
     keys: ["case_citation_edited", "case_citation"],
     nestedKeys: ["case_citation"],
   },
   jurisdiction: {
+    label: "Jurisdiction",
     keys: ["jurisdiction_edited", "jurisdiction"],
     nestedKeys: ["precise_jurisdiction"],
   },
   choiceOfLawSections: {
+    label: "Choice of Law Sections",
     keys: ["col_sections_edited", "col_sections"],
     nestedKeys: ["col_sections"],
   },
   themes: {
+    label: "Themes",
     keys: ["themes_edited", "themes"],
     nestedKeys: ["themes"],
     joinWith: ", ",
   },
   caseAbstract: {
+    label: "Abstract",
     keys: ["abstract_edited", "abstract"],
     nestedKeys: ["abstract"],
   },
   caseRelevantFacts: {
+    label: "Relevant Facts",
     keys: ["relevant_facts_edited", "relevant_facts"],
     nestedKeys: ["relevant_facts"],
   },
   casePILProvisions: {
+    label: "PIL Provisions",
     keys: ["legal_provisions_edited", "legal_provisions", "pil_provisions"],
     nestedKeys: ["legal_provisions", "pil_provisions"],
     joinWith: ", ",
   },
   caseChoiceofLawIssue: {
+    label: "Choice of Law Issue",
     keys: ["choice_of_law_issue_edited", "choice_of_law_issue", "col_issue"],
     nestedKeys: ["choice_of_law_issue", "col_issue"],
   },
   caseCourtsPosition: {
+    label: "Court's Position",
     keys: ["courts_position_edited", "courts_position"],
     nestedKeys: ["courts_position"],
   },
   caseObiterDicta: {
+    label: "Obiter Dicta",
     keys: ["obiter_dicta_edited", "obiter_dicta"],
     nestedKeys: ["obiter_dicta"],
   },
   caseDissentingOpinions: {
+    label: "Dissenting Opinions",
     keys: ["dissenting_opinions_edited", "dissenting_opinions"],
     nestedKeys: ["dissenting_opinions"],
   },
+};
+
+export const ANALYZER_STEP_LABELS: Record<string, string> = {
+  col_extraction: "Choice of Law Extraction",
+  theme_classification: "Theme Classification",
+  case_citation: "Case Citation",
+  relevant_facts: "Relevant Facts",
+  pil_provisions: "PIL Provisions",
+  col_issue: "Choice of Law Issue",
+  courts_position: "Court's Position",
+  obiter_dicta: "Obiter Dicta",
+  dissenting_opinions: "Dissenting Opinions",
+  abstract: "Abstract",
 };
 
 export const ANALYSIS_STEP_KEYS = [

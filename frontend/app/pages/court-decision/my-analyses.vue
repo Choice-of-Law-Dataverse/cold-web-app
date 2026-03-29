@@ -173,9 +173,13 @@ const {
   data: analyses,
   pending,
   error,
-} = await useAsyncData("my-analyses", async () => {
-  const { data, error } = await client.GET("/case-analyzer/my-analyses");
-  if (error) throw error;
-  return data;
-});
+} = await useAsyncData(
+  "my-analyses",
+  async () => {
+    const { data, error } = await client.GET("/case-analyzer/my-analyses");
+    if (error) throw error;
+    return data;
+  },
+  { server: false },
+);
 </script>

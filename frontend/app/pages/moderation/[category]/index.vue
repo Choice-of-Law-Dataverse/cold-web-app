@@ -1,18 +1,31 @@
 <template>
   <div class="py-12">
-    <div class="mb-8">
-      <h1 class="text-3xl font-bold">
-        {{ isCaseAnalyzer ? "All Submissions" : "Pending" }}:
-        {{ categoryLabel }}
-      </h1>
+    <div class="mb-8 flex items-center gap-3">
+      <NuxtLink
+        to="/moderation"
+        class="border-cold-gray text-cold-slate hover:border-cold-purple hover:text-cold-purple flex h-8 w-8 items-center justify-center rounded-lg border transition-colors"
+      >
+        <UIcon name="i-heroicons-arrow-left-16-solid" class="h-4 w-4" />
+      </NuxtLink>
+      <div>
+        <h1 class="text-cold-night text-2xl font-bold tracking-tight">
+          {{ categoryLabel }}
+        </h1>
+        <p class="text-cold-slate text-sm">
+          <template v-if="isCaseAnalyzer">All submissions</template>
+          <template v-else>Pending review</template>
+          <template v-if="suggestions">
+            &middot; {{ suggestions.length }}
+            {{ suggestions.length === 1 ? "item" : "items" }}
+          </template>
+        </p>
+      </div>
     </div>
 
-    <!-- Loading state -->
-    <div v-if="pending" class="flex justify-center py-12">
+    <div v-if="pending" class="flex justify-center py-16">
       <UIcon name="i-heroicons-arrow-path" class="h-8 w-8 animate-spin" />
     </div>
 
-    <!-- Error state -->
     <UAlert
       v-else-if="error"
       color="error"
@@ -22,96 +35,121 @@
       class="mb-4"
     />
 
-    <!-- Empty state -->
     <div
       v-else-if="!suggestions || suggestions.length === 0"
-      class="py-12 text-center"
+      class="empty-state"
     >
-      <p class="text-gray-600">
-        {{ isCaseAnalyzer ? "No submissions yet." : "No pending suggestions." }}
+      <UIcon
+        name="i-heroicons-check-circle"
+        class="text-cold-green mx-auto h-12 w-12"
+      />
+      <p class="text-cold-night mt-3 font-medium">
+        {{ isCaseAnalyzer ? "No submissions yet" : "Queue is clear" }}
+      </p>
+      <p class="text-cold-slate mt-1 text-sm">
+        {{
+          isCaseAnalyzer
+            ? "New submissions will appear here."
+            : "No items pending review."
+        }}
       </p>
     </div>
 
-    <!-- Suggestions list -->
-    <div v-else class="space-y-4">
-      <UCard
+    <div v-else class="suggestion-list">
+      <div
         v-for="suggestion in suggestions"
         :key="suggestion.id"
-        :class="[
-          'transition-shadow',
-          isClickable(suggestion)
-            ? 'cursor-pointer hover:shadow-lg'
-            : 'cursor-not-allowed opacity-60',
-        ]"
-        :ui="{ body: 'p-0' }"
-        @click="handleCardClick(suggestion)"
+        class="suggestion-row"
+        :class="{
+          'suggestion-row--disabled': !isClickable(suggestion),
+          'suggestion-row--clickable': isClickable(suggestion),
+        }"
+        @click="isClickable(suggestion) && handleCardClick(suggestion)"
       >
-        <template #header>
-          <div class="flex items-start justify-between px-6 py-4">
-            <div class="flex-1">
-              <h3 class="text-lg font-semibold">
+        <div class="flex min-w-0 flex-1 items-start gap-4">
+          <div class="min-w-0 flex-1">
+            <div class="flex items-center gap-2">
+              <h3 class="text-cold-night truncate text-sm font-semibold">
                 {{ getSuggestionTitle(suggestion) }}
               </h3>
-              <p class="mt-1 text-sm text-gray-600">
-                {{ getSuggestionMeta(suggestion) }}
-              </p>
-            </div>
-            <div class="flex items-center gap-2">
               <UBadge
                 v-if="suggestion.payload?.edit_entity_id"
                 color="warning"
                 variant="subtle"
+                size="xs"
               >
                 Edit
               </UBadge>
-              <UBadge
-                :color="getStatusBadgeColor(suggestion.moderationStatus)"
-                variant="subtle"
+            </div>
+
+            <p
+              v-if="getSuggestionSubtitle(suggestion)"
+              class="text-cold-slate mt-0.5 truncate text-xs"
+            >
+              {{ getSuggestionSubtitle(suggestion) }}
+            </p>
+
+            <div class="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1">
+              <span
+                v-if="
+                  getPreciseJurisdiction(suggestion) ||
+                  getJurisdiction(suggestion)
+                "
+                class="meta-item"
               >
-                {{ getStatusLabel(suggestion.moderationStatus) }}
-              </UBadge>
+                <JurisdictionFlag
+                  :iso3="
+                    getJurisdictionISO(
+                      getPreciseJurisdiction(suggestion) ||
+                        getJurisdiction(suggestion),
+                    )
+                  "
+                  size="xs"
+                />
+                {{
+                  getPreciseJurisdiction(suggestion) ||
+                  getJurisdiction(suggestion)
+                }}
+              </span>
+              <span v-if="getSuggestionDate(suggestion)" class="meta-item">
+                <UIcon
+                  name="i-heroicons-calendar-16-solid"
+                  class="h-3.5 w-3.5"
+                />
+                {{ getSuggestionDate(suggestion) }}
+              </span>
+              <span
+                v-if="suggestion.username || suggestion.userEmail"
+                class="meta-item"
+              >
+                <UIcon name="i-heroicons-user-16-solid" class="h-3.5 w-3.5" />
+                {{ suggestion.username || suggestion.userEmail }}
+              </span>
+              <span v-if="suggestion.source" class="meta-item">
+                <UIcon
+                  name="i-heroicons-arrow-top-right-on-square-16-solid"
+                  class="h-3.5 w-3.5"
+                />
+                {{ suggestion.source }}
+              </span>
             </div>
           </div>
-        </template>
 
-        <div class="flex flex-col gap-3 px-6 py-4">
-          <DetailRow
-            v-if="getPreciseJurisdiction(suggestion)"
-            label="Jurisdiction"
-          >
-            <p class="result-value-small text-sm">
-              {{ getPreciseJurisdiction(suggestion) }}
-            </p>
-          </DetailRow>
-
-          <DetailRow
-            v-if="getJurisdiction(suggestion)"
-            label="Jurisdiction Type"
-          >
-            <p class="result-value-small text-sm">
-              {{ getJurisdiction(suggestion) }}
-            </p>
-          </DetailRow>
-
-          <DetailRow
-            v-if="suggestion.username || suggestion.userEmail"
-            label="Submitted by"
-          >
-            <p class="result-value-small text-sm">
-              {{ suggestion.username || suggestion.userEmail || "Unknown" }}
-            </p>
-          </DetailRow>
-          <DetailRow v-if="suggestion.createdAt" label="Created">
-            <p class="result-value-small text-sm">
+          <div class="flex shrink-0 flex-col items-end gap-1.5">
+            <UBadge
+              :color="getStatusBadgeColor(suggestion.moderationStatus)"
+              variant="subtle"
+              size="xs"
+            >
+              {{ getStatusLabel(suggestion.moderationStatus) }}
+            </UBadge>
+            <span v-if="suggestion.createdAt" class="meta-item">
+              <UIcon name="i-heroicons-clock-16-solid" class="h-3.5 w-3.5" />
               {{ formatDateLong(suggestion.createdAt) }}
-            </p>
-          </DetailRow>
-
-          <DetailRow v-if="suggestion.source" label="Source">
-            <p class="result-value-small text-sm">{{ suggestion.source }}</p>
-          </DetailRow>
+            </span>
+          </div>
         </div>
-      </UCard>
+      </div>
     </div>
   </div>
 </template>
@@ -122,8 +160,9 @@ import { useModerationApi } from "@/composables/useModerationApi";
 import type { PendingSuggestion } from "@/composables/useModerationApi";
 import { getStatusBadgeColor, getStatusLabel } from "@/utils/moderationStatus";
 import { formatDateLong } from "@/utils/format";
-import DetailRow from "@/components/ui/DetailRow.vue";
-
+import JurisdictionFlag from "@/components/ui/JurisdictionFlag.vue";
+import { useJurisdictionLookup } from "@/composables/useJurisdictions";
+import { coerceValueToString } from "@/utils/analyzerPayloadParser";
 definePageMeta({
   middleware: ["moderation"],
 });
@@ -134,6 +173,7 @@ const categoryLabel = computed(() => getCategoryLabel(category.value));
 const isCaseAnalyzer = computed(() => category.value === "case-analyzer");
 
 const { listPendingSuggestions } = useModerationApi();
+const { getJurisdictionISO } = useJurisdictionLookup();
 
 const {
   data: suggestions,
@@ -144,79 +184,107 @@ const {
   () => listPendingSuggestions(category.value, isCaseAnalyzer.value),
   {
     watch: [category],
+    server: false,
   },
 );
 
-const getSuggestionTitle = (suggestion: PendingSuggestion): string => {
-  const payload = suggestion.payload || {};
+const extractValue = (raw: unknown): string => coerceValueToString(raw) ?? "";
 
-  // Try various title fields
+const getSuggestionTitle = (suggestion: PendingSuggestion): string => {
+  if ("caseCitation" in suggestion && suggestion.caseCitation) {
+    return String(suggestion.caseCitation);
+  }
+
+  const payload = suggestion.payload || {};
   const titleFields = [
     "case_citation",
     "case_name",
     "title",
+    "title_en",
+    "official_title",
     "name",
+    "abbreviation",
     "citation",
+    "publication_title",
   ];
-
   for (const field of titleFields) {
     if (payload[field]) {
-      const value = payload[field];
-      // Handle array values by taking first element
-      const extracted = Array.isArray(value) ? value[0] : value;
-      return String(extracted);
+      const value = extractValue(payload[field]);
+      if (value) return value;
     }
   }
-
+  if (payload.author) return extractValue(payload.author);
   return `Entry #${suggestion.id}`;
 };
 
-const getSuggestionMeta = (suggestion: PendingSuggestion): string => {
+const getSuggestionSubtitle = (suggestion: PendingSuggestion): string => {
   const payload = suggestion.payload || {};
   const parts: string[] = [];
+  const author = extractValue(payload.author);
+  if (author) parts.push(author);
+  const abbr = extractValue(payload.abbreviation);
+  const title = extractValue(payload.title);
+  if (abbr && title) parts.push(abbr);
+  const official = extractValue(payload.official_title);
+  const titleEn = extractValue(payload.title_en);
+  if (official && titleEn) parts.push(official);
+  return parts.join(" · ");
+};
 
-  // Add date if available
+const getSuggestionDate = (suggestion: PendingSuggestion): string => {
+  const payload = suggestion.payload || {};
   const dateFields = [
     "date_of_judgment",
     "decision_date",
     "date",
+    "instrument_date",
+    "date_publication",
+    "entry_into_force",
+    "publication_date",
     "year",
     "publication_year",
   ];
   for (const field of dateFields) {
-    if (payload[field]) {
-      parts.push(`Date: ${payload[field]}`);
-      break;
-    }
+    const val = extractValue(payload[field]);
+    if (val) return val;
   }
-
-  return parts.join(" | ") || "No additional information";
+  return "";
 };
 
 const getJurisdiction = (suggestion: PendingSuggestion): string => {
-  const payload = suggestion.payload || {};
-  const value = payload.jurisdiction || payload.country;
-  if (!value) return "";
-  const extracted = Array.isArray(value) ? value[0] : value;
-  return String(extracted);
+  const p = suggestion.payload || {};
+  const raw = p.jurisdiction || p.country;
+  if (!raw) return "";
+  if (typeof raw === "string") return raw;
+  if (Array.isArray(raw)) return raw[0] ? String(raw[0]) : "";
+  if (typeof raw === "object") {
+    const obj = raw as Record<string, unknown>;
+    if (typeof obj.precise_jurisdiction === "string")
+      return obj.precise_jurisdiction;
+    if (typeof obj.jurisdiction_code === "string") return obj.jurisdiction_code;
+  }
+  return "";
 };
 
 const getPreciseJurisdiction = (suggestion: PendingSuggestion): string => {
-  const payload = suggestion.payload || {};
-  const value =
-    payload.precise_jurisdiction || payload.precise_jurisdiction_edited;
-  if (!value) return "";
-  const extracted = Array.isArray(value) ? value[0] : value;
-  return String(extracted);
+  const p = suggestion.payload || {};
+  if (typeof p.precise_jurisdiction === "string") return p.precise_jurisdiction;
+  if (typeof p.precise_jurisdiction_edited === "string")
+    return p.precise_jurisdiction_edited;
+  const jur = p.jurisdiction;
+  if (jur && typeof jur === "object" && !Array.isArray(jur)) {
+    const obj = jur as Record<string, unknown>;
+    if (typeof obj.precise_jurisdiction === "string")
+      return obj.precise_jurisdiction;
+  }
+  return "";
 };
 
 const isClickable = (suggestion: PendingSuggestion): boolean => {
-  // For case-analyzer, approved and rejected items are not clickable
   if (isCaseAnalyzer.value) {
     const status = suggestion.moderationStatus;
     return status !== "approved" && status !== "rejected";
   }
-  // For other categories, all items are clickable
   return true;
 };
 
@@ -226,3 +294,63 @@ const handleCardClick = (suggestion: PendingSuggestion) => {
   }
 };
 </script>
+
+<style scoped>
+h1,
+h2,
+h3 {
+  font-family: "DM Sans", sans-serif;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 4rem 1rem;
+  border: 1px dashed var(--color-cold-gray);
+  border-radius: 12px;
+  background: var(--gradient-subtle);
+}
+
+.suggestion-list {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--color-cold-gray);
+  border-radius: 12px;
+  overflow: hidden;
+  background: white;
+}
+
+.suggestion-row {
+  display: flex;
+  align-items: flex-start;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--color-cold-gray);
+  transition:
+    background 0.15s ease,
+    opacity 0.15s ease;
+}
+
+.suggestion-row:last-child {
+  border-bottom: none;
+}
+
+.suggestion-row--clickable {
+  cursor: pointer;
+}
+
+.suggestion-row--clickable:hover {
+  background: var(--gradient-subtle);
+}
+
+.suggestion-row--disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  color: var(--color-cold-slate);
+}
+</style>

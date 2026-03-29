@@ -31,5 +31,8 @@ More specifically, when preparing the output, prioritize: (1) The court's direct
 -	If necessary, add brackets […] to abbreviate the text if it touches upon matters included in the exclusion list.
 4.	CONSTRAINT: Base extraction solely on the provided judgment text. Do not add interpretive commentary or external legal knowledge.
 
-\nHere is the text of the Court Decision:\n{text}\n\nHere is the section of the Court Decision containing Choice of Law related information:\n
+
+<court_decision>
+{text}
+</court_decision>
 """

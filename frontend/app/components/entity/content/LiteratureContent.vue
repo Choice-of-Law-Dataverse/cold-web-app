@@ -22,12 +22,28 @@
       </section>
     </template>
 
-    <template #abstractNote>
+    <template #author="{ value, label }">
+      <section v-if="value && value !== data.editor">
+        <DetailRow :label="label">
+          <p class="result-value-small whitespace-pre-line">{{ value }}</p>
+        </DetailRow>
+      </section>
+    </template>
+
+    <template #itemType="{ value, label }">
+      <section v-if="value">
+        <DetailRow :label="label">
+          <p class="result-value-small">{{ formatItemType(String(value)) }}</p>
+        </DetailRow>
+      </section>
+    </template>
+
+    <template #after-fields>
       <section>
         <DetailRow label="BibTeX Citation">
           <div class="flex flex-col gap-3">
             <pre
-              class="overflow-x-auto rounded-md bg-gray-50 p-4 font-mono text-xs dark:bg-gray-800"
+              class="overflow-x-auto rounded-md bg-gray-50 p-4 font-mono text-xs"
               >{{ bibtexContent }}</pre
             >
             <div class="flex gap-3">
@@ -35,7 +51,8 @@
                 variant="outline"
                 color="neutral"
                 size="xs"
-                icon="i-material-symbols:content-copy-outline"
+                leading-icon="i-material-symbols:content-copy-outline"
+                trailing-icon="i-material-symbols:content-copy-outline"
                 @click="copyBibTeX"
               >
                 Copy
@@ -44,7 +61,8 @@
                 variant="outline"
                 color="neutral"
                 size="xs"
-                icon="i-material-symbols:download-2-outline"
+                leading-icon="i-material-symbols:download-2-outline"
+                trailing-icon="i-material-symbols:download-2-outline"
                 @click="exportBibTeX"
               >
                 Download
@@ -66,6 +84,11 @@ import PdfLink from "@/components/ui/PdfLink.vue";
 import SourceExternalLink from "@/components/sources/SourceExternalLink.vue";
 import type { Literature } from "@/types/entities/literature";
 import { generateBibTeX, sanitizeFilename, downloadFile } from "@/utils/bibtex";
+import { camelCaseToLabel } from "@/utils/camelCaseToLabel";
+
+function formatItemType(value: string): string {
+  return camelCaseToLabel(value);
+}
 
 const props = defineProps<{
   data: Literature;

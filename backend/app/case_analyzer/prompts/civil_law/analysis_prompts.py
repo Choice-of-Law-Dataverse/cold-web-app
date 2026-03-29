@@ -20,7 +20,15 @@ Elaborate on facts including, but not limited to the following, as long as they 
 -	Exclude: Specific amounts, exact dates, individual names, procedural details, unrelated contract terms
 5.	CONSTRAINT:
 Base the factual narrative solely on the provided judgment text, synthesizing information from both the full text and extracted choice of law section.
-\nCourt Decision Text:\n{text}\n\nExtracted Choice of Law Section:\n{col_section}\n\nThe facts are:\n
+
+
+<court_decision>
+{text}
+</court_decision>
+
+<col_section>
+{col_section}
+</col_section>
 """
 
 # ===== PIL PROVISIONS =====
@@ -31,7 +39,14 @@ LIMITATIONS:
 - No literature or other doctrinal remarks
 - Do not use the paragraph symbol (§). If necessary use the abbreviation "Para."
 
-Court Decision Text:\n{text}\n\nExtracted Choice of Law Section:\n{col_section}\n\nThe private international law provisions are:\n
+
+<court_decision>
+{text}
+</court_decision>
+
+<col_section>
+{col_section}
+</col_section>
 """
 
 # ===== CHOICE OF LAW ISSUE =====
@@ -41,17 +56,45 @@ Your task is to identify the main private international law issue from a court d
 -	"Can an implied choice of law be inferred from forum selection clauses?"
 -	"Does the closest connection test apply when parties made no express choice of law?"
 
-The issue you extract will have to do with choice of law and the output has to be phrased in a general fashion. The issue is not about the specific details of the case but rather the overall choice-of-law issue behind the case. If any legal provisions are mentioned, use their English abbreviation.\n\nThe issue in this case is related to this theme/these themes:\n{classification_definitions}\n\nCourt Decision Text:\n{text}\n\nExtracted Choice of Law Section:\n{col_section}\n\nThe issue is:\n
+The issue you extract will have to do with choice of law and the output has to be phrased in a general fashion. The issue is not about the specific details of the case but rather the overall choice-of-law issue behind the case. If any legal provisions are mentioned, use their English abbreviation.
+
+<themes>
+{classification_definitions}
+</themes>
+
+<court_decision>
+{text}
+</court_decision>
+
+<col_section>
+{col_section}
+</col_section>
 """
 
 # ===== COURT'S POSITION =====
 COURTS_POSITION_PROMPT = """
-Summarize the court's position on the choice-of-law issue(s) within the decision. Your response is phrased in a general way, generalizing the issue(s) so that your generalization could be applied to other private international law cases. If any legal provisions are mentioned, use their English abbreviation. Your output is a direct answer to the issue laid out here:\n{col_issue}\n
+Summarize the court's position on the choice-of-law issue(s) within the decision. Your response is phrased in a general way, generalizing the issue(s) so that your generalization could be applied to other private international law cases. If any legal provisions are mentioned, use their English abbreviation. Your output is a direct answer to the following issue:
+
+<col_issue>
+{col_issue}
+</col_issue>
+
 CONSTRAINTS:
 - Base the response on the provided judgment text and extracted sections only.
 - Maintain a neutral and objective tone.
 - Use a maximum of 300 words.
-\nCourt Decision Text:\n{text}\n\nExtracted Choice of Law Section:\n{col_section}\n\nClassified Theme(s):\n{classification}\n\nThe court's position is:\n
+
+<court_decision>
+{text}
+</court_decision>
+
+<col_section>
+{col_section}
+</col_section>
+
+<themes>
+{classification}
+</themes>
 """
 
 # ===== ABSTRACT =====
@@ -79,17 +122,28 @@ If an official “abstract”, “headnote”/ “case note” exists in the jud
 
 6.	CONSTRAINT: Base the abstract on your previous analysis of this judgment's PIL components, ensuring it captures the essential choice of law elements for legal research and reference purposes. Use a maximum of four sentences.
 
-Court Decision Text:\n{text}
 
-The private international law themes are:\n{classification}
+<court_decision>
+{text}
+</court_decision>
 
-The relevant facts are:\n{facts}
+<themes>
+{classification}
+</themes>
 
-The private international law provisions are:\n{pil_provisions}
+<relevant_facts>
+{facts}
+</relevant_facts>
 
-The choice of law issue is:\n{col_issue}
+<pil_provisions>
+{pil_provisions}
+</pil_provisions>
 
-The court's position is:\n{court_position}
+<col_issue>
+{col_issue}
+</col_issue>
 
-\n\nThe abstract is:\n
+<courts_position>
+{court_position}
+</courts_position>
 """

@@ -1,20 +1,53 @@
-/**
- * Shared configuration for moderation categories
- */
-
 export interface CategoryConfig {
   id: string;
   label: string;
+  icon: string;
+  color: string;
 }
 
 export const MODERATION_CATEGORIES: CategoryConfig[] = [
-  { id: "case-analyzer", label: "Case Analyzer" },
-  { id: "court-decisions", label: "Court Decisions" },
-  { id: "domestic-instruments", label: "Domestic Instruments" },
-  { id: "regional-instruments", label: "Regional Instruments" },
-  { id: "international-instruments", label: "International Instruments" },
-  { id: "literature", label: "Literature" },
-  { id: "feedback", label: "Entity Feedback" },
+  {
+    id: "case-analyzer",
+    label: "Case Analyzer",
+    icon: "i-heroicons-cpu-chip",
+    color: "var(--color-cold-purple)",
+  },
+  {
+    id: "court-decisions",
+    label: "Court Decisions",
+    icon: "i-heroicons-scale",
+    color: "var(--color-label-court-decision)",
+  },
+  {
+    id: "domestic-instruments",
+    label: "Domestic Instruments",
+    icon: "i-heroicons-building-library",
+    color: "var(--color-label-instrument)",
+  },
+  {
+    id: "regional-instruments",
+    label: "Regional Instruments",
+    icon: "i-heroicons-globe-europe-africa",
+    color: "var(--color-label-instrument)",
+  },
+  {
+    id: "international-instruments",
+    label: "International Instruments",
+    icon: "i-heroicons-globe-alt",
+    color: "var(--color-label-instrument)",
+  },
+  {
+    id: "literature",
+    label: "Literature",
+    icon: "i-heroicons-book-open",
+    color: "var(--color-label-literature)",
+  },
+  {
+    id: "feedback",
+    label: "Entity Feedback",
+    icon: "i-heroicons-chat-bubble-left-right",
+    color: "var(--color-cold-teal)",
+  },
 ];
 
 export const CATEGORY_LABELS: Record<string, string> = Object.fromEntries(
@@ -23,4 +56,10 @@ export const CATEGORY_LABELS: Record<string, string> = Object.fromEntries(
 
 export function getCategoryLabel(categoryId: string): string {
   return CATEGORY_LABELS[categoryId] || categoryId;
+}
+
+export function getCategoryConfig(
+  categoryId: string,
+): CategoryConfig | undefined {
+  return MODERATION_CATEGORIES.find((cat) => cat.id === categoryId);
 }
