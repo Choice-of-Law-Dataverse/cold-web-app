@@ -1,3 +1,4 @@
+import logging
 import re
 from typing import Any
 
@@ -15,6 +16,8 @@ from app.schemas.requests import (
 from app.schemas.responses import FullTextSearchResponse, SpecialistResponse
 from app.schemas.search_result import validate_search_result
 from app.services.search import SearchService
+
+logger = logging.getLogger(__name__)
 
 
 def _normalize_to_camel(key: str) -> str:
@@ -121,7 +124,8 @@ def handle_entity_detail(
     try:
         result = search_service.get_entity_detail(body.table, body.id)
     except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e)) from e
+        logger.warning("Invalid entity detail request: %s", e)
+        raise HTTPException(status_code=400, detail="Invalid request parameters") from e
     if not result:
         raise HTTPException(status_code=404, detail=f"No record found for {body.id} in {body.table}")
     model = TABLE_DETAIL_MODELS.get(result.get("source_table", ""), DetailBase)
@@ -171,7 +175,8 @@ def return_full_table(
         else:
             results = search_service.full_table(table, response_type=response_type)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e)) from e
+        logger.exception("Failed to query table")
+        raise HTTPException(status_code=500, detail="Failed to query table") from e
 
     return [validate_record(_camel_keys(r)) for r in results]
 
@@ -215,4 +220,5 @@ def get_specialists_by_jurisdiction(
         results = search_service.get_specialists_by_jurisdiction(jurisdiction_alpha_code)
         return [SpecialistResponse(**r) for r in results]
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e)) from e
+        logger.exception("Failed to fetch specialists")
+        raise HTTPException(status_code=500, detail="Failed to fetch specialists") from e

@@ -122,6 +122,7 @@ def _make_typed_handler(category: str, table: str, body_type: type):  # noqa: AN
             background_tasks.add_task(send_new_suggestion_notification, table, new_id, payload, user)
             return SuggestionResponse(id=new_id)
         except Exception as e:
+            logger.exception("Failed to save suggestion")
             raise HTTPException(status_code=500, detail="Failed to save suggestion") from e
 
     return handler

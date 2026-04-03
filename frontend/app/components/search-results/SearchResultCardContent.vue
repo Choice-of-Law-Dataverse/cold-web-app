@@ -21,7 +21,9 @@
             <template #actions>
               <PdfLink
                 :pdf-field="resolvedPdfField"
-                :record-id="String(displayData.id)"
+                :record-id="
+                  displayData.id != null ? String(displayData.id) : undefined
+                "
                 :folder-name="pdfConfig.folderName"
               />
             </template>

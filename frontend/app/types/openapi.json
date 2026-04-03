@@ -2187,26 +2187,6 @@
               }
             ]
           },
-          "createdBy": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "updatedBy": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
           "toReview": {
             "anyOf": [
               {
@@ -2811,26 +2791,6 @@
             ]
           },
           "updatedAt": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "createdBy": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "updatedBy": {
             "anyOf": [
               {
                 "type": "string"
@@ -3514,26 +3474,6 @@
                 "type": "null"
               }
             ]
-          },
-          "createdBy": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "updatedBy": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ]
           }
         },
         "type": "object",
@@ -3959,26 +3899,6 @@
             ]
           },
           "updatedAt": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "createdBy": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "updatedBy": {
             "anyOf": [
               {
                 "type": "string"
@@ -4492,26 +4412,6 @@
             ]
           },
           "updatedAt": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "createdBy": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "updatedBy": {
             "anyOf": [
               {
                 "type": "string"
@@ -5083,26 +4983,6 @@
             ]
           },
           "updatedAt": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "createdBy": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "updatedBy": {
             "anyOf": [
               {
                 "type": "string"
@@ -6273,26 +6153,6 @@
                 "type": "null"
               }
             ]
-          },
-          "createdBy": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "updatedBy": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ]
           }
         },
         "type": "object",
@@ -6400,26 +6260,6 @@
             ]
           },
           "updatedAt": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "createdBy": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "updatedBy": {
             "anyOf": [
               {
                 "type": "string"
@@ -7348,26 +7188,6 @@
             ]
           },
           "updatedAt": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "createdBy": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "updatedBy": {
             "anyOf": [
               {
                 "type": "string"
@@ -8311,13 +8131,13 @@
             "anyOf": [
               {
                 "type": "string",
-                "enum": ["parsed", "raw", "both"]
+                "const": "parsed"
               },
               {
                 "type": "null"
               }
             ],
-            "description": "Select 'parsed' (default), 'raw', or 'both' for response data.",
+            "description": "Response data format. Only 'parsed' is supported.",
             "default": "parsed"
           }
         },
@@ -8391,13 +8211,13 @@
             "anyOf": [
               {
                 "type": "string",
-                "enum": ["parsed", "raw", "both"]
+                "const": "parsed"
               },
               {
                 "type": "null"
               }
             ],
-            "description": "Select 'parsed' (default), 'raw', or 'both' for response data.",
+            "description": "Response data format. Only 'parsed' is supported.",
             "default": "parsed"
           }
         },
@@ -8587,26 +8407,6 @@
             ]
           },
           "updatedAt": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "createdBy": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "updatedBy": {
             "anyOf": [
               {
                 "type": "string"
@@ -8881,26 +8681,6 @@
             ]
           },
           "updatedAt": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "createdBy": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "updatedBy": {
             "anyOf": [
               {
                 "type": "string"
@@ -9614,26 +9394,6 @@
               }
             ]
           },
-          "createdBy": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "updatedBy": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
           "fullText": {
             "anyOf": [
               {
@@ -10259,26 +10019,6 @@
               }
             ]
           },
-          "createdBy": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "updatedBy": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
           "type": {
             "anyOf": [
               {
@@ -10890,26 +10630,6 @@
             ]
           },
           "updatedAt": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "createdBy": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "updatedBy": {
             "anyOf": [
               {
                 "type": "string"
@@ -12481,26 +12201,6 @@
               }
             ]
           },
-          "createdBy": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "updatedBy": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
           "primaryTheme": {
             "anyOf": [
               {
@@ -12987,26 +12687,6 @@
             ]
           },
           "updatedAt": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "createdBy": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "updatedBy": {
             "anyOf": [
               {
                 "type": "string"
@@ -13616,26 +13296,6 @@
               }
             ]
           },
-          "createdBy": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "updatedBy": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
           "fullText": {
             "anyOf": [
               {
@@ -14162,26 +13822,6 @@
             ]
           },
           "updatedAt": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "createdBy": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "updatedBy": {
             "anyOf": [
               {
                 "type": "string"

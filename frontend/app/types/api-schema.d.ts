@@ -616,8 +616,6 @@ export interface components {
       relations: components["schemas"]["EntityRelations"];
       createdAt?: string | null;
       updatedAt?: string | null;
-      createdBy?: string | null;
-      updatedBy?: string | null;
       toReview?: string | null;
       questionColdId?: string | null;
     };
@@ -707,8 +705,6 @@ export interface components {
       relations: components["schemas"]["EntityRelations"];
       createdAt?: string | null;
       updatedAt?: string | null;
-      createdBy?: string | null;
-      updatedBy?: string | null;
       idNumber?: string | null;
       context?: string | null;
       natureOfTheAward?: string | null;
@@ -815,8 +811,6 @@ export interface components {
       relations: components["schemas"]["EntityRelations"];
       createdAt?: string | null;
       updatedAt?: string | null;
-      createdBy?: string | null;
-      updatedBy?: string | null;
     };
     /** ArbitralInstitutionRecord */
     ArbitralInstitutionRecord: {
@@ -891,8 +885,6 @@ export interface components {
       relations: components["schemas"]["EntityRelations"];
       createdAt?: string | null;
       updatedAt?: string | null;
-      createdBy?: string | null;
-      updatedBy?: string | null;
       fullTextOriginalLanguage?: string | null;
       fullTextEnglishTranslation?: string | null;
       arbitrationMethodType?: string | null;
@@ -975,8 +967,6 @@ export interface components {
       relations: components["schemas"]["EntityRelations"];
       createdAt?: string | null;
       updatedAt?: string | null;
-      createdBy?: string | null;
-      updatedBy?: string | null;
       idNumber?: string | null;
       officialSourceUrl?: string | null;
     };
@@ -1085,8 +1075,6 @@ export interface components {
       relations: components["schemas"]["EntityRelations"];
       createdAt?: string | null;
       updatedAt?: string | null;
-      createdBy?: string | null;
-      updatedBy?: string | null;
       idNumber?: string | null;
       date?: string | null;
       abstract?: string | null;
@@ -1282,8 +1270,6 @@ export interface components {
       relations: components["schemas"]["EntityRelations"];
       createdAt?: string | null;
       updatedAt?: string | null;
-      createdBy?: string | null;
-      updatedBy?: string | null;
     };
     /** DomesticInstrumentDetail */
     DomesticInstrumentDetail: {
@@ -1319,8 +1305,6 @@ export interface components {
       relations: components["schemas"]["EntityRelations"];
       createdAt?: string | null;
       updatedAt?: string | null;
-      createdBy?: string | null;
-      updatedBy?: string | null;
       idNumber?: string | null;
       officialTitle?: string | null;
       status?: string | null;
@@ -1479,8 +1463,6 @@ export interface components {
       relations: components["schemas"]["EntityRelations"];
       createdAt?: string | null;
       updatedAt?: string | null;
-      createdBy?: string | null;
-      updatedBy?: string | null;
       fullTextOfTheProvisionOriginalLanguage?: string | null;
       fullTextOfTheProvisionEnglishTranslation?: string | null;
       rankingDisplayOrder?: string | null;
@@ -1685,10 +1667,10 @@ export interface components {
       table: string;
       filters?: components["schemas"]["FTFilterOption"][] | null;
       /**
-       * @description Select 'parsed' (default), 'raw', or 'both' for response data.
+       * @description Response data format. Only 'parsed' is supported.
        * @default parsed
        */
-      response_type: ("parsed" | "raw" | "both") | null;
+      response_type: "parsed" | null;
     };
     /**
      * FullTextSearchRequest
@@ -1742,10 +1724,10 @@ export interface components {
        */
       sort_by_date: boolean | null;
       /**
-       * @description Select 'parsed' (default), 'raw', or 'both' for response data.
+       * @description Response data format. Only 'parsed' is supported.
        * @default parsed
        */
-      response_type: ("parsed" | "raw" | "both") | null;
+      response_type: "parsed" | null;
     };
     /** FullTextSearchResponse */
     FullTextSearchResponse: {
@@ -1807,8 +1789,6 @@ export interface components {
       relations: components["schemas"]["EntityRelations"];
       createdAt?: string | null;
       updatedAt?: string | null;
-      createdBy?: string | null;
-      updatedBy?: string | null;
       adaptedQuestion?: string | null;
       position?: string | null;
       questionColdId?: string | null;
@@ -1865,8 +1845,6 @@ export interface components {
       relations: components["schemas"]["EntityRelations"];
       createdAt?: string | null;
       updatedAt?: string | null;
-      createdBy?: string | null;
-      updatedBy?: string | null;
       idNumber?: string | null;
       url?: string | null;
     };
@@ -1989,8 +1967,6 @@ export interface components {
       relations: components["schemas"]["EntityRelations"];
       createdAt?: string | null;
       updatedAt?: string | null;
-      createdBy?: string | null;
-      updatedBy?: string | null;
       fullText?: string | null;
       rankingDisplayOrder?: string | null;
       instrumentColdId?: string | null;
@@ -2100,8 +2076,6 @@ export interface components {
       relations: components["schemas"]["EntityRelations"];
       createdAt?: string | null;
       updatedAt?: string | null;
-      createdBy?: string | null;
-      updatedBy?: string | null;
       type?: string | null;
       northSouthDivide?: string | null;
       jurisdictionalDifferentiator?: string | null;
@@ -2211,8 +2185,6 @@ export interface components {
       relations: components["schemas"]["EntityRelations"];
       createdAt?: string | null;
       updatedAt?: string | null;
-      createdBy?: string | null;
-      updatedBy?: string | null;
       idNumber?: string | null;
       itemType?: string | null;
       abstractNote?: string | null;
@@ -2436,8 +2408,6 @@ export interface components {
       relations: components["schemas"]["EntityRelations"];
       createdAt?: string | null;
       updatedAt?: string | null;
-      createdBy?: string | null;
-      updatedBy?: string | null;
       primaryTheme?: string | null;
       answeringOptions?: string | null;
     };
@@ -2520,8 +2490,6 @@ export interface components {
       relations: components["schemas"]["EntityRelations"];
       createdAt?: string | null;
       updatedAt?: string | null;
-      createdBy?: string | null;
-      updatedBy?: string | null;
       idNumber?: string | null;
       url?: string | null;
     };
@@ -2631,8 +2599,6 @@ export interface components {
       relations: components["schemas"]["EntityRelations"];
       createdAt?: string | null;
       updatedAt?: string | null;
-      createdBy?: string | null;
-      updatedBy?: string | null;
       fullText?: string | null;
       instrumentColdId?: string | null;
     };
@@ -2723,8 +2689,6 @@ export interface components {
       relations: components["schemas"]["EntityRelations"];
       createdAt?: string | null;
       updatedAt?: string | null;
-      createdBy?: string | null;
-      updatedBy?: string | null;
       specialist?: string | null;
       affiliation?: string | null;
       contact?: string | null;
