@@ -69,7 +69,7 @@ async def submit_suggestion(
         background_tasks.add_task(send_new_suggestion_notification, "generic", new_id, payload, user)
         return SuggestionResponse(id=new_id)
     except Exception as e:
-        logger.exception("Failed to save suggestion")
+        logger.exception("Failed to save generic suggestion source=%s", body.source)
         raise HTTPException(status_code=500, detail="Failed to save suggestion") from e
 
 
@@ -122,7 +122,7 @@ def _make_typed_handler(category: str, table: str, body_type: type):  # noqa: AN
             background_tasks.add_task(send_new_suggestion_notification, table, new_id, payload, user)
             return SuggestionResponse(id=new_id)
         except Exception as e:
-            logger.exception("Failed to save suggestion")
+            logger.exception("Failed to save suggestion category=%s table=%s", category, table)
             raise HTTPException(status_code=500, detail="Failed to save suggestion") from e
 
     return handler
@@ -188,7 +188,7 @@ async def moderation_summary(
             )
         ]
     except Exception as e:
-        logger.exception("Failed to fetch moderation summary")
+        logger.exception("Failed to fetch moderation summary for user")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to fetch moderation summary",
@@ -222,6 +222,7 @@ async def list_pending_suggestions(
             rows = service.list_pending(table)
         return [PendingSuggestionItem(**r) for r in rows]
     except Exception as e:
+        logger.exception("Failed to fetch pending suggestions category=%s", category)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to fetch pending suggestions",
@@ -277,6 +278,7 @@ async def get_suggestion_detail(
     except HTTPException:
         raise
     except Exception as e:
+        logger.exception("Failed to fetch suggestion category=%s id=%d", category, suggestion_id)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to fetch suggestion",
@@ -371,6 +373,7 @@ async def approve_suggestion(
     except HTTPException:
         raise
     except Exception as e:
+        logger.exception("Failed to approve suggestion category=%s id=%d", category, suggestion_id)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to approve suggestion",
@@ -411,6 +414,7 @@ async def reject_suggestion(
         return StatusMessage(status="success", message="Suggestion rejected successfully")
 
     except Exception as e:
+        logger.exception("Failed to reject suggestion category=%s id=%d", category, suggestion_id)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to reject suggestion",
@@ -448,6 +452,7 @@ async def delete_suggestion(
     except HTTPException:
         raise
     except Exception as e:
+        logger.exception("Failed to delete suggestion id=%d", suggestion_id)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to delete suggestion",

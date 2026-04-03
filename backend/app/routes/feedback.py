@@ -59,7 +59,7 @@ async def submit_feedback(
         )
         return FeedbackResponse(id=new_id)
     except Exception as e:
-        logger.exception("Failed to save feedback")
+        logger.exception("Failed to save feedback entity_type=%s entity_id=%s", body.entity_type, body.entity_id)
         raise HTTPException(status_code=500, detail="Failed to save feedback") from e
 
 

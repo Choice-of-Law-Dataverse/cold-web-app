@@ -135,7 +135,7 @@ async def upload_document(
                 # Run blocking I/O in thread pool
                 extracted_text = await asyncio.to_thread(extract_text_from_pdf, pdf_bytes)
             except Exception:
-                logger.exception("Failed to extract text from PDF")
+                logger.exception("Failed to extract text from PDF file=%s", file_name)
                 error_event = json.dumps(
                     {
                         "step": "error",
@@ -164,7 +164,7 @@ async def upload_document(
                         yield 'data: {"step": "heartbeat", "status": "in_progress"}\n\n'
 
             except Exception:
-                logger.exception("Failed to detect jurisdiction")
+                logger.exception("Failed to detect jurisdiction for file=%s", file_name)
                 error_event = json.dumps(
                     {
                         "step": "error",

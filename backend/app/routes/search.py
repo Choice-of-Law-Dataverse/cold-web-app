@@ -124,7 +124,7 @@ def handle_entity_detail(
     try:
         result = search_service.get_entity_detail(body.table, body.id)
     except ValueError as e:
-        logger.warning("Invalid entity detail request: %s", e)
+        logger.warning("Invalid entity detail request: table=%s id=%s: %s", body.table, body.id, e)
         raise HTTPException(status_code=400, detail="Invalid request parameters") from e
     if not result:
         raise HTTPException(status_code=404, detail=f"No record found for {body.id} in {body.table}")
@@ -175,7 +175,7 @@ def return_full_table(
         else:
             results = search_service.full_table(table, response_type=response_type)
     except Exception as e:
-        logger.exception("Failed to query table")
+        logger.exception("Failed to query table=%s filters=%d", table, len(filters))
         raise HTTPException(status_code=500, detail="Failed to query table") from e
 
     return [validate_record(_camel_keys(r)) for r in results]
@@ -220,5 +220,5 @@ def get_specialists_by_jurisdiction(
         results = search_service.get_specialists_by_jurisdiction(jurisdiction_alpha_code)
         return [SpecialistResponse(**r) for r in results]
     except Exception as e:
-        logger.exception("Failed to fetch specialists")
+        logger.exception("Failed to fetch specialists for jurisdiction=%s", jurisdiction_alpha_code)
         raise HTTPException(status_code=500, detail="Failed to fetch specialists") from e
