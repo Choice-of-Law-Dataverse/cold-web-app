@@ -1434,6 +1434,60 @@
         }
       }
     },
+    "/suggestions/moderation/summary": {
+      "get": {
+        "tags": ["Suggestions"],
+        "summary": "Get pending counts for all moderation categories",
+        "description": "Requires editor or admin role. Returns pending suggestion counts per category.",
+        "operationId": "moderation_summary_api_v1_suggestions_moderation_summary_get",
+        "parameters": [
+          {
+            "name": "X-API-Key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "title": "X-Api-Key"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ModerationSummaryItem"
+                  },
+                  "title": "Response Moderation Summary Api V1 Suggestions Moderation Summary Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/suggestions/pending/{category}": {
       "get": {
         "tags": ["Suggestions"],
@@ -2035,6 +2089,16 @@
     "schemas": {
       "AnswerDetail": {
         "properties": {
+          "coldId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "answer": {
             "anyOf": [
               {
@@ -2066,16 +2130,6 @@
             ]
           },
           "jurisdictionsAlpha3Code": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "coldId": {
             "anyOf": [
               {
                 "type": "string"
@@ -2509,6 +2563,16 @@
       },
       "AnswerSearchResult": {
         "properties": {
+          "coldId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "answer": {
             "anyOf": [
               {
@@ -2540,16 +2604,6 @@
             ]
           },
           "jurisdictionsAlpha3Code": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "coldId": {
             "anyOf": [
               {
                 "type": "string"
@@ -2678,6 +2732,16 @@
       },
       "ArbitralAwardDetail": {
         "properties": {
+          "coldId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "caseNumber": {
             "anyOf": [
               {
@@ -2699,16 +2763,6 @@
             ]
           },
           "year": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "coldId": {
             "anyOf": [
               {
                 "type": "string"
@@ -3244,6 +3298,16 @@
       },
       "ArbitralAwardSearchResult": {
         "properties": {
+          "coldId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "caseNumber": {
             "anyOf": [
               {
@@ -3265,16 +3329,6 @@
             ]
           },
           "year": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "coldId": {
             "anyOf": [
               {
                 "type": "string"
@@ -3383,6 +3437,16 @@
       },
       "ArbitralInstitutionDetail": {
         "properties": {
+          "coldId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "institution": {
             "anyOf": [
               {
@@ -3394,16 +3458,6 @@
             ]
           },
           "abbreviation": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "coldId": {
             "anyOf": [
               {
                 "type": "string"
@@ -3747,6 +3801,16 @@
       },
       "ArbitralInstitutionSearchResult": {
         "properties": {
+          "coldId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "institution": {
             "anyOf": [
               {
@@ -3758,16 +3822,6 @@
             ]
           },
           "abbreviation": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "coldId": {
             "anyOf": [
               {
                 "type": "string"
@@ -3846,7 +3900,7 @@
       },
       "ArbitralProvisionDetail": {
         "properties": {
-          "article": {
+          "coldId": {
             "anyOf": [
               {
                 "type": "string"
@@ -3856,7 +3910,7 @@
               }
             ]
           },
-          "coldId": {
+          "article": {
             "anyOf": [
               {
                 "type": "string"
@@ -4260,7 +4314,7 @@
       },
       "ArbitralProvisionSearchResult": {
         "properties": {
-          "article": {
+          "coldId": {
             "anyOf": [
               {
                 "type": "string"
@@ -4270,7 +4324,7 @@
               }
             ]
           },
-          "coldId": {
+          "article": {
             "anyOf": [
               {
                 "type": "string"
@@ -4369,6 +4423,16 @@
       },
       "ArbitralRuleDetail": {
         "properties": {
+          "coldId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "setOfRules": {
             "anyOf": [
               {
@@ -4380,16 +4444,6 @@
             ]
           },
           "inForceFrom": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "coldId": {
             "anyOf": [
               {
                 "type": "string"
@@ -4766,6 +4820,16 @@
       },
       "ArbitralRuleSearchResult": {
         "properties": {
+          "coldId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "setOfRules": {
             "anyOf": [
               {
@@ -4777,16 +4841,6 @@
             ]
           },
           "inForceFrom": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "coldId": {
             "anyOf": [
               {
                 "type": "string"
@@ -4910,6 +4964,16 @@
       },
       "CourtDecisionDetail": {
         "properties": {
+          "coldId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "caseTitle": {
             "anyOf": [
               {
@@ -4971,16 +5035,6 @@
             ]
           },
           "jurisdictionsAlpha3Code": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "coldId": {
             "anyOf": [
               {
                 "type": "string"
@@ -5724,6 +5778,16 @@
       },
       "CourtDecisionSearchResult": {
         "properties": {
+          "coldId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "caseTitle": {
             "anyOf": [
               {
@@ -5785,16 +5849,6 @@
             ]
           },
           "jurisdictionsAlpha3Code": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "coldId": {
             "anyOf": [
               {
                 "type": "string"
@@ -6247,6 +6301,16 @@
       },
       "DomesticInstrumentDetail": {
         "properties": {
+          "coldId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "titleInEnglish": {
             "anyOf": [
               {
@@ -6288,16 +6352,6 @@
             ]
           },
           "jurisdictionsAlpha3Code": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "coldId": {
             "anyOf": [
               {
                 "type": "string"
@@ -6921,6 +6975,16 @@
       },
       "DomesticInstrumentSearchResult": {
         "properties": {
+          "coldId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "titleInEnglish": {
             "anyOf": [
               {
@@ -6962,16 +7026,6 @@
             ]
           },
           "jurisdictionsAlpha3Code": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "coldId": {
             "anyOf": [
               {
                 "type": "string"
@@ -7235,7 +7289,7 @@
       },
       "DomesticLegalProvisionDetail": {
         "properties": {
-          "article": {
+          "coldId": {
             "anyOf": [
               {
                 "type": "string"
@@ -7245,7 +7299,7 @@
               }
             ]
           },
-          "coldId": {
+          "article": {
             "anyOf": [
               {
                 "type": "string"
@@ -7672,7 +7726,7 @@
       },
       "DomesticLegalProvisionSearchResult": {
         "properties": {
-          "article": {
+          "coldId": {
             "anyOf": [
               {
                 "type": "string"
@@ -7682,7 +7736,7 @@
               }
             ]
           },
-          "coldId": {
+          "article": {
             "anyOf": [
               {
                 "type": "string"
@@ -8414,6 +8468,9 @@
                   "$ref": "#/components/schemas/AnswerSearchResult"
                 },
                 {
+                  "$ref": "#/components/schemas/HcchAnswerSearchResult"
+                },
+                {
                   "$ref": "#/components/schemas/CourtDecisionSearchResult"
                 },
                 {
@@ -8634,8 +8691,127 @@
         "required": ["id"],
         "title": "HcchAnswerRelation"
       },
+      "HcchAnswerSearchResult": {
+        "properties": {
+          "coldId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "sourceTable": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "rank": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "resultDate": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "jurisdictions": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "themes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "adaptedQuestion": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "position": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "questionColdId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "title": "HcchAnswerSearchResult"
+      },
       "InternationalInstrumentDetail": {
         "properties": {
+          "coldId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "name": {
             "anyOf": [
               {
@@ -8657,16 +8833,6 @@
             ]
           },
           "attachment": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "coldId": {
             "anyOf": [
               {
                 "type": "string"
@@ -9180,6 +9346,16 @@
       },
       "InternationalInstrumentSearchResult": {
         "properties": {
+          "coldId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "name": {
             "anyOf": [
               {
@@ -9201,16 +9377,6 @@
             ]
           },
           "attachment": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "coldId": {
             "anyOf": [
               {
                 "type": "string"
@@ -9370,6 +9536,16 @@
       },
       "InternationalLegalProvisionDetail": {
         "properties": {
+          "coldId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "titleOfTheProvision": {
             "anyOf": [
               {
@@ -9381,16 +9557,6 @@
             ]
           },
           "provision": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "coldId": {
             "anyOf": [
               {
                 "type": "string"
@@ -9817,6 +9983,16 @@
       },
       "InternationalLegalProvisionSearchResult": {
         "properties": {
+          "coldId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "titleOfTheProvision": {
             "anyOf": [
               {
@@ -9828,16 +10004,6 @@
             ]
           },
           "provision": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "coldId": {
             "anyOf": [
               {
                 "type": "string"
@@ -9995,6 +10161,16 @@
       },
       "JurisdictionDetail": {
         "properties": {
+          "coldId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "name": {
             "anyOf": [
               {
@@ -10026,16 +10202,6 @@
             ]
           },
           "jurisdictionSummary": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "coldId": {
             "anyOf": [
               {
                 "type": "string"
@@ -10463,6 +10629,16 @@
       },
       "JurisdictionSearchResult": {
         "properties": {
+          "coldId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "name": {
             "anyOf": [
               {
@@ -10494,16 +10670,6 @@
             ]
           },
           "jurisdictionSummary": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "coldId": {
             "anyOf": [
               {
                 "type": "string"
@@ -10605,6 +10771,16 @@
       },
       "LiteratureDetail": {
         "properties": {
+          "coldId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "title": {
             "anyOf": [
               {
@@ -10666,16 +10842,6 @@
             ]
           },
           "oupJdChapter": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "coldId": {
             "anyOf": [
               {
                 "type": "string"
@@ -11815,6 +11981,16 @@
       },
       "LiteratureSearchResult": {
         "properties": {
+          "coldId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "title": {
             "anyOf": [
               {
@@ -11876,16 +12052,6 @@
             ]
           },
           "oupJdChapter": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "coldId": {
             "anyOf": [
               {
                 "type": "string"
@@ -12133,6 +12299,22 @@
           "url": "https://doi.org/10.1000/j.jicl.2022.12345"
         }
       },
+      "ModerationSummaryItem": {
+        "properties": {
+          "category": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "pendingCount": {
+            "type": "integer"
+          }
+        },
+        "type": "object",
+        "required": ["category", "label", "pendingCount"],
+        "title": "ModerationSummaryItem"
+      },
       "PendingSuggestionItem": {
         "properties": {
           "id": {
@@ -12221,6 +12403,16 @@
       },
       "QuestionDetail": {
         "properties": {
+          "coldId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "question": {
             "anyOf": [
               {
@@ -12232,16 +12424,6 @@
             ]
           },
           "questionNumber": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "coldId": {
             "anyOf": [
               {
                 "type": "string"
@@ -12558,6 +12740,16 @@
       },
       "QuestionSearchResult": {
         "properties": {
+          "coldId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "question": {
             "anyOf": [
               {
@@ -12569,16 +12761,6 @@
             ]
           },
           "questionNumber": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "coldId": {
             "anyOf": [
               {
                 "type": "string"
@@ -12716,6 +12898,16 @@
       },
       "RegionalInstrumentDetail": {
         "properties": {
+          "coldId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "title": {
             "anyOf": [
               {
@@ -12747,16 +12939,6 @@
             ]
           },
           "attachment": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "coldId": {
             "anyOf": [
               {
                 "type": "string"
@@ -13150,6 +13332,16 @@
       },
       "RegionalInstrumentSearchResult": {
         "properties": {
+          "coldId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "title": {
             "anyOf": [
               {
@@ -13181,16 +13373,6 @@
             ]
           },
           "attachment": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "coldId": {
             "anyOf": [
               {
                 "type": "string"
@@ -13356,6 +13538,16 @@
       },
       "RegionalLegalProvisionDetail": {
         "properties": {
+          "coldId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "titleOfTheProvision": {
             "anyOf": [
               {
@@ -13367,16 +13559,6 @@
             ]
           },
           "provision": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "coldId": {
             "anyOf": [
               {
                 "type": "string"
@@ -13730,6 +13912,16 @@
       },
       "RegionalLegalProvisionSearchResult": {
         "properties": {
+          "coldId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "titleOfTheProvision": {
             "anyOf": [
               {
@@ -13741,16 +13933,6 @@
             ]
           },
           "provision": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "coldId": {
             "anyOf": [
               {
                 "type": "string"

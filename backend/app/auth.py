@@ -95,7 +95,7 @@ def verify_frontend_request(x_api_key: str = Header(None, alias="X-API-Key")) ->
         )
 
     if x_api_key != config.API_KEY:
-        logger.warning("Invalid API key attempt (length=%d)", len(x_api_key))
+        logger.warning("Invalid API key attempt")
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Invalid API key",

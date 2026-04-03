@@ -403,6 +403,26 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/suggestions/moderation/summary": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Get pending counts for all moderation categories
+     * @description Requires editor or admin role. Returns pending suggestion counts per category.
+     */
+    get: operations["moderation_summary_api_v1_suggestions_moderation_summary_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/suggestions/pending/{category}": {
     parameters: {
       query?: never;
@@ -565,11 +585,11 @@ export interface components {
   schemas: {
     /** AnswerDetail */
     AnswerDetail: {
+      coldId?: string | null;
       answer?: string | null;
       moreInformation?: string | null;
       oupBookQuote?: string | null;
       jurisdictionsAlpha3Code?: string | null;
-      coldId?: string | null;
       id: number;
       sourceTable: string;
       /**
@@ -638,11 +658,11 @@ export interface components {
     };
     /** AnswerSearchResult */
     AnswerSearchResult: {
+      coldId?: string | null;
       answer?: string | null;
       moreInformation?: string | null;
       oupBookQuote?: string | null;
       jurisdictionsAlpha3Code?: string | null;
-      coldId?: string | null;
       id?: string | number | null;
       sourceTable?: string | null;
       rank?: number | null;
@@ -657,10 +677,10 @@ export interface components {
     };
     /** ArbitralAwardDetail */
     ArbitralAwardDetail: {
+      coldId?: string | null;
       caseNumber?: string | null;
       awardSummary?: string | null;
       year?: string | null;
-      coldId?: string | null;
       id: number;
       sourceTable: string;
       /**
@@ -750,10 +770,10 @@ export interface components {
     };
     /** ArbitralAwardSearchResult */
     ArbitralAwardSearchResult: {
+      coldId?: string | null;
       caseNumber?: string | null;
       awardSummary?: string | null;
       year?: string | null;
-      coldId?: string | null;
       id?: string | number | null;
       sourceTable?: string | null;
       rank?: number | null;
@@ -766,9 +786,9 @@ export interface components {
     };
     /** ArbitralInstitutionDetail */
     ArbitralInstitutionDetail: {
+      coldId?: string | null;
       institution?: string | null;
       abbreviation?: string | null;
-      coldId?: string | null;
       id: number;
       sourceTable: string;
       /**
@@ -831,9 +851,9 @@ export interface components {
     };
     /** ArbitralInstitutionSearchResult */
     ArbitralInstitutionSearchResult: {
+      coldId?: string | null;
       institution?: string | null;
       abbreviation?: string | null;
-      coldId?: string | null;
       id?: string | number | null;
       sourceTable?: string | null;
       rank?: number | null;
@@ -843,8 +863,8 @@ export interface components {
     };
     /** ArbitralProvisionDetail */
     ArbitralProvisionDetail: {
-      article?: string | null;
       coldId?: string | null;
+      article?: string | null;
       id: number;
       sourceTable: string;
       /**
@@ -913,8 +933,8 @@ export interface components {
     };
     /** ArbitralProvisionSearchResult */
     ArbitralProvisionSearchResult: {
-      article?: string | null;
       coldId?: string | null;
+      article?: string | null;
       id?: string | number | null;
       sourceTable?: string | null;
       rank?: number | null;
@@ -926,9 +946,9 @@ export interface components {
     };
     /** ArbitralRuleDetail */
     ArbitralRuleDetail: {
+      coldId?: string | null;
       setOfRules?: string | null;
       inForceFrom?: string | null;
-      coldId?: string | null;
       id: number;
       sourceTable: string;
       /**
@@ -997,9 +1017,9 @@ export interface components {
     };
     /** ArbitralRuleSearchResult */
     ArbitralRuleSearchResult: {
+      coldId?: string | null;
       setOfRules?: string | null;
       inForceFrom?: string | null;
-      coldId?: string | null;
       id?: string | number | null;
       sourceTable?: string | null;
       rank?: number | null;
@@ -1031,6 +1051,7 @@ export interface components {
     };
     /** CourtDecisionDetail */
     CourtDecisionDetail: {
+      coldId?: string | null;
       caseTitle?: string | null;
       caseCitation?: string | null;
       publicationDateIso?: string | null;
@@ -1038,7 +1059,6 @@ export interface components {
       choiceOfLawIssue?: string | null;
       officialSourcePdf?: string | null;
       jurisdictionsAlpha3Code?: string | null;
-      coldId?: string | null;
       id: number;
       sourceTable: string;
       /**
@@ -1141,6 +1161,7 @@ export interface components {
     };
     /** CourtDecisionSearchResult */
     CourtDecisionSearchResult: {
+      coldId?: string | null;
       caseTitle?: string | null;
       caseCitation?: string | null;
       publicationDateIso?: string | null;
@@ -1148,7 +1169,6 @@ export interface components {
       choiceOfLawIssue?: string | null;
       officialSourcePdf?: string | null;
       jurisdictionsAlpha3Code?: string | null;
-      coldId?: string | null;
       id?: string | number | null;
       sourceTable?: string | null;
       rank?: number | null;
@@ -1267,12 +1287,12 @@ export interface components {
     };
     /** DomesticInstrumentDetail */
     DomesticInstrumentDetail: {
+      coldId?: string | null;
       titleInEnglish?: string | null;
       date?: string | null;
       abbreviation?: string | null;
       sourcePdf?: string | null;
       jurisdictionsAlpha3Code?: string | null;
-      coldId?: string | null;
       id: number;
       sourceTable: string;
       /**
@@ -1363,12 +1383,12 @@ export interface components {
     };
     /** DomesticInstrumentSearchResult */
     DomesticInstrumentSearchResult: {
+      coldId?: string | null;
       titleInEnglish?: string | null;
       date?: string | null;
       abbreviation?: string | null;
       sourcePdf?: string | null;
       jurisdictionsAlpha3Code?: string | null;
-      coldId?: string | null;
       id?: string | number | null;
       sourceTable?: string | null;
       rank?: number | null;
@@ -1431,8 +1451,8 @@ export interface components {
     };
     /** DomesticLegalProvisionDetail */
     DomesticLegalProvisionDetail: {
-      article?: string | null;
       coldId?: string | null;
+      article?: string | null;
       id: number;
       sourceTable: string;
       /**
@@ -1503,8 +1523,8 @@ export interface components {
     };
     /** DomesticLegalProvisionSearchResult */
     DomesticLegalProvisionSearchResult: {
-      article?: string | null;
       coldId?: string | null;
+      article?: string | null;
       id?: string | number | null;
       sourceTable?: string | null;
       rank?: number | null;
@@ -1736,6 +1756,7 @@ export interface components {
       pageSize: number;
       results: (
         | components["schemas"]["AnswerSearchResult"]
+        | components["schemas"]["HcchAnswerSearchResult"]
         | components["schemas"]["CourtDecisionSearchResult"]
         | components["schemas"]["DomesticInstrumentSearchResult"]
         | components["schemas"]["RegionalInstrumentSearchResult"]
@@ -1799,12 +1820,25 @@ export interface components {
       adaptedQuestion?: string | null;
       position?: string | null;
     };
+    /** HcchAnswerSearchResult */
+    HcchAnswerSearchResult: {
+      coldId?: string | null;
+      id?: string | number | null;
+      sourceTable?: string | null;
+      rank?: number | null;
+      resultDate?: string | null;
+      jurisdictions?: string | null;
+      themes?: string | null;
+      adaptedQuestion?: string | null;
+      position?: string | null;
+      questionColdId?: string | null;
+    };
     /** InternationalInstrumentDetail */
     InternationalInstrumentDetail: {
+      coldId?: string | null;
       name?: string | null;
       date?: string | null;
       attachment?: string | null;
-      coldId?: string | null;
       id: number;
       sourceTable: string;
       /**
@@ -1884,10 +1918,10 @@ export interface components {
     };
     /** InternationalInstrumentSearchResult */
     InternationalInstrumentSearchResult: {
+      coldId?: string | null;
       name?: string | null;
       date?: string | null;
       attachment?: string | null;
-      coldId?: string | null;
       id?: string | number | null;
       sourceTable?: string | null;
       rank?: number | null;
@@ -1926,9 +1960,9 @@ export interface components {
     };
     /** InternationalLegalProvisionDetail */
     InternationalLegalProvisionDetail: {
+      coldId?: string | null;
       titleOfTheProvision?: string | null;
       provision?: string | null;
-      coldId?: string | null;
       id: number;
       sourceTable: string;
       /**
@@ -1999,9 +2033,9 @@ export interface components {
     };
     /** InternationalLegalProvisionSearchResult */
     InternationalLegalProvisionSearchResult: {
+      coldId?: string | null;
       titleOfTheProvision?: string | null;
       provision?: string | null;
-      coldId?: string | null;
       id?: string | number | null;
       sourceTable?: string | null;
       rank?: number | null;
@@ -2035,11 +2069,11 @@ export interface components {
     };
     /** JurisdictionDetail */
     JurisdictionDetail: {
+      coldId?: string | null;
       name?: string | null;
       region?: string | null;
       legalFamily?: string | null;
       jurisdictionSummary?: string | null;
-      coldId?: string | null;
       id: number;
       sourceTable: string;
       /**
@@ -2123,11 +2157,11 @@ export interface components {
     };
     /** JurisdictionSearchResult */
     JurisdictionSearchResult: {
+      coldId?: string | null;
       name?: string | null;
       region?: string | null;
       legalFamily?: string | null;
       jurisdictionSummary?: string | null;
-      coldId?: string | null;
       id?: string | number | null;
       sourceTable?: string | null;
       rank?: number | null;
@@ -2143,6 +2177,7 @@ export interface components {
     };
     /** LiteratureDetail */
     LiteratureDetail: {
+      coldId?: string | null;
       title?: string | null;
       author?: string | null;
       publicationYear?: string | null;
@@ -2150,7 +2185,6 @@ export interface components {
       publisher?: string | null;
       openAccess?: string | null;
       oupJdChapter?: string | null;
-      coldId?: string | null;
       id: number;
       sourceTable: string;
       /**
@@ -2292,6 +2326,7 @@ export interface components {
     };
     /** LiteratureSearchResult */
     LiteratureSearchResult: {
+      coldId?: string | null;
       title?: string | null;
       author?: string | null;
       publicationYear?: string | null;
@@ -2299,7 +2334,6 @@ export interface components {
       publisher?: string | null;
       openAccess?: string | null;
       oupJdChapter?: string | null;
-      coldId?: string | null;
       id?: string | number | null;
       sourceTable?: string | null;
       rank?: number | null;
@@ -2349,6 +2383,12 @@ export interface components {
       /** @description Submitter comments */
       submitter_comments?: string | null;
     };
+    /** ModerationSummaryItem */
+    ModerationSummaryItem: {
+      category: string;
+      label: string;
+      pendingCount: number;
+    };
     /** PendingSuggestionItem */
     PendingSuggestionItem: {
       id: number;
@@ -2367,9 +2407,9 @@ export interface components {
     };
     /** QuestionDetail */
     QuestionDetail: {
+      coldId?: string | null;
       question?: string | null;
       questionNumber?: string | null;
-      coldId?: string | null;
       id: number;
       sourceTable: string;
       /**
@@ -2429,9 +2469,9 @@ export interface components {
     };
     /** QuestionSearchResult */
     QuestionSearchResult: {
+      coldId?: string | null;
       question?: string | null;
       questionNumber?: string | null;
-      coldId?: string | null;
       id?: string | number | null;
       sourceTable?: string | null;
       rank?: number | null;
@@ -2449,11 +2489,11 @@ export interface components {
     };
     /** RegionalInstrumentDetail */
     RegionalInstrumentDetail: {
+      coldId?: string | null;
       title?: string | null;
       abbreviation?: string | null;
       date?: string | null;
       attachment?: string | null;
-      coldId?: string | null;
       id: number;
       sourceTable: string;
       /**
@@ -2521,11 +2561,11 @@ export interface components {
     };
     /** RegionalInstrumentSearchResult */
     RegionalInstrumentSearchResult: {
+      coldId?: string | null;
       title?: string | null;
       abbreviation?: string | null;
       date?: string | null;
       attachment?: string | null;
-      coldId?: string | null;
       id?: string | number | null;
       sourceTable?: string | null;
       rank?: number | null;
@@ -2562,9 +2602,9 @@ export interface components {
     };
     /** RegionalLegalProvisionDetail */
     RegionalLegalProvisionDetail: {
+      coldId?: string | null;
       titleOfTheProvision?: string | null;
       provision?: string | null;
-      coldId?: string | null;
       id: number;
       sourceTable: string;
       /**
@@ -2628,9 +2668,9 @@ export interface components {
     };
     /** RegionalLegalProvisionSearchResult */
     RegionalLegalProvisionSearchResult: {
+      coldId?: string | null;
       titleOfTheProvision?: string | null;
       provision?: string | null;
-      coldId?: string | null;
       id?: string | number | null;
       sourceTable?: string | null;
       rank?: number | null;
@@ -3736,6 +3776,38 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["SuggestionResponse"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  moderation_summary_api_v1_suggestions_moderation_summary_get: {
+    parameters: {
+      query?: never;
+      header?: {
+        "X-API-Key"?: string;
+        authorization?: string;
+      };
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ModerationSummaryItem"][];
         };
       };
       /** @description Validation Error */

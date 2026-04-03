@@ -59,7 +59,8 @@ async def submit_feedback(
         )
         return FeedbackResponse(id=new_id)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e)) from e
+        logger.exception("Failed to save feedback")
+        raise HTTPException(status_code=500, detail="Failed to save feedback") from e
 
 
 @router.get(

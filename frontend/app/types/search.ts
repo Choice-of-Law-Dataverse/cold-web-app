@@ -30,9 +30,12 @@ export type JurisdictionSearchResult =
   components["schemas"]["JurisdictionSearchResult"];
 export type QuestionSearchResult =
   components["schemas"]["QuestionSearchResult"];
+export type HcchAnswerSearchResult =
+  components["schemas"]["HcchAnswerSearchResult"];
 
 export type AnySearchResult =
   | AnswerSearchResult
+  | HcchAnswerSearchResult
   | CourtDecisionSearchResult
   | DomesticInstrumentSearchResult
   | RegionalInstrumentSearchResult

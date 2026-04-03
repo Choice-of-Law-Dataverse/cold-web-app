@@ -54,7 +54,7 @@ export default defineEventHandler(async (event) => {
       Key: path,
     });
 
-    const PRESIGNED_URL_TTL_SECONDS = 3_600;
+    const PRESIGNED_URL_TTL_SECONDS = 900;
     const presignedUrl = await getSignedUrl(s3Client, command, {
       expiresIn: PRESIGNED_URL_TTL_SECONDS,
     });

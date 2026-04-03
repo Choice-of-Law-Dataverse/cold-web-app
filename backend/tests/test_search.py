@@ -1,10 +1,14 @@
 import pytest
 
+from app.schemas.details import TABLE_DETAIL_MODELS
 from app.schemas.entities import EntityBase
+from app.schemas.records import TABLE_RECORD_MODELS
+from app.schemas.responses import FullTextSearchResponse
 from app.schemas.search_result import (
     TABLE_SEARCH_MODELS,
     AnswerSearchResult,
     CourtDecisionSearchResult,
+    HcchAnswerSearchResult,
     SearchResultBase,
     validate_search_result,
 )
@@ -45,8 +49,11 @@ class TestValidateSearchResult:
         result = validate_search_result(data)
         assert isinstance(result, AnswerSearchResult)
 
-    def test_hcch_answers_mapped(self):
-        assert "HCCH Answers" in TABLE_SEARCH_MODELS
+    def test_hcch_answers_dispatched(self):
+        data = {"source_table": "HCCH Answers", "adapted_question": "Q1", "position": "Yes"}
+        result = validate_search_result(data)
+        assert isinstance(result, HcchAnswerSearchResult)
+        assert result.adapted_question == "Q1"
 
 
 class TestEntityBaseConfig:
@@ -92,3 +99,53 @@ class TestTableSearchModelsComplete:
     )
     def test_table_has_model(self, table: str):
         assert table in TABLE_SEARCH_MODELS, f"Missing TABLE_SEARCH_MODELS entry for {table}"
+
+
+class TestTableModelCrossCoverage:
+    SEARCH_ONLY_TABLES = {"HCCH Answers"}
+    DETAIL_ONLY_TABLES = {"Specialists"}
+
+    def test_search_keys_covered_by_detail(self):
+        missing = TABLE_SEARCH_MODELS.keys() - TABLE_DETAIL_MODELS.keys() - self.SEARCH_ONLY_TABLES
+        assert not missing, f"TABLE_SEARCH_MODELS has tables missing from TABLE_DETAIL_MODELS: {missing}"
+
+    def test_detail_keys_covered_by_search(self):
+        missing = TABLE_DETAIL_MODELS.keys() - TABLE_SEARCH_MODELS.keys() - self.DETAIL_ONLY_TABLES
+        assert not missing, f"TABLE_DETAIL_MODELS has tables missing from TABLE_SEARCH_MODELS: {missing}"
+
+    def test_record_keys_covered_by_search(self):
+        missing = TABLE_SEARCH_MODELS.keys() - TABLE_RECORD_MODELS.keys() - self.SEARCH_ONLY_TABLES
+        assert not missing, f"TABLE_SEARCH_MODELS has tables missing from TABLE_RECORD_MODELS: {missing}"
+
+
+class TestFullTextSearchResponseSerialization:
+    def test_response_serializes_mixed_results(self):
+        results = [
+            validate_search_result({"source_table": "Answers", "answer": "Yes", "cold_id": "CHE_01"}),
+            validate_search_result({"source_table": "Court Decisions", "case_title": "A v B"}),
+            validate_search_result({"source_table": "HCCH Answers", "adapted_question": "Q1"}),
+        ]
+        response = FullTextSearchResponse(
+            query="test",
+            total_matches=3,
+            page=1,
+            page_size=50,
+            results=results,
+        )
+        dumped = response.model_dump(by_alias=True)
+        assert len(dumped["results"]) == 3
+        assert dumped["results"][0]["answer"] == "Yes"
+        assert dumped["results"][1]["caseTitle"] == "A v B"
+        assert dumped["results"][2]["adaptedQuestion"] == "Q1"
+
+    def test_response_handles_empty_results(self):
+        response = FullTextSearchResponse(
+            query="nothing",
+            total_matches=0,
+            page=1,
+            page_size=50,
+            results=[],
+        )
+        dumped = response.model_dump(by_alias=True)
+        assert dumped["results"] == []
+        assert dumped["totalMatches"] == 0

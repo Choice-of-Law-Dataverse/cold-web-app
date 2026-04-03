@@ -89,6 +89,11 @@ def handle_full_text_search(
     page_size = body.page_size
     sort_by_date = body.sort_by_date or False
     response_type = body.response_type or "parsed"
+    if response_type != "parsed":
+        raise HTTPException(
+            status_code=400,
+            detail="Only response_type='parsed' is supported for typed search results",
+        )
 
     raw = search_service.full_text_search(
         search_string,
@@ -96,7 +101,7 @@ def handle_full_text_search(
         page,
         page_size,
         sort_by_date,
-        response_type=response_type,
+        response_type="parsed",
     )
     validated_results = [validate_search_result(r) for r in raw.pop("results", [])]
     return FullTextSearchResponse(results=validated_results, **raw)
