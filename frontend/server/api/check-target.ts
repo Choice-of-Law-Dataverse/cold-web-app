@@ -1,3 +1,4 @@
+import { lookup } from "node:dns/promises";
 import { validateOrigin } from "../utils/validateOrigin";
 
 const BLOCKED_HOSTNAMES = new Set([
@@ -5,15 +6,15 @@ const BLOCKED_HOSTNAMES = new Set([
   "127.0.0.1",
   "0.0.0.0",
   "[::1]",
-  "metadata.google.internal",
 ]);
 
-function isPrivateIP(hostname: string): boolean {
-  if (BLOCKED_HOSTNAMES.has(hostname)) return true;
-  if (hostname.startsWith("10.")) return true;
-  if (hostname.startsWith("192.168.")) return true;
-  if (hostname.startsWith("169.254.")) return true;
-  if (/^172\.(1[6-9]|2\d|3[01])\./.test(hostname)) return true;
+function isPrivateIP(ip: string): boolean {
+  if (BLOCKED_HOSTNAMES.has(ip)) return true;
+  if (ip.startsWith("10.")) return true;
+  if (ip.startsWith("192.168.")) return true;
+  if (ip.startsWith("169.254.")) return true;
+  if (ip === "::1") return true;
+  if (/^172\.(1[6-9]|2\d|3[01])\./.test(ip)) return true;
   return false;
 }
 
@@ -38,7 +39,7 @@ export default defineEventHandler(async (event) => {
     return false;
   }
 
-  if (isPrivateIP(parsed.hostname)) {
+  if (BLOCKED_HOSTNAMES.has(parsed.hostname)) {
     return false;
   }
 
@@ -50,9 +51,19 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
+    const { address } = await lookup(parsed.hostname);
+    if (isPrivateIP(address)) {
+      return false;
+    }
+  } catch {
+    return false;
+  }
+
+  try {
     const res = await fetch(url, {
       method: "HEAD",
       redirect: "manual",
+      signal: AbortSignal.timeout(5000),
     });
     return res.ok;
   } catch {
