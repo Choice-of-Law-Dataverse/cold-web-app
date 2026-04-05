@@ -116,13 +116,13 @@ const resolvedTheme = computed(() => {
     return String(props.resultData.themes)
       .split(/[,|]/)
       .map((theme: string) => theme.trim())
-      .filter(Boolean);
+      .filter((t) => t && t !== "null" && t !== "None");
   }
 
   const themes =
     props.resultData.titleOfTheProvision ?? props.resultData.themes;
 
-  if (!themes || themes === "None") {
+  if (!themes || themes === "None" || themes === "null") {
     return [];
   }
 
@@ -131,7 +131,7 @@ const resolvedTheme = computed(() => {
       String(themes)
         .split(/[,|]/)
         .map((theme: string) => theme.trim())
-        .filter(Boolean),
+        .filter((t) => t && t !== "null" && t !== "None"),
     ),
   ];
 });

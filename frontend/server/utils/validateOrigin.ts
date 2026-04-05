@@ -7,8 +7,9 @@ export function validateOrigin(
 ): void {
   const origin = getHeader(event, "origin");
   const referer = getHeader(event, "referer");
+  const source = origin ?? referer;
 
-  if (!origin) {
+  if (!source) {
     throw createError({
       statusCode: 403,
       message: "Forbidden: Missing origin",
@@ -18,7 +19,7 @@ export function validateOrigin(
   const allowedOrigins = [config.public.siteUrl].filter(Boolean);
 
   const isValidOrigin = allowedOrigins.some(
-    (allowed) => origin === allowed || (referer && referer.startsWith(allowed)),
+    (allowed) => source === allowed || source.startsWith(allowed + "/"),
   );
 
   if (!isValidOrigin) {

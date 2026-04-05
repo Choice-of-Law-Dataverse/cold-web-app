@@ -1,7 +1,8 @@
+import datetime
 import logging
-from typing import Any
+from typing import Annotated, Any
 
-from pydantic import ConfigDict
+from pydantic import BeforeValidator, ConfigDict
 from pydantic.alias_generators import to_camel
 
 from app.schemas.entities import (
@@ -26,6 +27,15 @@ from app.schemas.entities import (
 logger = logging.getLogger(__name__)
 
 
+def _coerce_date_to_str(v: Any) -> str | None:
+    if isinstance(v, (datetime.date, datetime.datetime)):
+        return v.isoformat()
+    return v
+
+
+DateAsStr = Annotated[str | None, BeforeValidator(_coerce_date_to_str)]
+
+
 class SearchResultBase(EntityBase):
     model_config = ConfigDict(
         alias_generator=to_camel,
@@ -37,7 +47,7 @@ class SearchResultBase(EntityBase):
     id: str | int | None = None
     source_table: str | None = None
     rank: float | None = None
-    result_date: str | None = None
+    result_date: DateAsStr = None
     jurisdictions: str | None = None
     themes: str | None = None
 
