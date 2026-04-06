@@ -3,7 +3,7 @@ from typing import Any
 
 from fastapi import APIRouter, BackgroundTasks, Depends, Header, HTTPException, Request, status
 
-from app.auth import extract_user_email, has_editor_access, require_editor_or_admin, require_user, verify_frontend_request
+from app.auth import extract_user_identity, has_editor_access, require_editor_or_admin, require_user, verify_frontend_request
 from app.schemas.responses import ModerationSummaryItem, PendingSuggestionItem, StatusMessage, SuggestionDetailItem
 from app.schemas.suggestions import (
     CourtDecisionSuggestion,
@@ -69,7 +69,8 @@ async def submit_suggestion(
         background_tasks.add_task(send_new_suggestion_notification, "generic", new_id, payload, user)
         return SuggestionResponse(id=new_id)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e)) from e
+        logger.exception("Failed to save generic suggestion source=%s", body.source)
+        raise HTTPException(status_code=500, detail="Failed to save suggestion") from e
 
 
 _TYPED_SUGGESTION_ROUTES: list[tuple[str, str, str, str, type]] = [
@@ -121,7 +122,8 @@ def _make_typed_handler(category: str, table: str, body_type: type):  # noqa: AN
             background_tasks.add_task(send_new_suggestion_notification, table, new_id, payload, user)
             return SuggestionResponse(id=new_id)
         except Exception as e:
-            raise HTTPException(status_code=500, detail=str(e)) from e
+            logger.exception("Failed to save suggestion category=%s table=%s", category, table)
+            raise HTTPException(status_code=500, detail="Failed to save suggestion") from e
 
     return handler
 
@@ -186,7 +188,7 @@ async def moderation_summary(
             )
         ]
     except Exception as e:
-        logger.exception("Failed to fetch moderation summary")
+        logger.exception("Failed to fetch moderation summary for user")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to fetch moderation summary",
@@ -220,9 +222,10 @@ async def list_pending_suggestions(
             rows = service.list_pending(table)
         return [PendingSuggestionItem(**r) for r in rows]
     except Exception as e:
+        logger.exception("Failed to fetch pending suggestions category=%s", category)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to fetch pending suggestions: {str(e)}",
+            detail="Failed to fetch pending suggestions",
         ) from e
 
 
@@ -255,7 +258,7 @@ async def get_suggestion_detail(
             detail="Insufficient permissions for this category",
         )
 
-    token_sub = None if is_moderator else extract_user_email(user)
+    token_sub = None if is_moderator else extract_user_identity(user)
     if not is_moderator and not token_sub:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
@@ -275,9 +278,10 @@ async def get_suggestion_detail(
     except HTTPException:
         raise
     except Exception as e:
+        logger.exception("Failed to fetch suggestion category=%s id=%d", category, suggestion_id)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to fetch suggestion: {str(e)}",
+            detail="Failed to fetch suggestion",
         ) from e
 
 
@@ -325,7 +329,7 @@ async def approve_suggestion(
         original_payload: dict[str, Any] = item.get("payload", {}) or {}
 
         # Get user email from Auth0 token
-        moderator_email = extract_user_email(user) or "unknown"
+        moderator_email = extract_user_identity(user) or "unknown"
 
         if category == "case-analyzer":
             writer = MainDBWriter()
@@ -369,9 +373,10 @@ async def approve_suggestion(
     except HTTPException:
         raise
     except Exception as e:
+        logger.exception("Failed to approve suggestion category=%s id=%d", category, suggestion_id)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to approve suggestion: {str(e)}",
+            detail="Failed to approve suggestion",
         ) from e
 
 
@@ -396,7 +401,7 @@ async def reject_suggestion(
 
     try:
         # Get user email from Auth0 token
-        moderator_email = extract_user_email(user) or "unknown"
+        moderator_email = extract_user_identity(user) or "unknown"
 
         service.mark_status(
             table,
@@ -409,9 +414,10 @@ async def reject_suggestion(
         return StatusMessage(status="success", message="Suggestion rejected successfully")
 
     except Exception as e:
+        logger.exception("Failed to reject suggestion category=%s id=%d", category, suggestion_id)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to reject suggestion: {str(e)}",
+            detail="Failed to reject suggestion",
         ) from e
 
 
@@ -446,7 +452,8 @@ async def delete_suggestion(
     except HTTPException:
         raise
     except Exception as e:
+        logger.exception("Failed to delete suggestion id=%d", suggestion_id)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to delete suggestion: {str(e)}",
+            detail="Failed to delete suggestion",
         ) from e

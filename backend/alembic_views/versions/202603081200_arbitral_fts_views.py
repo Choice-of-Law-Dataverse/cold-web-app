@@ -495,5 +495,14 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
+    import importlib
+
     op.execute("DROP MATERIALIZED VIEW IF EXISTS data_views.arbitral_awards CASCADE")
     op.execute("DROP MATERIALIZED VIEW IF EXISTS data_views.arbitral_rules CASCADE")
+    op.execute(
+        "DROP FUNCTION IF EXISTS data_views.search_all_v2(text, text[], text[], text[], integer, integer, boolean) CASCADE;"
+    )
+    op.execute("DROP FUNCTION IF EXISTS data_views.search_all_count_v2(text, text[], text[], text[]) CASCADE;")
+    prev = importlib.import_module("alembic_views.versions.202603081100_base_views_and_search_v3")
+    op.execute(prev.SEARCH_ALL_V3)
+    op.execute(prev.SEARCH_ALL_COUNT_V3)

@@ -200,3 +200,4 @@ backend/*.csv
 # agents artifacts
 .playwright-mcp
 .desloppify/
+.claude-octopus/

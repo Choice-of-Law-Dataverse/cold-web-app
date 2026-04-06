@@ -1,34 +1,35 @@
 from unittest.mock import MagicMock, patch
 
 import pytest
+from fastapi import HTTPException
 
 from app.auth import (
     EMAIL_CLAIM,
     ROLES_CLAIM,
-    extract_user_email,
+    extract_user_identity,
     has_editor_access,
     verify_frontend_request,
 )
 
 
-class TestExtractUserEmail:
+class TestExtractUserIdentity:
     def test_none_user(self):
-        assert extract_user_email(None) is None
+        assert extract_user_identity(None) is None
 
     def test_empty_user(self):
-        assert extract_user_email({}) is None
+        assert extract_user_identity({}) is None
 
     def test_custom_claim(self):
         user = {EMAIL_CLAIM: "alice@example.com"}
-        assert extract_user_email(user) == "alice@example.com"
+        assert extract_user_identity(user) == "alice@example.com"
 
     def test_standard_email(self):
         user = {"email": "bob@example.com"}
-        assert extract_user_email(user) == "bob@example.com"
+        assert extract_user_identity(user) == "bob@example.com"
 
     def test_sub_fallback(self):
         user = {"sub": "auth0|123"}
-        assert extract_user_email(user) == "auth0|123"
+        assert extract_user_identity(user) == "auth0|123"
 
     def test_custom_claim_takes_priority(self):
         user = {
@@ -36,7 +37,7 @@ class TestExtractUserEmail:
             "email": "standard@example.com",
             "sub": "auth0|123",
         }
-        assert extract_user_email(user) == "custom@example.com"
+        assert extract_user_identity(user) == "custom@example.com"
 
 
 class TestHasEditorAccess:
@@ -69,9 +70,11 @@ class TestHasEditorAccess:
 
 class TestVerifyFrontendRequest:
     @patch("app.auth.config")
-    def test_no_api_key_configured_allows_all(self, mock_config: MagicMock):
+    def test_no_api_key_configured_raises_500(self, mock_config: MagicMock):
         mock_config.API_KEY = ""
-        assert verify_frontend_request(x_api_key="") is None
+        with pytest.raises(HTTPException) as exc_info:
+            verify_frontend_request(x_api_key="")
+        assert exc_info.value.status_code == 500
 
     @patch("app.auth.config")
     def test_missing_api_key_raises_403(self, mock_config: MagicMock):

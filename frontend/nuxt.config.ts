@@ -48,6 +48,7 @@ export default defineNuxtConfig({
         "@tanstack/vue-query",
         "mitt",
         "openapi-fetch",
+        "date-fns",
       ],
       exclude: ["@opentelemetry/api"],
     },

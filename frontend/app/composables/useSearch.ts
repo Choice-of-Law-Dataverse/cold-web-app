@@ -60,7 +60,7 @@ const fetchSearchResults = async (
   if (error) throw error;
 
   return {
-    results: data.results as Record<string, unknown>[],
+    results: data.results,
     totalMatches: data.totalMatches || 0,
   };
 };

@@ -1,35 +1,34 @@
-from pydantic import BaseModel, ConfigDict
-from pydantic.alias_generators import to_camel
-
-from app.schemas.records import coerce_bools_to_str
+from app.schemas.entities import (
+    AnswerBase,
+    ArbitralAwardBase,
+    ArbitralInstitutionBase,
+    ArbitralProvisionBase,
+    ArbitralRuleBase,
+    CourtDecisionBase,
+    DomesticInstrumentBase,
+    DomesticLegalProvisionBase,
+    EntityBase,
+    InternationalInstrumentBase,
+    InternationalLegalProvisionBase,
+    JurisdictionBase,
+    LiteratureBase,
+    QuestionBase,
+    RegionalInstrumentBase,
+    RegionalLegalProvisionBase,
+)
 from app.schemas.relations import EntityRelations
 
 
-class DetailBase(BaseModel):
-    model_config = ConfigDict(
-        alias_generator=to_camel,
-        populate_by_name=True,
-        coerce_numbers_to_str=True,
-    )
-
-    _coerce_bools_to_str = coerce_bools_to_str
-
+class DetailBase(EntityBase):
     id: int
-    cold_id: str | None = None
     source_table: str
     relations: EntityRelations = EntityRelations()
     created_at: str | None = None
     updated_at: str | None = None
-    created_by: str | None = None
-    updated_by: str | None = None
 
 
-class AnswerDetail(DetailBase):
-    answer: str | None = None
-    more_information: str | None = None
+class AnswerDetail(DetailBase, AnswerBase):
     to_review: str | None = None
-    oup_book_quote: str | None = None
-    jurisdictions_alpha_3_code: str | None = None
     question_cold_id: str | None = None
 
 
@@ -39,35 +38,25 @@ class HcchAnswerDetail(DetailBase):
     question_cold_id: str | None = None
 
 
-class QuestionDetail(DetailBase):
-    question: str | None = None
-    question_number: str | None = None
+class QuestionDetail(DetailBase, QuestionBase):
     primary_theme: str | None = None
     answering_options: str | None = None
 
 
-class JurisdictionDetail(DetailBase):
-    name: str | None = None
+class JurisdictionDetail(DetailBase, JurisdictionBase):
     type: str | None = None
-    region: str | None = None
     north_south_divide: str | None = None
     jurisdictional_differentiator: str | None = None
-    legal_family: str | None = None
-    jurisdiction_summary: str | None = None
     irrelevant: bool | None = None
     done: bool | None = None
 
 
-class CourtDecisionDetail(DetailBase):
+class CourtDecisionDetail(DetailBase, CourtDecisionBase):
     id_number: str | None = None
-    case_citation: str | None = None
-    case_title: str | None = None
-    instance: str | None = None
     date: str | None = None
     abstract: str | None = None
     case_rank: str | None = None
     english_translation: str | None = None
-    choice_of_law_issue: str | None = None
     court_s_position: str | None = None
     translated_excerpt: str | None = None
     relevant_facts: str | None = None
@@ -77,76 +66,52 @@ class CourtDecisionDetail(DetailBase):
     quote: str | None = None
     text_of_the_relevant_legal_provisions: str | None = None
     official_source_url: str | None = None
-    official_source_pdf: str | None = None
-    publication_date_iso: str | None = None
-    jurisdictions_alpha_3_code: str | None = None
 
 
-class DomesticInstrumentDetail(DetailBase):
+class DomesticInstrumentDetail(DetailBase, DomesticInstrumentBase):
     id_number: str | None = None
-    title_in_english: str | None = None
     official_title: str | None = None
-    date: str | None = None
     status: str | None = None
-    abbreviation: str | None = None
     relevant_provisions: str | None = None
     full_text_of_the_provisions: str | None = None
     publication_date: str | None = None
     entry_into_force: str | None = None
     source_url: str | None = None
-    source_pdf: str | None = None
     compatible_with_the_hcch_principles: bool | None = None
     compatible_with_the_uncitral_model_law: bool | None = None
-    jurisdictions_alpha_3_code: str | None = None
 
 
-class DomesticLegalProvisionDetail(DetailBase):
-    article: str | None = None
+class DomesticLegalProvisionDetail(DetailBase, DomesticLegalProvisionBase):
     full_text_of_the_provision_original_language: str | None = None
     full_text_of_the_provision_english_translation: str | None = None
     ranking_display_order: str | None = None
     domestic_instrument_cold_id: str | None = None
 
 
-class RegionalInstrumentDetail(DetailBase):
+class RegionalInstrumentDetail(DetailBase, RegionalInstrumentBase):
     id_number: str | None = None
-    title: str | None = None
-    abbreviation: str | None = None
-    date: str | None = None
     url: str | None = None
-    attachment: str | None = None
 
 
-class RegionalLegalProvisionDetail(DetailBase):
-    provision: str | None = None
-    title_of_the_provision: str | None = None
+class RegionalLegalProvisionDetail(DetailBase, RegionalLegalProvisionBase):
     full_text: str | None = None
     instrument_cold_id: str | None = None
 
 
-class InternationalInstrumentDetail(DetailBase):
+class InternationalInstrumentDetail(DetailBase, InternationalInstrumentBase):
     id_number: str | None = None
-    name: str | None = None
-    date: str | None = None
     url: str | None = None
-    attachment: str | None = None
 
 
-class InternationalLegalProvisionDetail(DetailBase):
-    provision: str | None = None
-    title_of_the_provision: str | None = None
+class InternationalLegalProvisionDetail(DetailBase, InternationalLegalProvisionBase):
     full_text: str | None = None
     ranking_display_order: str | None = None
     instrument_cold_id: str | None = None
 
 
-class LiteratureDetail(DetailBase):
+class LiteratureDetail(DetailBase, LiteratureBase):
     id_number: str | None = None
     item_type: str | None = None
-    publication_year: str | None = None
-    author: str | None = None
-    title: str | None = None
-    publication_title: str | None = None
     abstract_note: str | None = None
     isbn: str | None = None
     issn: str | None = None
@@ -155,7 +120,6 @@ class LiteratureDetail(DetailBase):
     date: str | None = None
     date_added: str | None = None
     date_modified: str | None = None
-    publisher: str | None = None
     language: str | None = None
     extra: str | None = None
     manual_tags: str | None = None
@@ -165,14 +129,12 @@ class LiteratureDetail(DetailBase):
     pages: str | None = None
     library_catalog: str | None = None
     access_date: str | None = None
-    open_access: str | None = None
     open_access_url: str | None = None
     journal_abbreviation: str | None = None
     short_title: str | None = None
     place: str | None = None
     num_pages: str | None = None
     type: str | None = None
-    oup_jd_chapter: str | None = None
     contributor: str | None = None
     automatic_tags: str | None = None
     number: str | None = None
@@ -184,31 +146,24 @@ class LiteratureDetail(DetailBase):
     jurisdiction_summary: str | None = None
 
 
-class ArbitralAwardDetail(DetailBase):
+class ArbitralAwardDetail(DetailBase, ArbitralAwardBase):
     id_number: str | None = None
-    case_number: str | None = None
     context: str | None = None
-    award_summary: str | None = None
-    year: str | None = None
     nature_of_the_award: str | None = None
     seat_town: str | None = None
     source: str | None = None
 
 
-class ArbitralInstitutionDetail(DetailBase):
-    institution: str | None = None
-    abbreviation: str | None = None
+class ArbitralInstitutionDetail(DetailBase, ArbitralInstitutionBase):
+    pass
 
 
-class ArbitralRuleDetail(DetailBase):
+class ArbitralRuleDetail(DetailBase, ArbitralRuleBase):
     id_number: str | None = None
-    set_of_rules: str | None = None
-    in_force_from: str | None = None
     official_source_url: str | None = None
 
 
-class ArbitralProvisionDetail(DetailBase):
-    article: str | None = None
+class ArbitralProvisionDetail(DetailBase, ArbitralProvisionBase):
     full_text_original_language: str | None = None
     full_text_english_translation: str | None = None
     arbitration_method_type: str | None = None

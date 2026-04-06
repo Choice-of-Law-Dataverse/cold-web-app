@@ -9,7 +9,7 @@ import logfire
 from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import StreamingResponse
 
-from app.auth import extract_user_email, require_user, verify_frontend_request
+from app.auth import extract_user_identity, require_user, verify_frontend_request
 from app.case_analyzer import (
     JurisdictionOutput,
     analyze_case_streaming,
@@ -134,13 +134,13 @@ async def upload_document(
             try:
                 # Run blocking I/O in thread pool
                 extracted_text = await asyncio.to_thread(extract_text_from_pdf, pdf_bytes)
-            except Exception as e:
-                logger.error("Failed to extract text from PDF: %s", str(e))
+            except Exception:
+                logger.exception("Failed to extract text from PDF file=%s", file_name)
                 error_event = json.dumps(
                     {
                         "step": "error",
                         "status": "error",
-                        "error": f"Failed to extract text from PDF: {str(e)}",
+                        "error": "Failed to extract text from PDF",
                     }
                 )
                 yield f"data: {error_event}\n\n"
@@ -163,13 +163,13 @@ async def upload_document(
                     else:
                         yield 'data: {"step": "heartbeat", "status": "in_progress"}\n\n'
 
-            except Exception as e:
-                logger.error("Failed to detect jurisdiction: %s", str(e))
+            except Exception:
+                logger.exception("Failed to detect jurisdiction for file=%s", file_name)
                 error_event = json.dumps(
                     {
                         "step": "error",
                         "status": "error",
-                        "error": f"Failed to detect jurisdiction: {str(e)}",
+                        "error": "Failed to detect jurisdiction",
                     }
                 )
                 yield f"data: {error_event}\n\n"
@@ -523,9 +523,11 @@ async def submit_for_approval(
             )
 
         # Verify ownership - the user submitting should be the one who created the draft
-        token_sub = extract_user_email(user)
+        token_sub = extract_user_identity(user)
+        if not token_sub:
+            raise HTTPException(status_code=401, detail="Unable to identify user")
         record_email = record.get("user_email")
-        if token_sub and record_email and token_sub != record_email:
+        if record_email and token_sub != record_email:
             logger.warning(
                 "User %s attempted to submit draft %d owned by %s",
                 token_sub,
@@ -556,7 +558,7 @@ async def list_my_analyses(
     user: dict = Depends(require_user),
     service: SuggestionService = Depends(get_suggestion_service),
 ) -> list[UserAnalysisSummary]:
-    user_email = extract_user_email(user)
+    user_email = extract_user_identity(user)
     if not user_email:
         raise HTTPException(status_code=401, detail="Unable to identify user")
 
@@ -582,7 +584,7 @@ async def get_draft_for_recovery(
         raise HTTPException(status_code=404, detail="Draft not found")
 
     # Verify ownership
-    token_sub = extract_user_email(user)
+    token_sub = extract_user_identity(user)
     record_email = record.get("user_email")
     if token_sub and record_email and token_sub != record_email:
         raise HTTPException(status_code=403, detail="You can only access your own drafts")

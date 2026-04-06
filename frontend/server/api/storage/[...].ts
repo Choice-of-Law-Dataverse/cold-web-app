@@ -12,9 +12,14 @@ export default defineEventHandler(async (event) => {
 
   validateOrigin(event, config);
 
-  // Extract the R2 storage path from the request
-  // Expected format: /api/storage/nc/uploads/noco/...
   const path = decodeURIComponent(parseProxyUrl(event.path));
+
+  if (!path.startsWith("nc/uploads/")) {
+    throw createError({
+      statusCode: 403,
+      message: "Forbidden: Invalid storage path",
+    });
+  }
 
   if (
     !config.r2.accessKeyId ||
@@ -49,7 +54,7 @@ export default defineEventHandler(async (event) => {
       Key: path,
     });
 
-    const PRESIGNED_URL_TTL_SECONDS = 3_600;
+    const PRESIGNED_URL_TTL_SECONDS = 900;
     const presignedUrl = await getSignedUrl(s3Client, command, {
       expiresIn: PRESIGNED_URL_TTL_SECONDS,
     });

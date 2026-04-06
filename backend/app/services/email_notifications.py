@@ -3,7 +3,7 @@ from typing import Any
 
 import resend
 
-from app.auth import extract_user_email
+from app.auth import extract_user_identity
 from app.config import config
 
 logger = logging.getLogger(__name__)
@@ -101,7 +101,7 @@ def send_new_suggestion_notification(
     label = CATEGORY_LABELS.get(category, category)
     summary = _extract_summary(category, payload)
     moderation_url = _build_moderation_url(category, suggestion_id)
-    submitter_email = payload.get("submitter_email") or extract_user_email(user) or "Not provided"
+    submitter_email = payload.get("submitter_email") or extract_user_identity(user) or "Not provided"
     submitter_comments = payload.get("submitter_comments")
 
     subject = f"[CoLD] {action}: {label}"

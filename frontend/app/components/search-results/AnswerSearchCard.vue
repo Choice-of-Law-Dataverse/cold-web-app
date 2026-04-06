@@ -51,10 +51,11 @@
 import { computed } from "vue";
 import SearchResultCardContent from "@/components/search-results/SearchResultCardContent.vue";
 import DetailRow from "@/components/ui/DetailRow.vue";
+import type { AnswerSearchResult } from "@/types/search";
 import { formatYear } from "@/utils/format";
 
 const props = defineProps<{
-  resultData: Record<string, unknown>;
+  resultData: AnswerSearchResult;
 }>();
 
 const answerValue = computed(() => {
@@ -83,7 +84,7 @@ const relatedCasesCount = computed(() => {
 });
 
 const relatedDecisionsLink = computed(
-  () => `question/${props.resultData.id}#related-court-decisions`,
+  () => `/question/${props.resultData.id}#related-court-decisions`,
 );
 
 const hasMoreInformation = computed(
@@ -96,7 +97,7 @@ const hasMoreInformation = computed(
 
 const lastUpdatedDisplay = computed(() => {
   const raw = props.resultData.lastModified || props.resultData.created;
-  const y = formatYear(raw as string | null | undefined);
+  const y = formatYear(raw);
   return y ? String(y) : "";
 });
 </script>

@@ -1,4 +1,5 @@
 import type { TableName } from "@/types/api";
+import type { AnySearchResult, AnySearchResultKey } from "@/types/search";
 import type { RelatedItem } from "@/types/ui";
 import type { Specialist } from "@/types/entities/specialist";
 import type { CourtDecision } from "@/types/entities/court-decision";
@@ -131,29 +132,29 @@ export const RELATION_RENDERERS: Record<string, RelationRendererConfig> = {
 };
 
 export interface SearchCardFieldImage {
-  dataKey: string;
+  dataKey: AnySearchResultKey;
   src: string;
   alt: string;
   class?: string;
 }
 
 export interface SearchCardField {
-  key: string;
+  key: AnySearchResultKey;
   label?: string;
-  fallback?: (data: Record<string, unknown>) => string;
+  fallback?: (data: AnySearchResult) => string;
   format?: "date" | "year";
   inlineImage?: SearchCardFieldImage;
 }
 
 export interface SearchCardPdf {
-  sourceFields: string[];
+  sourceFields: AnySearchResultKey[];
   folderName: string;
 }
 
 export interface SearchCardConfig {
   fields: SearchCardField[];
   pdf?: SearchCardPdf;
-  processData?: (data: Record<string, unknown>) => Record<string, unknown>;
+  processData?: (data: AnySearchResult) => AnySearchResult;
 }
 
 export interface EntityConfig {
@@ -247,8 +248,8 @@ export const entityRegistry: Record<string, EntityConfig> = {
       fields: [
         {
           key: "caseTitle",
-          fallback: (data: Record<string, unknown>) =>
-            String(data.caseCitation || ""),
+          fallback: (data: AnySearchResult) =>
+            String(("caseCitation" in data && data.caseCitation) || ""),
         },
         {
           key: "publicationDateIso",
@@ -375,9 +376,12 @@ export const entityRegistry: Record<string, EntityConfig> = {
         sourceFields: ["officialSourcePdf", "sourcePdf"],
         folderName: "domestic-instruments",
       },
-      processData: (data: Record<string, unknown>) => ({
+      processData: (data) => ({
         ...data,
-        themes: data.domesticLegalProvisionsThemes,
+        themes:
+          "domesticLegalProvisionsThemes" in data
+            ? String(data.domesticLegalProvisionsThemes)
+            : data.themes,
       }),
     },
   },

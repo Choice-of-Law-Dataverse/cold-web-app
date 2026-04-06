@@ -14,9 +14,9 @@ class FullTextSearchRequest(BaseModel):
     page: int = Field(1, ge=1, description="Page number, must be >= 1")
     page_size: int = Field(50, ge=1, le=100, description="Number of results per page")
     sort_by_date: bool | None = Field(False, description="Sort results by date descending if True.")
-    response_type: Literal["parsed", "raw", "both"] | None = Field(
+    response_type: Literal["parsed"] | None = Field(
         "parsed",
-        description="Select 'parsed' (default), 'raw', or 'both' for response data.",
+        description="Response data format. Only 'parsed' is supported.",
     )
     model_config = {
         "json_schema_extra": {
@@ -70,9 +70,9 @@ class FTFilterOption(BaseModel):
 class FullTableRequest(BaseModel):
     table: str
     filters: list[FTFilterOption] | None = None
-    response_type: Literal["parsed", "raw", "both"] | None = Field(
+    response_type: Literal["parsed"] | None = Field(
         "parsed",
-        description="Select 'parsed' (default), 'raw', or 'both' for response data.",
+        description="Response data format. Only 'parsed' is supported.",
     )
     model_config = {
         "json_schema_extra": {

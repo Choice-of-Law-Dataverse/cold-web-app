@@ -21,8 +21,7 @@ export function extractStoragePath(url: string): string | null {
     const urlObj = new URL(url);
     // Remove leading slash from pathname
     return urlObj.pathname.substring(1);
-  } catch (error) {
-    console.error("Failed to parse URL:", error, url);
+  } catch {
     return null;
   }
 }

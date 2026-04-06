@@ -15,7 +15,6 @@ export default defineEventHandler(async (event) => {
     "X-API-Key": config.apiKey,
   };
 
-  // Propagate trace context to backend for distributed tracing
   const activeSpan = trace.getActiveSpan();
   if (activeSpan) {
     const ctx = trace.setSpan(context.active(), activeSpan);

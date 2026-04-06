@@ -1,40 +1,62 @@
 import type { H3Event } from "h3";
 import * as logfire from "@pydantic/logfire-node";
 
+const SAFE_METHODS = new Set(["GET", "HEAD", "OPTIONS"]);
+
+export function buildAllowedOrigins(config: {
+  public: Record<string, unknown>;
+}): string[] {
+  const origins: string[] = [];
+
+  const siteUrl = String(config.public.siteUrl || "");
+  if (siteUrl) {
+    try {
+      origins.push(new URL(siteUrl).origin);
+    } catch {
+      /* malformed siteUrl — skip */
+    }
+  }
+
+  const vercelUrl = process.env.VERCEL_URL;
+  if (vercelUrl) {
+    origins.push(`https://${vercelUrl}`);
+  }
+
+  return origins;
+}
+
 export function validateOrigin(
   event: H3Event,
-  config: { public: { siteUrl: string } },
+  config: { public: Record<string, unknown> },
 ): void {
+  if (SAFE_METHODS.has(event.method)) {
+    return;
+  }
+
   const origin = getHeader(event, "origin");
-  const referer = getHeader(event, "referer");
-  const host = getHeader(event, "host");
 
-  const allowedOrigins = [
-    `https://${host}`,
-    `http://${host}`,
-    config.public.siteUrl,
-  ].filter(Boolean);
-
-  const sourceHeader = origin || referer;
-  if (!sourceHeader) {
-    logfire.warning("Request blocked - no origin or referer header", {
-      host,
-    });
+  if (!origin) {
     throw createError({
       statusCode: 403,
       message: "Forbidden: Missing origin",
     });
   }
 
-  const isValidOrigin = allowedOrigins.some(
-    (allowed) => origin === allowed || (referer && referer.startsWith(allowed)),
-  );
+  let sourceOrigin: string;
+  try {
+    sourceOrigin = new URL(origin).origin;
+  } catch {
+    throw createError({
+      statusCode: 403,
+      message: "Forbidden: Invalid origin",
+    });
+  }
 
-  if (!isValidOrigin) {
+  const allowedOrigins = buildAllowedOrigins(config);
+
+  if (!allowedOrigins.includes(sourceOrigin)) {
     logfire.warning("Request blocked - invalid origin", {
       origin,
-      referer,
-      host,
       allowedOrigins,
     });
     throw createError({
