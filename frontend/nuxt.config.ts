@@ -102,6 +102,7 @@ export default defineNuxtConfig({
     },
     public: {
       siteUrl: process.env.NUXT_SITE_URL,
+      additionalOrigins: process.env.NUXT_ADDITIONAL_ORIGINS,
     },
   },
   robots: {
