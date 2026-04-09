@@ -56,6 +56,12 @@ describe("buildAllowedOrigins", () => {
     expect(origins).toContain("https://my-app-abc123.vercel.app");
   });
 
+  it("preserves port in www variant", () => {
+    const origins = buildAllowedOrigins(makeConfig("http://localhost:3000"));
+    expect(origins).toContain("http://localhost:3000");
+    expect(origins).toContain("http://www.localhost:3000");
+  });
+
   it("includes additionalOrigins with www variants", () => {
     const origins = buildAllowedOrigins(
       makeConfig("https://cold.global", "https://choiceoflawdataverse.com"),
