@@ -3,6 +3,14 @@ import * as logfire from "@pydantic/logfire-node";
 
 const SAFE_METHODS = new Set(["GET", "HEAD", "OPTIONS"]);
 
+function withWwwVariant(url: URL): string {
+  const alt = new URL(url.href);
+  alt.hostname = url.hostname.startsWith("www.")
+    ? url.hostname.slice(4)
+    : `www.${url.hostname}`;
+  return alt.origin;
+}
+
 export function buildAllowedOrigins(config: {
   public: Record<string, unknown>;
 }): string[] {
@@ -13,13 +21,22 @@ export function buildAllowedOrigins(config: {
     try {
       const parsed = new URL(siteUrl);
       origins.push(parsed.origin);
-      if (parsed.hostname.startsWith("www.")) {
-        origins.push(`${parsed.protocol}//${parsed.hostname.slice(4)}`);
-      } else {
-        origins.push(`${parsed.protocol}//www.${parsed.hostname}`);
-      }
+      origins.push(withWwwVariant(parsed));
     } catch {
       /* malformed siteUrl — skip */
+    }
+  }
+
+  const extra = String(config.public.additionalOrigins || "");
+  if (extra) {
+    for (const raw of extra.split(",")) {
+      try {
+        const parsed = new URL(raw.trim());
+        origins.push(parsed.origin);
+        origins.push(withWwwVariant(parsed));
+      } catch {
+        /* malformed entry — skip */
+      }
     }
   }
 
