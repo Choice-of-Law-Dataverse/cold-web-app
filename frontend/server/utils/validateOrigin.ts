@@ -11,7 +11,13 @@ export function buildAllowedOrigins(config: {
   const siteUrl = String(config.public.siteUrl || "");
   if (siteUrl) {
     try {
-      origins.push(new URL(siteUrl).origin);
+      const parsed = new URL(siteUrl);
+      origins.push(parsed.origin);
+      if (parsed.hostname.startsWith("www.")) {
+        origins.push(`${parsed.protocol}//${parsed.hostname.slice(4)}`);
+      } else {
+        origins.push(`${parsed.protocol}//www.${parsed.hostname}`);
+      }
     } catch {
       /* malformed siteUrl — skip */
     }

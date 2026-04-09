@@ -36,15 +36,23 @@ describe("buildAllowedOrigins", () => {
     }
   });
 
-  it("extracts origin from siteUrl", () => {
+  it("extracts origin from siteUrl and includes www variant", () => {
     const origins = buildAllowedOrigins(makeConfig("https://cold.global/path"));
-    expect(origins).toEqual(["https://cold.global"]);
+    expect(origins).toEqual(["https://cold.global", "https://www.cold.global"]);
+  });
+
+  it("extracts origin from www siteUrl and includes non-www variant", () => {
+    const origins = buildAllowedOrigins(
+      makeConfig("https://www.cold.global/path"),
+    );
+    expect(origins).toEqual(["https://www.cold.global", "https://cold.global"]);
   });
 
   it("includes VERCEL_URL when set", () => {
     process.env.VERCEL_URL = "my-app-abc123.vercel.app";
     const origins = buildAllowedOrigins(makeConfig("https://cold.global"));
     expect(origins).toContain("https://cold.global");
+    expect(origins).toContain("https://www.cold.global");
     expect(origins).toContain("https://my-app-abc123.vercel.app");
   });
 
@@ -78,6 +86,15 @@ describe("validateOrigin", () => {
   it("allows matching origin", () => {
     mockGetHeader.mockImplementation((_e: unknown, name: string) =>
       name === "origin" ? "https://cold.global" : undefined,
+    );
+    expect(() =>
+      validateOrigin(makeEvent("POST"), makeConfig("https://cold.global")),
+    ).not.toThrow();
+  });
+
+  it("allows www variant of matching origin", () => {
+    mockGetHeader.mockImplementation((_e: unknown, name: string) =>
+      name === "origin" ? "https://www.cold.global" : undefined,
     );
     expect(() =>
       validateOrigin(makeEvent("POST"), makeConfig("https://cold.global")),
