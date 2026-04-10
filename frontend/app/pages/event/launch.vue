@@ -76,14 +76,19 @@
               <strong>Horatia Muir Watt</strong>
               <EventDot />
               <strong>Béligh Elbalti</strong>
+              <EventDot />
+              <strong>Gérald Goldstein</strong>
             </p>
             <p>Moderated by <strong>Daniel Girsberger</strong></p>
           </EventSession>
 
-          <EventSession time="1.00 pm" title="CoLD × HCCH">
+          <EventSession
+            time="1.00 pm"
+            title="Permanent Bureau Remarks on Ten Years of the HCCH Principles"
+          >
             <p>
-              10 years of the HCCH Principles on Choice of Law in International
-              Commercial Contracts — and what lies ahead.
+              Retrospective on a decade of the HCCH Principles on Choice of Law
+              in International Commercial Contracts.
             </p>
             <p><strong>Raquel Peixoto</strong></p>
           </EventSession>
