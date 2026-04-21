@@ -1,5 +1,8 @@
+from ..shared import NAV_TOOLS_PREAMBLE
+
 # ===== RELEVANT FACTS =====
-FACTS_PROMPT = """
+FACTS_PROMPT = (
+    """
 TASK: Extract and synthesize factual elements essential for understanding the choice of law analysis into a single, coherent paragraph.
 INSTRUCTIONS:
 1.	Output Requirement:
@@ -21,18 +24,18 @@ Elaborate on facts including, but not limited to the following, as long as they 
 5.	CONSTRAINT:
 Base the factual narrative solely on the provided judgment text, synthesizing information from both the full text and extracted choice of law section.
 
-
-<court_decision>
-{text}
-</court_decision>
-
+"""
+    + NAV_TOOLS_PREAMBLE
+    + """
 <col_section>
 {col_section}
 </col_section>
 """
+)
 
 # ===== PIL PROVISIONS =====
-PIL_PROVISIONS_PROMPT = """
+PIL_PROVISIONS_PROMPT = (
+    """
 TASK: Extract only private international law–related cases that the court actually used to support its choice of law reasoning and decision.
 INSTRUCTIONS:
 1.	Authority Categories:
@@ -49,18 +52,18 @@ INSTRUCTIONS:
 -   Sources that do not have precedential value
 4.	CONSTRAINT: Extract only from the court's own reasoning in the provided judgment text, focusing on authorities that directly supported the choice of law analysis and conclusion. Do not cite cases or provisions that are not private international law-related.
 
-
-<court_decision>
-{text}
-</court_decision>
-
+"""
+    + NAV_TOOLS_PREAMBLE
+    + """
 <col_section>
 {col_section}
 </col_section>
 """
+)
 
 # ===== CHOICE OF LAW ISSUE =====
-COL_ISSUE_PROMPT = """
+COL_ISSUE_PROMPT = (
+    """
 TASK: Identify the specific choice of law questions that the court actually decided in this private international law (PIL) case.
 INSTRUCTIONS:
 1.	Issue Identification Criteria:
@@ -85,18 +88,18 @@ Frame each issue as a precise legal question. Examples:
 <themes>
 {classification_definitions}
 </themes>
-
-<court_decision>
-{text}
-</court_decision>
-
+"""
+    + NAV_TOOLS_PREAMBLE
+    + """
 <col_section>
 {col_section}
 </col_section>
 """
+)
 
 # ===== COURT'S POSITION =====
-COURTS_POSITION_PROMPT = """
+COURTS_POSITION_PROMPT = (
+    """
 TASK: Extract the binding legal principle(s) that the court established as essential to its choice of law decision.
 INSTRUCTIONS:
 1.	Ratio Identification Method:
@@ -123,11 +126,9 @@ Your output is a direct answer to the following issue:
 <col_issue>
 {col_issue}
 </col_issue>
-
-<court_decision>
-{text}
-</court_decision>
-
+"""
+    + NAV_TOOLS_PREAMBLE
+    + """
 <col_section>
 {col_section}
 </col_section>
@@ -136,8 +137,10 @@ Your output is a direct answer to the following issue:
 {classification}
 </themes>
 """
+)
 
-COURTS_POSITION_OBITER_DICTA_PROMPT = """
+COURTS_POSITION_OBITER_DICTA_PROMPT = (
+    """
 TASK: Extract judicial observations about choice of law that are not essential to the court's decision but provide persuasive legal commentary.
 INSTRUCTIONS:
 1.	Obiter Identification Method:
@@ -169,11 +172,9 @@ Your output is a direct answer to the following issue:
 <col_issue>
 {col_issue}
 </col_issue>
-
-<court_decision>
-{text}
-</court_decision>
-
+"""
+    + NAV_TOOLS_PREAMBLE
+    + """
 <col_section>
 {col_section}
 </col_section>
@@ -182,8 +183,10 @@ Your output is a direct answer to the following issue:
 {classification}
 </themes>
 """
+)
 
-COURTS_POSITION_DISSENTING_OPINIONS_PROMPT = """
+COURTS_POSITION_DISSENTING_OPINIONS_PROMPT = (
+    """
 TASK: Identify and summarize any dissenting or minority judicial opinions specifically related to choice of law analysis.
 INSTRUCTIONS:
 1.	Scope of Analysis:
@@ -209,11 +212,9 @@ Your output is a direct answer to the following issue:
 <col_issue>
 {col_issue}
 </col_issue>
-
-<court_decision>
-{text}
-</court_decision>
-
+"""
+    + NAV_TOOLS_PREAMBLE
+    + """
 <col_section>
 {col_section}
 </col_section>
@@ -222,6 +223,7 @@ Your output is a direct answer to the following issue:
 {classification}
 </themes>
 """
+)
 
 # ===== ABSTRACT =====
 ABSTRACT_PROMPT = """
@@ -248,11 +250,6 @@ Synthesize a comprehensive abstract using the analytical components you have pre
 If an official “abstract”, “headnote”/”case note” exists in the judgment text, extract it instead of synthesizing.
 
 6.	CONSTRAINT: Base the abstract on your previous analysis of this judgment's PIL components, ensuring it captures the essential choice of law elements for legal research and reference purposes.
-
-
-<court_decision>
-{text}
-</court_decision>
 
 <themes>
 {classification}

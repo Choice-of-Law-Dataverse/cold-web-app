@@ -377,7 +377,7 @@ async def analyze_document(
                 draft_id=draft_id,
             ):
                 try:
-                    async_gen = analyze_case_streaming(text, jurisdiction_output, cached_results)
+                    async_gen = analyze_case_streaming(text, jurisdiction_output, cached_results, draft_id=draft_id)
                     generator_exhausted = False
 
                     while not generator_exhausted:

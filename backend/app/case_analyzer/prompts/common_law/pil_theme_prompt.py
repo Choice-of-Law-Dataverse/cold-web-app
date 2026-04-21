@@ -1,3 +1,7 @@
-PIL_THEME_PROMPT = """
-Your task is to assign specific themes to a court decision. Your response consists of the most fitting value(s) from the \"Keywords\" column. You assign the theme most closely related to the choice of law issue. For example, the decision might be about "Party autonomy", but the issue refers specifically to "Tacit choice". Be as precise as possible. If the decision goes beyond the scope of the predetermined themes, use \"NA\".\nHere is the table with all keywords and their definitions:\n{themes_table}\n\nHere is the text of the Court Decision:\n{text}\n\nHere is the section of the Court Decision containing Choice of Law related information:\n{col_section}
-"""
+from ..shared import NAV_TOOLS_PREAMBLE
+
+PIL_THEME_PROMPT = (
+    '\nYour task is to assign specific themes to a court decision. Your response consists of the most fitting value(s) from the "Keywords" column. You assign the theme most closely related to the choice of law issue. For example, the decision might be about "Party autonomy", but the issue refers specifically to "Tacit choice". Be as precise as possible. If the decision goes beyond the scope of the predetermined themes, use "NA".\nHere is the table with all keywords and their definitions:\n{themes_table}'
+    + NAV_TOOLS_PREAMBLE
+    + "\nHere is the section of the Court Decision containing Choice of Law related information:\n{col_section}\n"
+)
