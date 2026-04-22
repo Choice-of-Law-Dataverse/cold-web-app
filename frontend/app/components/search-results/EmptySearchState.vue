@@ -36,7 +36,7 @@ const router = useRouter();
 const searchSuggestions = ref([
   "Tacit Choice in Argentina",
   "Party Autonomy in Switzerland",
-  "Public policy limitations",
+  "Public Policy Limitations",
   "Forum Selection Clauses",
   "International Arbitration",
 ]);
