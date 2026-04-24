@@ -6,7 +6,11 @@
         <h2 class="card-title" :class="{ 'text-center': centerTitle }">
           {{ title }}
         </h2>
-        <p v-if="subtitle" class="card-subtitle">
+        <p
+          v-if="subtitle"
+          class="card-subtitle"
+          :class="{ 'text-center': centerTitle }"
+        >
           {{ subtitle }}
         </p>
       </div>
