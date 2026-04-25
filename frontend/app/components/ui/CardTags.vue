@@ -5,25 +5,26 @@
     <NuxtLink
       v-for="(jurisdictionString, index) in formattedJurisdiction"
       :key="`jurisdiction-${index}`"
-      class="label-jurisdiction jurisdiction-label-link"
+      class="schip schip--jur"
       :to="jurisdictionLinkTo(jurisdictionString)"
       @click.stop
     >
-      <span class="flag-wrapper">
-        <JurisdictionFlag
-          :iso3="getJurisdictionISO(jurisdictionString)"
-          class="flag-icon"
-        />
+      <JurisdictionFlag
+        :iso3="getJurisdictionISO(jurisdictionString)"
+        class="schip-flag"
+      />
+      <span class="schip-text">{{ jurisdictionString }}</span>
+      <span class="schip-affordance schip-affordance--arrow">
+        <UIcon name="i-material-symbols:arrow-forward" />
       </span>
-      {{ jurisdictionString }}
     </NuxtLink>
 
     <span
       v-for="(family, index) in legalFamily"
       :key="`legal-family-${index}`"
-      class="label-theme"
+      class="schip schip--family"
     >
-      {{ family }}
+      <span class="schip-text">{{ family }}</span>
     </span>
 
     <template
@@ -83,9 +84,9 @@
               'Specialist',
             ].includes(sourceTableLabel)
           "
-          :class="['label', labelColorClass]"
+          :class="['schip', 'schip--type', labelColorClass]"
         >
-          {{ sourceTableLabel }}
+          <span class="schip-text">{{ sourceTableLabel }}</span>
         </span>
         <NuxtLink
           v-else
@@ -96,9 +97,9 @@
               '+',
             )
           "
-          :class="['label', labelColorClass, 'label-link', 'cursor-pointer']"
+          :class="['schip', 'schip--type', labelColorClass]"
         >
-          {{ sourceTableLabel }}
+          <span class="schip-text">{{ sourceTableLabel }}</span>
         </NuxtLink>
       </template>
     </template>
@@ -106,10 +107,10 @@
     <NuxtLink
       v-for="(theme, index) in formattedTheme"
       :key="`theme-${index}`"
-      class="label-theme label-link cursor-pointer"
+      class="schip schip--theme"
       :to="'/search?theme=' + encodeURIComponent(theme).replace(/%20/g, '+')"
     >
-      {{ theme }}
+      <span class="schip-text">{{ theme }}</span>
     </NuxtLink>
   </div>
 </template>
@@ -194,10 +195,11 @@ watch(selectedType, (val, old) => {
   flex-grow: 1;
   padding-bottom: 0.25rem;
   padding-top: 0.25rem;
+  gap: 6px 8px;
 }
 
 .tags-container > * {
-  margin-right: 0.625rem;
+  margin-right: 0.5rem;
 }
 
 .tags-container > *:last-child {
@@ -212,62 +214,110 @@ watch(selectedType, (val, old) => {
   scrollbar-width: none;
 }
 
-a {
-  font-weight: 500;
-  text-decoration: none;
-}
-
-.jurisdiction-label-link {
+.schip {
+  --schip-color: var(--color-cold-purple);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 11px;
   font-weight: 600;
-
-  .flag-wrapper {
-    width: 1.125rem;
-  }
-
-  .flag-icon {
-    height: 11px;
-    width: auto;
-  }
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 2px 9px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--schip-color) 8%, white);
+  color: color-mix(in srgb, var(--schip-color) 80%, black);
+  text-decoration: none;
+  white-space: nowrap;
+  border: 1px solid transparent;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
 }
 
-.jurisdiction-label-link:hover .flag-wrapper {
+.schip:hover {
+  background: color-mix(in srgb, var(--schip-color) 14%, white);
+  border-color: color-mix(in srgb, var(--schip-color) 30%, white);
+  color: color-mix(in srgb, var(--schip-color) 95%, black);
+}
+
+.schip--type {
+  --schip-color: var(--color-cold-purple);
+}
+
+.schip--type.label-court-decision {
+  --schip-color: var(--color-label-court-decision);
+}
+.schip--type.label-question {
+  --schip-color: var(--color-label-question);
+}
+.schip--type.label-instrument {
+  --schip-color: var(--color-label-instrument);
+}
+.schip--type.label-arbitration {
+  --schip-color: var(--color-label-arbitration);
+}
+.schip--type.label-literature {
+  --schip-color: var(--color-label-literature);
+}
+.schip--type.label-specialist {
+  --schip-color: var(--color-label-specialist);
+}
+.schip--type.label-jurisdiction {
+  --schip-color: var(--color-cold-night);
+}
+
+.schip--jur {
+  --schip-color: var(--color-cold-night);
+}
+
+.schip--family {
+  --schip-color: #b07000;
+  background: transparent;
+  font-weight: 500;
+}
+
+.schip--family:hover {
+  background: color-mix(in srgb, var(--schip-color) 10%, white);
+}
+
+.schip--theme {
+  --schip-color: var(--color-cold-purple);
+}
+
+.schip-flag {
+  height: 11px;
+  width: auto;
+  transition:
+    opacity 0.15s ease,
+    width 0.15s ease;
+}
+
+.schip--jur:hover .schip-flag {
+  opacity: 0;
+  width: 0;
+  margin-right: -5px;
+}
+
+.schip-affordance {
+  display: inline-flex;
+  align-items: center;
   width: 0;
   opacity: 0;
+  margin-left: -2px;
+  font-size: 11px;
+  transition:
+    opacity 0.15s ease,
+    width 0.15s ease,
+    margin 0.15s ease;
 }
 
-.jurisdiction-label-link::after {
-  mask-image: var(--icon-search);
-  -webkit-mask-image: var(--icon-search);
-  height: 0.75rem;
-}
-
-.jurisdiction-label-link:hover::after {
-  width: 1.125rem;
-}
-
-.label-court-decision,
-a.label-court-decision {
-  color: var(--color-label-court-decision);
-}
-.label-question,
-a.label-question {
-  color: var(--color-label-question);
-}
-.label-instrument,
-a.label-instrument {
-  color: var(--color-label-instrument);
-}
-.label-literature,
-a.label-literature {
-  color: var(--color-label-literature);
-}
-.label-arbitration,
-a.label-arbitration {
-  color: var(--color-label-arbitration);
-}
-.label-specialist,
-a.label-specialist {
-  color: var(--color-label-specialist);
+.schip--jur:hover .schip-affordance--arrow {
+  width: 11px;
+  opacity: 0.9;
+  margin-left: 2px;
 }
 
 .custom-caret {

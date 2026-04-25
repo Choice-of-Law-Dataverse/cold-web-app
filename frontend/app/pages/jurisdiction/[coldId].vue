@@ -7,20 +7,11 @@
       :data="data"
       :show-suggest-edit="true"
       :show-legal-family="false"
+      entity-type="jurisdiction"
+      :entity-id="coldId"
+      :entity-title="data?.name ?? undefined"
     >
-      <template #title-caption>
-        <span>
-          Country Report<template v-if="captionLegalFamily">
-            <span aria-hidden="true"> · </span>{{ captionLegalFamily }}
-          </template>
-        </span>
-      </template>
-
-      <EntityContent v-if="data" base-path="/jurisdiction" :data="data" />
-
-      <template #footer>
-        <LastModified :date="data?.updatedAt" />
-      </template>
+      <JurisdictionContent v-if="data" :data="data" />
     </BaseDetailLayout>
     <ClientOnly>
       <div class="mt-8">
@@ -81,13 +72,7 @@
       </template>
     </ClientOnly>
 
-    <PageSeoMeta :title-candidates="[data?.name]" fallback="Country Report" />
-
-    <EntityFeedback
-      entity-type="jurisdiction"
-      :entity-id="coldId"
-      :entity-title="data?.name ?? undefined"
-    />
+    <PageSeoMeta :title-candidates="[data?.name]" fallback="Jurisdiction" />
   </div>
 </template>
 
@@ -95,12 +80,10 @@
 import { computed, ref } from "vue";
 import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layout/BaseDetailLayout.vue";
-import EntityContent from "@/components/entity/EntityContent.vue";
+import JurisdictionContent from "@/components/entity/content/JurisdictionContent.vue";
 import JurisdictionComparisonTable from "@/components/jurisdiction/JurisdictionComparisonTable.vue";
-import LastModified from "@/components/ui/LastModified.vue";
 import LoadingBar from "@/components/layout/LoadingBar.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
-import EntityFeedback from "@/components/ui/EntityFeedback.vue";
 import { useEntityData } from "@/composables/useEntityData";
 import { flagUrl } from "@/config/assets";
 
@@ -108,12 +91,6 @@ const route = useRoute();
 const coldId = ref((route.params.coldId as string).toUpperCase());
 
 const { data, isLoading, error } = useEntityData("/jurisdiction", coldId);
-
-const captionLegalFamily = computed(() => {
-  const value = data.value?.legalFamily;
-  if (!value || value === "N/A") return "";
-  return String(value);
-});
 
 const jurisdictionOption = computed(() => {
   if (!data.value) return null;

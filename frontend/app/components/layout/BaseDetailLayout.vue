@@ -17,6 +17,9 @@
     :show-notification-banner="props.showNotificationBanner"
     :notification-banner-message="props.notificationBannerMessage"
     :icon="props.icon"
+    :entity-type="props.entityType"
+    :entity-id="props.entityId"
+    :entity-title="props.entityTitle"
     @save="emit('save')"
     @open-save-modal="emit('open-save-modal')"
     @open-cancel-modal="emit('open-cancel-modal')"
@@ -54,6 +57,9 @@ const props = withDefaults(
     showJson?: boolean;
     showPrint?: boolean;
     showLegalFamily?: boolean;
+    entityType?: string;
+    entityId?: string;
+    entityTitle?: string;
   }>(),
   {
     error: undefined,
@@ -70,6 +76,9 @@ const props = withDefaults(
     showJson: true,
     showPrint: true,
     showLegalFamily: true,
+    entityType: "",
+    entityId: "",
+    entityTitle: "",
   },
 );
 

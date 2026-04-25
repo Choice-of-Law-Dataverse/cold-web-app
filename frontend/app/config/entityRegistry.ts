@@ -502,11 +502,12 @@ export const entityRegistry: Record<string, EntityConfig> = {
   },
   "/jurisdiction": {
     table: "Jurisdictions",
-    singularLabel: "Jurisdiction",
-    fieldOrder: ["jurisdictionSummary", "jurisdictionalDifferentiator"],
+    singularLabel: "Report",
+    fieldOrder: ["name", "jurisdictionSummary", "jurisdictionalDifferentiator"],
     labelOverrides: { jurisdictionSummary: "Summary" },
     titleKey: "name",
     process: processJurisdiction,
+    contentComponentId: "JurisdictionContent",
     variant: "jurisdiction",
   },
   "/domestic-legal-provision": {
@@ -585,7 +586,7 @@ const VARIANT_TO_LABEL_CLASS: Record<string, string> = {
   instrument: "label-instrument",
   arbitration: "label-arbitration",
   literature: "label-literature",
-  jurisdiction: "hidden",
+  jurisdiction: "label-jurisdiction",
   specialist: "label-specialist",
 };
 

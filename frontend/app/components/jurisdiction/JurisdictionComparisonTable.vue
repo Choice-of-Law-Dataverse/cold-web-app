@@ -623,7 +623,11 @@ const rows = computed(() => {
 }
 
 .question-row:hover {
-  background: var(--gradient-subtle-hover);
+  background: linear-gradient(
+    315deg,
+    color-mix(in srgb, var(--color-cold-purple) 2%, white),
+    color-mix(in srgb, var(--color-cold-green) 1%, white)
+  );
 }
 
 .comparison-grid {
@@ -655,7 +659,11 @@ const rows = computed(() => {
 }
 
 .comparison-row:hover {
-  background: var(--gradient-subtle-hover);
+  background: linear-gradient(
+    315deg,
+    color-mix(in srgb, var(--color-cold-purple) 2%, white),
+    color-mix(in srgb, var(--color-cold-green) 1%, white)
+  );
 }
 
 .comparison-cell {
@@ -728,10 +736,8 @@ const rows = computed(() => {
 }
 
 .answer-button:hover {
-  background: linear-gradient(
-    315deg,
-    color-mix(in srgb, var(--color-cold-purple) 8%, white),
-    color-mix(in srgb, var(--color-cold-green) 4%, white)
-  );
+  @apply shadow;
+  background: var(--gradient-subtle-emphasis);
+  color: var(--color-cold-purple);
 }
 </style>

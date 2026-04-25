@@ -1,5 +1,23 @@
 <template>
   <EntityContent base-path="/court-decision" :data="data">
+    <template #caseTitle="{ value, label, tooltip }">
+      <DetailRow :label="label" :tooltip="tooltip">
+        <TitleWithActions>
+          {{ value }}
+          <template #actions>
+            <PdfLink
+              :pdf-field="data.officialSourcePdf"
+              :record-id="String(data.coldId || '')"
+              folder-name="court-decisions"
+            />
+            <SourceExternalLink
+              :source-url="String(data.officialSourceUrl || '')"
+            />
+          </template>
+        </TitleWithActions>
+      </DetailRow>
+    </template>
+
     <template #quote="{ label, tooltip }">
       <DetailRow
         v-if="data.quote || data.translatedExcerpt"
@@ -77,6 +95,9 @@
 import { ref } from "vue";
 import EntityContent from "@/components/entity/EntityContent.vue";
 import DetailRow from "@/components/ui/DetailRow.vue";
+import TitleWithActions from "@/components/ui/TitleWithActions.vue";
+import PdfLink from "@/components/ui/PdfLink.vue";
+import SourceExternalLink from "@/components/sources/SourceExternalLink.vue";
 import ShowMoreLess from "@/components/ui/ShowMoreLess.vue";
 import type { CourtDecision } from "@/types/entities/court-decision";
 

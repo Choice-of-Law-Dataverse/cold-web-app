@@ -138,10 +138,8 @@ function handleClick(event: MouseEvent, questionId: string) {
 }
 
 .answer-pill:hover {
-  background: linear-gradient(
-    315deg,
-    color-mix(in srgb, var(--color-cold-purple) 8%, white),
-    color-mix(in srgb, var(--color-cold-green) 4%, white)
-  );
+  @apply shadow;
+  background: var(--gradient-subtle-emphasis);
+  color: var(--color-cold-purple);
 }
 </style>

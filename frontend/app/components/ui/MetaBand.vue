@@ -2,7 +2,10 @@
   <section
     v-if="isVisible"
     class="meta-band"
-    :class="{ 'meta-band--new': headerMode === 'new' }"
+    :class="{
+      'meta-band--new': headerMode === 'new',
+      'meta-band--compact': compact,
+    }"
   >
     <div class="meta-chips">
       <template v-if="headerMode === 'new'">
@@ -24,14 +27,33 @@
         </div>
       </template>
       <template v-else>
-        <div v-if="hasFirstLine" class="meta-line">
+        <div v-if="hasFirstLine || resolvedTheme.length > 0" class="meta-line">
+          <button
+            v-if="typeChip && isJurisdictionType"
+            ref="typeChipRef"
+            type="button"
+            :class="[
+              'schip',
+              'schip--type',
+              'schip--button',
+              typeChip.colorClass,
+            ]"
+            :aria-expanded="pickerOpen"
+            aria-haspopup="listbox"
+            @click="togglePicker"
+          >
+            <span class="schip-text">{{ typeChip.label }}</span>
+          </button>
           <NuxtLink
-            v-if="typeChip"
+            v-else-if="typeChip"
             :to="typeChip.to"
             :class="['schip', 'schip--type', typeChip.colorClass]"
           >
+            <span class="schip-tag" aria-hidden="true">
+              <UIcon name="i-lucide:tag" />
+            </span>
             <span class="schip-text">{{ typeChip.label }}</span>
-            <span class="schip-affordance schip-affordance--search">
+            <span class="schip-affordance" aria-hidden="true">
               <UIcon name="i-material-symbols:search" />
             </span>
           </NuxtLink>
@@ -41,37 +63,29 @@
             :to="`/jurisdiction/${j.coldId}`"
             class="schip schip--jur"
           >
-            <JurisdictionFlag
-              v-if="j.coldId"
-              :iso3="j.coldId"
-              class="schip-flag"
-            />
+            <span class="schip-flag-wrap">
+              <JurisdictionFlag
+                v-if="j.coldId"
+                :iso3="j.coldId"
+                class="schip-flag"
+              />
+            </span>
             <span class="schip-text">{{ j.name }}</span>
-            <span class="schip-affordance schip-affordance--arrow">
+            <span class="schip-arrow-wrap" aria-hidden="true">
               <UIcon name="i-material-symbols:arrow-forward" />
             </span>
           </NuxtLink>
           <NuxtLink
-            v-for="(f, idx) in resolvedLegalFamily"
-            :key="`family-${idx}`"
-            :to="`/search?type=Jurisdictions&legalFamily=${encodeURIComponent(f).replace(/%20/g, '+')}`"
-            class="schip schip--family"
+            v-for="chip in taggedSearchChips"
+            :key="chip.key"
+            :to="chip.to"
+            :class="chip.class"
           >
-            <span class="schip-text">{{ f }}</span>
-            <span class="schip-affordance schip-affordance--search">
-              <UIcon name="i-material-symbols:search" />
+            <span class="schip-tag" aria-hidden="true">
+              <UIcon name="i-lucide:tag" />
             </span>
-          </NuxtLink>
-        </div>
-        <div v-if="resolvedTheme.length > 0" class="meta-line">
-          <NuxtLink
-            v-for="(theme, idx) in resolvedTheme"
-            :key="`theme-${idx}`"
-            :to="`/search?theme=${encodeURIComponent(theme).replace(/%20/g, '+')}`"
-            class="schip schip--theme"
-          >
-            <span class="schip-text">{{ theme }}</span>
-            <span class="schip-affordance schip-affordance--search">
+            <span class="schip-text">{{ chip.label }}</span>
+            <span class="schip-affordance" aria-hidden="true">
               <UIcon name="i-material-symbols:search" />
             </span>
           </NuxtLink>
@@ -92,6 +106,7 @@
           color="neutral"
           size="xs"
           leading-icon="i-material-symbols:verified-outline"
+          trailing-icon="i-material-symbols:verified-outline"
           class="meta-btn"
           @click.prevent="isCiteOpen = true"
         >
@@ -103,6 +118,7 @@
           color="neutral"
           size="xs"
           leading-icon="i-material-symbols:data-object"
+          trailing-icon="i-material-symbols:data-object"
           class="meta-btn"
           @click.prevent="exportJSON"
         >
@@ -114,22 +130,79 @@
           color="neutral"
           size="xs"
           leading-icon="i-material-symbols:print-outline"
+          trailing-icon="i-material-symbols:print-outline"
           class="meta-btn"
           @click.prevent="printPage"
         >
           Print
         </UButton>
+        <EntityFeedback
+          v-if="entityType && entityId"
+          :entity-type="entityType as EntityType"
+          :entity-id="entityId"
+          :entity-title="entityTitle"
+        />
       </template>
     </div>
     <LazyCiteModal v-if="!isNewMode" v-model="isCiteOpen" />
+
+    <Teleport to="body">
+      <div
+        v-if="pickerOpen"
+        class="picker-overlay"
+        @click.self="pickerOpen = false"
+      >
+        <div class="picker-panel" :style="pickerStyle">
+          <UInput
+            v-model="pickerSearch"
+            placeholder="Search a jurisdiction..."
+            icon="i-material-symbols:search"
+            autofocus
+            variant="none"
+            class="picker-search"
+          />
+          <div class="picker-list">
+            <button
+              v-for="item in pickerFiltered"
+              :key="item.coldId || item.name"
+              class="picker-item"
+              type="button"
+              @click="selectPickerJurisdiction(item)"
+            >
+              <JurisdictionFlag
+                v-if="item.coldId"
+                :iso3="item.coldId"
+                :faded="!hasCoverage(item.answerCoverage)"
+                class="picker-flag"
+              />
+              <span
+                :class="{
+                  'picker-item-text--faded': !hasCoverage(item.answerCoverage),
+                }"
+              >
+                {{ item.label }}
+              </span>
+            </button>
+            <div v-if="pickerFiltered.length === 0" class="picker-empty">
+              No jurisdictions found
+            </div>
+          </div>
+        </div>
+      </div>
+    </Teleport>
   </section>
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch, defineAsyncComponent } from "vue";
+import { computed, nextTick, ref, watch, defineAsyncComponent } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import JurisdictionFlag from "@/components/ui/JurisdictionFlag.vue";
-import { useJurisdictionLookup } from "@/composables/useJurisdictions";
+import EntityFeedback from "@/components/ui/EntityFeedback.vue";
+import type { components } from "@/types/api-schema";
+import {
+  useJurisdictionLookup,
+  useJurisdictions,
+} from "@/composables/useJurisdictions";
 import {
   parseJurisdictionString,
   primaryJurisdictionAlpha3,
@@ -140,6 +213,8 @@ import {
   getSingularLabel,
   getTableName,
 } from "@/config/entityRegistry";
+
+type EntityType = components["schemas"]["EntityType"];
 
 const LazyCiteModal = defineAsyncComponent(
   () => import("@/components/ui/CiteModal.vue"),
@@ -157,6 +232,10 @@ const props = withDefaults(
     showJson?: boolean;
     showPrint?: boolean;
     showLegalFamily?: boolean;
+    entityType?: string;
+    entityId?: string;
+    entityTitle?: string;
+    compact?: boolean;
   }>(),
   {
     resultData: () => ({}),
@@ -169,6 +248,10 @@ const props = withDefaults(
     showJson: true,
     showPrint: true,
     showLegalFamily: true,
+    entityType: "",
+    entityId: "",
+    entityTitle: "",
+    compact: false,
   },
 );
 
@@ -184,7 +267,8 @@ const { findJurisdictionByCode, findJurisdictionByName } =
 const isCiteOpen = ref(false);
 const isNewMode = computed(() => props.headerMode === "new");
 
-const primaryCode = computed(() => primaryJurisdictionAlpha3(props.resultData));
+const searchParam = (value: string) =>
+  encodeURIComponent(value).replace(/%20/g, "+");
 
 interface ResolvedJurisdiction {
   name: string;
@@ -224,7 +308,9 @@ const resolvedJurisdiction = computed<ResolvedJurisdiction[]>(() => {
     return match?.coldId ? [{ name: single, coldId: match.coldId }] : [];
   }
 
-  const primary = findJurisdictionByCode(primaryCode.value);
+  const primary = findJurisdictionByCode(
+    primaryJurisdictionAlpha3(props.resultData),
+  );
   if (primary?.name && primary.coldId) {
     if (parsed.length === 0) {
       return [{ name: primary.name, coldId: primary.coldId }];
@@ -282,9 +368,89 @@ const typeChip = computed(() => {
   return {
     label,
     colorClass,
-    to: `/search?type=${encodeURIComponent(searchType).replace(/%20/g, "+")}`,
+    to: `/search?type=${searchParam(searchType)}`,
   };
 });
+
+interface TaggedSearchChip {
+  key: string;
+  to: string;
+  class: string;
+  label: string;
+}
+
+const taggedSearchChips = computed<TaggedSearchChip[]>(() => [
+  ...resolvedLegalFamily.value.map((f, idx) => ({
+    key: `family-${idx}`,
+    to: `/search?type=Jurisdictions&legalFamily=${searchParam(f)}`,
+    class: "schip schip--family",
+    label: f,
+  })),
+  ...resolvedTheme.value.map((theme, idx) => ({
+    key: `theme-${idx}`,
+    to: `/search?theme=${searchParam(theme)}`,
+    class: "schip schip--theme",
+    label: theme,
+  })),
+]);
+
+const isJurisdictionType = computed(
+  () => typeChip.value?.colorClass === "label-jurisdiction",
+);
+
+const { data: allJurisdictions } = useJurisdictions(isJurisdictionType);
+
+const typeChipRef = ref<HTMLButtonElement | null>(null);
+const pickerOpen = ref(false);
+const pickerSearch = ref("");
+const pickerStyle = ref<Record<string, string>>({});
+
+const hasCoverage = (coverage?: number) => (coverage ?? 0) > 0;
+
+const pickerFiltered = computed(() => {
+  const list = allJurisdictions.value ?? [];
+  const q = pickerSearch.value.toLowerCase().trim();
+  if (!q) return list;
+  return list.filter((j) => j.label.toLowerCase().includes(q));
+});
+
+watch(pickerOpen, async (open) => {
+  if (open) {
+    await nextTick();
+    positionPicker();
+  } else {
+    pickerSearch.value = "";
+  }
+});
+
+watch(
+  () => route.fullPath,
+  () => {
+    pickerOpen.value = false;
+    if (props.headerMode === "new") selectedNewType.value = "";
+  },
+);
+
+function togglePicker() {
+  pickerOpen.value = !pickerOpen.value;
+}
+
+function positionPicker() {
+  const el = typeChipRef.value;
+  if (!el) return;
+  const rect = el.getBoundingClientRect();
+  pickerStyle.value = {
+    top: `${rect.bottom + 4}px`,
+    left: `${rect.left}px`,
+    minWidth: `${Math.max(rect.width, 260)}px`,
+  };
+}
+
+function selectPickerJurisdiction(item: { coldId?: string }) {
+  pickerOpen.value = false;
+  if (!item.coldId) return;
+  router.push(`/jurisdiction/${item.coldId.toUpperCase()}`);
+}
 
 const hasFirstLine = computed(
   () =>
@@ -304,7 +470,12 @@ const isVisible = computed(() => {
 
 const hasActions = computed(() => {
   if (props.headerMode === "new") return true;
-  return props.showCite || props.showJson || props.showPrint;
+  return (
+    props.showCite ||
+    props.showJson ||
+    props.showPrint ||
+    !!(props.entityType && props.entityId)
+  );
 });
 
 const typeOptions = [
@@ -315,13 +486,6 @@ const typeOptions = [
   { label: "Literature", value: "Literature" },
 ];
 const selectedNewType = ref("");
-
-watch(
-  () => route.fullPath,
-  () => {
-    if (props.headerMode === "new") selectedNewType.value = "";
-  },
-);
 
 watch(selectedNewType, (val, old) => {
   if (props.headerMode === "new" && val && val !== old) {
@@ -378,11 +542,7 @@ function printPage() {
   gap: 6px 18px;
   align-items: center;
   padding: 0.625rem 1rem 0.625rem 1.5rem;
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--color-cold-purple) 3%, white),
-    color-mix(in srgb, var(--color-cold-green) 2%, white)
-  );
+  background: var(--gradient-subtle);
   border-bottom: 1px solid
     color-mix(in srgb, var(--color-cold-gray) 70%, transparent);
 }
@@ -392,6 +552,65 @@ function printPage() {
     grid-template-columns: 1fr;
     padding: 0.625rem 1rem;
   }
+}
+
+.meta-band--compact {
+  grid-template-columns: 1fr;
+  padding: 0 0.875rem 0.625rem;
+  background: transparent;
+  border-bottom: none;
+}
+
+.meta-band--compact .meta-chips {
+  gap: 5px;
+}
+
+.meta-band--compact .meta-line {
+  gap: 5px 7px;
+  min-height: 0;
+}
+
+.meta-band--compact .schip {
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  padding: 1px 7px;
+  gap: 4px;
+}
+
+.meta-band--compact .schip-flag-wrap,
+.meta-band--compact .schip-arrow-wrap {
+  width: 14px;
+  height: 10px;
+}
+
+.meta-band--compact .schip-arrow-wrap {
+  width: 0;
+}
+
+.meta-band--compact .schip--jur:hover .schip-arrow-wrap {
+  width: 14px;
+}
+
+.meta-band--compact .schip-flag {
+  width: 14px;
+  height: 10px;
+}
+
+.meta-band--compact .schip-tag,
+.meta-band--compact .schip-affordance {
+  font-size: 10px;
+}
+
+.meta-band--compact .schip-tag {
+  width: 10px;
+}
+
+.meta-band--compact .schip:hover .schip-tag {
+  width: 0;
+}
+
+.meta-band--compact .schip:hover .schip-affordance {
+  width: 10px;
 }
 
 .meta-chips {
@@ -409,10 +628,6 @@ function printPage() {
   min-height: 22px;
 }
 
-.meta-line--empty {
-  min-height: 22px;
-}
-
 .meta-label {
   font-family: "IBM Plex Mono", monospace;
   font-size: 10px;
@@ -421,16 +636,6 @@ function printPage() {
   text-transform: uppercase;
   color: var(--color-cold-night-alpha);
   flex-shrink: 0;
-}
-
-.meta-label--muted {
-  color: var(--color-cold-night-alpha-25);
-}
-
-.meta-sep {
-  color: var(--color-cold-night-alpha-25);
-  user-select: none;
-  font-size: 12px;
 }
 
 .schip {
@@ -484,6 +689,16 @@ function printPage() {
 .schip--type.label-specialist {
   --schip-color: var(--color-label-specialist);
 }
+.schip--type.label-jurisdiction {
+  --schip-color: var(--color-cold-night);
+}
+
+.schip--button {
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  margin: 0;
+}
 
 .schip--jur {
   --schip-color: var(--color-cold-night);
@@ -503,37 +718,73 @@ function printPage() {
   --schip-color: var(--color-cold-purple);
 }
 
-.schip-flag {
+.schip-flag-wrap,
+.schip-arrow-wrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 16px;
   height: 11px;
-  width: auto;
+  overflow: hidden;
   transition:
-    opacity 0.15s ease,
-    width 0.15s ease;
+    width 0.18s ease,
+    opacity 0.15s ease;
 }
 
-.schip--jur:hover .schip-flag {
-  opacity: 0;
+.schip-flag {
+  width: 16px;
+  height: 11px;
+  object-fit: contain;
+}
+
+.schip-arrow-wrap {
   width: 0;
-  margin-right: -5px;
+  opacity: 0;
+  font-size: 12px;
 }
 
+.schip--jur:hover .schip-flag-wrap {
+  width: 0;
+  opacity: 0;
+}
+
+.schip--jur:hover .schip-arrow-wrap {
+  width: 16px;
+  opacity: 0.9;
+}
+
+.schip-tag,
 .schip-affordance {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 11px;
+  font-size: 11px;
+  overflow: hidden;
+  transition:
+    width 0.15s ease,
+    opacity 0.15s ease;
+}
+
+.schip-tag {
+  opacity: 0.65;
+}
+
+.schip-affordance {
   width: 0;
   opacity: 0;
-  margin-left: -2px;
-  font-size: 11px;
-  transition:
-    opacity 0.15s ease,
-    width 0.15s ease,
-    margin 0.15s ease;
+}
+
+.schip:hover .schip-tag {
+  width: 0;
+  opacity: 0;
 }
 
 .schip:hover .schip-affordance {
   width: 11px;
   opacity: 0.9;
-  margin-left: 2px;
 }
 
 .meta-actions {
@@ -555,5 +806,78 @@ function printPage() {
 
 :deep(.meta-btn:hover) {
   background: color-mix(in srgb, var(--color-cold-purple) 6%, white);
+}
+</style>
+
+<style>
+.picker-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+}
+
+.picker-panel {
+  position: fixed;
+  width: 300px;
+  max-width: calc(100vw - 1rem);
+  max-height: 360px;
+  display: flex;
+  flex-direction: column;
+  background: white;
+  border-radius: 0.5rem;
+  border: 1px solid var(--color-cold-gray);
+  box-shadow:
+    0 4px 12px rgb(0 0 0 / 0.08),
+    0 1px 3px rgb(0 0 0 / 0.04);
+  z-index: 101;
+}
+
+.picker-search {
+  border-bottom: 1px solid var(--color-cold-gray);
+}
+
+.picker-search :deep(input) {
+  text-align: left;
+}
+
+.picker-list {
+  overflow-y: auto;
+  padding: 0.25rem;
+}
+
+.picker-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.5rem 0.625rem;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-family: "DM Sans", sans-serif;
+  color: var(--color-cold-night);
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.1s ease;
+  border: none;
+  background: none;
+}
+
+.picker-item:hover {
+  background: var(--gradient-subtle-hover);
+}
+
+.picker-flag {
+  flex-shrink: 0;
+}
+
+.picker-item-text--faded {
+  color: var(--color-cold-night-alpha);
+}
+
+.picker-empty {
+  padding: 1rem;
+  text-align: center;
+  font-size: 0.875rem;
+  color: var(--color-cold-slate);
 }
 </style>

@@ -66,16 +66,10 @@ interface ResolvedRelation {
   items: RelatedItem[];
 }
 
-const props = withDefaults(
-  defineProps<{
-    data: ProcessedEntity;
-    basePath: string;
-    skipTitleKey?: boolean;
-  }>(),
-  {
-    skipTitleKey: true,
-  },
-);
+const props = defineProps<{
+  data: ProcessedEntity;
+  basePath: string;
+}>();
 
 function getValue(key: string): unknown {
   return (props.data as Record<string, unknown>)[key];
@@ -86,11 +80,7 @@ const entityConfig = computed(() => getEntityConfig(props.basePath));
 const resolvedFields = computed<ResolvedField[]>(() => {
   const fieldOrder = entityConfig.value?.fieldOrder ?? [];
   const labelOverrides = entityConfig.value?.labelOverrides ?? {};
-  const titleKey = entityConfig.value?.titleKey;
-  const filtered = props.skipTitleKey
-    ? fieldOrder.filter((key) => key !== titleKey)
-    : fieldOrder;
-  return filtered.map((key) => ({
+  return fieldOrder.map((key) => ({
     key,
     label: labelOverrides[key] ?? camelCaseToLabel(key),
     tooltip: tooltips[key],
