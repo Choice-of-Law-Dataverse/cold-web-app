@@ -87,26 +87,7 @@ const resolvedFields = computed<ResolvedField[]>(() => {
   }));
 });
 
-type RelationComparator = (
-  a: Record<string, unknown>,
-  b: Record<string, unknown>,
-) => number;
-
-const sortByDateDesc: RelationComparator = (a, b) => {
-  const aDate = typeof a.date === "string" ? a.date : "";
-  const bDate = typeof b.date === "string" ? b.date : "";
-  if (aDate === bDate) return 0;
-  if (!aDate) return 1;
-  if (!bDate) return -1;
-  return bDate.localeCompare(aDate);
-};
-
-const sortByRankingDisplayOrder: RelationComparator = (a, b) =>
-  (Number(a.rankingDisplayOrder) || 0) - (Number(b.rankingDisplayOrder) || 0);
-
-const RELATION_COMPARATORS: Record<string, RelationComparator> = {
-  courtDecisions: sortByDateDesc,
-};
+const RELATIONS_PRESORTED_BY_BACKEND = new Set(["courtDecisions"]);
 
 const resolvedRelations = computed<ResolvedRelation[]>(() => {
   const relData = (props.data as Record<string, unknown>).relations as
@@ -118,12 +99,17 @@ const resolvedRelations = computed<ResolvedRelation[]>(() => {
     .filter(([key]) => !exclude.has(key))
     .map(([key, config]) => {
       const rawItems = relData[key] ?? [];
-      const comparator = RELATION_COMPARATORS[key] ?? sortByRankingDisplayOrder;
-      const sorted = [...rawItems].sort(comparator);
+      const ordered = RELATIONS_PRESORTED_BY_BACKEND.has(key)
+        ? rawItems
+        : [...rawItems].sort(
+            (a, b) =>
+              (Number(a.rankingDisplayOrder) || 0) -
+              (Number(b.rankingDisplayOrder) || 0),
+          );
       return {
         key,
         ...config,
-        items: sorted.map(mapRelationToItem).filter((item) => item.id),
+        items: ordered.map(mapRelationToItem).filter((item) => item.id),
       };
     })
     .filter((s) => s.items.length > 0);

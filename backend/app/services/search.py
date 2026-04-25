@@ -8,7 +8,25 @@ from app.services.filter_builder import build_filter_clause
 
 _SAFE_IDENTIFIER = re.compile(r"^[a-z_][a-z0-9_.]*$")
 
+_DATE_DDMMYYYY = re.compile(r"^(\d{2})\.(\d{2})\.(\d{4})$")
+_DATE_ISO = re.compile(r"^(\d{4})-(\d{2})-(\d{2})")
+
 logger = logging.getLogger(__name__)
+
+
+def _court_decision_date_sort_key(value: Any) -> str:
+    if not isinstance(value, str):
+        return ""
+    text = value.strip()
+    if not text:
+        return ""
+    iso = _DATE_ISO.match(text)
+    if iso:
+        return f"{iso.group(1)}-{iso.group(2)}-{iso.group(3)}"
+    dmy = _DATE_DDMMYYYY.match(text)
+    if dmy:
+        return f"{dmy.group(3)}-{dmy.group(2)}-{dmy.group(1)}"
+    return ""
 
 
 class SearchService:
@@ -91,13 +109,22 @@ class SearchService:
             return None
 
         base_record = row.get("base_record") or {}
+        relations = row.get("relations") or {}
+
+        court_decisions = relations.get("court_decisions")
+        if isinstance(court_decisions, list):
+            relations["court_decisions"] = sorted(
+                court_decisions,
+                key=lambda item: _court_decision_date_sort_key(item.get("date") if isinstance(item, dict) else None),
+                reverse=True,
+            )
 
         return {
             "source_table": row.get("source_table"),
             "id": row.get("record_id"),
             "cold_id": row.get("cold_id"),
             **base_record,
-            "relations": row.get("relations") or {},
+            "relations": relations,
         }
 
     @staticmethod
