@@ -6,7 +6,7 @@
       v-for="(jurisdictionString, index) in formattedJurisdiction"
       :key="`jurisdiction-${index}`"
       class="label-jurisdiction jurisdiction-label-link"
-      :to="`/search?jurisdiction=${encodeURIComponent(jurisdictionString).replace(/%20/g, '+')}`"
+      :to="jurisdictionLinkTo(jurisdictionString)"
       @click.stop
     >
       <span class="flag-wrapper">
@@ -143,7 +143,13 @@ const props = withDefaults(
 const route = useRoute();
 const router = useRouter();
 
-const { getJurisdictionISO } = useJurisdictionLookup();
+const { getJurisdictionISO, findJurisdictionByName } = useJurisdictionLookup();
+
+function jurisdictionLinkTo(name: string): string {
+  const match = findJurisdictionByName(name);
+  if (match?.coldId) return `/jurisdiction/${match.coldId}`;
+  return `/search?jurisdiction=${encodeURIComponent(name).replace(/%20/g, "+")}`;
+}
 
 const typeOptions = [
   { label: "Court Decision", value: "Court Decision" },

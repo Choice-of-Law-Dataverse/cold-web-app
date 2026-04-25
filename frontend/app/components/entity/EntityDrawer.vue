@@ -47,17 +47,25 @@
             />
           </div>
         </div>
-        <div class="px-6 pt-3 pb-3">
-          <CardTags
-            :formatted-jurisdiction="headerJurisdictions"
-            :legal-family="headerLegalFamily"
-            :source-table-label="headerSourceTable"
-            :label-color-class="headerLabelColor"
-            :formatted-theme="[]"
-          />
+        <div
+          v-if="entityData && drawerTitle"
+          class="drawer-title-block px-6 pt-3 pb-4"
+        >
+          <h2 class="drawer-title">{{ drawerTitle }}</h2>
         </div>
 
         <div class="gradient-top-border" />
+
+        <MetaBand
+          v-if="entityData"
+          :result-data="entityData"
+          :card-type="headerSourceTable"
+          :formatted-jurisdiction="headerJurisdictions"
+          :legal-family="headerLegalFamily"
+          :show-cite="false"
+          :show-json="false"
+          :show-print="false"
+        />
 
         <div class="flex-1 overflow-x-hidden overflow-y-auto">
           <div v-if="isLoading" class="p-6">
@@ -110,8 +118,8 @@ import LoadingBar from "@/components/layout/LoadingBar.vue";
 import InlineError from "@/components/ui/InlineError.vue";
 import JurisdictionDrawerQA from "@/components/jurisdiction/JurisdictionDrawerQA.vue";
 import DrawerAnswerMap from "@/components/jurisdiction/DrawerAnswerMap.vue";
-import CardTags from "@/components/ui/CardTags.vue";
-import { getLabelColorClassByVariant } from "@/config/entityRegistry";
+import MetaBand from "@/components/ui/MetaBand.vue";
+import { getEntityConfig } from "@/config/entityRegistry";
 import { primaryJurisdictionAlpha3 } from "@/utils/jurisdictionParser";
 
 const contentComponents: Record<string, Component> = {
@@ -186,9 +194,14 @@ const headerJurisdictions = computed<string[]>(() => {
 
 const headerSourceTable = computed(() => config.value?.singularLabel ?? "");
 
-const headerLabelColor = computed(() =>
-  getLabelColorClassByVariant(config.value?.variant ?? ""),
-);
+const drawerTitle = computed(() => {
+  const data = entityData.value;
+  if (!data || !basePath.value) return "";
+  const cfg = getEntityConfig(basePath.value);
+  if (!cfg?.titleKey) return "";
+  const value = (data as Record<string, unknown>)[cfg.titleKey];
+  return typeof value === "string" ? value : "";
+});
 
 const headerLegalFamily = computed<string[]>(() => {
   const data = entityData.value;
@@ -222,8 +235,19 @@ const questionSuffix = computed(() => {
 </script>
 
 <style scoped>
-:deep(.tags-container) {
-  white-space: normal;
-  gap: 0.375rem 0;
+.drawer-title-block {
+  display: flex;
+  flex-direction: column;
+}
+
+.drawer-title {
+  font-family: "DM Sans", sans-serif;
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 1.3;
+  letter-spacing: -0.015em;
+  margin: 0;
+  color: var(--color-cold-night);
+  overflow-wrap: break-word;
 }
 </style>

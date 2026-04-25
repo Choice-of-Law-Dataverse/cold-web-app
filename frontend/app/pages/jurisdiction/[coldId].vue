@@ -5,14 +5,16 @@
       :loading="isLoading"
       :error="error"
       :data="data"
-      :formatted-jurisdiction="[data?.name ?? '']"
       :show-suggest-edit="true"
+      :show-legal-family="false"
     >
-      <DetailRow label="">
-        <h1 class="mb-4 text-3xl font-semibold md:text-4xl">
-          Country Report for {{ data?.name || "N/A" }}
-        </h1>
-      </DetailRow>
+      <template #title-caption>
+        <span>
+          Country Report<template v-if="captionLegalFamily">
+            <span aria-hidden="true"> · </span>{{ captionLegalFamily }}
+          </template>
+        </span>
+      </template>
 
       <EntityContent v-if="data" base-path="/jurisdiction" :data="data" />
 
@@ -93,7 +95,6 @@
 import { computed, ref } from "vue";
 import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layout/BaseDetailLayout.vue";
-import DetailRow from "@/components/ui/DetailRow.vue";
 import EntityContent from "@/components/entity/EntityContent.vue";
 import JurisdictionComparisonTable from "@/components/jurisdiction/JurisdictionComparisonTable.vue";
 import LastModified from "@/components/ui/LastModified.vue";
@@ -107,6 +108,12 @@ const route = useRoute();
 const coldId = ref((route.params.coldId as string).toUpperCase());
 
 const { data, isLoading, error } = useEntityData("/jurisdiction", coldId);
+
+const captionLegalFamily = computed(() => {
+  const value = data.value?.legalFamily;
+  if (!value || value === "N/A") return "";
+  return String(value);
+});
 
 const jurisdictionOption = computed(() => {
   if (!data.value) return null;

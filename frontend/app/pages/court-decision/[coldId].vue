@@ -10,6 +10,19 @@
       :data="data"
       :show-suggest-edit="true"
     >
+      <template #title-actions>
+        <template v-if="data">
+          <PdfLink
+            :pdf-field="data.officialSourcePdf"
+            :record-id="String(data.coldId || '')"
+            folder-name="court-decisions"
+          />
+          <SourceExternalLink
+            :source-url="String(data.officialSourceUrl || '')"
+          />
+        </template>
+      </template>
+
       <CourtDecisionContent v-if="data" :data="data" />
 
       <template #footer>
@@ -46,6 +59,8 @@ import { computed, ref } from "vue";
 import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layout/BaseDetailLayout.vue";
 import CourtDecisionContent from "@/components/entity/content/CourtDecisionContent.vue";
+import PdfLink from "@/components/ui/PdfLink.vue";
+import SourceExternalLink from "@/components/sources/SourceExternalLink.vue";
 import JurisdictionReportBanner from "@/components/jurisdiction/JurisdictionReportBanner.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
 import LastModified from "@/components/ui/LastModified.vue";

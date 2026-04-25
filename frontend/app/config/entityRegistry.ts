@@ -571,6 +571,10 @@ export function getEntityConfigByTable(
   return basePath ? entityRegistry[basePath] : undefined;
 }
 
+export function getBasePathForTable(table: string): string | undefined {
+  return tableToBasePath.get(table);
+}
+
 export function getBasePathForCard(cardType: string): string | undefined {
   return tableToBasePath.get(cardType) ?? labelToBasePath.get(cardType);
 }

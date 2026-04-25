@@ -1,27 +1,5 @@
 <template>
   <EntityContent base-path="/literature" :data="data">
-    <template #title="{ value, label }">
-      <section v-if="value">
-        <DetailRow :label="label">
-          <TitleWithActions>
-            {{ value }}
-            <template #actions>
-              <PdfLink
-                :pdf-field="undefined"
-                :record-id="String(data.coldId || '')"
-                folder-name="literatures"
-              />
-              <SourceExternalLink
-                :source-url="sourceUrl"
-                :label="sourceLinkLabel"
-                :open-access="!!data.openAccessUrl"
-              />
-            </template>
-          </TitleWithActions>
-        </DetailRow>
-      </section>
-    </template>
-
     <template #author="{ value, label }">
       <section v-if="value && value !== data.editor">
         <DetailRow :label="label">
@@ -79,9 +57,6 @@
 import { computed } from "vue";
 import EntityContent from "@/components/entity/EntityContent.vue";
 import DetailRow from "@/components/ui/DetailRow.vue";
-import TitleWithActions from "@/components/ui/TitleWithActions.vue";
-import PdfLink from "@/components/ui/PdfLink.vue";
-import SourceExternalLink from "@/components/sources/SourceExternalLink.vue";
 import type { Literature } from "@/types/entities/literature";
 import { generateBibTeX, sanitizeFilename, downloadFile } from "@/utils/bibtex";
 import { camelCaseToLabel } from "@/utils/camelCaseToLabel";
@@ -93,15 +68,6 @@ function formatItemType(value: string): string {
 const props = defineProps<{
   data: Literature;
 }>();
-
-const sourceUrl = computed(() => {
-  if (props.data.openAccessUrl) return String(props.data.openAccessUrl);
-  return String(props.data.url || "");
-});
-
-const sourceLinkLabel = computed(() =>
-  props.data.openAccessUrl ? "Open Access Link" : "Link",
-);
 
 const bibtexContent = computed(() => generateBibTeX(props.data));
 
