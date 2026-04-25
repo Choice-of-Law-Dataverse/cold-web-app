@@ -42,6 +42,7 @@ class SearchService:
         "arbitration provision": "data_views.base_arbitral_provisions",
         "jurisdictions": "data_views.base_jurisdictions",
         "questions": "data_views.base_questions",
+        "specialists": "data_views.base_specialists",
     }
 
     _TABLE_TO_FTS_ENRICHMENT: dict[str, tuple[str, dict[str, str]]] = {
