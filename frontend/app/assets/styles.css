@@ -2035,11 +2035,10 @@ button.cold-toggle-btn[aria-pressed="true"] {
   margin-bottom: 1.25rem;
 }
 
-/* Images - constrain to reasonable size */
+/* Images - display at their specified width, prevent overflow */
 .content-page-prose img {
-  max-width: 200px;
+  max-width: 100%;
   height: auto;
-  border-radius: 0.375rem;
   margin-top: 1rem;
   margin-bottom: 1rem;
 }
