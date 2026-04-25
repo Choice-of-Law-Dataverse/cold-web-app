@@ -8,7 +8,28 @@ from app.services.filter_builder import build_filter_clause
 
 _SAFE_IDENTIFIER = re.compile(r"^[a-z_][a-z0-9_.]*$")
 
+_DATE_DDMMYYYY = re.compile(r"^(\d{2})\.(\d{2})\.(\d{4})$")
+_DATE_ISO = re.compile(r"^(\d{4})-(\d{2})-(\d{2})")
+
 logger = logging.getLogger(__name__)
+
+
+def _ranking_from_date(value: Any) -> int | None:
+    """Negated YYYYMMDD so ascending rankingDisplayOrder sort yields newest-first."""
+    if not isinstance(value, str):
+        return None
+    text = value.strip()
+    if not text:
+        return None
+    iso = _DATE_ISO.match(text)
+    if iso:
+        year, month, day = int(iso.group(1)), int(iso.group(2)), int(iso.group(3))
+    else:
+        dmy = _DATE_DDMMYYYY.match(text)
+        if not dmy:
+            return None
+        day, month, year = int(dmy.group(1)), int(dmy.group(2)), int(dmy.group(3))
+    return -(year * 10000 + month * 100 + day)
 
 
 class SearchService:
@@ -91,13 +112,22 @@ class SearchService:
             return None
 
         base_record = row.get("base_record") or {}
+        relations = row.get("relations") or {}
+
+        court_decisions = relations.get("court_decisions")
+        if isinstance(court_decisions, list):
+            for item in court_decisions:
+                if isinstance(item, dict) and item.get("ranking_display_order") is None:
+                    ranking = _ranking_from_date(item.get("date"))
+                    if ranking is not None:
+                        item["ranking_display_order"] = ranking
 
         return {
             "source_table": row.get("source_table"),
             "id": row.get("record_id"),
             "cold_id": row.get("cold_id"),
             **base_record,
-            "relations": row.get("relations") or {},
+            "relations": relations,
         }
 
     @staticmethod

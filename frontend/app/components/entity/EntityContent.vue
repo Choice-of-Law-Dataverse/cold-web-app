@@ -40,7 +40,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { camelCaseToLabel } from "@/utils/camelCaseToLabel";
-import { formatDate, parseSortableDate } from "@/utils/format";
+import { formatDate } from "@/utils/format";
 import { tooltips } from "@/config/tooltips";
 import {
   getEntityConfig,
@@ -87,26 +87,6 @@ const resolvedFields = computed<ResolvedField[]>(() => {
   }));
 });
 
-function compareRelations(
-  a: Record<string, unknown>,
-  b: Record<string, unknown>,
-): number {
-  const aDate = parseSortableDate(
-    typeof a.date === "string" ? a.date : undefined,
-  );
-  const bDate = parseSortableDate(
-    typeof b.date === "string" ? b.date : undefined,
-  );
-  if (aDate !== null && bDate !== null && aDate !== bDate) {
-    return bDate - aDate;
-  }
-  if (aDate !== null && bDate === null) return -1;
-  if (aDate === null && bDate !== null) return 1;
-  return (
-    (Number(a.rankingDisplayOrder) || 0) - (Number(b.rankingDisplayOrder) || 0)
-  );
-}
-
 const resolvedRelations = computed<ResolvedRelation[]>(() => {
   const relData = (props.data as Record<string, unknown>).relations as
     | Record<string, Record<string, unknown>[]>
@@ -117,7 +97,11 @@ const resolvedRelations = computed<ResolvedRelation[]>(() => {
     .filter(([key]) => !exclude.has(key))
     .map(([key, config]) => {
       const rawItems = relData[key] ?? [];
-      const sorted = [...rawItems].sort(compareRelations);
+      const sorted = [...rawItems].sort(
+        (a, b) =>
+          (Number(a.rankingDisplayOrder) || 0) -
+          (Number(b.rankingDisplayOrder) || 0),
+      );
       return {
         key,
         ...config,

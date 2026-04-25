@@ -68,28 +68,3 @@ export function formatDateLong(dateString: string): string {
     return dateString;
   }
 }
-
-const DATE_DDMMYYYY = /^(\d{2})\.(\d{2})\.(\d{4})$/;
-
-/**
- * Parse a date string into a UTC timestamp suitable for sorting.
- * Supports DD.MM.YYYY (used by some relation views) and any format
- * the native Date constructor accepts (ISO 8601, RFC 2822, etc.).
- * Returns null when the input is missing or unparseable.
- */
-export function parseSortableDate(
-  value: string | null | undefined,
-): number | null {
-  if (typeof value !== "string") return null;
-  const trimmed = value.trim();
-  if (!trimmed) return null;
-  const dmy = DATE_DDMMYYYY.exec(trimmed);
-  if (dmy) {
-    const day = Number(dmy[1]);
-    const month = Number(dmy[2]);
-    const year = Number(dmy[3]);
-    return Date.UTC(year, month - 1, day);
-  }
-  const time = new Date(trimmed).getTime();
-  return Number.isNaN(time) ? null : time;
-}

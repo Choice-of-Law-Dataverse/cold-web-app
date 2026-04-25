@@ -12,6 +12,7 @@ from app.schemas.search_result import (
     SearchResultBase,
     validate_search_result,
 )
+from app.services.search import _ranking_from_date
 
 
 class TestValidateSearchResult:
@@ -116,6 +117,33 @@ class TestTableModelCrossCoverage:
     def test_record_keys_covered_by_search(self):
         missing = TABLE_SEARCH_MODELS.keys() - TABLE_RECORD_MODELS.keys() - self.SEARCH_ONLY_TABLES
         assert not missing, f"TABLE_SEARCH_MODELS has tables missing from TABLE_RECORD_MODELS: {missing}"
+
+
+class TestRankingFromDate:
+    def test_dd_mm_yyyy_negated(self):
+        assert _ranking_from_date("20.02.1951") == -19510220
+
+    def test_iso_negated(self):
+        assert _ranking_from_date("2024-05-12") == -20240512
+
+    def test_iso_with_time_uses_date_part(self):
+        assert _ranking_from_date("2024-05-12T10:00:00") == -20240512
+
+    def test_unparseable_returns_none(self):
+        assert _ranking_from_date(None) is None
+        assert _ranking_from_date("") is None
+        assert _ranking_from_date("not a date") is None
+
+    def test_ascending_sort_yields_newest_first(self):
+        dates = ["20.02.1951", "13.03.1985", "23.03.1965", "2024-01-15"]
+        items: list[dict[str, object]] = [{"date": d, "ranking_display_order": _ranking_from_date(d)} for d in dates]
+        ordered = sorted(items, key=lambda i: int(i["ranking_display_order"] or 0))  # type: ignore[arg-type]
+        assert [i["date"] for i in ordered] == [
+            "2024-01-15",
+            "13.03.1985",
+            "23.03.1965",
+            "20.02.1951",
+        ]
 
 
 class TestFullTextSearchResponseSerialization:

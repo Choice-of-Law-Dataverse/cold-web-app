@@ -1146,6 +1146,7 @@ export interface components {
       caseCitation?: string | null;
       caseTitle?: string | null;
       date?: string | null;
+      rankingDisplayOrder?: string | number | null;
     };
     /** CourtDecisionSearchResult */
     CourtDecisionSearchResult: {
