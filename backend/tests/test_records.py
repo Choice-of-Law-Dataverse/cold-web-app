@@ -45,8 +45,8 @@ class TestRecordBase:
 
 
 class TestTableRecordModels:
-    def test_all_15_entries(self):
-        assert len(TABLE_RECORD_MODELS) == 15
+    def test_all_16_entries(self):
+        assert len(TABLE_RECORD_MODELS) == 16
 
     def test_expected_table_names(self):
         expected = {
@@ -65,6 +65,7 @@ class TestTableRecordModels:
             "Regional Legal Provisions",
             "Jurisdictions",
             "Questions",
+            "Specialists",
         }
         assert set(TABLE_RECORD_MODELS.keys()) == expected
 
