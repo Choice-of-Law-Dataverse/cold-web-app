@@ -42,7 +42,10 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-import { parseJurisdictionString } from "@/utils/jurisdictionParser";
+import {
+  parseJurisdictionString,
+  primaryJurisdictionAlpha3,
+} from "@/utils/jurisdictionParser";
 import { getSingularLabel, getLabelColorClass } from "@/config/entityRegistry";
 import { useJurisdictionLookup } from "@/composables/useJurisdictions";
 import CardTags from "@/components/ui/CardTags.vue";
@@ -75,16 +78,9 @@ const props = withDefaults(
 
 const { findJurisdictionByCode } = useJurisdictionLookup();
 
-const COLD_ID_ALPHA3_PATTERN = /^[A-Z]+-([A-Z]{3})-/;
-
-const primaryJurisdictionCode = computed(() => {
-  const explicit = String(props.resultData.jurisdictionsAlpha3Code || "");
-  if (explicit) return explicit.toUpperCase();
-  const fromColdId = String(
-    props.resultData.coldId || props.resultData.id || "",
-  ).match(COLD_ID_ALPHA3_PATTERN);
-  return fromColdId?.[1] ?? "";
-});
+const primaryJurisdictionCode = computed(() =>
+  primaryJurisdictionAlpha3(props.resultData),
+);
 
 const resolvedJurisdiction = computed(() => {
   if (props.formattedJurisdiction.length > 0) {
