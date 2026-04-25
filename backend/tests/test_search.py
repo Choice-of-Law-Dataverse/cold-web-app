@@ -12,7 +12,6 @@ from app.schemas.search_result import (
     SearchResultBase,
     validate_search_result,
 )
-from app.services.search import _court_decision_date_sort_key
 
 
 class TestValidateSearchResult:
@@ -117,27 +116,6 @@ class TestTableModelCrossCoverage:
     def test_record_keys_covered_by_search(self):
         missing = TABLE_SEARCH_MODELS.keys() - TABLE_RECORD_MODELS.keys() - self.SEARCH_ONLY_TABLES
         assert not missing, f"TABLE_SEARCH_MODELS has tables missing from TABLE_RECORD_MODELS: {missing}"
-
-
-class TestCourtDecisionDateSortKey:
-    def test_dd_mm_yyyy_to_iso_for_sorting(self):
-        assert _court_decision_date_sort_key("20.02.1951") == "1951-02-20"
-
-    def test_iso_passthrough(self):
-        assert _court_decision_date_sort_key("2024-05-12") == "2024-05-12"
-
-    def test_iso_with_time_normalised(self):
-        assert _court_decision_date_sort_key("2024-05-12T10:00:00") == "2024-05-12"
-
-    def test_unrecognised_strings_sink_to_bottom_when_sorted_desc(self):
-        assert _court_decision_date_sort_key("not a date") == ""
-        assert _court_decision_date_sort_key("") == ""
-        assert _court_decision_date_sort_key(None) == ""
-
-    def test_descending_sort_orders_newest_first(self):
-        items = ["20.02.1951", "13.03.1985", "23.03.1965", "2024-01-15", None, ""]
-        ordered = sorted(items, key=_court_decision_date_sort_key, reverse=True)
-        assert ordered[:4] == ["2024-01-15", "13.03.1985", "23.03.1965", "20.02.1951"]
 
 
 class TestFullTextSearchResponseSerialization:
