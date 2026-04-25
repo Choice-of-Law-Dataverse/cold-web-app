@@ -11,10 +11,6 @@
       :show-suggest-edit="true"
     >
       <SpecialistContent v-if="data" :data="data" />
-
-      <template #footer>
-        <LastModified :date="data?.updatedAt" />
-      </template>
     </BaseDetailLayout>
 
     <PageSeoMeta :title-candidates="[data?.specialist]" fallback="Specialist" />
@@ -26,7 +22,6 @@ import { ref } from "vue";
 import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layout/BaseDetailLayout.vue";
 import SpecialistContent from "@/components/entity/content/SpecialistContent.vue";
-import LastModified from "@/components/ui/LastModified.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
 import { useEntityData } from "@/composables/useEntityData";
 

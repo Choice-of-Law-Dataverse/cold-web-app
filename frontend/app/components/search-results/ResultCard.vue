@@ -10,24 +10,25 @@
         class="result-card"
         :ui="{
           body: '!p-0',
-          header: 'border-b-0 px-6 py-5',
+          header: 'border-b-0 !p-0',
         }"
       >
         <template #header>
-          <BaseCardHeader
+          <MetaBand
             v-if="resultData"
             :result-data="resultData"
             :card-type="cardType"
-            :show-open-link="true"
             :formatted-jurisdiction="formattedJurisdiction"
             :formatted-theme="formattedTheme"
-            :show-suggest-edit="false"
+            :show-cite="false"
+            :show-json="false"
+            :show-print="false"
           />
         </template>
 
         <div class="gradient-top-border" />
 
-        <div class="flex px-6 py-5">
+        <div class="flex px-6 py-4">
           <slot />
         </div>
       </UCard>
@@ -49,7 +50,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { UCard } from "#components";
-import BaseCardHeader from "@/components/ui/CardHeader.vue";
+import MetaBand from "@/components/ui/MetaBand.vue";
 import { getBasePathForCard, getEntityConfig } from "@/config/entityRegistry";
 import { useEntityDrawer } from "@/composables/useEntityDrawer";
 import type { AnySearchResult } from "@/types/search";

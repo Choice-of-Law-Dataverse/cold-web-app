@@ -65,7 +65,12 @@ export function useEntityData(
       const { data, error } = await client.POST("/search/details", {
         body: { table, id: toValue(coldId) },
       });
-      if (error) throw error;
+      if (error) {
+        const detail = (error as { detail?: unknown }).detail;
+        throw new Error(
+          typeof detail === "string" ? detail : "Failed to load entity",
+        );
+      }
       return cfg.process(data) as ProcessedEntity;
     },
     enabled: computed(() =>

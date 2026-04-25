@@ -9,12 +9,11 @@
       :error="error"
       :data="data"
       :show-suggest-edit="true"
+      entity-type="international_instrument"
+      :entity-id="coldId"
+      :entity-title="data?.name ?? undefined"
     >
       <InternationalInstrumentContent v-if="data" :data="data" />
-
-      <template #footer>
-        <LastModified :date="data?.updatedAt" />
-      </template>
     </BaseDetailLayout>
 
     <div v-if="hcchAnswers.length" class="mt-8">
@@ -25,12 +24,6 @@
       :title-candidates="[data?.name]"
       fallback="International Instrument"
     />
-
-    <EntityFeedback
-      entity-type="international_instrument"
-      :entity-id="coldId"
-      :entity-title="data?.name ?? undefined"
-    />
   </div>
 </template>
 
@@ -40,9 +33,7 @@ import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layout/BaseDetailLayout.vue";
 import InternationalInstrumentContent from "@/components/entity/content/InternationalInstrumentContent.vue";
 import HcchAnswersList from "@/components/ui/HcchAnswersList.vue";
-import LastModified from "@/components/ui/LastModified.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
-import EntityFeedback from "@/components/ui/EntityFeedback.vue";
 import { useEntityData } from "@/composables/useEntityData";
 
 const route = useRoute();
