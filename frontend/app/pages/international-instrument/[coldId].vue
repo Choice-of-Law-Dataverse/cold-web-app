@@ -54,8 +54,12 @@ const { data, isLoading, error } = useEntityData(
 );
 
 const hcchAnswers = computed(() =>
-  (data.value?.relations.hcchAnswers ?? []).filter(
-    (a) => a.adaptedQuestion || a.position,
-  ),
+  (data.value?.relations.hcchAnswers ?? [])
+    .filter((a) => a.adaptedQuestion || a.position)
+    .sort((a, b) =>
+      (a.coldId ?? "").localeCompare(b.coldId ?? "", undefined, {
+        numeric: true,
+      }),
+    ),
 );
 </script>
