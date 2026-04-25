@@ -49,6 +49,7 @@ export default defineNuxtConfig({
         "mitt",
         "openapi-fetch",
         "date-fns",
+        "@vue-leaflet/vue-leaflet",
       ],
       exclude: ["@opentelemetry/api"],
     },
