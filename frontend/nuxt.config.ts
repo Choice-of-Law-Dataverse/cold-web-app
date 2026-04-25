@@ -122,11 +122,6 @@ export default defineNuxtConfig({
   fonts: {
     families: [
       {
-        name: "DM Serif Display",
-        provider: "google",
-        weights: [400],
-      },
-      {
         name: "DM Sans",
         provider: "google",
         weights: [300, 400, 500, 600, 700],
