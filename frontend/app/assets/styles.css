@@ -88,7 +88,7 @@
   );
 
   /* Nav heights - mobile defaults */
-  --nav-height: 5rem;
+  --nav-height: 3.5rem;
   --nav-height-scrolled: 3.5rem;
   --banner-height: 2.5rem;
 
@@ -194,7 +194,7 @@
 /* Desktop nav heights */
 @media (min-width: 640px) {
   :root {
-    --nav-height: 7rem;
+    --nav-height: 4rem;
     --nav-height-scrolled: 4rem;
   }
 }

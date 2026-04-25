@@ -1,8 +1,8 @@
 <template>
   <nav
     aria-label="Main navigation"
-    class="border-cold-gray sticky top-0 z-50 w-full border-b bg-white px-3 sm:px-6"
-    :class="{ 'bg-purple-active': isExpanded, 'nav-scrolled': isScrolled }"
+    class="border-cold-gray nav-scrolled sticky top-0 z-50 w-full border-b bg-white px-3 sm:px-6"
+    :class="{ 'bg-purple-active': isExpanded }"
   >
     <div class="nav-inner max-w-container mx-auto w-full py-3 sm:py-6 sm:pt-8">
       <div
@@ -11,7 +11,7 @@
         <NavSearchBar
           :search-text="searchText"
           :is-mobile="isMobile"
-          :is-scrolled="isScrolled"
+          :is-scrolled="true"
           :hidden="isMobile && navMenu?.showMenu"
           @update:search-text="searchText = $event"
           @update:is-expanded="isExpanded = $event"
@@ -59,36 +59,7 @@ const route = useRoute();
 const searchText = ref("");
 const isExpanded = ref(false);
 const isMobile = ref(false);
-const isScrolled = ref(false);
 const navMenu = ref<InstanceType<typeof NavMenu> | null>(null);
-
-const SCROLL_THRESHOLD_ON = 48;
-const SCROLL_THRESHOLD_OFF = 16;
-let isScrollTicking = false;
-
-function updateScrollState(): void {
-  const scrollY = window.scrollY;
-
-  if (isScrolled.value) {
-    if (scrollY <= SCROLL_THRESHOLD_OFF) {
-      isScrolled.value = false;
-    }
-  } else if (scrollY >= SCROLL_THRESHOLD_ON) {
-    isScrolled.value = true;
-  }
-}
-
-function handleScroll(): void {
-  if (isScrollTicking) {
-    return;
-  }
-
-  isScrollTicking = true;
-  window.requestAnimationFrame(() => {
-    updateScrollState();
-    isScrollTicking = false;
-  });
-}
 
 function checkScreenSize(): void {
   const width = window.innerWidth;
@@ -109,8 +80,6 @@ watch(
 onMounted(() => {
   checkScreenSize();
   window.addEventListener("resize", checkScreenSize);
-  window.addEventListener("scroll", handleScroll, { passive: true });
-  updateScrollState();
 
   const q = route.query.q;
   if (typeof q === "string") {
@@ -122,7 +91,6 @@ onMounted(() => {
 
 onUnmounted(() => {
   window.removeEventListener("resize", checkScreenSize);
-  window.removeEventListener("scroll", handleScroll);
   eventBus.off("update-search", updateSearchFromEvent);
 });
 </script>
