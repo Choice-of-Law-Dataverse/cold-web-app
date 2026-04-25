@@ -331,10 +331,6 @@
                 >
                   <span class="theme-header__name">{{ item.theme }}</span>
                   <span v-if="item.stats" class="theme-header__stats">
-                    <UIcon
-                      name="i-material-symbols:check-circle-rounded"
-                      class="theme-header__stats-icon"
-                    />
                     {{ item.stats.percentage }}% match
                     <span class="theme-header__stats-detail">
                       ({{ item.stats.matching }} of {{ item.stats.total }})
@@ -443,10 +439,6 @@
               <div v-if="item.type === 'theme-header'" class="theme-header">
                 <span class="theme-header__name">{{ item.theme }}</span>
                 <span v-if="item.stats" class="theme-header__stats">
-                  <UIcon
-                    name="i-material-symbols:check-circle-rounded"
-                    class="theme-header__stats-icon"
-                  />
                   {{ item.stats.percentage }}% match
                   <span class="theme-header__stats-detail">
                     ({{ item.stats.matching }} of {{ item.stats.total }})
@@ -1016,12 +1008,6 @@ const matchStats = computed(() => {
   text-transform: none;
   color: var(--color-cold-night-alpha);
   white-space: nowrap;
-}
-
-.theme-header__stats-icon {
-  width: 0.875rem;
-  height: 0.875rem;
-  color: var(--color-emerald-500, #10b981);
 }
 
 .theme-header__stats-detail {
