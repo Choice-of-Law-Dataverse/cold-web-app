@@ -13,7 +13,6 @@
               />
               <SourceExternalLink
                 :source-url="sourceUrl"
-                :label="sourceLinkLabel"
                 :open-access="!!data.openAccessUrl"
               />
             </template>
@@ -98,10 +97,6 @@ const sourceUrl = computed(() => {
   if (props.data.openAccessUrl) return String(props.data.openAccessUrl);
   return String(props.data.url || "");
 });
-
-const sourceLinkLabel = computed(() =>
-  props.data.openAccessUrl ? "Open Access Link" : "Link",
-);
 
 const bibtexContent = computed(() => generateBibTeX(props.data));
 
