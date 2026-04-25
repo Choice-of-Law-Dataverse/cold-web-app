@@ -8,20 +8,16 @@ This <a href="https://global.oup.com/academic/product/choice-of-law-in-internati
     src="https://choiceoflaw.blob.core.windows.net/assets/external_link.svg"
     alt="external link"
     class="external-link-icon"
-  /></a> is the main output of the previous research project, “Hague Principles and Beyond”. It contains over sixty reports dealing with the regulation of choice of law in a significant number of jurisdictions around the world and a general report. The book has been applauded by the academic community, and it is regarded as a definitive reference guide to the key choice of law principles on international contracts.
-<a href="https://fdslive.oup.com/www.oup.com/academic/pdf/13/9780198840107_chapter1.pdf" target="_blank">Read the General Comparative Report<img
+  /></a> is the main output of the previous research project, <a href="https://data.snf.ch/grants/grant/179515" target="_blank">“The Hague Principles and Beyond”<img
     src="https://choiceoflaw.blob.core.windows.net/assets/external_link.svg"
     alt="external link"
     class="external-link-icon"
-  /></a>.
-
-## ‌Uniform Law Review
-
-Volume 22, Issue 2, June 2017 - special issue on the HCCH Principles (<a href="https://academic.oup.com/ulr/issue/22/2" target="_blank">available through paywall<img
+  /></a>. It contains over sixty reports dealing with the regulation of choice of law in a significant number of jurisdictions around the world and a general report. The book has been applauded by the academic community and it is regarded as a definitive reference guide to the key choice of law principles on international contracts.
+<a href="https://fdslive.oup.com/www.oup.com/academic/pdf/13/9780198840107_chapter1.pdf(https://academic.oup.com/oxford-law-pro/book/57728/chapter/470401437)" target="_blank">Read the General Comparative Report<img
     src="https://choiceoflaw.blob.core.windows.net/assets/external_link.svg"
     alt="external link"
     class="external-link-icon"
-  /></a>)
+  /></a> (Open Access).
 
 ## Hague Conference on Private International Law
 
@@ -32,7 +28,7 @@ Consult the <a href="https://www.hcch.net/en/instruments/conventions/specialised
     class="external-link-icon"
   /></a>, regularly updated.
 
-## Selected List of Freely Available Texts
+## Recommended Open-Access Readings on Choice of Law
 
 - Andreas Schwartze, [‘New Trends in Parties’ Options to Select the Applicable Law? The Hague Principles on Choice of Law In International Contracts in a Comparative Perspective’ (2015)](/literature/L-9) 12 University of St. Thomas Law Journal: Fides et lustitia 87
 
@@ -79,4 +75,4 @@ Consult the <a href="https://www.hcch.net/en/instruments/conventions/specialised
     class="external-link-icon"
   /></a>
 
-[Contact us](/contact) if you want a reference to be included here.
+Help us expand this list. If you've authored or come across an open-access work on choice of law that fits here, please add the new literature entry under [submit new data](/submit) 
