@@ -17,7 +17,11 @@
     </BaseDetailLayout>
 
     <div v-if="hcchAnswers.length" class="mt-8">
-      <HcchAnswersList :answers="hcchAnswers" />
+      <InternationalInstrumentComparisonTable
+        :instrument-name="data?.name ?? ''"
+        :instrument-cold-id="data?.coldId ?? coldId"
+        :hcch-answers="hcchAnswers"
+      />
     </div>
 
     <PageSeoMeta
@@ -32,7 +36,7 @@ import { computed, ref } from "vue";
 import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layout/BaseDetailLayout.vue";
 import InternationalInstrumentContent from "@/components/entity/content/InternationalInstrumentContent.vue";
-import HcchAnswersList from "@/components/ui/HcchAnswersList.vue";
+import InternationalInstrumentComparisonTable from "@/components/international-instrument/InternationalInstrumentComparisonTable.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
 import { useEntityData } from "@/composables/useEntityData";
 
@@ -44,13 +48,5 @@ const { data, isLoading, error } = useEntityData(
   coldId,
 );
 
-const hcchAnswers = computed(() =>
-  (data.value?.relations.hcchAnswers ?? [])
-    .filter((a) => a.adaptedQuestion || a.position)
-    .sort((a, b) =>
-      (a.coldId ?? "").localeCompare(b.coldId ?? "", undefined, {
-        numeric: true,
-      }),
-    ),
-);
+const hcchAnswers = computed(() => data.value?.relations.hcchAnswers ?? []);
 </script>
