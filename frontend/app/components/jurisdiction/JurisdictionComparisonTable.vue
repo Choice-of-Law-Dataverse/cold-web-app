@@ -85,41 +85,55 @@
         />
 
         <div v-else-if="isSingleJurisdiction" class="question-list">
-          <div
-            v-for="row in rows"
-            :id="`question-${row.id}`"
-            :key="row.id"
-            class="question-row flex flex-col gap-2 py-3.5 md:flex-row md:items-center md:gap-4"
-            :style="{ paddingLeft: `calc(1.5rem + ${row.level * 2}em)` }"
-          >
+          <template v-for="item in groupedRows" :key="item.key">
+            <div v-if="item.type === 'theme-header'" class="theme-header">
+              {{ item.theme }}
+            </div>
             <div
-              class="min-w-0 flex-1 text-sm whitespace-pre-line"
-              :class="{ 'font-semibold': isBoldQuestion(row.id) }"
+              v-else
+              :id="`question-${item.row.id}`"
+              class="question-row flex flex-col gap-2 py-3.5 md:flex-row md:items-center md:gap-4"
+              :style="{ paddingLeft: `calc(1.5rem + ${item.row.level * 2}em)` }"
             >
-              <span class="inline-block max-w-[68ch]">{{ row.question }}</span>
-            </div>
-
-            <div class="flex shrink-0 items-center md:w-[200px] md:justify-end">
-              <UTooltip
-                v-if="row.answer"
-                :text="row.answer"
-                :disabled="shouldShowDash(row.answer)"
-                :delay-duration="300"
+              <div
+                class="min-w-0 flex-1 text-sm whitespace-pre-line"
+                :class="{ 'font-semibold': isBoldQuestion(item.row.id) }"
               >
-                <a
-                  :href="row.answerLink"
-                  class="answer-button max-w-full truncate"
-                  @click="
-                    handleAnswerClick($event, jurisdictionCodes[0]!, row.id)
-                  "
+                <span class="inline-block max-w-[68ch]">{{
+                  item.row.question
+                }}</span>
+              </div>
+
+              <div
+                class="flex shrink-0 items-center md:w-[200px] md:justify-end"
+              >
+                <UTooltip
+                  v-if="item.row.answer"
+                  :text="item.row.answer"
+                  :disabled="shouldShowDash(item.row.answer)"
+                  :delay-duration="300"
                 >
-                  <template v-if="shouldShowDash(row.answer)">—</template>
-                  <span v-else class="truncate">{{ row.answer }}</span>
-                </a>
-              </UTooltip>
-              <span v-else class="answer-button text-gray-400">—</span>
+                  <a
+                    :href="item.row.answerLink"
+                    class="answer-button max-w-full truncate"
+                    @click="
+                      handleAnswerClick(
+                        $event,
+                        jurisdictionCodes[0]!,
+                        item.row.id,
+                      )
+                    "
+                  >
+                    <template v-if="shouldShowDash(item.row.answer)">
+                      —
+                    </template>
+                    <span v-else class="truncate">{{ item.row.answer }}</span>
+                  </a>
+                </UTooltip>
+                <span v-else class="answer-button text-gray-400">—</span>
+              </div>
             </div>
-          </div>
+          </template>
         </div>
 
         <div v-else>
@@ -203,132 +217,166 @@
                 </button>
               </div>
 
-              <div v-for="row in rows" :key="row.id" class="comparison-row">
+              <template v-for="item in groupedRows" :key="item.key">
                 <div
-                  :id="`question-${row.id}`"
-                  class="comparison-cell comparison-cell--question text-sm whitespace-pre-line"
-                  :class="[
-                    { 'font-semibold': isBoldQuestion(row.id) },
-                    { 'sticky-col-1': isScrollable },
-                  ]"
-                  :style="{ paddingLeft: `${row.level * 2}em` }"
+                  v-if="item.type === 'theme-header'"
+                  class="comparison-theme-header"
                 >
-                  {{ row.question }}
+                  {{ item.theme }}
                 </div>
-
-                <div
-                  v-for="(jurisdiction, jIndex) in jurisdictions"
-                  :key="jurisdiction.coldId || jurisdiction.name"
-                  class="comparison-cell comparison-cell--answer"
-                  :class="{ 'sticky-col-2': jIndex === 0 && isScrollable }"
-                  :style="
-                    jIndex === 0 && isScrollable ? { left: stickyColLeft } : {}
-                  "
-                >
+                <div v-else class="comparison-row">
                   <div
-                    v-if="
-                      answersLoading &&
-                      !hasAnswersForJurisdiction(jurisdiction.coldId)
-                    "
+                    :id="`question-${item.row.id}`"
+                    class="comparison-cell comparison-cell--question text-sm whitespace-pre-line"
+                    :class="[
+                      { 'font-semibold': isBoldQuestion(item.row.id) },
+                      { 'sticky-col-1': isScrollable },
+                    ]"
+                    :style="{ paddingLeft: `${item.row.level * 2}em` }"
                   >
-                    <USkeleton class="h-4 w-16" />
+                    {{ item.row.question }}
                   </div>
-                  <UTooltip
-                    v-else-if="
-                      jurisdiction.coldId && row.answers?.[jurisdiction.coldId]
+
+                  <div
+                    v-for="(jurisdiction, jIndex) in jurisdictions"
+                    :key="jurisdiction.coldId || jurisdiction.name"
+                    class="comparison-cell comparison-cell--answer"
+                    :class="{ 'sticky-col-2': jIndex === 0 && isScrollable }"
+                    :style="
+                      jIndex === 0 && isScrollable
+                        ? { left: stickyColLeft }
+                        : {}
                     "
-                    :text="row.answers[jurisdiction.coldId]"
-                    :disabled="shouldShowDash(row.answers[jurisdiction.coldId])"
-                    :delay-duration="300"
                   >
-                    <a
-                      :href="getAnswerLink(jurisdiction.coldId, row.id)"
-                      class="answer-button"
-                      @click="
-                        handleAnswerClick($event, jurisdiction.coldId, row.id)
+                    <div
+                      v-if="
+                        answersLoading &&
+                        !hasAnswersForJurisdiction(jurisdiction.coldId)
                       "
                     >
-                      <template
-                        v-if="shouldShowDash(row.answers[jurisdiction.coldId])"
+                      <USkeleton class="h-4 w-16" />
+                    </div>
+                    <UTooltip
+                      v-else-if="
+                        jurisdiction.coldId &&
+                        item.row.answers?.[jurisdiction.coldId]
+                      "
+                      :text="item.row.answers[jurisdiction.coldId]"
+                      :disabled="
+                        shouldShowDash(item.row.answers[jurisdiction.coldId])
+                      "
+                      :delay-duration="300"
+                    >
+                      <a
+                        :href="getAnswerLink(jurisdiction.coldId, item.row.id)"
+                        class="answer-button"
+                        @click="
+                          handleAnswerClick(
+                            $event,
+                            jurisdiction.coldId,
+                            item.row.id,
+                          )
+                        "
                       >
-                        —
-                      </template>
-                      <span v-else class="line-clamp-2">{{
-                        row.answers[jurisdiction.coldId]
-                      }}</span>
-                    </a>
-                  </UTooltip>
-                  <span v-else class="text-gray-400">—</span>
+                        <template
+                          v-if="
+                            shouldShowDash(
+                              item.row.answers[jurisdiction.coldId],
+                            )
+                          "
+                        >
+                          —
+                        </template>
+                        <span v-else class="line-clamp-2">{{
+                          item.row.answers[jurisdiction.coldId]
+                        }}</span>
+                      </a>
+                    </UTooltip>
+                    <span v-else class="text-gray-400">—</span>
+                  </div>
                 </div>
-              </div>
+              </template>
             </div>
           </div>
 
           <div class="question-list block md:hidden">
-            <div
-              v-for="row in rows"
-              :id="`question-${row.id}`"
-              :key="row.id"
-              class="question-row py-3.5"
-              :style="{ paddingLeft: `calc(1.5rem + ${row.level * 2}em)` }"
-            >
-              <div
-                class="mb-3 text-sm whitespace-pre-line"
-                :class="{ 'font-semibold': isBoldQuestion(row.id) }"
-              >
-                {{ row.question }}
+            <template v-for="item in groupedRows" :key="item.key">
+              <div v-if="item.type === 'theme-header'" class="theme-header">
+                {{ item.theme }}
               </div>
-
-              <div class="flex flex-wrap gap-4">
+              <div
+                v-else
+                :id="`question-${item.row.id}`"
+                class="question-row py-3.5"
+                :style="{
+                  paddingLeft: `calc(1.5rem + ${item.row.level * 2}em)`,
+                }"
+              >
                 <div
-                  v-for="jurisdiction in jurisdictions"
-                  :key="jurisdiction.coldId || jurisdiction.name"
-                  class="flex items-center gap-2"
+                  class="mb-3 text-sm whitespace-pre-line"
+                  :class="{ 'font-semibold': isBoldQuestion(item.row.id) }"
                 >
+                  {{ item.row.question }}
+                </div>
+
+                <div class="flex flex-wrap gap-4">
                   <div
-                    v-if="
-                      answersLoading &&
-                      !hasAnswersForJurisdiction(jurisdiction.coldId)
-                    "
+                    v-for="jurisdiction in jurisdictions"
+                    :key="jurisdiction.coldId || jurisdiction.name"
                     class="flex items-center gap-2"
                   >
-                    <img
-                      v-if="jurisdiction.avatar"
-                      :src="jurisdiction.avatar"
-                      :alt="`${jurisdiction.name} flag`"
-                      class="h-2 w-3 object-cover"
-                    />
-                    <USkeleton class="h-4 w-16" />
-                  </div>
-                  <a
-                    v-else-if="
-                      jurisdiction.coldId && row.answers?.[jurisdiction.coldId]
-                    "
-                    :href="getAnswerLink(jurisdiction.coldId, row.id)"
-                    class="answer-button !inline-flex max-w-[10rem] items-center gap-2"
-                    @click="
-                      handleAnswerClick($event, jurisdiction.coldId, row.id)
-                    "
-                  >
-                    <img
-                      v-if="jurisdiction.avatar"
-                      :src="jurisdiction.avatar"
-                      :alt="`${jurisdiction.name} flag`"
-                      class="h-2 w-3 flex-shrink-0 object-cover"
-                    />
-                    <template
-                      v-if="shouldShowDash(row.answers[jurisdiction.coldId])"
+                    <div
+                      v-if="
+                        answersLoading &&
+                        !hasAnswersForJurisdiction(jurisdiction.coldId)
+                      "
+                      class="flex items-center gap-2"
                     >
-                      —
-                    </template>
-                    <span v-else class="min-w-0 truncate">{{
-                      row.answers[jurisdiction.coldId]
-                    }}</span>
-                  </a>
-                  <span v-else class="text-gray-400">—</span>
+                      <img
+                        v-if="jurisdiction.avatar"
+                        :src="jurisdiction.avatar"
+                        :alt="`${jurisdiction.name} flag`"
+                        class="h-2 w-3 object-cover"
+                      />
+                      <USkeleton class="h-4 w-16" />
+                    </div>
+                    <a
+                      v-else-if="
+                        jurisdiction.coldId &&
+                        item.row.answers?.[jurisdiction.coldId]
+                      "
+                      :href="getAnswerLink(jurisdiction.coldId, item.row.id)"
+                      class="answer-button !inline-flex max-w-[10rem] items-center gap-2"
+                      @click="
+                        handleAnswerClick(
+                          $event,
+                          jurisdiction.coldId,
+                          item.row.id,
+                        )
+                      "
+                    >
+                      <img
+                        v-if="jurisdiction.avatar"
+                        :src="jurisdiction.avatar"
+                        :alt="`${jurisdiction.name} flag`"
+                        class="h-2 w-3 flex-shrink-0 object-cover"
+                      />
+                      <template
+                        v-if="
+                          shouldShowDash(item.row.answers[jurisdiction.coldId])
+                        "
+                      >
+                        —
+                      </template>
+                      <span v-else class="min-w-0 truncate">{{
+                        item.row.answers[jurisdiction.coldId]
+                      }}</span>
+                    </a>
+                    <span v-else class="text-gray-400">—</span>
+                  </div>
                 </div>
               </div>
-            </div>
+            </template>
           </div>
         </div>
       </div>
@@ -549,7 +597,54 @@ const hasAnswersForJurisdiction = (coldId?: string) => {
   return loadedJurisdictions.value.has(upperCode);
 };
 
-const rows = computed(() => {
+type SingleJurisdictionRow = {
+  id: string;
+  question: string | null | undefined;
+  answer: string;
+  answerLink: string;
+  level: number;
+  theme: string;
+};
+
+type MultiJurisdictionRow = {
+  id: string;
+  question: string | null | undefined;
+  answers: Record<string, string>;
+  level: number;
+  theme: string;
+};
+
+type Row = SingleJurisdictionRow | MultiJurisdictionRow;
+
+type GroupedRow =
+  | { type: "theme-header"; theme: string; key: string }
+  | {
+      type: "question";
+      row: SingleJurisdictionRow & MultiJurisdictionRow;
+      key: string;
+    };
+
+const THEME_NAME_BY_CODE: Record<string, string> = {
+  P: "Codification",
+  PA: "Party Autonomy",
+  FoC: "Freedom of Choice",
+  TC: "Tacit Choice",
+  AoC: "Absence of Choice",
+  MR: "Overriding Mandatory Rules",
+  PP: "Public Policy",
+  Arb: "Arbitration",
+};
+
+const THEME_ORDER_BY_NAME = new Map(
+  Object.values(THEME_NAME_BY_CODE).map((name, idx) => [name, idx]),
+);
+
+function themeCodeFromId(id: string): string | null {
+  const match = id.match(/-([A-Za-z]+)$/);
+  return match?.[1] ?? null;
+}
+
+const rows = computed<Row[]>(() => {
   if (!questionsData.value || !Array.isArray(questionsData.value)) {
     return [];
   }
@@ -560,26 +655,29 @@ const rows = computed(() => {
     return aId.localeCompare(bId);
   });
 
-  return sorted.map((item) => {
+  return sorted.flatMap<Row>((item) => {
     const id = String(item.id ?? "");
-    const level = typeof id === "string" ? id.match(/\./g)?.length || 0 : 0;
+    const code = themeCodeFromId(id);
+    const themeName = code ? THEME_NAME_BY_CODE[code] : undefined;
+    if (!code || !themeName) return [];
+    const level = id.match(/\./g)?.length || 0;
 
-    // Backward compatible format for single jurisdiction
     if (isSingleJurisdiction.value) {
       const iso3 = jurisdictionCodes.value[0]?.toUpperCase();
       const answerText = iso3 ? answersMap.value?.get(iso3)?.get(id) || "" : "";
       const answerDisplay = processAnswerText(answerText);
 
-      return {
+      const row: SingleJurisdictionRow = {
         id,
         question: item.question,
         answer: answerDisplay,
         answerLink: `/question/${iso3}_${id}`,
         level,
+        theme: themeName,
       };
+      return [row];
     }
 
-    // Answers map for multiple jurisdictions
     const answers: Record<string, string> = {};
     for (const jurisdiction of jurisdictions.value) {
       const iso3 = jurisdiction.coldId?.toUpperCase();
@@ -589,13 +687,43 @@ const rows = computed(() => {
       }
     }
 
-    return {
+    const row: MultiJurisdictionRow = {
       id,
       question: item.question,
       answers,
       level,
+      theme: themeName,
     };
+    return [row];
   });
+});
+
+const groupedRows = computed<GroupedRow[]>(() => {
+  const groups = new Map<string, Row[]>();
+  for (const row of rows.value) {
+    const bucket = groups.get(row.theme) ?? [];
+    bucket.push(row);
+    groups.set(row.theme, bucket);
+  }
+
+  const ordered = [...groups.entries()].sort(([a], [b]) => {
+    const ai = THEME_ORDER_BY_NAME.get(a) ?? Number.MAX_SAFE_INTEGER;
+    const bi = THEME_ORDER_BY_NAME.get(b) ?? Number.MAX_SAFE_INTEGER;
+    return ai - bi;
+  });
+
+  const out: GroupedRow[] = [];
+  for (const [theme, themeRows] of ordered) {
+    out.push({ type: "theme-header", theme, key: `theme:${theme}` });
+    for (const row of themeRows) {
+      out.push({
+        type: "question",
+        row: row as SingleJurisdictionRow & MultiJurisdictionRow,
+        key: `q:${row.id}`,
+      });
+    }
+  }
+  return out;
 });
 </script>
 
@@ -624,6 +752,34 @@ const rows = computed(() => {
 
 .question-row:hover {
   background: var(--gradient-subtle-hover);
+}
+
+.theme-header {
+  padding: 1.25rem 1.5rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-cold-night-alpha);
+}
+
+.theme-header:first-child {
+  padding-top: 0.25rem;
+}
+
+.comparison-theme-header {
+  grid-column: 1 / -1;
+  padding: 1.25rem 0.5rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-cold-night-alpha);
+  border-bottom: 1px solid var(--color-gray-100, #f3f4f6);
+}
+
+.comparison-theme-header:first-of-type {
+  padding-top: 0.25rem;
 }
 
 .comparison-grid {
@@ -730,6 +886,6 @@ const rows = computed(() => {
 .answer-button:hover {
   @apply shadow;
   background: var(--gradient-subtle-emphasis);
-  color: var(--color-cold-purple);
+  color: var(--color-cold-night-alpha);
 }
 </style>
