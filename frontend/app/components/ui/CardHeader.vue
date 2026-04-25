@@ -44,6 +44,7 @@
 import { computed } from "vue";
 import { parseJurisdictionString } from "@/utils/jurisdictionParser";
 import { getSingularLabel, getLabelColorClass } from "@/config/entityRegistry";
+import { useJurisdictionLookup } from "@/composables/useJurisdictions";
 import CardTags from "@/components/ui/CardTags.vue";
 import CardActions from "@/components/ui/CardActions.vue";
 
@@ -72,6 +73,19 @@ const props = withDefaults(
   },
 );
 
+const { findJurisdictionByCode } = useJurisdictionLookup();
+
+const COLD_ID_ALPHA3_PATTERN = /^[A-Z]+-([A-Z]{3})-/;
+
+const primaryJurisdictionCode = computed(() => {
+  const explicit = String(props.resultData.jurisdictionsAlpha3Code || "");
+  if (explicit) return explicit.toUpperCase();
+  const fromColdId = String(
+    props.resultData.coldId || props.resultData.id || "",
+  ).match(COLD_ID_ALPHA3_PATTERN);
+  return fromColdId?.[1] ?? "";
+});
+
 const resolvedJurisdiction = computed(() => {
   if (props.formattedJurisdiction.length > 0) {
     return props.formattedJurisdiction;
@@ -91,8 +105,14 @@ const resolvedJurisdiction = computed(() => {
   }
 
   const parsed = parseJurisdictionString(jurisdictionString);
-  if (parsed.length > 1) return [];
-  return parsed;
+  if (parsed.length <= 1) return parsed;
+
+  const primary = findJurisdictionByCode(primaryJurisdictionCode.value);
+  if (!primary?.name) return [];
+  const match = parsed.find(
+    (name) => name.toLowerCase() === primary.name.toLowerCase(),
+  );
+  return match ? [match] : [];
 });
 
 const formattedSourceTable = computed(() => {
