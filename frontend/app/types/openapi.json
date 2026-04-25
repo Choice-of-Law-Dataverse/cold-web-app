@@ -5650,19 +5650,6 @@
                 "type": "null"
               }
             ]
-          },
-          "rankingDisplayOrder": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ]
           }
         },
         "type": "object",
