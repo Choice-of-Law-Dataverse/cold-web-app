@@ -15,10 +15,6 @@
         base-path="/arbitral-institution"
         :data="data"
       />
-
-      <template #footer>
-        <LastModified :date="data?.updatedAt" />
-      </template>
     </BaseDetailLayout>
 
     <PageSeoMeta
@@ -34,7 +30,6 @@ import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layout/BaseDetailLayout.vue";
 import EntityContent from "@/components/entity/EntityContent.vue";
 import { useEntityData } from "@/composables/useEntityData";
-import LastModified from "@/components/ui/LastModified.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
 
 const route = useRoute();

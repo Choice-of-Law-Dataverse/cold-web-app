@@ -12,52 +12,58 @@
   >
     <template #content>
       <div class="flex h-full flex-col overflow-hidden">
-        <div
-          class="flex items-center justify-between rounded-tl-xl px-4 pt-2 pb-1"
-          style="background: var(--gradient-subtle)"
-        >
-          <UButton
-            v-if="canGoBack"
-            icon="i-lucide-arrow-left"
-            variant="ghost"
-            color="neutral"
-            size="md"
-            @click="goBack"
-          />
-          <div v-else />
-          <div class="flex items-center gap-1">
+        <header class="drawer-header rounded-tl-xl">
+          <div class="drawer-header__top">
             <UButton
-              v-if="hasDetailPage"
-              :to="fullPagePath"
-              leading-icon="i-lucide-maximize"
-              trailing-icon="i-material-symbols:arrow-forward"
-              color="primary"
-              variant="ghost"
-              size="xs"
-              @click="closeDrawer"
-            >
-              Full page
-            </UButton>
-            <UButton
-              icon="i-lucide-x"
+              v-if="canGoBack"
+              icon="i-lucide-arrow-left"
               variant="ghost"
               color="neutral"
               size="md"
-              @click="closeDrawer"
+              class="drawer-header__icon-btn"
+              @click="goBack"
             />
+            <span v-else class="drawer-header__spacer" aria-hidden="true" />
+            <div class="drawer-header__actions">
+              <UButton
+                v-if="hasDetailPage"
+                :to="fullPagePath"
+                leading-icon="i-lucide-maximize"
+                trailing-icon="i-lucide-arrow-up-right"
+                color="primary"
+                variant="ghost"
+                size="xs"
+                class="drawer-header__fullpage"
+                @click="closeDrawer"
+              >
+                Full page
+              </UButton>
+              <UButton
+                icon="i-lucide-x"
+                variant="ghost"
+                color="neutral"
+                size="md"
+                aria-label="Close"
+                class="drawer-header__icon-btn"
+                @click="closeDrawer"
+              />
+            </div>
           </div>
-        </div>
-        <div class="px-6 pt-3 pb-3">
-          <CardTags
+
+          <MetaBand
+            v-if="entityData"
+            :result-data="entityData"
+            :card-type="headerSourceTable"
             :formatted-jurisdiction="headerJurisdictions"
             :legal-family="headerLegalFamily"
-            :source-table-label="headerSourceTable"
-            :label-color-class="headerLabelColor"
-            :formatted-theme="[]"
+            :show-cite="false"
+            :show-json="false"
+            :show-print="false"
+            compact
           />
-        </div>
+        </header>
 
-        <div class="gradient-top-border" />
+        <div class="drawer-header__rule" />
 
         <div class="flex-1 overflow-x-hidden overflow-y-auto">
           <div v-if="isLoading" class="p-6">
@@ -106,12 +112,12 @@ import SpecialistContent from "@/components/entity/content/SpecialistContent.vue
 import RegionalInstrumentContent from "@/components/entity/content/RegionalInstrumentContent.vue";
 import InternationalInstrumentContent from "@/components/entity/content/InternationalInstrumentContent.vue";
 import QuestionContent from "@/components/entity/content/QuestionContent.vue";
+import JurisdictionContent from "@/components/entity/content/JurisdictionContent.vue";
 import LoadingBar from "@/components/layout/LoadingBar.vue";
 import InlineError from "@/components/ui/InlineError.vue";
 import JurisdictionDrawerQA from "@/components/jurisdiction/JurisdictionDrawerQA.vue";
 import DrawerAnswerMap from "@/components/jurisdiction/DrawerAnswerMap.vue";
-import CardTags from "@/components/ui/CardTags.vue";
-import { getLabelColorClassByVariant } from "@/config/entityRegistry";
+import MetaBand from "@/components/ui/MetaBand.vue";
 import { primaryJurisdictionAlpha3 } from "@/utils/jurisdictionParser";
 
 const contentComponents: Record<string, Component> = {
@@ -122,6 +128,7 @@ const contentComponents: Record<string, Component> = {
   RegionalInstrumentContent,
   InternationalInstrumentContent,
   QuestionContent,
+  JurisdictionContent,
 };
 
 const route = useRoute();
@@ -186,10 +193,6 @@ const headerJurisdictions = computed<string[]>(() => {
 
 const headerSourceTable = computed(() => config.value?.singularLabel ?? "");
 
-const headerLabelColor = computed(() =>
-  getLabelColorClassByVariant(config.value?.variant ?? ""),
-);
-
 const headerLegalFamily = computed<string[]>(() => {
   const data = entityData.value;
   if (!data || !("legalFamily" in data)) return [];
@@ -222,8 +225,81 @@ const questionSuffix = computed(() => {
 </script>
 
 <style scoped>
-:deep(.tags-container) {
-  white-space: normal;
-  gap: 0.375rem 0;
+.drawer-header {
+  position: relative;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--color-cold-purple) 5%, white) 0%,
+    color-mix(in srgb, var(--color-cold-purple) 2%, white) 60%,
+    color-mix(in srgb, var(--color-cold-green) 1.5%, white) 100%
+  );
+}
+
+.drawer-header__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.375rem 0.625rem 0.375rem 0.625rem;
+  min-height: 2.25rem;
+}
+
+.drawer-header__spacer {
+  display: block;
+  width: 1px;
+  height: 1px;
+}
+
+.drawer-header__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.125rem;
+}
+
+:deep(.drawer-header__icon-btn) {
+  color: color-mix(in srgb, var(--color-cold-night) 55%, transparent);
+  transition:
+    color 0.15s ease,
+    background 0.15s ease;
+}
+
+:deep(.drawer-header__icon-btn:hover) {
+  color: var(--color-cold-night);
+  background: color-mix(in srgb, var(--color-cold-night) 6%, transparent);
+}
+
+:deep(.drawer-header__fullpage) {
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  padding-inline: 0.5rem;
+  background: transparent;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+:deep(.drawer-header__fullpage:hover) {
+  background: color-mix(in srgb, var(--color-cold-purple) 8%, transparent);
+}
+
+:deep(.drawer-header__fullpage [class*="trailing"]) {
+  font-size: 0.85em;
+  margin-left: 0.0625rem;
+  transition: transform 0.18s ease;
+}
+
+:deep(.drawer-header__fullpage:hover [class*="trailing"]) {
+  transform: translate(1px, -1px);
+}
+
+.drawer-header__rule {
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    color-mix(in srgb, var(--color-cold-purple) 35%, transparent) 18%,
+    color-mix(in srgb, var(--color-cold-green) 30%, transparent) 82%,
+    transparent 100%
+  );
+  flex-shrink: 0;
 }
 </style>

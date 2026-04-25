@@ -1,7 +1,7 @@
 import type { components } from "@/types/api-schema";
 import type { AnswerDetailResponse } from "@/types/entities/answer";
 
-export type QuestionResponse = components["schemas"]["AnswerRecord"];
+export type QuestionResponse = components["schemas"]["QuestionRecord"];
 export type QuestionDetailResponse = components["schemas"]["QuestionDetail"];
 
 export type Question = AnswerDetailResponse & {

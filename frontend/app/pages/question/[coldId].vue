@@ -9,16 +9,11 @@
       :error="error"
       :data="data"
       :show-suggest-edit="true"
+      entity-type="question"
+      :entity-id="coldId"
+      :entity-title="data?.question ?? undefined"
     >
       <QuestionContent v-if="data" :data="data" />
-
-      <template #footer>
-        <JurisdictionReportBanner
-          :jurisdiction-code="soleJurisdiction?.coldId ?? undefined"
-          :jurisdiction-name="soleJurisdiction?.name ?? undefined"
-        />
-        <LastModified :date="data?.updatedAt" />
-      </template>
     </BaseDetailLayout>
     <div class="mt-8">
       <QuestionAnswerMap
@@ -31,12 +26,6 @@
       :title-candidates="[soleJurisdiction?.name, data?.question]"
       fallback="Question"
     />
-
-    <EntityFeedback
-      entity-type="question"
-      :entity-id="coldId"
-      :entity-title="data?.question ?? undefined"
-    />
   </div>
 </template>
 
@@ -45,11 +34,8 @@ import { computed, ref } from "vue";
 import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layout/BaseDetailLayout.vue";
 import QuestionContent from "@/components/entity/content/QuestionContent.vue";
-import JurisdictionReportBanner from "@/components/jurisdiction/JurisdictionReportBanner.vue";
 import QuestionAnswerMap from "@/components/jurisdiction/QuestionAnswerMap.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
-import EntityFeedback from "@/components/ui/EntityFeedback.vue";
-import LastModified from "@/components/ui/LastModified.vue";
 import { useEntityData } from "@/composables/useEntityData";
 
 const route = useRoute();

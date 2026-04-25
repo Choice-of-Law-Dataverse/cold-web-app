@@ -11,23 +11,16 @@
       :formatted-jurisdiction="jurisdictionNames"
       :formatted-theme="themeNames"
       :show-suggest-edit="true"
+      entity-type="arbitral_award"
+      :entity-id="coldId"
+      :entity-title="caseNumberTitle ?? undefined"
     >
       <EntityContent v-if="data" base-path="/arbitral-award" :data="data" />
-
-      <template #footer>
-        <LastModified :date="data?.updatedAt" />
-      </template>
     </BaseDetailLayout>
 
     <PageSeoMeta
       :title-candidates="[caseNumberTitle]"
       fallback="Arbitral Award"
-    />
-
-    <EntityFeedback
-      entity-type="arbitral_award"
-      :entity-id="coldId"
-      :entity-title="caseNumberTitle ?? undefined"
     />
   </div>
 </template>
@@ -38,9 +31,7 @@ import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layout/BaseDetailLayout.vue";
 import EntityContent from "@/components/entity/EntityContent.vue";
 import { useEntityData } from "@/composables/useEntityData";
-import LastModified from "@/components/ui/LastModified.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
-import EntityFeedback from "@/components/ui/EntityFeedback.vue";
 
 const route = useRoute();
 

@@ -2695,6 +2695,30 @@ export interface components {
       bio?: string | null;
       website?: string | null;
     };
+    /** SpecialistRecord */
+    SpecialistRecord: {
+      sourceTable?: string | null;
+      id?: string | number | null;
+      coldId?: string | null;
+      rank?: number | null;
+      specialist?: string | null;
+      affiliation?: string | null;
+      contact?: string | null;
+      bio?: string | null;
+      website?: string | null;
+      recordId?: string | null;
+      ncOrder?: string | null;
+      ncRecordId?: string | null;
+      ncRecordHash?: string | null;
+      created?: string | null;
+      createdAt?: string | null;
+      updatedAt?: string | null;
+      createdBy?: string | null;
+      updatedBy?: string | null;
+      jurisdictions?: string | null;
+      jurisdictionsAlpha3Code?: string | null;
+      jurisdictionsLink?: string | null;
+    };
     /** SpecialistRelation */
     SpecialistRelation: {
       id: number;
@@ -3029,6 +3053,7 @@ export interface operations {
             | components["schemas"]["RegionalLegalProvisionRecord"]
             | components["schemas"]["JurisdictionRecord"]
             | components["schemas"]["QuestionRecord"]
+            | components["schemas"]["SpecialistRecord"]
             | components["schemas"]["RecordBase"]
           )[];
         };

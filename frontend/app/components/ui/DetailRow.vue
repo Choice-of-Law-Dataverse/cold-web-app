@@ -1,6 +1,6 @@
 <template>
   <div class="detail-row @container" :class="variant ? `type-${variant}` : ''">
-    <div class="flex flex-col gap-3 @md:flex-row @md:items-start @md:gap-10">
+    <div class="flex flex-col gap-2 @md:flex-row @md:items-start @md:gap-10">
       <div class="label-key @md:w-48 @md:shrink-0">
         <span class="flex items-center gap-1.5">
           <span class="mono-font">
@@ -51,13 +51,13 @@ defineProps({
 <style scoped>
 .detail-row {
   position: relative;
-  padding: 1rem 1rem;
+  padding: 0.75rem 1rem;
   margin: 0 -1rem;
   border-radius: 2px;
   transition: background 0.15s ease;
 
   @media (min-width: 640px) {
-    padding: 1rem 1.5rem;
+    padding: 0.75rem 1.5rem;
     margin: 0 -1.5rem;
   }
 }
