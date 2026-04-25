@@ -68,6 +68,23 @@
               />
             </div>
           </div>
+
+          <div v-if="matchStats" class="comparison-match-stats">
+            <UIcon
+              name="i-material-symbols:check-circle-rounded"
+              class="comparison-match-stats__icon"
+            />
+            <span class="comparison-match-stats__value">
+              {{ matchStats.percentage }}%
+            </span>
+            <span class="comparison-match-stats__label">
+              matching answers
+              <span class="comparison-match-stats__detail">
+                ({{ matchStats.matching }} of {{ matchStats.total }}
+                {{ matchStats.total === 1 ? "question" : "questions" }})
+              </span>
+            </span>
+          </div>
         </div>
 
         <div
@@ -216,6 +233,11 @@
                   />
                 </button>
               </div>
+              <div
+                class="comparison-header-cell comparison-header-cell--match sticky top-0 bg-white py-3"
+                :class="isScrollable ? 'sticky-col-match' : ''"
+                aria-hidden="true"
+              />
 
               <template v-for="item in groupedRows" :key="item.key">
                 <div
@@ -294,6 +316,28 @@
                     </UTooltip>
                     <span v-else class="text-gray-400">—</span>
                   </div>
+
+                  <div
+                    class="comparison-cell comparison-cell--match"
+                    :class="isScrollable ? 'sticky-col-match' : ''"
+                  >
+                    <USkeleton
+                      v-if="!allJurisdictionsHaveAnswersLoaded"
+                      class="h-4 w-4 rounded-full"
+                    />
+                    <UIcon
+                      v-else-if="item.row.matchStatus === 'match'"
+                      name="i-material-symbols:check-circle-rounded"
+                      class="match-indicator match-indicator--match"
+                      :title="`All ${jurisdictions.length} jurisdictions agree`"
+                    />
+                    <UIcon
+                      v-else-if="item.row.matchStatus === 'mismatch'"
+                      name="i-material-symbols:remove-rounded"
+                      class="match-indicator match-indicator--mismatch"
+                      title="Answers differ"
+                    />
+                  </div>
                 </div>
               </template>
             </div>
@@ -313,10 +357,31 @@
                 }"
               >
                 <div
-                  class="mb-3 text-sm whitespace-pre-line"
+                  class="mb-3 flex items-start gap-2 text-sm whitespace-pre-line"
                   :class="{ 'font-semibold': isBoldQuestion(item.row.id) }"
                 >
-                  {{ item.row.question }}
+                  <span class="min-w-0 flex-1">{{ item.row.question }}</span>
+                  <UIcon
+                    v-if="
+                      allJurisdictionsHaveAnswersLoaded &&
+                      item.row.matchStatus === 'match'
+                    "
+                    name="i-material-symbols:check-circle-rounded"
+                    class="match-indicator match-indicator--match mt-0.5 shrink-0"
+                  />
+                  <UIcon
+                    v-else-if="
+                      allJurisdictionsHaveAnswersLoaded &&
+                      item.row.matchStatus === 'mismatch'
+                    "
+                    name="i-material-symbols:remove-rounded"
+                    class="match-indicator match-indicator--mismatch mt-0.5 shrink-0"
+                  />
+                  <span
+                    v-else
+                    class="match-indicator match-indicator--spacer shrink-0"
+                    aria-hidden="true"
+                  />
                 </div>
 
                 <div class="flex flex-wrap gap-4">
@@ -554,6 +619,8 @@ const useShortLabels = computed(() => jurisdictions.value.length >= 4);
 
 const isScrollable = computed(() => jurisdictions.value.length >= 5);
 
+const MATCH_COL_WIDTH = 44;
+
 const gridTemplateColumns = computed(() => {
   const count = jurisdictions.value.length;
   let questionCol: string;
@@ -569,7 +636,7 @@ const gridTemplateColumns = computed(() => {
     answerCol = "minmax(0, 1fr)";
   }
   const answerCols = Array(count).fill(answerCol).join(" ");
-  return `${questionCol} ${answerCols}`;
+  return `${questionCol} ${answerCols} ${MATCH_COL_WIDTH}px`;
 });
 
 const stickyColLeft = computed(() => {
@@ -597,32 +664,36 @@ const hasAnswersForJurisdiction = (coldId?: string) => {
   return loadedJurisdictions.value.has(upperCode);
 };
 
-type SingleJurisdictionRow = {
+const allJurisdictionsHaveAnswersLoaded = computed(() =>
+  jurisdictionCodes.value.every((code) => hasAnswersForJurisdiction(code)),
+);
+
+type MatchStatus = "match" | "mismatch" | "na";
+
+const normalizeAnswerForMatch = (value: string) =>
+  !value || DASH_ANSWERS.has(value) ? "—" : value;
+
+const getMatchStatus = (answers: Record<string, string>): MatchStatus => {
+  const values = Object.values(answers);
+  if (values.length < 2) return "na";
+  const normalized = values.map(normalizeAnswerForMatch);
+  return new Set(normalized).size === 1 ? "match" : "mismatch";
+};
+
+type Row = {
   id: string;
   question: string | null | undefined;
-  answer: string;
-  answerLink: string;
+  answer?: string;
+  answerLink?: string;
+  answers?: Record<string, string>;
+  matchStatus: MatchStatus;
   level: number;
   theme: string;
 };
-
-type MultiJurisdictionRow = {
-  id: string;
-  question: string | null | undefined;
-  answers: Record<string, string>;
-  level: number;
-  theme: string;
-};
-
-type Row = SingleJurisdictionRow | MultiJurisdictionRow;
 
 type GroupedRow =
   | { type: "theme-header"; theme: string; key: string }
-  | {
-      type: "question";
-      row: SingleJurisdictionRow & MultiJurisdictionRow;
-      key: string;
-    };
+  | { type: "question"; row: Row; key: string };
 
 const THEME_NAME_BY_CODE: Record<string, string> = {
   P: "Codification",
@@ -667,11 +738,12 @@ const rows = computed<Row[]>(() => {
       const answerText = iso3 ? answersMap.value?.get(iso3)?.get(id) || "" : "";
       const answerDisplay = processAnswerText(answerText);
 
-      const row: SingleJurisdictionRow = {
+      const row: Row = {
         id,
         question: item.question,
         answer: answerDisplay,
         answerLink: `/question/${iso3}_${id}`,
+        matchStatus: "na",
         level,
         theme: themeName,
       };
@@ -687,10 +759,11 @@ const rows = computed<Row[]>(() => {
       }
     }
 
-    const row: MultiJurisdictionRow = {
+    const row: Row = {
       id,
       question: item.question,
       answers,
+      matchStatus: getMatchStatus(answers),
       level,
       theme: themeName,
     };
@@ -716,14 +789,28 @@ const groupedRows = computed<GroupedRow[]>(() => {
   for (const [theme, themeRows] of ordered) {
     out.push({ type: "theme-header", theme, key: `theme:${theme}` });
     for (const row of themeRows) {
-      out.push({
-        type: "question",
-        row: row as SingleJurisdictionRow & MultiJurisdictionRow,
-        key: `q:${row.id}`,
-      });
+      out.push({ type: "question", row, key: `q:${row.id}` });
     }
   }
   return out;
+});
+
+const matchStats = computed(() => {
+  if (isSingleJurisdiction.value) return null;
+  if (!allJurisdictionsHaveAnswersLoaded.value) return null;
+  let total = 0;
+  let matching = 0;
+  for (const row of rows.value) {
+    if (row.matchStatus === "na") continue;
+    total++;
+    if (row.matchStatus === "match") matching++;
+  }
+  if (total === 0) return null;
+  return {
+    total,
+    matching,
+    percentage: Math.round((matching / total) * 100),
+  };
 });
 </script>
 
@@ -887,5 +974,77 @@ const groupedRows = computed<GroupedRow[]>(() => {
   @apply shadow;
   background: var(--gradient-subtle-emphasis);
   color: var(--color-cold-night-alpha);
+}
+
+.comparison-header-cell--match {
+  padding-inline: 0;
+}
+
+.comparison-cell--match {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 0;
+}
+
+.match-indicator {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+.match-indicator--match {
+  color: var(--color-emerald-500, #10b981);
+}
+
+.match-indicator--mismatch {
+  color: var(--color-amber-500, #f59e0b);
+}
+
+.match-indicator--spacer {
+  display: inline-block;
+}
+
+.sticky-col-match {
+  position: sticky;
+  right: 0;
+  z-index: 35;
+  background: white;
+}
+
+.comparison-row:hover .sticky-col-match {
+  background: inherit;
+}
+
+.comparison-match-stats {
+  margin-top: 0.875rem;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  padding: 0.5rem 0.875rem;
+  border-radius: 6px;
+  background: var(--gradient-subtle);
+}
+
+.comparison-match-stats__icon {
+  position: relative;
+  top: 2px;
+  width: 1rem;
+  height: 1rem;
+  color: var(--color-emerald-500, #10b981);
+}
+
+.comparison-match-stats__value {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-cold-night);
+}
+
+.comparison-match-stats__label {
+  font-size: 0.8125rem;
+  color: var(--color-cold-night-alpha);
+}
+
+.comparison-match-stats__detail {
+  font-size: 0.75rem;
 }
 </style>
