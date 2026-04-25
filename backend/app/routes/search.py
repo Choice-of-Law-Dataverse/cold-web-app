@@ -165,15 +165,31 @@ def return_full_table(
     table = body.table
     filters = body.filters or []
     response_type = getattr(body, "response_type", "parsed")
+    order_by = body.order_by
+    order_dir = body.order_dir
+    limit = body.limit
 
     if not table:
         raise HTTPException(status_code=400, detail="No table provided")
 
     try:
         if filters:
-            results = search_service.filtered_table(table, filters, response_type=response_type)
+            results = search_service.filtered_table(
+                table,
+                filters,
+                response_type=response_type,
+                order_by=order_by,
+                order_dir=order_dir,
+                limit=limit,
+            )
         else:
-            results = search_service.full_table(table, response_type=response_type)
+            results = search_service.full_table(
+                table,
+                response_type=response_type,
+                order_by=order_by,
+                order_dir=order_dir,
+                limit=limit,
+            )
     except Exception as e:
         logger.exception("Failed to query table=%s filters=%d", table, len(filters))
         raise HTTPException(status_code=500, detail="Failed to query table") from e

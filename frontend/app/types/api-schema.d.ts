@@ -1659,6 +1659,9 @@ export interface components {
      *           "value": "Switzerland"
      *         }
      *       ],
+     *       "limit": 10,
+     *       "order_by": "date",
+     *       "order_dir": "desc",
      *       "response_type": "parsed",
      *       "table": "Answers"
      *     }
@@ -1671,6 +1674,15 @@ export interface components {
        * @default parsed
        */
       response_type: "parsed" | null;
+      /** @description Maximum number of rows to return. Omit for no limit. */
+      limit?: number | null;
+      /** @description Column name to sort by (camelCase or snake_case). Unknown columns are ignored. */
+      order_by?: string | null;
+      /**
+       * @description Sort direction when order_by is provided.
+       * @default desc
+       */
+      order_dir: ("asc" | "desc") | null;
     };
     /**
      * FullTextSearchRequest

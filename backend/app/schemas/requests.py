@@ -74,6 +74,20 @@ class FullTableRequest(BaseModel):
         "parsed",
         description="Response data format. Only 'parsed' is supported.",
     )
+    limit: int | None = Field(
+        None,
+        ge=1,
+        le=10000,
+        description="Maximum number of rows to return. Omit for no limit.",
+    )
+    order_by: str | None = Field(
+        None,
+        description="Column name to sort by (camelCase or snake_case). Unknown columns are ignored.",
+    )
+    order_dir: Literal["asc", "desc"] | None = Field(
+        "desc",
+        description="Sort direction when order_by is provided.",
+    )
     model_config = {
         "json_schema_extra": {
             "examples": [
@@ -81,6 +95,9 @@ class FullTableRequest(BaseModel):
                     "table": "Answers",
                     "filters": [{"column": "Jurisdictions", "value": "Switzerland"}],
                     "response_type": "parsed",
+                    "limit": 10,
+                    "order_by": "date",
+                    "order_dir": "desc",
                 },
             ]
         }

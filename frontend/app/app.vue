@@ -25,6 +25,11 @@ useHead({
   },
   link: [
     {
+      rel: "preconnect",
+      href: "https://choiceoflaw.blob.core.windows.net",
+      crossorigin: "",
+    },
+    {
       rel: "icon",
       type: "image/png",
       href: "/favicon-96x96.png",

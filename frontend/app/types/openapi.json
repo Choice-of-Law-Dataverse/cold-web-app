@@ -8142,6 +8142,43 @@
             ],
             "description": "Response data format. Only 'parsed' is supported.",
             "default": "parsed"
+          },
+          "limit": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 10000.0,
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Maximum number of rows to return. Omit for no limit."
+          },
+          "order_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Column name to sort by (camelCase or snake_case). Unknown columns are ignored."
+          },
+          "order_dir": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": ["asc", "desc"]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Sort direction when order_by is provided.",
+            "default": "desc"
           }
         },
         "type": "object",
@@ -8155,6 +8192,9 @@
                 "value": "Switzerland"
               }
             ],
+            "limit": 10,
+            "order_by": "date",
+            "order_dir": "desc",
             "response_type": "parsed",
             "table": "Answers"
           }
