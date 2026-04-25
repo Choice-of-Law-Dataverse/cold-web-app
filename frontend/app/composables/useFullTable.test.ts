@@ -31,7 +31,7 @@ describe("useFullTable", () => {
 
     expect(useQuery).toHaveBeenCalledWith(
       expect.objectContaining({
-        queryKey: ["Questions", undefined],
+        queryKey: ["Questions", undefined, null, null, null],
       }),
     );
   });
@@ -43,7 +43,21 @@ describe("useFullTable", () => {
 
     expect(useQuery).toHaveBeenCalledWith(
       expect.objectContaining({
-        queryKey: ["Questions", "Test"],
+        queryKey: ["Questions", "Test", null, null, null],
+      }),
+    );
+  });
+
+  it("includes pagination params in query key when provided", () => {
+    useFullTable("Questions", {
+      limit: 5,
+      orderBy: "date",
+      orderDir: "desc",
+    });
+
+    expect(useQuery).toHaveBeenCalledWith(
+      expect.objectContaining({
+        queryKey: ["Questions", undefined, 5, "date", "desc"],
       }),
     );
   });

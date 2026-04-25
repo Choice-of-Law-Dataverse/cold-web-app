@@ -18,10 +18,17 @@ import { formatYear } from "@/utils/format";
 
 type ApiClient = ReturnType<typeof createClient<paths>>;
 
+export interface FullTableQueryParams {
+  limit?: number;
+  orderBy?: string;
+  orderDir?: "asc" | "desc";
+}
+
 export async function fetchFullTableData<T extends TableName>(
   client: ApiClient,
   table: T,
   filters: TypedFilter<T>[] = [],
+  params: FullTableQueryParams = {},
 ): Promise<TableResponseMap[T][]> {
   const { data, error } = await client.POST("/search/full_table", {
     body: {
@@ -33,6 +40,9 @@ export async function fetchFullTableData<T extends TableName>(
           }))
         : null,
       response_type: null,
+      limit: params.limit ?? null,
+      order_by: params.orderBy ?? null,
+      order_dir: params.orderDir ?? null,
     },
   });
   if (error) throw error;
@@ -43,7 +53,7 @@ interface UseFullTableOptions<
   T extends TableName,
   TProcessed,
   TSelected = TProcessed[],
-> {
+> extends FullTableQueryParams {
   filters?: TypedFilter<T>[];
   process?: (raw: TableResponseMap[T]) => TProcessed;
   select?: (data: TProcessed[]) => TSelected;
@@ -56,15 +66,23 @@ export function useFullTable<
   TSelected = TProcessed[],
 >(table: T, options: UseFullTableOptions<T, TProcessed, TSelected> = {}) {
   const { client } = useApiClient();
-  const { filters, process, select, enabled } = options;
+  const { filters, process, select, enabled, limit, orderBy, orderDir } =
+    options;
 
   return useQuery({
     queryKey: [
       table,
       filters ? filters.map((f) => f.value).join(",") : undefined,
+      limit ?? null,
+      orderBy ?? null,
+      orderDir ?? null,
     ],
     queryFn: async () => {
-      const data = await fetchFullTableData(client, table, filters);
+      const data = await fetchFullTableData(client, table, filters, {
+        limit,
+        orderBy,
+        orderDir,
+      });
       if (process) {
         return data.map(process);
       }
@@ -86,15 +104,22 @@ export function useFullTableWithFilters<
   options: Omit<UseFullTableOptions<T, TProcessed, TSelected>, "filters"> = {},
 ) {
   const { client } = useApiClient();
-  const { process, select, enabled } = options;
+  const { process, select, enabled, limit, orderBy, orderDir } = options;
 
   return useQuery({
     queryKey: computed(() => [
       table,
       filters.value.map((f) => f.value).join(","),
+      limit ?? null,
+      orderBy ?? null,
+      orderDir ?? null,
     ]),
     queryFn: async () => {
-      const data = await fetchFullTableData(client, table, filters.value);
+      const data = await fetchFullTableData(client, table, filters.value, {
+        limit,
+        orderBy,
+        orderDir,
+      });
       if (process) {
         return data.map(process);
       }
@@ -122,9 +147,13 @@ export function useInternationalLegalProvisions() {
   });
 }
 
-export function useLeadingCases() {
+export function useLeadingCases(options: { limit?: number } = {}) {
+  const { limit } = options;
   return useFullTable("Court Decisions", {
     filters: [{ column: "caseRank", value: 10 }],
+    limit,
+    orderBy: limit ? "publicationDateIso" : undefined,
+    orderDir: limit ? "desc" : undefined,
     select: (data) => {
       return data.sort(
         (a, b) =>

@@ -33,6 +33,10 @@
                 src="https://choiceoflaw.blob.core.windows.net/assets/Prix-ORD-DEF_2025.png"
                 alt="Swiss National ORD Prize 2025"
                 class="hero-badge-img"
+                width="64"
+                height="67"
+                loading="lazy"
+                decoding="async"
               />
               <span class="hero-badge-text">Swiss National ORD Prize 2025</span>
             </a>
@@ -73,7 +77,12 @@
     </div>
 
     <div class="animate-fade-up animate-delay-1 col-span-12">
-      <JurisdictionMap />
+      <ClientOnly>
+        <JurisdictionMap />
+        <template #fallback>
+          <div class="map-ssr-placeholder" aria-hidden="true" />
+        </template>
+      </ClientOnly>
     </div>
 
     <!-- Explore Data Section -->
@@ -157,15 +166,30 @@
     </div>
 
     <div class="col-span-12 flex md:col-span-7">
-      <RecentDomesticInstruments />
+      <ClientOnly>
+        <RecentDomesticInstruments />
+        <template #fallback>
+          <div class="card-ssr-placeholder" aria-hidden="true" />
+        </template>
+      </ClientOnly>
     </div>
 
     <div class="col-span-12 flex md:col-span-5">
-      <PopularSearches />
+      <ClientOnly>
+        <PopularSearches />
+        <template #fallback>
+          <div class="card-ssr-placeholder" aria-hidden="true" />
+        </template>
+      </ClientOnly>
     </div>
 
     <div class="col-span-12 flex md:col-span-7">
-      <SuccessfulLegalTransplantations />
+      <ClientOnly>
+        <SuccessfulLegalTransplantations />
+        <template #fallback>
+          <div class="card-ssr-placeholder" aria-hidden="true" />
+        </template>
+      </ClientOnly>
     </div>
 
     <div class="col-span-12 flex md:col-span-5">
@@ -182,7 +206,12 @@
     </div>
 
     <div class="col-span-12 flex md:col-span-7">
-      <PlotCourtDecisionsJurisdiction />
+      <ClientOnly>
+        <PlotCourtDecisionsJurisdiction />
+        <template #fallback>
+          <div class="card-ssr-placeholder" aria-hidden="true" />
+        </template>
+      </ClientOnly>
     </div>
 
     <div class="col-span-12 flex md:col-span-5">
@@ -197,11 +226,21 @@
       />
     </div>
     <div class="col-span-12 flex md:col-span-7">
-      <LeadingCases />
+      <ClientOnly>
+        <LeadingCases />
+        <template #fallback>
+          <div class="card-ssr-placeholder" aria-hidden="true" />
+        </template>
+      </ClientOnly>
     </div>
 
     <div class="col-span-12 flex md:col-span-5">
-      <TopLiteratureThemes />
+      <ClientOnly>
+        <TopLiteratureThemes />
+        <template #fallback>
+          <div class="card-ssr-placeholder" aria-hidden="true" />
+        </template>
+      </ClientOnly>
     </div>
 
     <!-- Stay Connected Section -->
@@ -246,22 +285,38 @@
 </template>
 
 <script setup lang="ts">
-import PopularSearches from "@/components/landing-page/PopularSearches.vue";
-import TopLiteratureThemes from "@/components/landing-page/TopLiteratureThemes.vue";
-import JurisdictionMap from "@/components/landing-page/JurisdictionMap.vue";
+import { defineAsyncComponent } from "vue";
 import HeroJurisdictionPicker from "@/components/landing-page/HeroJurisdictionPicker.vue";
 import ConnectCard from "@/components/landing-page/ConnectCard.vue";
 import NumberCard from "@/components/landing-page/NumberCard.vue";
 import CompareJurisdictionsCard from "@/components/landing-page/CompareJurisdictionsCard.vue";
 import SectionHeader from "@/components/ui/SectionHeader.vue";
 import { externalLinks } from "@/utils/externalLinks";
-import RecentDomesticInstruments from "@/components/landing-page/RecentDomesticInstruments.vue";
-import SuccessfulLegalTransplantations from "@/components/landing-page/SuccessfulLegalTransplantations.vue";
-import LeadingCases from "@/components/landing-page/LeadingCases.vue";
 import { useHead, useRuntimeConfig, useRouter } from "#imports";
-import PlotCourtDecisionsJurisdiction from "@/components/landing-page/PlotCourtDecisionsJurisdiction.vue";
 import { useJurisdictions } from "@/composables/useJurisdictions";
 import type { JurisdictionOption } from "@/types/analyzer";
+
+const JurisdictionMap = defineAsyncComponent(
+  () => import("@/components/landing-page/JurisdictionMap.vue"),
+);
+const PopularSearches = defineAsyncComponent(
+  () => import("@/components/landing-page/PopularSearches.vue"),
+);
+const TopLiteratureThemes = defineAsyncComponent(
+  () => import("@/components/landing-page/TopLiteratureThemes.vue"),
+);
+const RecentDomesticInstruments = defineAsyncComponent(
+  () => import("@/components/landing-page/RecentDomesticInstruments.vue"),
+);
+const SuccessfulLegalTransplantations = defineAsyncComponent(
+  () => import("@/components/landing-page/SuccessfulLegalTransplantations.vue"),
+);
+const LeadingCases = defineAsyncComponent(
+  () => import("@/components/landing-page/LeadingCases.vue"),
+);
+const PlotCourtDecisionsJurisdiction = defineAsyncComponent(
+  () => import("@/components/landing-page/PlotCourtDecisionsJurisdiction.vue"),
+);
 
 const links = externalLinks;
 const config = useRuntimeConfig();
@@ -296,6 +351,26 @@ useHead({
 </script>
 
 <style scoped>
+.map-ssr-placeholder {
+  width: 100%;
+  height: 600px;
+  border-radius: 1rem;
+  background: var(--gradient-subtle);
+}
+
+@media (max-width: 640px) {
+  .map-ssr-placeholder {
+    height: 400px;
+  }
+}
+
+.card-ssr-placeholder {
+  width: 100%;
+  min-height: 320px;
+  border-radius: 0.75rem;
+  background: var(--gradient-subtle);
+}
+
 h2 {
   font-weight: 500;
 }
