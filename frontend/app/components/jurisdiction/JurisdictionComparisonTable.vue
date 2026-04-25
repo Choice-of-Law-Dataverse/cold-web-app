@@ -85,81 +85,91 @@
                   {{ matchStats.total === 1 ? "question" : "questions" }})
                 </span>
               </span>
+              <span
+                class="comparison-match-stats__divider"
+                aria-hidden="true"
+              />
+              <button
+                type="button"
+                class="comparison-caveats__trigger"
+                :aria-expanded="showCaveats"
+                @click="showCaveats = !showCaveats"
+              >
+                <UIcon
+                  name="i-material-symbols:info-outline"
+                  class="comparison-caveats__trigger-icon"
+                />
+                About these numbers
+              </button>
             </div>
           </div>
-          <details v-if="matchStats" class="comparison-caveats">
-            <summary class="comparison-caveats__summary">
-              <UIcon
-                name="i-material-symbols:info-outline"
-                class="comparison-caveats__summary-icon"
-              />
-              About these numbers
-            </summary>
-            <div class="comparison-caveats__body">
-              <p>A few caveats should be expressed at the outset:</p>
-              <ul>
-                <li>
-                  Simplification may be necessary to concentrate on a limited
-                  number of key options that legislators, courts, or further
-                  authorities may have when implementing, interpreting, or
-                  applying a specific rule regarding an issue addressed in the
-                  <NuxtLink to="/learn/methodology#questionnaire">
-                    Questionnaire </NuxtLink
-                  >.
-                </li>
-                <li>
-                  Similarly, it is difficult to adequately compare the
-                  individual instruments or jurisdictions in view of the
-                  different legal methods used in various parts of the world,
-                  and the varying degree of sophistication. A certain degree of
-                  asymmetry of information must be taken into consideration;
-                  while some specialists were able to rely on sophisticated
-                  codifications of PIL rules, or numerous court decisions and
-                  academic writings, such privileges were not available to
-                  specialists of some of the countries where party choice of law
-                  is limited, or rarely practiced.
-                </li>
-                <li>
-                  Finally, CoLD deals with legal cultures that address choice of
-                  law problems in different ways, as prominently illustrated by
-                  the dichotomy between common-law and civil-law jurisdictions.
-                  For example, various jurisdictions based in the common-law
-                  tradition have not enacted PIL codifications addressing party
-                  choice of law, whereas many civil law-based jurisdictions have
-                  enacted, or are in the process of enacting, such
-                  codifications. These differences have a direct impact on the
-                  methods used by courts and practitioners to apply, and
-                  interpret, rules dealing with choice of law, the results of
-                  which are sometimes difficult to compare.
-                </li>
-                <li>
-                  At times, a sophisticated user may find that the Jurisdiction
-                  Comparison tool is an attempt to compare apples with oranges.
-                  This phenomenon is not atypical in comparative law. We
-                  strongly recommend consulting the additional information
-                  linked to the answers (by clicking on it).
-                </li>
-              </ul>
-              <h4 class="comparison-caveats__heading">
-                Availability of information
-              </h4>
-              <p>
-                Many specialists in private international law, with a focus on
-                their respective jurisdictions, have contributed to the data
-                collection. Their names are indicated in the country report.
-                Nevertheless, certain jurisdictions may contain more data points
-                than others. This might be related to:
-              </p>
-              <ul>
-                <li>availability of information about choice of law rules;</li>
-                <li>
-                  importance of the jurisdiction from an economic, social, or
-                  cultural perspective;
-                </li>
-                <li>availability of specialists.</li>
-              </ul>
-            </div>
-          </details>
+          <div
+            v-if="matchStats && showCaveats"
+            class="comparison-caveats__body"
+          >
+            <p>A few caveats should be expressed at the outset:</p>
+            <ul>
+              <li>
+                Simplification may be necessary to concentrate on a limited
+                number of key options that legislators, courts, or further
+                authorities may have when implementing, interpreting, or
+                applying a specific rule regarding an issue addressed in the
+                <NuxtLink to="/learn/methodology#questionnaire">
+                  Questionnaire </NuxtLink
+                >.
+              </li>
+              <li>
+                Similarly, it is difficult to adequately compare the individual
+                instruments or jurisdictions in view of the different legal
+                methods used in various parts of the world, and the varying
+                degree of sophistication. A certain degree of asymmetry of
+                information must be taken into consideration; while some
+                specialists were able to rely on sophisticated codifications of
+                PIL rules, or numerous court decisions and academic writings,
+                such privileges were not available to specialists of some of the
+                countries where party choice of law is limited, or rarely
+                practiced.
+              </li>
+              <li>
+                Finally, CoLD deals with legal cultures that address choice of
+                law problems in different ways, as prominently illustrated by
+                the dichotomy between common-law and civil-law jurisdictions.
+                For example, various jurisdictions based in the common-law
+                tradition have not enacted PIL codifications addressing party
+                choice of law, whereas many civil law-based jurisdictions have
+                enacted, or are in the process of enacting, such codifications.
+                These differences have a direct impact on the methods used by
+                courts and practitioners to apply, and interpret, rules dealing
+                with choice of law, the results of which are sometimes difficult
+                to compare.
+              </li>
+              <li>
+                At times, a sophisticated user may find that the Jurisdiction
+                Comparison tool is an attempt to compare apples with oranges.
+                This phenomenon is not atypical in comparative law. We strongly
+                recommend consulting the additional information linked to the
+                answers (by clicking on it).
+              </li>
+            </ul>
+            <h4 class="comparison-caveats__heading">
+              Availability of information
+            </h4>
+            <p>
+              Many specialists in private international law, with a focus on
+              their respective jurisdictions, have contributed to the data
+              collection. Their names are indicated in the country report.
+              Nevertheless, certain jurisdictions may contain more data points
+              than others. This might be related to:
+            </p>
+            <ul>
+              <li>availability of information about choice of law rules;</li>
+              <li>
+                importance of the jurisdiction from an economic, social, or
+                cultural perspective;
+              </li>
+              <li>availability of specialists.</li>
+            </ul>
+          </div>
         </div>
 
         <div
@@ -583,6 +593,8 @@ const comparisonJurisdictions = ref<JurisdictionOption[]>([]);
 
 // Track selected value for the selector (to reset after selection)
 const selectedJurisdiction = ref<JurisdictionOption | undefined>(undefined);
+
+const showCaveats = ref(false);
 
 // Get all available jurisdictions
 const {
@@ -1200,41 +1212,36 @@ const matchStats = computed(() => {
   font-size: 0.75rem;
 }
 
-.comparison-caveats {
-  margin-top: 0.5rem;
+.comparison-match-stats__divider {
+  width: 1px;
+  align-self: stretch;
+  margin: 0 0.25rem;
+  background: color-mix(in srgb, var(--color-cold-night) 12%, transparent);
 }
 
-.comparison-caveats__summary {
+.comparison-caveats__trigger {
   display: inline-flex;
   align-items: center;
   gap: 0.375rem;
-  margin-left: auto;
-  padding: 0.25rem 0;
-  width: fit-content;
   font-size: 0.75rem;
   font-weight: 500;
   color: var(--color-cold-night-alpha);
   cursor: pointer;
-  list-style: none;
-  user-select: none;
-  float: right;
+  background: transparent;
+  border: 0;
+  padding: 0;
 }
 
-.comparison-caveats__summary::-webkit-details-marker {
-  display: none;
-}
-
-.comparison-caveats__summary:hover {
+.comparison-caveats__trigger:hover {
   color: var(--color-cold-night);
 }
 
-.comparison-caveats__summary-icon {
+.comparison-caveats__trigger-icon {
   width: 0.875rem;
   height: 0.875rem;
 }
 
 .comparison-caveats__body {
-  clear: both;
   margin-top: 0.75rem;
   padding: 1rem 1.25rem;
   border-radius: 6px;
