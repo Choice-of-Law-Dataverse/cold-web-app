@@ -21,6 +21,8 @@ BEGIN
             RETURN TO_DATE(s, 'DD.MM.YYYY');
         ELSIF s ~ '^[0-9]{4}-[0-9]{2}-[0-9]{2}' THEN
             RETURN substring(s FROM 1 FOR 10)::date;
+        ELSIF s ~ '^[0-9]{4}$' THEN
+            RETURN TO_DATE(s, 'YYYY');
         ELSE
             RETURN NULL;
         END IF;
@@ -107,7 +109,7 @@ BEGIN
                 WHERE m."Answers_id" = v_id
             ), '[]'::jsonb),
             'literature', COALESCE((
-                SELECT jsonb_agg(to_jsonb(r.*))
+                SELECT jsonb_agg(to_jsonb(r.*) ORDER BY r.publication_year DESC NULLS LAST)
                 FROM data_views.rel_literature r
                 JOIN {S}."_nc_m2m_Answers_Literature" m ON m."Literature_id" = r.id
                 WHERE m."Answers_id" = v_id
@@ -343,7 +345,7 @@ BEGIN
                 WHERE qcd."Court_Decisions_id" = v_id
             ), '[]'::jsonb),
             'arbitral_awards', COALESCE((
-                SELECT jsonb_agg(to_jsonb(r.*))
+                SELECT jsonb_agg(to_jsonb(r.*) ORDER BY r.year DESC NULLS LAST)
                 FROM data_views.rel_arbitral_awards r
                 JOIN {S}."_nc_m2m_Court_Decisions_Arbitral_Awards" m ON m."Arbitral_Awards_id" = r.id
                 WHERE m."Court_Decisions_id" = v_id
@@ -551,7 +553,7 @@ BEGIN
                 WHERE m."Regional_Instruments_id" = v_id
             ), '[]'::jsonb),
             'literature', COALESCE((
-                SELECT jsonb_agg(to_jsonb(r.*))
+                SELECT jsonb_agg(to_jsonb(r.*) ORDER BY r.publication_year DESC NULLS LAST)
                 FROM data_views.rel_literature r
                 JOIN {S}."_nc_m2m_Regional_Instru_Literature" m ON m."Literature_id" = r.id
                 WHERE m."Regional_Instruments_id" = v_id
@@ -614,7 +616,7 @@ BEGIN
                 WHERE m."Regional_Legal_Provisions_id" = v_id
             ), '[]'::jsonb),
             'literature', COALESCE((
-                SELECT jsonb_agg(to_jsonb(r.*))
+                SELECT jsonb_agg(to_jsonb(r.*) ORDER BY r.publication_year DESC NULLS LAST)
                 FROM data_views.rel_literature r
                 JOIN {S}."_nc_m2m_Regional_Legal__Literature" m ON m."Literature_id" = r.id
                 WHERE m."Regional_Legal_Provisions_id" = v_id
@@ -671,7 +673,7 @@ BEGIN
                 WHERE m."International_Instruments_id" = v_id
             ), '[]'::jsonb),
             'literature', COALESCE((
-                SELECT jsonb_agg(to_jsonb(r.*))
+                SELECT jsonb_agg(to_jsonb(r.*) ORDER BY r.publication_year DESC NULLS LAST)
                 FROM data_views.rel_literature r
                 JOIN {S}."_nc_m2m_International_I_Literature" m ON m."Literature_id" = r.id
                 WHERE m."International_Instruments_id" = v_id
@@ -735,7 +737,7 @@ BEGIN
                 WHERE m."International_Legal_Provisions_id" = v_id
             ), '[]'::jsonb),
             'literature', COALESCE((
-                SELECT jsonb_agg(to_jsonb(r.*))
+                SELECT jsonb_agg(to_jsonb(r.*) ORDER BY r.publication_year DESC NULLS LAST)
                 FROM data_views.rel_literature r
                 JOIN {S}."_nc_m2m_International_L_Literature" m ON m."Literature_id" = r.id
                 WHERE m."International_Legal_Provisions_id" = v_id
@@ -940,13 +942,13 @@ BEGIN
 
         SELECT jsonb_build_object(
             'arbitral_awards', COALESCE((
-                SELECT jsonb_agg(to_jsonb(r.*))
+                SELECT jsonb_agg(to_jsonb(r.*) ORDER BY r.year DESC NULLS LAST)
                 FROM data_views.rel_arbitral_awards r
                 JOIN {S}."_nc_m2m_Arbitral_Instit_Arbitral_Awards" m ON m."Arbitral_Awards_id" = r.id
                 WHERE m."Arbitral_Institutions_id" = v_id
             ), '[]'::jsonb),
             'arbitral_rules', COALESCE((
-                SELECT jsonb_agg(to_jsonb(r.*))
+                SELECT jsonb_agg(to_jsonb(r.*) ORDER BY data_views._sortable_date(r.in_force_from) DESC NULLS LAST)
                 FROM data_views.rel_arbitral_rules r
                 JOIN {S}."_nc_m2m_Arbitral_Instit_Arbitral_Rules" m ON m."Arbitral_Rules_id" = r.id
                 WHERE m."Arbitral_Institutions_id" = v_id
@@ -1057,7 +1059,7 @@ BEGIN
 
         SELECT jsonb_build_object(
             'arbitral_awards', COALESCE((
-                SELECT jsonb_agg(to_jsonb(r.*))
+                SELECT jsonb_agg(to_jsonb(r.*) ORDER BY r.year DESC NULLS LAST)
                 FROM data_views.rel_arbitral_awards r
                 JOIN {S}."_nc_m2m_Arbitral Provis_Arbitral_Awards" m ON m."Arbitral_Awards_id" = r.id
                 WHERE m."Arbitral Provisions_id" = v_id
@@ -1069,7 +1071,7 @@ BEGIN
                 WHERE m."Arbitral Provisions_id" = v_id
             ), '[]'::jsonb),
             'arbitral_rules', COALESCE((
-                SELECT jsonb_agg(to_jsonb(r.*))
+                SELECT jsonb_agg(to_jsonb(r.*) ORDER BY data_views._sortable_date(r.in_force_from) DESC NULLS LAST)
                 FROM data_views.rel_arbitral_rules r
                 JOIN {S}."_nc_m2m_Arbitral Provis_Arbitral_Rules" m ON m."Arbitral_Rules_id" = r.id
                 WHERE m."Arbitral Provisions_id" = v_id
@@ -1125,7 +1127,7 @@ BEGIN
                 WHERE m."Jurisdictions_id" = v_id
             ), '[]'::jsonb),
             'literature', COALESCE((
-                SELECT jsonb_agg(to_jsonb(r.*))
+                SELECT jsonb_agg(to_jsonb(r.*) ORDER BY r.publication_year DESC NULLS LAST)
                 FROM data_views.rel_literature r
                 JOIN {S}."_nc_m2m_Jurisdictions_Literature" m ON m."Literature_id" = r.id
                 WHERE m."Jurisdictions_id" = v_id
@@ -1137,7 +1139,7 @@ BEGIN
                 WHERE m."Jurisdictions_id" = v_id
             ), '[]'::jsonb),
             'arbitral_awards', COALESCE((
-                SELECT jsonb_agg(to_jsonb(r.*))
+                SELECT jsonb_agg(to_jsonb(r.*) ORDER BY r.year DESC NULLS LAST)
                 FROM data_views.rel_arbitral_awards r
                 JOIN {S}."_nc_m2m_Jurisdictions_Arbitral_Awards" m ON m."Arbitral_Awards_id" = r.id
                 WHERE m."Jurisdictions_id" = v_id
