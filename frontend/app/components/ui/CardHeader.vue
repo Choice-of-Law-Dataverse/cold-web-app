@@ -100,19 +100,20 @@ const resolvedJurisdiction = computed(() => {
       "",
   );
 
-  if (!jurisdictionString) {
-    return [];
-  }
-
-  const parsed = parseJurisdictionString(jurisdictionString);
-  if (parsed.length <= 1) return parsed;
+  const parsed = jurisdictionString
+    ? parseJurisdictionString(jurisdictionString)
+    : [];
+  if (parsed.length === 1) return parsed;
 
   const primary = findJurisdictionByCode(primaryJurisdictionCode.value);
-  if (!primary?.name) return [];
-  const match = parsed.find(
-    (name) => name.toLowerCase() === primary.name.toLowerCase(),
-  );
-  return match ? [match] : [];
+  if (primary?.name) {
+    if (parsed.length === 0) return [primary.name];
+    const match = parsed.find(
+      (name) => name.toLowerCase() === primary.name.toLowerCase(),
+    );
+    if (match) return [match];
+  }
+  return [];
 });
 
 const formattedSourceTable = computed(() => {
