@@ -4,13 +4,27 @@
       <DetailRow :label="label">
         <div class="report-block">
           <h2 class="report-block__title">{{ value }}</h2>
-          <div v-if="data.coldId || legalFamily" class="report-block__subtitle">
+          <div
+            v-if="data.coldId || subtitleTokens.length > 0"
+            class="report-block__subtitle"
+          >
             <JurisdictionFlag
               v-if="data.coldId"
               :iso3="data.coldId"
               class="report-block__flag"
             />
-            <span v-if="legalFamily">{{ legalFamily }}</span>
+            <template
+              v-for="(token, idx) in subtitleTokens"
+              :key="`token-${idx}`"
+            >
+              <span
+                v-if="idx > 0 || data.coldId"
+                class="report-block__separator"
+                aria-hidden="true"
+                >·</span
+              >
+              <span>{{ token }}</span>
+            </template>
           </div>
         </div>
       </DetailRow>
@@ -29,10 +43,17 @@ const props = defineProps<{
   data: Jurisdiction;
 }>();
 
-const legalFamily = computed(() => {
-  const value = props.data?.legalFamily;
-  if (!value || value === "N/A") return "";
-  return String(value);
+const cleanValue = (value: unknown): string => {
+  if (!value) return "";
+  const str = String(value);
+  if (str === "N/A") return "";
+  return str;
+};
+
+const subtitleTokens = computed(() => {
+  const region = cleanValue(props.data?.region);
+  const family = cleanValue(props.data?.legalFamily);
+  return [region, family].filter((token) => token.length > 0);
 });
 </script>
 
@@ -67,5 +88,9 @@ const legalFamily = computed(() => {
   height: 12px;
   width: auto;
   display: inline-block;
+}
+
+.report-block__separator {
+  color: color-mix(in srgb, var(--color-cold-night-alpha) 60%, transparent);
 }
 </style>
