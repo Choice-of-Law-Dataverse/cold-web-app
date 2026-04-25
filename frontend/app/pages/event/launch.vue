@@ -15,7 +15,7 @@
             Online via Zoom &middot; Free &amp; Open
           </p>
           <h1
-            class="text-cold-night mt-4 font-serif text-4xl leading-tight font-bold sm:text-5xl"
+            class="text-cold-night mt-4 text-4xl leading-tight font-bold sm:text-5xl"
           >
             Choice of Law Dataverse in Action
           </h1>
