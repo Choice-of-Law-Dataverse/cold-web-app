@@ -4,9 +4,11 @@
     subtitle="Read top-ranked court decisions"
     :loading="isLoading"
     :error="error"
+    header-link="/court-decision/leading-cases"
+    header-class="cursor-pointer text-left md:whitespace-nowrap"
   >
     <FlagTitleYearItem
-      v-for="decision in leadingCases?.slice(0, 3)"
+      v-for="decision in leadingCases?.slice(0, 6)"
       :key="String(decision.id || '')"
       :to="`/court-decision/${decision.id}`"
       :iso3="decision.jurisdictionsAlpha3Code || ''"

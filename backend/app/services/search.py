@@ -44,6 +44,26 @@ class SearchService:
         "questions": "data_views.base_questions",
     }
 
+    _TABLE_TO_FTS_ENRICHMENT: dict[str, tuple[str, dict[str, str]]] = {
+        "answers": (
+            "data_views.answers",
+            {"question": "Questions", "jurisdictions": "Jurisdictions", "themes": "Themes"},
+        ),
+        "hcch answers": ("data_views.hcch_answers", {"themes": "Themes"}),
+        "court decisions": (
+            "data_views.court_decisions",
+            {"jurisdictions": "Jurisdictions", "themes": "Themes"},
+        ),
+        "domestic instruments": (
+            "data_views.domestic_instruments",
+            {"jurisdictions": "Jurisdictions"},
+        ),
+        "literature": (
+            "data_views.literature",
+            {"themes": "Themes"},
+        ),
+    }
+
     def _complete_view_for_table(self, table: str) -> str:
         if not table:
             raise ValueError("No table provided")
@@ -51,6 +71,34 @@ class SearchService:
         if not view or not _SAFE_IDENTIFIER.match(view):
             raise ValueError(f"Unsupported table for full/filtered query: {table}")
         return view
+
+    def _fts_enrichment_for_table(self, table: str) -> tuple[str, dict[str, str]] | None:
+        enrichment = self._TABLE_TO_FTS_ENRICHMENT.get(table.strip().lower())
+        if not enrichment:
+            return None
+        view, fields = enrichment
+        if not _SAFE_IDENTIFIER.match(view):
+            return None
+        if any(not re.match(r"^[A-Za-z_][A-Za-z0-9_]*$", k) for k in fields):
+            return None
+        if any(not re.match(r"^[A-Za-z_][A-Za-z0-9_]*$", v) for v in fields.values()):
+            return None
+        return view, fields
+
+    def _build_select_sql(self, table: str, alias: str = "c", where_sql: str = "") -> str:
+        view = self._complete_view_for_table(table)
+        enrichment = self._fts_enrichment_for_table(table)
+        if enrichment is None:
+            return f"SELECT {alias}.id AS record_id, to_jsonb({alias}.*) AS complete_record FROM {view} {alias}{where_sql}"
+        fts_view, fields = enrichment
+        pairs = ", ".join(f"'{key}', sv.\"{col}\"" for key, col in fields.items())
+        return (
+            f"SELECT {alias}.id AS record_id, "
+            f"to_jsonb({alias}.*) || jsonb_build_object({pairs}) AS complete_record "
+            f"FROM {view} {alias} "
+            f"LEFT JOIN {fts_view} sv ON sv.id = {alias}.id"
+            f"{where_sql}"
+        )
 
     VALID_DETAIL_TABLES: set[str] = {
         "Answers",
@@ -125,8 +173,7 @@ class SearchService:
 
     def full_table(self, table: str, response_type: str = "parsed") -> list[dict[str, Any]]:
         try:
-            view = self._complete_view_for_table(table)
-            sql = f"SELECT c.id AS record_id, to_jsonb(c.*) AS complete_record FROM {view} c"
+            sql = self._build_select_sql(table)
             rows = self.db.execute_query(sql, {}) or []
             return self._flatten_rows(rows, table, response_type)
         except Exception as e:
@@ -135,10 +182,9 @@ class SearchService:
 
     def filtered_table(self, table: str, filters: list[Any], response_type: str = "parsed") -> list[dict[str, Any]]:
         try:
-            view = self._complete_view_for_table(table)
             alias = "c"
             where_sql, params = build_filter_clause(alias, filters)
-            sql = f"SELECT {alias}.id AS record_id, to_jsonb({alias}.*) AS complete_record FROM {view} {alias}{where_sql}"
+            sql = self._build_select_sql(table, alias=alias, where_sql=where_sql)
             rows = self.db.execute_query(sql, params) or []
             return self._flatten_rows(rows, table, response_type)
         except Exception as e:

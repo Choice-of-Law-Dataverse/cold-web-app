@@ -112,6 +112,7 @@ import JurisdictionDrawerQA from "@/components/jurisdiction/JurisdictionDrawerQA
 import DrawerAnswerMap from "@/components/jurisdiction/DrawerAnswerMap.vue";
 import CardTags from "@/components/ui/CardTags.vue";
 import { getLabelColorClassByVariant } from "@/config/entityRegistry";
+import { primaryJurisdictionAlpha3 } from "@/utils/jurisdictionParser";
 
 const contentComponents: Record<string, Component> = {
   CourtDecisionContent,
@@ -168,12 +169,19 @@ const headerJurisdictions = computed<string[]>(() => {
   if (!("relations" in data)) return [];
   const jurisdictions = data.relations.jurisdictions;
   if (!jurisdictions?.length) return [];
-  const filtered = jurisdictions
-    .filter((j) => j.coldId !== pageJurisdictionCode.value)
-    .map((j) => j.name || "")
-    .filter((name) => name);
-  if (filtered.length !== 1) return [];
-  return filtered;
+  const filtered = jurisdictions.filter(
+    (j) => j.coldId !== pageJurisdictionCode.value,
+  );
+  if (filtered.length === 1) {
+    const name = filtered[0]?.name;
+    return name ? [name] : [];
+  }
+  const primary = primaryJurisdictionAlpha3(
+    data as Record<string, unknown>,
+  ).toUpperCase();
+  if (!primary) return [];
+  const match = filtered.find((j) => j.coldId?.toUpperCase() === primary);
+  return match?.name ? [match.name] : [];
 });
 
 const headerSourceTable = computed(() => config.value?.singularLabel ?? "");
