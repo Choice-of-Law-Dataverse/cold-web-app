@@ -69,21 +69,23 @@
             </div>
           </div>
 
-          <div v-if="matchStats" class="comparison-match-stats">
-            <UIcon
-              name="i-material-symbols:check-circle-rounded"
-              class="comparison-match-stats__icon"
-            />
-            <span class="comparison-match-stats__value">
-              {{ matchStats.percentage }}%
-            </span>
-            <span class="comparison-match-stats__label">
-              matching answers
-              <span class="comparison-match-stats__detail">
-                ({{ matchStats.matching }} of {{ matchStats.total }}
-                {{ matchStats.total === 1 ? "question" : "questions" }})
+          <div v-if="matchStats" class="comparison-match-stats-wrapper">
+            <div class="comparison-match-stats">
+              <UIcon
+                name="i-material-symbols:check-circle-rounded"
+                class="comparison-match-stats__icon"
+              />
+              <span class="comparison-match-stats__value">
+                {{ matchStats.percentage }}%
               </span>
-            </span>
+              <span class="comparison-match-stats__label">
+                matching answers
+                <span class="comparison-match-stats__detail">
+                  ({{ matchStats.matching }} of {{ matchStats.total }}
+                  {{ matchStats.total === 1 ? "question" : "questions" }})
+                </span>
+              </span>
+            </div>
           </div>
         </div>
 
@@ -104,7 +106,7 @@
         <div v-else-if="isSingleJurisdiction" class="question-list">
           <template v-for="item in groupedRows" :key="item.key">
             <div v-if="item.type === 'theme-header'" class="theme-header">
-              {{ item.theme }}
+              <span class="theme-header__name">{{ item.theme }}</span>
             </div>
             <div
               v-else
@@ -244,7 +246,17 @@
                   v-if="item.type === 'theme-header'"
                   class="comparison-theme-header"
                 >
-                  {{ item.theme }}
+                  <span class="theme-header__name">{{ item.theme }}</span>
+                  <span v-if="item.stats" class="theme-header__stats">
+                    <UIcon
+                      name="i-material-symbols:check-circle-rounded"
+                      class="theme-header__stats-icon"
+                    />
+                    {{ item.stats.percentage }}% match
+                    <span class="theme-header__stats-detail">
+                      ({{ item.stats.matching }} of {{ item.stats.total }})
+                    </span>
+                  </span>
                 </div>
                 <div v-else class="comparison-row">
                   <div
@@ -346,7 +358,17 @@
           <div class="question-list block md:hidden">
             <template v-for="item in groupedRows" :key="item.key">
               <div v-if="item.type === 'theme-header'" class="theme-header">
-                {{ item.theme }}
+                <span class="theme-header__name">{{ item.theme }}</span>
+                <span v-if="item.stats" class="theme-header__stats">
+                  <UIcon
+                    name="i-material-symbols:check-circle-rounded"
+                    class="theme-header__stats-icon"
+                  />
+                  {{ item.stats.percentage }}% match
+                  <span class="theme-header__stats-detail">
+                    ({{ item.stats.matching }} of {{ item.stats.total }})
+                  </span>
+                </span>
               </div>
               <div
                 v-else
@@ -691,9 +713,32 @@ type Row = {
   theme: string;
 };
 
+type MatchStats = { matching: number; total: number; percentage: number };
+
 type GroupedRow =
-  | { type: "theme-header"; theme: string; key: string }
+  | {
+      type: "theme-header";
+      theme: string;
+      stats: MatchStats | null;
+      key: string;
+    }
   | { type: "question"; row: Row; key: string };
+
+function aggregateMatchStats(items: Row[]): MatchStats | null {
+  let total = 0;
+  let matching = 0;
+  for (const row of items) {
+    if (row.matchStatus === "na") continue;
+    total++;
+    if (row.matchStatus === "match") matching++;
+  }
+  if (total === 0) return null;
+  return {
+    total,
+    matching,
+    percentage: Math.round((matching / total) * 100),
+  };
+}
 
 const THEME_NAME_BY_CODE: Record<string, string> = {
   P: "Codification",
@@ -785,9 +830,16 @@ const groupedRows = computed<GroupedRow[]>(() => {
     return ai - bi;
   });
 
+  const showStats =
+    !isSingleJurisdiction.value && allJurisdictionsHaveAnswersLoaded.value;
   const out: GroupedRow[] = [];
   for (const [theme, themeRows] of ordered) {
-    out.push({ type: "theme-header", theme, key: `theme:${theme}` });
+    out.push({
+      type: "theme-header",
+      theme,
+      stats: showStats ? aggregateMatchStats(themeRows) : null,
+      key: `theme:${theme}`,
+    });
     for (const row of themeRows) {
       out.push({ type: "question", row, key: `q:${row.id}` });
     }
@@ -798,19 +850,7 @@ const groupedRows = computed<GroupedRow[]>(() => {
 const matchStats = computed(() => {
   if (isSingleJurisdiction.value) return null;
   if (!allJurisdictionsHaveAnswersLoaded.value) return null;
-  let total = 0;
-  let matching = 0;
-  for (const row of rows.value) {
-    if (row.matchStatus === "na") continue;
-    total++;
-    if (row.matchStatus === "match") matching++;
-  }
-  if (total === 0) return null;
-  return {
-    total,
-    matching,
-    percentage: Math.round((matching / total) * 100),
-  };
+  return aggregateMatchStats(rows.value);
 });
 </script>
 
@@ -842,6 +882,10 @@ const matchStats = computed(() => {
 }
 
 .theme-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
   padding: 1.25rem 1.5rem 0.5rem;
   font-size: 0.75rem;
   font-weight: 600;
@@ -856,6 +900,10 @@ const matchStats = computed(() => {
 
 .comparison-theme-header {
   grid-column: 1 / -1;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
   padding: 1.25rem 0.5rem 0.5rem;
   font-size: 0.75rem;
   font-weight: 600;
@@ -867,6 +915,32 @@ const matchStats = computed(() => {
 
 .comparison-theme-header:first-of-type {
   padding-top: 0.25rem;
+}
+
+.theme-header__name {
+  min-width: 0;
+}
+
+.theme-header__stats {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--color-cold-night-alpha);
+  white-space: nowrap;
+}
+
+.theme-header__stats-icon {
+  width: 0.875rem;
+  height: 0.875rem;
+  color: var(--color-emerald-500, #10b981);
+}
+
+.theme-header__stats-detail {
+  font-size: 0.6875rem;
 }
 
 .comparison-grid {
@@ -1015,8 +1089,13 @@ const matchStats = computed(() => {
   background: inherit;
 }
 
-.comparison-match-stats {
+.comparison-match-stats-wrapper {
   margin-top: 0.875rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.comparison-match-stats {
   display: inline-flex;
   align-items: baseline;
   gap: 0.5rem;
