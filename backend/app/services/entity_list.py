@@ -30,6 +30,30 @@ _SAFE_IDENTIFIER = re.compile(r"^[a-z_][a-z0-9_.]*$")
 _SAFE_COLUMN = re.compile(r"^[a-z_][a-z0-9_]*$")
 
 
+def _theme_exists_clause(slug: str, schema: str) -> str | None:
+    """WHERE fragment using :theme, referencing base-view alias 'b'."""
+    if slug == "literature":
+        return (
+            f'EXISTS (SELECT 1 FROM "{schema}"."_nc_m2m_Themes_Literature" m '
+            f'JOIN "{schema}"."Themes" t ON t.id = m."Themes_id" '
+            f'WHERE m."Literature_id" = b.id AND t."Theme" = :theme)'
+        )
+    if slug == "arbitral-awards":
+        return (
+            f'EXISTS (SELECT 1 FROM "{schema}"."_nc_m2m_Themes_Arbitral_Awards" m '
+            f'JOIN "{schema}"."Themes" t ON t.id = m."Themes_id" '
+            f'WHERE m."Arbitral_Awards_id" = b.id AND t."Theme" = :theme)'
+        )
+    if slug == "court-decisions":
+        return (
+            f'EXISTS (SELECT 1 FROM "{schema}"."_nc_m2m_Questions_Court_Decisions" qcd '
+            f'JOIN "{schema}"."_nc_m2m_Themes_Questions" tq ON tq."Questions_id" = qcd."Questions_id" '
+            f'JOIN "{schema}"."Themes" t ON t.id = tq."Themes_id" '
+            f'WHERE qcd."Court_Decisions_id" = b.id AND t."Theme" = :theme)'
+        )
+    return None
+
+
 @dataclass(frozen=True)
 class EntityListConfig:
     slug: str
@@ -206,11 +230,14 @@ class EntityListService:
 
         if jurisdiction and cfg.has_jurisdiction:
             params["juris"] = jurisdiction.upper()
-            where_parts.append("\"jurisdictions_alpha_3_code\" ILIKE '%' || :juris || '%'")
+            where_parts.append("b.\"jurisdictions_alpha_3_code\" ILIKE '%' || :juris || '%'")
 
-        if theme and cfg.has_theme:
-            params["theme"] = theme
-            where_parts.append("\"themes\" ILIKE '%' || :theme || '%'")
+        schema = config.NOCODB_POSTGRES_SCHEMA
+        if theme and cfg.has_theme and schema:
+            theme_clause = _theme_exists_clause(cfg.slug, schema)
+            if theme_clause:
+                params["theme"] = theme
+                where_parts.append(theme_clause)
 
         if extra_filters:
             for raw_key, raw_val in extra_filters.items():
@@ -221,7 +248,7 @@ class EntityListService:
                     continue
                 p_name = f"f_{col}"
                 params[p_name] = raw_val
-                where_parts.append(f'"{col}"::text = :{p_name}')
+                where_parts.append(f'b."{col}"::text = :{p_name}')
 
         where_sql = (" WHERE " + " AND ".join(where_parts)) if where_parts else ""
 
@@ -231,15 +258,15 @@ class EntityListService:
         direction = (order_dir or cfg.default_order_dir).lower()
         if direction not in {"asc", "desc"}:
             direction = cfg.default_order_dir
-        order_sql = f' ORDER BY "{order_col}" {direction.upper()} NULLS LAST'
+        order_sql = f' ORDER BY b."{order_col}" {direction.upper()} NULLS LAST'
 
         page = max(1, page)
         page_size = max(1, min(200, page_size))
         offset = (page - 1) * page_size
 
-        projection = ", ".join(f'"{col}"' for col in ("id", "cold_id", *cfg.columns))
-        list_sql = f"SELECT {projection} FROM {cfg.view}{where_sql}{order_sql} LIMIT {page_size} OFFSET {offset}"
-        count_sql = f"SELECT COUNT(*) AS n FROM {cfg.view}{where_sql}"
+        projection = ", ".join(f'b."{col}"' for col in ("id", "cold_id", *cfg.columns))
+        list_sql = f"SELECT {projection} FROM {cfg.view} b{where_sql}{order_sql} LIMIT {page_size} OFFSET {offset}"
+        count_sql = f"SELECT COUNT(*) AS n FROM {cfg.view} b{where_sql}"
 
         try:
             rows = self.db.execute_query(list_sql, params) or []
