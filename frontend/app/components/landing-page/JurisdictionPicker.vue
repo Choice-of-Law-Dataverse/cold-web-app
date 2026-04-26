@@ -101,10 +101,15 @@ watch(isOpen, async (open) => {
 function positionPanel() {
   if (!wrapperRef.value) return;
   const rect = wrapperRef.value.getBoundingClientRect();
+  const offset = 4;
+  const collisionPadding = 8;
+  const availableHeight =
+    window.innerHeight - rect.bottom - offset - collisionPadding;
   panelStyle.value = {
-    top: `${rect.bottom + 4}px`,
+    top: `${rect.bottom + offset}px`,
     left: `${rect.left}px`,
     minWidth: `${rect.width}px`,
+    maxHeight: `${availableHeight}px`,
   };
 }
 
@@ -191,7 +196,6 @@ async function selectItem(item: ProcessedJurisdiction) {
 .picker-panel {
   position: fixed;
   width: 320px;
-  max-height: 360px;
   display: flex;
   flex-direction: column;
   background: white;

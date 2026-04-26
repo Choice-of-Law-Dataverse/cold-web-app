@@ -119,6 +119,11 @@
     color-mix(in srgb, var(--color-cold-purple) 16%, white),
     color-mix(in srgb, var(--color-cold-green) 12%, white)
   );
+  --gradient-row-hover: linear-gradient(
+    315deg,
+    color-mix(in srgb, var(--color-cold-purple) 2%, white),
+    color-mix(in srgb, var(--color-cold-green) 1%, white)
+  );
 
   /* Purple-Green gradients with transparent (for badges/regions) */
   --gradient-transparent-light: linear-gradient(

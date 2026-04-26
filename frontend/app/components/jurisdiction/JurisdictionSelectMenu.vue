@@ -6,7 +6,12 @@
     :placeholder="placeholder"
     :items="selectItems"
     :disabled="disabled"
+    :leading="!!internalSelected?.original?.coldId"
     size="xl"
+    :ui="{
+      content:
+        'max-h-(--reka-combobox-content-available-height) w-max min-w-(--reka-combobox-trigger-width)',
+    }"
     @update:model-value="onInternalSelect"
   >
     <!-- Custom item rendering with avatars -->
@@ -28,12 +33,11 @@
       </div>
     </template>
 
-    <!-- Custom label rendering for selected value -->
     <template #leading>
       <JurisdictionFlag
         v-if="internalSelected?.original?.coldId"
         :iso3="internalSelected.original.coldId"
-        :faded="!hasCoverage(internalSelected?.original?.answerCoverage)"
+        :faded="!hasCoverage(internalSelected.original.answerCoverage)"
         class="mr-1.5"
       />
     </template>

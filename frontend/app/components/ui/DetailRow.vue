@@ -80,11 +80,7 @@ defineProps({
 }
 
 .detail-row:hover {
-  background: linear-gradient(
-    315deg,
-    color-mix(in srgb, var(--color-cold-purple) 2%, white),
-    color-mix(in srgb, var(--color-cold-green) 1%, white)
-  );
+  background: var(--gradient-row-hover);
 }
 
 .label-key {

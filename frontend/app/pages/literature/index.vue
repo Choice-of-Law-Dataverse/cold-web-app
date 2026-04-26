@@ -8,102 +8,30 @@
     <template #full-width>
       <div class="gradient-top-border" />
       <div class="w-full px-6 py-6">
-        <div class="literature-filters mb-6 flex flex-wrap gap-4">
-          <div class="filter-control">
-            <label class="filter-label">Theme</label>
-            <USelectMenu
-              v-model="selectedTheme"
-              :items="themeOptions"
-              placeholder="Any"
-              size="xl"
-              class="w-56"
-            />
-          </div>
-          <div v-if="hasActiveFilter" class="filter-control filter-reset">
-            <UButton
-              variant="ghost"
-              size="sm"
-              icon="i-material-symbols:close"
-              @click="resetFilters"
-            >
-              Clear filters
-            </UButton>
-          </div>
-        </div>
-        <div class="literature-table">
-          <UTable :columns="columns" :data="rows">
-            <template #title-cell="{ row }">
-              <NuxtLink
-                v-if="row.original.coldId"
-                :to="`/literature/${row.original.coldId}`"
-                class="table-row-link"
-              >
-                <span class="result-value-small">{{ row.original.title }}</span>
-                <img
-                  v-if="row.original.openAccess"
-                  src="https://assets.cold.global/assets/Open_Access_logo_PLoS_transparent.svg"
-                  alt="Open Access"
-                  class="ml-1 inline-flex w-3"
-                />
-              </NuxtLink>
-              <span v-else class="result-value-small">{{
-                row.original.title
-              }}</span>
-            </template>
-            <template #author-cell="{ row }">
-              <NuxtLink
-                v-if="row.original.coldId"
-                :to="`/literature/${row.original.coldId}`"
-                class="table-row-link"
-              >
-                <span
-                  class="result-value-small block truncate whitespace-nowrap"
-                >
-                  {{ row.original.author }}
-                </span>
-              </NuxtLink>
-              <span
-                v-else
-                class="result-value-small block truncate whitespace-nowrap"
-                >{{ row.original.author }}</span
-              >
-            </template>
-            <template #publicationYear-cell="{ row }">
-              <NuxtLink
-                v-if="row.original.coldId"
-                :to="`/literature/${row.original.coldId}`"
-                class="table-row-link"
-              >
-                <span class="result-value-small">{{
-                  row.original.publicationYear
-                }}</span>
-              </NuxtLink>
-              <span v-else class="result-value-small">{{
-                row.original.publicationYear
-              }}</span>
-            </template>
-            <template #open-cell="{ row }">
-              <NuxtLink
-                v-if="row.original.coldId"
-                :to="`/literature/${row.original.coldId}`"
-                class="table-row-link arrow-cell"
-              >
-                <UIcon
-                  name="i-material-symbols:arrow-forward"
-                  class="arrow-icon"
-                />
-              </NuxtLink>
-              <span v-else class="text-gray-400">—</span>
-            </template>
-          </UTable>
-        </div>
+        <EntityListFilters v-model:theme="selectedTheme" :filters="['theme']" />
 
-        <EntityListPagination
-          v-if="data && data.total > pageSize"
+        <EntityListTable
           v-model:page="page"
-          :total="data.total"
-          :page-size="pageSize"
-        />
+          v-model:order-by="orderBy"
+          v-model:order-dir="orderDir"
+          :columns="columns"
+          :rows="rows"
+          link-base="/literature"
+          :total="data?.total"
+          :loading="isLoading"
+        >
+          <template #cell-title="{ row }">
+            <span class="result-value-small entity-list__cell">
+              {{ row.title || "—" }}
+              <img
+                v-if="row.openAccess"
+                src="https://assets.cold.global/assets/Open_Access_logo_PLoS_transparent.svg"
+                alt="Open Access"
+                class="ml-1 inline-flex w-3 align-middle"
+              />
+            </span>
+          </template>
+        </EntityListTable>
       </div>
     </template>
   </BaseDetailLayout>
@@ -112,167 +40,53 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
 import BaseDetailLayout from "@/components/layout/BaseDetailLayout.vue";
-import EntityListPagination from "@/components/layout/EntityListPagination.vue";
+import EntityListFilters from "@/components/entity-list/EntityListFilters.vue";
+import EntityListTable, {
+  type EntityListColumn,
+} from "@/components/entity-list/EntityListTable.vue";
 import { useEntityList } from "@/composables/useEntityList";
-import themeOptions from "@/assets/themeOptions.json";
+import { sanitizeCell } from "@/utils/format";
 
 useHead({
   title: "Literature — CoLD",
 });
 
 const page = ref(1);
-const pageSize = 250;
 const resultData = null;
 
 const selectedTheme = ref<string | undefined>(undefined);
-
-const hasActiveFilter = computed(() => Boolean(selectedTheme.value));
+const orderBy = ref<string | undefined>(undefined);
+const orderDir = ref<"asc" | "desc" | undefined>(undefined);
 
 watch(selectedTheme, () => {
   page.value = 1;
 });
 
-function resetFilters() {
-  selectedTheme.value = undefined;
-}
-
 const { data, isLoading } = useEntityList("literature", {
   page,
-  pageSize,
   theme: selectedTheme,
+  orderBy,
+  orderDir,
 });
-
-const sanitize = (v: unknown) =>
-  v == null || v === "NA" ? "" : String(v).trim();
 
 const rows = computed(() =>
   (data.value?.items ?? []).map((item) => ({
-    title: sanitize(item.title),
-    author: sanitize(item.author),
-    publicationYear: sanitize(item.publicationYear),
+    title: sanitizeCell(item.title),
+    author: sanitizeCell(item.author),
+    publicationYear: sanitizeCell(item.publicationYear),
     openAccess: Boolean(item.oupJdChapter),
-    coldId: sanitize(item.coldId),
+    coldId: sanitizeCell(item.coldId),
   })),
 );
 
-const columns = [
-  { id: "title", accessorKey: "title", header: "Title" },
-  { id: "author", accessorKey: "author", header: "Author(s)" },
+const columns: EntityListColumn[] = [
+  { key: "title", header: "Title", width: "50%", sortable: true },
+  { key: "author", header: "Author(s)", sortable: true },
   {
-    id: "publicationYear",
-    accessorKey: "publicationYear",
+    key: "publicationYear",
     header: "Year",
+    width: "120px",
+    sortable: true,
   },
-  { id: "open", accessorKey: "coldId", header: "" },
 ];
 </script>
-
-<style scoped>
-.filter-label {
-  display: block;
-  font-weight: 700;
-  font-size: 12px;
-  letter-spacing: 0.01em;
-  text-transform: uppercase;
-  color: var(--color-cold-night);
-  margin-bottom: 4px;
-}
-
-.filter-control {
-  min-width: 200px;
-}
-
-.filter-reset {
-  display: flex;
-  align-items: flex-end;
-  min-width: auto;
-}
-
-.literature-table :deep(table) {
-  table-layout: fixed;
-  width: 100%;
-}
-
-.literature-table :deep(th),
-.literature-table :deep(td) {
-  box-sizing: border-box;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  padding-right: 16px;
-}
-
-.literature-table :deep(th:first-child),
-.literature-table :deep(td:first-child) {
-  width: 50%;
-}
-
-.literature-table :deep(th:nth-child(2)),
-.literature-table :deep(td:nth-child(2)) {
-  width: auto;
-}
-
-.literature-table :deep(th:nth-child(3)),
-.literature-table :deep(td:nth-child(3)) {
-  width: 120px;
-  min-width: 120px;
-  max-width: 120px;
-}
-
-.literature-table :deep(th:last-child),
-.literature-table :deep(td:last-child) {
-  width: 80px;
-  min-width: 80px;
-  max-width: 80px;
-  padding-right: 16px;
-  text-align: right;
-}
-
-.literature-table :deep(tbody tr) {
-  height: 72px;
-}
-.literature-table :deep(tbody td) {
-  height: 72px;
-  vertical-align: middle;
-}
-
-.literature-table :deep(tbody tr:hover) {
-  background-color: rgba(0, 0, 0, 0.02);
-  cursor: pointer;
-}
-
-.literature-table :deep(tbody tr:hover .arrow-icon) {
-  animation: bounce-right 0.4s ease-out;
-}
-
-.literature-table :deep(thead th) {
-  font-weight: 700;
-  font-size: 12px;
-  letter-spacing: 0.01em;
-  text-transform: uppercase;
-  color: var(--color-cold-night);
-}
-
-.literature-table :deep(thead th span),
-.literature-table :deep(thead th button),
-.literature-table :deep(thead th button span) {
-  font-weight: 700;
-  font-size: 12px;
-  letter-spacing: 0.01em;
-  text-transform: uppercase;
-  color: var(--color-cold-night);
-}
-
-.literature-table :deep(thead th button:hover),
-.literature-table :deep(thead th a:hover) {
-  background-color: transparent;
-  color: inherit;
-  text-decoration: none;
-  box-shadow: none;
-}
-.literature-table :deep(thead th button:hover span),
-.literature-table :deep(thead th a:hover span) {
-  color: inherit;
-  text-decoration: none;
-}
-</style>
