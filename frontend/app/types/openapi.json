@@ -16,9 +16,7 @@
   "paths": {
     "/search/": {
       "get": {
-        "tags": [
-          "Search"
-        ],
+        "tags": ["Search"],
         "summary": "Full-text search across CoLD data",
         "description": "Searches across multiple domains (Answers, HCCH Answers, Court Decisions, Domestic Instruments, Regional Instruments, International Instruments, Literature, Arbitral Awards, and Arbitral Rules). Filter columns are exposed as dedicated repeatable query parameters: `tables`, `jurisdictions`, `themes`. Pass each value separately, e.g. `?tables=Answers&tables=Court%20Decisions&jurisdictions=Switzerland`. You can sort by date and paginate results.",
         "operationId": "handle_full_text_search_api_v1_search__get",
@@ -157,9 +155,7 @@
                   "filters": [
                     {
                       "column": "tables",
-                      "values": [
-                        "Answers"
-                      ]
+                      "values": ["Answers"]
                     }
                   ],
                   "total_matches": 2,
@@ -196,9 +192,7 @@
     },
     "/search/details": {
       "get": {
-        "tags": [
-          "Search"
-        ],
+        "tags": ["Search"],
         "summary": "Fetch a curated record by CoLD ID including relations",
         "description": "Given a table and a CoLD ID, returns the record with all first-hop relations in a standardized shape.",
         "operationId": "handle_entity_detail_api_v1_search_details_get",
@@ -311,9 +305,7 @@
     },
     "/search/full_table": {
       "get": {
-        "tags": [
-          "Search"
-        ],
+        "tags": ["Search"],
         "summary": "Return full or filtered table",
         "description": "Returns all records from the specified table or a filtered subset. Filters use the repeatable `filter` query parameter with format `column:value` or `column:val1,val2` for multiple values. Values matching `true`/`false` are parsed as booleans; pure-digit strings as integers; everything else stays a string. Example: `?table=Court%20Decisions&filter=caseRank:10&filter=jurisdiction:Switzerland`.",
         "operationId": "return_full_table_api_v1_search_full_table_get",
@@ -395,10 +387,7 @@
             "schema": {
               "anyOf": [
                 {
-                  "enum": [
-                    "asc",
-                    "desc"
-                  ],
+                  "enum": ["asc", "desc"],
                   "type": "string"
                 },
                 {
@@ -480,9 +469,7 @@
                   {
                     "source_table": "Answers",
                     "id": "CHE_15-TC",
-                    "Jurisdictions": [
-                      "Switzerland"
-                    ],
+                    "Jurisdictions": ["Switzerland"],
                     "Title": "\u2026"
                   }
                 ]
@@ -510,9 +497,7 @@
     },
     "/search/specialists/{jurisdiction_alpha_code}": {
       "get": {
-        "tags": [
-          "Search"
-        ],
+        "tags": ["Search"],
         "summary": "Get specialists by jurisdiction",
         "description": "Returns all specialists associated with a specific jurisdiction using Alpha_3_Code.",
         "operationId": "get_specialists_by_jurisdiction_api_v1_search_specialists__jurisdiction_alpha_code__get",
@@ -577,9 +562,7 @@
     },
     "/ai/classify_query": {
       "get": {
-        "tags": [
-          "AI"
-        ],
+        "tags": ["AI"],
         "summary": "Classify a free-text user query into a predefined category",
         "description": "Uses an external model to classify the user's query into one of the predefined CoLD categories.",
         "operationId": "classify_query_get_api_v1_ai_classify_query_get",
@@ -636,9 +619,7 @@
     },
     "/case-analyzer/upload": {
       "post": {
-        "tags": [
-          "Case Analyzer"
-        ],
+        "tags": ["Case Analyzer"],
         "summary": "Upload court decision document for initial analysis",
         "description": "Upload a PDF court decision document. The system will extract text, detect jurisdiction and legal system type, save as draft in database. Returns a stream of SSE events with progress updates and heartbeats.",
         "operationId": "upload_document_api_v1_case_analyzer_upload_post",
@@ -696,9 +677,7 @@
     },
     "/case-analyzer/analyze": {
       "post": {
-        "tags": [
-          "Case Analyzer"
-        ],
+        "tags": ["Case Analyzer"],
         "summary": "Confirm jurisdiction and run full case analysis",
         "description": "Confirm or correct the detected jurisdiction and run the full case analysis workflow. Returns a stream of intermediate results as each analysis step completes. Updates the database draft at each step for recoverability.",
         "operationId": "analyze_document_api_v1_case_analyzer_analyze_post",
@@ -756,9 +735,7 @@
     },
     "/case-analyzer/submit": {
       "post": {
-        "tags": [
-          "Case Analyzer"
-        ],
+        "tags": ["Case Analyzer"],
         "summary": "Submit case analysis for moderation approval",
         "description": "Submit user-edited case analysis data for moderation approval. The data is stored in the submitted_data column and the status is changed to 'pending'. Moderators will review and can approve/reject.",
         "operationId": "submit_for_approval_api_v1_case_analyzer_submit_post",
@@ -818,9 +795,7 @@
     },
     "/case-analyzer/my-analyses": {
       "get": {
-        "tags": [
-          "Case Analyzer"
-        ],
+        "tags": ["Case Analyzer"],
         "summary": "List user's case analyses",
         "description": "Returns all case analyses belonging to the authenticated user.",
         "operationId": "list_my_analyses_api_v1_case_analyzer_my_analyses_get",
@@ -874,9 +849,7 @@
     },
     "/case-analyzer/draft/{draft_id}": {
       "get": {
-        "tags": [
-          "Case Analyzer"
-        ],
+        "tags": ["Case Analyzer"],
         "summary": "Get draft data for recovery",
         "description": "Fetch draft data to recover the analyzer form state. Returns draft data if status is recoverable (not pending/approved).",
         "operationId": "get_draft_for_recovery_api_v1_case_analyzer_draft__draft_id__get",
@@ -935,9 +908,7 @@
     },
     "/submarine/": {
       "get": {
-        "tags": [
-          "Submarine"
-        ],
+        "tags": ["Submarine"],
         "summary": "Animated submarine easter egg",
         "operationId": "submarine_api_v1_submarine__get",
         "responses": {
@@ -956,9 +927,7 @@
     },
     "/sitemap/urls": {
       "get": {
-        "tags": [
-          "Sitemap"
-        ],
+        "tags": ["Sitemap"],
         "summary": "Get All Frontend Urls",
         "operationId": "get_all_frontend_urls_api_v1_sitemap_urls_get",
         "responses": {
@@ -981,9 +950,7 @@
     },
     "/landing-page/jurisdictions": {
       "get": {
-        "tags": [
-          "LandingPage"
-        ],
+        "tags": ["LandingPage"],
         "summary": "Jurisdictions with data availability",
         "description": "Returns ISO Alpha-3 codes and a has_data flag (1/0) depending on whether non-'No data' answers exist.",
         "operationId": "get_jurisdictions_api_v1_landing_page_jurisdictions_get",
@@ -1013,9 +980,7 @@
     },
     "/statistics/jurisdictions-with-answer-percentage": {
       "get": {
-        "tags": [
-          "Statistics"
-        ],
+        "tags": ["Statistics"],
         "summary": "Get all jurisdictions with answer data percentage",
         "description": "Returns all jurisdictions with their complete data plus the percentage of answers that contain data (not 'no data'). Percentage is calculated per jurisdiction.",
         "operationId": "get_jurisdictions_with_answer_coverage_api_v1_statistics_jurisdictions_with_answer_percentage_get",
@@ -1055,9 +1020,7 @@
     },
     "/statistics/count-by-jurisdiction": {
       "get": {
-        "tags": [
-          "Statistics"
-        ],
+        "tags": ["Statistics"],
         "summary": "Count records by jurisdiction for a specific table",
         "description": "Returns count of rows grouped by jurisdiction for the specified table. Supported tables: Court Decisions, Domestic Instruments, Literature.",
         "operationId": "count_by_jurisdiction_api_v1_statistics_count_by_jurisdiction_get",
@@ -1136,9 +1099,7 @@
     },
     "/statistics/counts": {
       "get": {
-        "tags": [
-          "Statistics"
-        ],
+        "tags": ["Statistics"],
         "summary": "Counts for every entity in the dataverse",
         "description": "Returns counts per entity type, optionally scoped to a jurisdiction. Plain GET so it can be cached at the edge by Cloudflare.",
         "operationId": "get_entity_counts_api_v1_statistics_counts_get",
@@ -1188,9 +1149,7 @@
     },
     "/entities/{slug}": {
       "get": {
-        "tags": [
-          "Entities"
-        ],
+        "tags": ["Entities"],
         "summary": "List entities of a given type with optional jurisdiction filter",
         "description": "Returns a paginated, slim list of entities using the relation contract (`*Relation` shapes used inside detail responses). Supports jurisdiction filtering for entities that expose `jurisdictions_alpha_3_code`. Court Decisions additionally accepts a `case_rank` filter.",
         "operationId": "list_entity_api_v1_entities__slug__get",
@@ -1312,10 +1271,7 @@
             "schema": {
               "anyOf": [
                 {
-                  "enum": [
-                    "asc",
-                    "desc"
-                  ],
+                  "enum": ["asc", "desc"],
                   "type": "string"
                 },
                 {
@@ -1357,9 +1313,7 @@
     },
     "/suggestions/": {
       "post": {
-        "tags": [
-          "Suggestions"
-        ],
+        "tags": ["Suggestions"],
         "summary": "Submit a new data suggestion",
         "description": "Accepts arbitrary dictionaries from the frontend and stores them in a separate Postgres table.",
         "operationId": "submit_suggestion_api_v1_suggestions__post",
@@ -1419,9 +1373,7 @@
     },
     "/suggestions/court-decisions": {
       "post": {
-        "tags": [
-          "Suggestions"
-        ],
+        "tags": ["Suggestions"],
         "summary": "Submit a new Court Decision suggestion",
         "operationId": "handler_api_v1_suggestions_court_decisions_post",
         "parameters": [
@@ -1496,9 +1448,7 @@
     },
     "/suggestions/domestic-instruments": {
       "post": {
-        "tags": [
-          "Suggestions"
-        ],
+        "tags": ["Suggestions"],
         "summary": "Submit a new Domestic Instrument suggestion",
         "operationId": "handler_api_v1_suggestions_domestic_instruments_post",
         "parameters": [
@@ -1573,9 +1523,7 @@
     },
     "/suggestions/regional-instruments": {
       "post": {
-        "tags": [
-          "Suggestions"
-        ],
+        "tags": ["Suggestions"],
         "summary": "Submit a new Regional Instrument suggestion",
         "operationId": "handler_api_v1_suggestions_regional_instruments_post",
         "parameters": [
@@ -1650,9 +1598,7 @@
     },
     "/suggestions/international-instruments": {
       "post": {
-        "tags": [
-          "Suggestions"
-        ],
+        "tags": ["Suggestions"],
         "summary": "Submit a new International Instrument suggestion",
         "operationId": "handler_api_v1_suggestions_international_instruments_post",
         "parameters": [
@@ -1727,9 +1673,7 @@
     },
     "/suggestions/literature": {
       "post": {
-        "tags": [
-          "Suggestions"
-        ],
+        "tags": ["Suggestions"],
         "summary": "Submit a new Literature suggestion",
         "operationId": "handler_api_v1_suggestions_literature_post",
         "parameters": [
@@ -1804,9 +1748,7 @@
     },
     "/suggestions/moderation/summary": {
       "get": {
-        "tags": [
-          "Suggestions"
-        ],
+        "tags": ["Suggestions"],
         "summary": "Get pending counts for all moderation categories",
         "description": "Requires editor or admin role. Returns pending suggestion counts per category.",
         "operationId": "moderation_summary_api_v1_suggestions_moderation_summary_get",
@@ -1860,9 +1802,7 @@
     },
     "/suggestions/pending/{category}": {
       "get": {
-        "tags": [
-          "Suggestions"
-        ],
+        "tags": ["Suggestions"],
         "summary": "List pending suggestions for a category",
         "description": "Requires editor or admin role. Returns list of pending suggestions for moderation.",
         "operationId": "list_pending_suggestions_api_v1_suggestions_pending__category__get",
@@ -1935,9 +1875,7 @@
     },
     "/suggestions/{category}/{suggestion_id}": {
       "get": {
-        "tags": [
-          "Suggestions"
-        ],
+        "tags": ["Suggestions"],
         "summary": "Get specific suggestion details",
         "description": "Authenticated users can retrieve details for their own submissions. Editors and admins can access any suggestion for moderation.",
         "operationId": "get_suggestion_detail_api_v1_suggestions__category___suggestion_id__get",
@@ -2003,9 +1941,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "Suggestions"
-        ],
+        "tags": ["Suggestions"],
         "summary": "Delete a suggestion",
         "description": "Requires editor or admin role. Permanently deletes a suggestion.",
         "operationId": "delete_suggestion_api_v1_suggestions__category___suggestion_id__delete",
@@ -2073,9 +2009,7 @@
     },
     "/suggestions/{category}/{suggestion_id}/approve": {
       "post": {
-        "tags": [
-          "Suggestions"
-        ],
+        "tags": ["Suggestions"],
         "summary": "Approve a suggestion",
         "description": "Requires editor or admin role. Marks a suggestion as approved and processes it for insertion",
         "operationId": "approve_suggestion_api_v1_suggestions__category___suggestion_id__approve_post",
@@ -2143,9 +2077,7 @@
     },
     "/suggestions/{category}/{suggestion_id}/reject": {
       "post": {
-        "tags": [
-          "Suggestions"
-        ],
+        "tags": ["Suggestions"],
         "summary": "Reject a suggestion",
         "description": "Requires editor or admin role. Marks a suggestion as rejected.",
         "operationId": "reject_suggestion_api_v1_suggestions__category___suggestion_id__reject_post",
@@ -2213,9 +2145,7 @@
     },
     "/feedback": {
       "post": {
-        "tags": [
-          "Feedback"
-        ],
+        "tags": ["Feedback"],
         "summary": "Submit entity feedback",
         "operationId": "submit_feedback_api_v1_feedback_post",
         "parameters": [
@@ -2274,9 +2204,7 @@
     },
     "/feedback/pending": {
       "get": {
-        "tags": [
-          "Feedback"
-        ],
+        "tags": ["Feedback"],
         "summary": "List pending feedback",
         "operationId": "list_pending_api_v1_feedback_pending_get",
         "parameters": [
@@ -2329,9 +2257,7 @@
     },
     "/feedback/{feedback_id}": {
       "get": {
-        "tags": [
-          "Feedback"
-        ],
+        "tags": ["Feedback"],
         "summary": "Get feedback detail",
         "operationId": "get_feedback_api_v1_feedback__feedback_id__get",
         "parameters": [
@@ -2387,9 +2313,7 @@
         }
       },
       "patch": {
-        "tags": [
-          "Feedback"
-        ],
+        "tags": ["Feedback"],
         "summary": "Update feedback status",
         "operationId": "update_feedback_api_v1_feedback__feedback_id__patch",
         "parameters": [
@@ -2597,10 +2521,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "id",
-          "sourceTable"
-        ],
+        "required": ["id", "sourceTable"],
         "title": "AnswerDetail"
       },
       "AnswerRecord": {
@@ -3280,10 +3201,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "id",
-          "sourceTable"
-        ],
+        "required": ["id", "sourceTable"],
         "title": "ArbitralAwardDetail"
       },
       "ArbitralAwardRecord": {
@@ -3704,9 +3622,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "id"
-        ],
+        "required": ["id"],
         "title": "ArbitralAwardRelation"
       },
       "ArbitralAwardSearchResult": {
@@ -3930,10 +3846,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "id",
-          "sourceTable"
-        ],
+        "required": ["id", "sourceTable"],
         "title": "ArbitralInstitutionDetail"
       },
       "ArbitralInstitutionRecord": {
@@ -4192,9 +4105,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "id"
-        ],
+        "required": ["id"],
         "title": "ArbitralInstitutionRelation"
       },
       "ArbitralInstitutionSearchResult": {
@@ -4418,10 +4329,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "id",
-          "sourceTable"
-        ],
+        "required": ["id", "sourceTable"],
         "title": "ArbitralProvisionDetail"
       },
       "ArbitralProvisionRecord": {
@@ -4690,9 +4598,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "id"
-        ],
+        "required": ["id"],
         "title": "ArbitralProvisionRelation"
       },
       "ArbitralProvisionSearchResult": {
@@ -4906,10 +4812,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "id",
-          "sourceTable"
-        ],
+        "required": ["id", "sourceTable"],
         "title": "ArbitralRuleDetail"
       },
       "ArbitralRuleRecord": {
@@ -5181,9 +5084,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "id"
-        ],
+        "required": ["id"],
         "title": "ArbitralRuleRelation"
       },
       "ArbitralRuleSearchResult": {
@@ -5312,10 +5213,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "draftId",
-          "jurisdiction"
-        ],
+        "required": ["draftId", "jurisdiction"],
         "title": "ConfirmAnalysisRequest"
       },
       "CourtDecisionDetail": {
@@ -5590,10 +5488,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "id",
-          "sourceTable"
-        ],
+        "required": ["id", "sourceTable"],
         "title": "CourtDecisionDetail"
       },
       "CourtDecisionRecord": {
@@ -6109,12 +6004,20 @@
                 "type": "null"
               }
             ]
+          },
+          "publicationDateIso": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "type": "object",
-        "required": [
-          "id"
-        ],
+        "required": ["id"],
         "title": "CourtDecisionRelation"
       },
       "CourtDecisionSearchResult": {
@@ -6598,10 +6501,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "id",
-          "sourceTable"
-        ],
+        "required": ["id", "sourceTable"],
         "title": "DetailBase"
       },
       "DomesticInstrumentDetail": {
@@ -6816,10 +6716,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "id",
-          "sourceTable"
-        ],
+        "required": ["id", "sourceTable"],
         "title": "DomesticInstrumentDetail"
       },
       "DomesticInstrumentRecord": {
@@ -7268,9 +7165,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "id"
-        ],
+        "required": ["id"],
         "title": "DomesticInstrumentRelation"
       },
       "DomesticInstrumentSearchResult": {
@@ -7583,10 +7478,7 @@
           "source_url": "https://boletin.oficial.ar/ley.pdf",
           "submitter_comments": "Newer consolidated version available.",
           "submitter_email": "user@example.com",
-          "themes": [
-            "contract",
-            "choice-of-law"
-          ],
+          "themes": ["contract", "choice-of-law"],
           "title_en": "Argentinian Private International Law Act"
         }
       },
@@ -7702,10 +7594,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "id",
-          "sourceTable"
-        ],
+        "required": ["id", "sourceTable"],
         "title": "DomesticLegalProvisionDetail"
       },
       "DomesticLegalProvisionRecord": {
@@ -8007,9 +7896,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "id"
-        ],
+        "required": ["id"],
         "title": "DomesticLegalProvisionRelation"
       },
       "DomesticLegalProvisionSearchResult": {
@@ -8185,10 +8072,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "draftId",
-          "status"
-        ],
+        "required": ["draftId", "status"],
         "title": "DraftRecoveryResponse"
       },
       "EntityCountsResponse": {
@@ -8211,9 +8095,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "counts"
-        ],
+        "required": ["counts"],
         "title": "EntityCountsResponse"
       },
       "EntityListResponse": {
@@ -8235,12 +8117,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "items",
-          "total",
-          "page",
-          "pageSize"
-        ],
+        "required": ["items", "total", "page", "pageSize"],
         "title": "EntityListResponse"
       },
       "EntityRelations": {
@@ -8403,10 +8280,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "column",
-          "values"
-        ],
+        "required": ["column", "values"],
         "title": "FTSFilterOption"
       },
       "FeedbackDetail": {
@@ -8474,11 +8348,7 @@
       },
       "FeedbackModerationStatus": {
         "type": "string",
-        "enum": [
-          "pending",
-          "reviewed",
-          "dismissed"
-        ],
+        "enum": ["pending", "reviewed", "dismissed"],
         "title": "FeedbackModerationStatus"
       },
       "FeedbackPendingItem": {
@@ -8540,9 +8410,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "id"
-        ],
+        "required": ["id"],
         "title": "FeedbackResponse"
       },
       "FeedbackSubmit": {
@@ -8589,13 +8457,7 @@
       },
       "FeedbackType": {
         "type": "string",
-        "enum": [
-          "improve",
-          "missing_data",
-          "wrong_info",
-          "outdated",
-          "other"
-        ],
+        "enum": ["improve", "missing_data", "wrong_info", "outdated", "other"],
         "title": "FeedbackType"
       },
       "FeedbackUpdate": {
@@ -8605,9 +8467,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "moderationStatus"
-        ],
+        "required": ["moderationStatus"],
         "title": "FeedbackUpdate"
       },
       "FullTextSearchResponse": {
@@ -8704,12 +8564,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "totalMatches",
-          "page",
-          "pageSize",
-          "results"
-        ],
+        "required": ["totalMatches", "page", "pageSize", "results"],
         "title": "FullTextSearchResponse"
       },
       "HTTPValidationError": {
@@ -8816,10 +8671,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "id",
-          "sourceTable"
-        ],
+        "required": ["id", "sourceTable"],
         "title": "HcchAnswerDetail"
       },
       "HcchAnswerRelation": {
@@ -8859,9 +8711,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "id"
-        ],
+        "required": ["id"],
         "title": "HcchAnswerRelation"
       },
       "HcchAnswerSearchResult": {
@@ -9085,10 +8935,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "id",
-          "sourceTable"
-        ],
+        "required": ["id", "sourceTable"],
         "title": "InternationalInstrumentDetail"
       },
       "InternationalInstrumentRecord": {
@@ -9517,9 +9364,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "id"
-        ],
+        "required": ["id"],
         "title": "InternationalInstrumentRelation"
       },
       "InternationalInstrumentSearchResult": {
@@ -9702,11 +9547,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "name",
-          "url",
-          "instrument_date"
-        ],
+        "required": ["name", "url", "instrument_date"],
         "title": "InternationalInstrumentSuggestion",
         "example": {
           "instrument_date": "2015-03-19",
@@ -9828,10 +9669,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "id",
-          "sourceTable"
-        ],
+        "required": ["id", "sourceTable"],
         "title": "InternationalLegalProvisionDetail"
       },
       "InternationalLegalProvisionRecord": {
@@ -10143,9 +9981,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "id"
-        ],
+        "required": ["id"],
         "title": "InternationalLegalProvisionRelation"
       },
       "InternationalLegalProvisionSearchResult": {
@@ -10270,10 +10106,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "jurisdiction",
-          "n"
-        ],
+        "required": ["jurisdiction", "n"],
         "title": "JurisdictionCount",
         "examples": [
           {
@@ -10326,10 +10159,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "id",
-          "name"
-        ],
+        "required": ["id", "name"],
         "title": "JurisdictionCoverage"
       },
       "JurisdictionDetail": {
@@ -10484,10 +10314,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "id",
-          "sourceTable"
-        ],
+        "required": ["id", "sourceTable"],
         "title": "JurisdictionDetail"
       },
       "JurisdictionInfo": {
@@ -10506,11 +10333,7 @@
           },
           "confidence": {
             "type": "string",
-            "enum": [
-              "low",
-              "medium",
-              "high"
-            ],
+            "enum": ["low", "medium", "high"],
             "description": "Confidence level of detection"
           },
           "reasoning": {
@@ -10784,9 +10607,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "id"
-        ],
+        "required": ["id"],
         "title": "JurisdictionRelation"
       },
       "JurisdictionSearchResult": {
@@ -10928,10 +10749,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "code",
-          "hasData"
-        ],
+        "required": ["code", "hasData"],
         "title": "LandingPageJurisdiction"
       },
       "LiteratureDetail": {
@@ -11406,10 +11224,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "id",
-          "sourceTable"
-        ],
+        "required": ["id", "sourceTable"],
         "title": "LiteratureDetail"
       },
       "LiteratureRecord": {
@@ -12124,9 +11939,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "id"
-        ],
+        "required": ["id"],
         "title": "LiteratureRelation"
       },
       "LiteratureSearchResult": {
@@ -12462,11 +12275,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "category",
-          "label",
-          "pendingCount"
-        ],
+        "required": ["category", "label", "pendingCount"],
         "title": "ModerationSummaryItem"
       },
       "PendingSuggestionItem": {
@@ -12552,9 +12361,7 @@
         },
         "additionalProperties": true,
         "type": "object",
-        "required": [
-          "id"
-        ],
+        "required": ["id"],
         "title": "PendingSuggestionItem"
       },
       "QuestionDetail": {
@@ -12659,10 +12466,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "id",
-          "sourceTable"
-        ],
+        "required": ["id", "sourceTable"],
         "title": "QuestionDetail"
       },
       "QuestionRecord": {
@@ -12874,9 +12678,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "id"
-        ],
+        "required": ["id"],
         "title": "QuestionRelation"
       },
       "QuestionSearchResult": {
@@ -13159,10 +12961,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "id",
-          "sourceTable"
-        ],
+        "required": ["id", "sourceTable"],
         "title": "RegionalInstrumentDetail"
       },
       "RegionalInstrumentRecord": {
@@ -13461,9 +13260,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "id"
-        ],
+        "required": ["id"],
         "title": "RegionalInstrumentRelation"
       },
       "RegionalInstrumentSearchResult": {
@@ -13661,9 +13458,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "abbreviation"
-        ],
+        "required": ["abbreviation"],
         "title": "RegionalInstrumentSuggestion",
         "example": {
           "abbreviation": "EU-Rome I",
@@ -13776,10 +13571,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "id",
-          "sourceTable"
-        ],
+        "required": ["id", "sourceTable"],
         "title": "RegionalLegalProvisionDetail"
       },
       "RegionalLegalProvisionRecord": {
@@ -14028,9 +13820,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "id"
-        ],
+        "required": ["id"],
         "title": "RegionalLegalProvisionRelation"
       },
       "RegionalLegalProvisionSearchResult": {
@@ -14231,10 +14021,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "loc",
-          "lastmod"
-        ],
+        "required": ["loc", "lastmod"],
         "title": "SitemapEntry"
       },
       "SpecialistDetail": {
@@ -14349,10 +14136,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "id",
-          "sourceTable"
-        ],
+        "required": ["id", "sourceTable"],
         "title": "SpecialistDetail"
       },
       "SpecialistRecord": {
@@ -14611,9 +14395,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "id"
-        ],
+        "required": ["id"],
         "title": "SpecialistRelation"
       },
       "SpecialistResponse": {
@@ -14726,9 +14508,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "id"
-        ],
+        "required": ["id"],
         "title": "SpecialistResponse",
         "examples": [
           {
@@ -14755,10 +14535,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "status",
-          "message"
-        ],
+        "required": ["status", "message"],
         "title": "StatusMessage"
       },
       "SubmitForApprovalRequest": {
@@ -14782,10 +14559,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "draftId",
-          "submittedData"
-        ],
+        "required": ["draftId", "submittedData"],
         "title": "SubmitForApprovalRequest"
       },
       "SubmitForApprovalResponse": {
@@ -14805,10 +14579,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "draftId",
-          "message"
-        ],
+        "required": ["draftId", "message"],
         "title": "SubmitForApprovalResponse"
       },
       "SuggestionDetailItem": {
@@ -14874,9 +14645,7 @@
         },
         "additionalProperties": true,
         "type": "object",
-        "required": [
-          "id"
-        ],
+        "required": ["id"],
         "title": "SuggestionDetailItem"
       },
       "SuggestionPayload": {
@@ -14922,9 +14691,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "data"
-        ],
+        "required": ["data"],
         "title": "SuggestionPayload",
         "examples": [
           {
@@ -14951,9 +14718,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "id"
-        ],
+        "required": ["id"],
         "title": "SuggestionResponse"
       },
       "ThemeRelation": {
@@ -14983,9 +14748,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "id"
-        ],
+        "required": ["id"],
         "title": "ThemeRelation"
       },
       "UploadDocumentRequest": {
@@ -15000,10 +14763,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "fileName",
-          "blobUrl"
-        ],
+        "required": ["fileName", "blobUrl"],
         "title": "UploadDocumentRequest"
       },
       "UserAnalysisSummary": {
@@ -15046,10 +14806,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "id",
-          "moderationStatus"
-        ],
+        "required": ["id", "moderationStatus"],
         "title": "UserAnalysisSummary"
       },
       "ValidationError": {
@@ -15075,11 +14832,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "loc",
-          "msg",
-          "type"
-        ],
+        "required": ["loc", "msg", "type"],
         "title": "ValidationError"
       }
     }

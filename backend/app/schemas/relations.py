@@ -39,6 +39,7 @@ class CourtDecisionRelation(_RelationBase):
     case_citation: str | None = None
     case_title: str | None = None
     date: str | None = None
+    publication_date_iso: str | None = None
 
 
 class DomesticInstrumentRelation(_RelationBase):

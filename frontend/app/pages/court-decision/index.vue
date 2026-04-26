@@ -189,7 +189,7 @@ const rows = computed(() =>
   (data.value?.items ?? []).map((item) => ({
     caseTitle: sanitize(item.caseTitle),
     caseCitation: sanitize(item.caseCitation),
-    date: formatDate(sanitize(item.date)) || "",
+    date: formatDate(sanitize(item.publicationDateIso)) || "",
     coldId: sanitize(item.coldId),
   })),
 );
