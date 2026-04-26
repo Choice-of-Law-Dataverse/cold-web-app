@@ -8,7 +8,7 @@
     header-class="cursor-pointer text-left md:whitespace-nowrap"
   >
     <FlagTitleYearItem
-      v-for="decision in leadingCases?.slice(0, 6)"
+      v-for="decision in leadingCases"
       :key="String(decision.id || '')"
       :to="`/court-decision/${decision.id}`"
       :iso3="decision.jurisdictionsAlpha3Code || ''"
@@ -29,5 +29,5 @@ import FlagTitleYearItem from "@/components/landing-page/FlagTitleYearItem.vue";
 import { useLeadingCases } from "@/composables/useFullTable";
 import { formatYear } from "@/utils/format";
 
-const { data: leadingCases, isLoading, error } = useLeadingCases();
+const { data: leadingCases, isLoading, error } = useLeadingCases({ limit: 6 });
 </script>

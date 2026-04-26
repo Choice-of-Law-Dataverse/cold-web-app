@@ -7,7 +7,7 @@
     <div v-else-if="items.length" class="result-value-small">
       <div class="mb-2 flex flex-row flex-wrap gap-x-6 gap-y-2">
         <EntityLink
-          v-for="item in items"
+          v-for="item in visibleItems"
           :key="item.id"
           :id="item.id"
           :title="item.title"
@@ -15,6 +15,10 @@
           :badge="item.badge"
         />
       </div>
+      <ShowMoreLess
+        v-if="items.length > SHOW_MORE_THRESHOLD"
+        v-model:is-expanded="isExpanded"
+      />
     </div>
     <p
       v-else-if="emptyValueBehavior.action === 'display'"
@@ -26,11 +30,14 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import LoadingBar from "@/components/layout/LoadingBar.vue";
 import InlineError from "@/components/ui/InlineError.vue";
 import EntityLink from "@/components/ui/EntityLink.vue";
+import ShowMoreLess from "@/components/ui/ShowMoreLess.vue";
 import type { RelatedItem, EmptyValueBehavior } from "@/types/ui";
+
+const SHOW_MORE_THRESHOLD = 20;
 
 const props = withDefaults(
   defineProps<{
@@ -50,7 +57,15 @@ const props = withDefaults(
   },
 );
 
+const isExpanded = ref(false);
+
 const hasItems = computed(() => props.items.length > 0);
+
+const visibleItems = computed(() =>
+  isExpanded.value || props.items.length <= SHOW_MORE_THRESHOLD
+    ? props.items
+    : props.items.slice(0, SHOW_MORE_THRESHOLD),
+);
 
 const shouldShowSection = computed(
   () =>

@@ -25,21 +25,42 @@
       {{ announcement }}
     </div>
 
-    <EntityDrawer />
+    <EntityDrawer v-if="hasOpenedDrawer" />
   </div>
 </template>
 
 <script setup lang="ts">
+import { defineAsyncComponent, onMounted, ref, watch } from "vue";
 import Nav from "@/components/layout/Nav.vue";
 import Footer from "@/components/layout/Footer.vue";
 import ErrorBoundary from "@/components/ui/ErrorBoundary.vue";
-import EntityDrawer from "@/components/entity/EntityDrawer.vue";
 import EventBanner from "@/components/layout/EventBanner.vue";
 import { useScreenAnnouncer } from "@/composables/useScreenAnnouncer";
 import { useEntityDrawer } from "@/composables/useEntityDrawer";
 
+const EntityDrawer = defineAsyncComponent(
+  () => import("@/components/entity/EntityDrawer.vue"),
+);
+
 const { announcement } = useScreenAnnouncer();
 const { isOpen: isDrawerOpen } = useEntityDrawer();
+
+const hasOpenedDrawer = ref(false);
+
+watch(isDrawerOpen, (open) => {
+  if (open) hasOpenedDrawer.value = true;
+});
+
+onMounted(() => {
+  if (hasOpenedDrawer.value) return;
+  const schedule =
+    typeof window.requestIdleCallback === "function"
+      ? (cb: () => void) => window.requestIdleCallback(cb, { timeout: 2500 })
+      : (cb: () => void) => window.setTimeout(cb, 1500);
+  schedule(() => {
+    hasOpenedDrawer.value = true;
+  });
+});
 // import { useNavigationDirection } from "@/composables/useNavigationDirection";
 
 // const { direction } = useNavigationDirection();

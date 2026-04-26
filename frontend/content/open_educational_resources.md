@@ -5,16 +5,24 @@ title: Open Educational Resources — CoLD
 ## ‌Choice of Law in International Commercial Contracts
 
 This <a href="https://global.oup.com/academic/product/choice-of-law-in-international-commercial-contracts-9780198840107?cc=ch&lang=en" target="_blank">book<img
-    src="https://choiceoflaw.blob.core.windows.net/assets/external_link.svg"
+    src="https://assets.cold.global/assets/external_link.svg"
     alt="external link"
     class="external-link-icon"
-  /></a> is the main output of the previous research project, <a href="https://data.snf.ch/grants/grant/179515" target="_blank">“The Hague Principles and Beyond”<img
-    src="https://choiceoflaw.blob.core.windows.net/assets/external_link.svg"
-    alt="external link"
-    class="external-link-icon"
-  /></a>. It contains over sixty reports dealing with the regulation of choice of law in a significant number of jurisdictions around the world and a general report. The book has been applauded by the academic community and it is regarded as a definitive reference guide to the key choice of law principles on international contracts.
-<a href="https://fdslive.oup.com/www.oup.com/academic/pdf/13/9780198840107_chapter1.pdf(https://academic.oup.com/oxford-law-pro/book/57728/chapter/470401437)" target="_blank">Read the General Comparative Report<img
-    src="https://choiceoflaw.blob.core.windows.net/assets/external_link.svg"
+  /></a> is the main output of the previous research project, <a href=”https://data.snf.ch/grants/grant/179515” target=”_blank”>”The Hague Principles and Beyond”<img
+    src=”https://assets.cold.global/assets/external_link.svg”
+    alt=”external link”
+    class=”external-link-icon”
+  /></a>. It contains over sixty reports dealing with the regulation of choice of law in a significant number of jurisdictions around the world and a general report. The book has been applauded by the academic community, and it is regarded as a definitive reference guide to the key choice of law principles on international contracts.
+<a href=”https://fdslive.oup.com/www.oup.com/academic/pdf/13/9780198840107_chapter1.pdf” target=”_blank”>Read the General Comparative Report<img
+    src=”https://assets.cold.global/assets/external_link.svg”
+    alt=”external link”
+    class=”external-link-icon”
+  /></a>.
+
+## ‌Uniform Law Review
+
+Volume 22, Issue 2, June 2017 - special issue on the HCCH Principles (<a href=”https://academic.oup.com/ulr/issue/22/2” target=”_blank”>available through paywall<img
+    src=”https://assets.cold.global/assets/external_link.svg”
     alt="external link"
     class="external-link-icon"
   /></a> (Open Access).
@@ -23,7 +31,7 @@ This <a href="https://global.oup.com/academic/product/choice-of-law-in-internati
 
 Official materials from the Hague Conference on Private International Law
 Consult the <a href="https://www.hcch.net/en/instruments/conventions/specialised-sections/choice-of-law-principles" target="_blank">HCCH page<img
-    src="https://choiceoflaw.blob.core.windows.net/assets/external_link.svg"
+    src="https://assets.cold.global/assets/external_link.svg"
     alt="external link"
     class="external-link-icon"
   /></a>, regularly updated.
@@ -71,7 +79,7 @@ Consult the <a href="https://www.hcch.net/en/instruments/conventions/specialised
 - Michael Douglas and Nicholas Loadsmant, [‘The Impact of the Hague Principles on Choice of Law in International Commercial Contracts’ (2018)](/literature/L-81) 19 Melbourne Journal of International Law 1.
 
 <a href="/search?type=Literature">See all texts and references<img
-    src="https://choiceoflaw.blob.core.windows.net/assets/arrow_forward.svg"
+    src="https://assets.cold.global/assets/arrow_forward.svg"
     class="external-link-icon"
   /></a>
 

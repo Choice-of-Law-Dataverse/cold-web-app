@@ -10,19 +10,15 @@ const fetchNumberCount = async (tableName: TableName) => {
 
   const { client } = useApiClient();
 
-  const { data, error } = await client.POST("/search/", {
-    body: {
-      search_string: "",
-      filters: [
-        {
-          column: "tables",
-          values: [tableName],
-        },
-      ],
-      page: 1,
-      page_size: 1,
-      sort_by_date: false,
-      response_type: null,
+  const { data, error } = await client.GET("/search/", {
+    params: {
+      query: {
+        search_string: "",
+        tables: [tableName],
+        page: 1,
+        page_size: 1,
+        sort_by_date: false,
+      },
     },
   });
 

@@ -7,6 +7,10 @@
 <script setup lang="ts">
 import ContentPageLayout from "@/components/layout/ContentPageLayout.vue";
 
+useHead({
+  title: "Disclaimer — CoLD",
+});
+
 const { data: page } = await useAsyncData("disclaimer", () =>
   queryCollection("content").path("/disclaimer").first(),
 );

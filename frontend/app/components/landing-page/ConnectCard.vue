@@ -16,7 +16,12 @@
       </div>
 
       <div class="icon-container">
-        <NuxtLink v-if="isRelativeLink" :to="buttonLink" class="icon-link">
+        <NuxtLink
+          v-if="isRelativeLink"
+          :to="buttonLink"
+          :aria-label="buttonText"
+          class="icon-link"
+        >
           <template v-if="imageSrc">
             <img :src="imageSrc" alt="" class="icon-image" />
           </template>
@@ -31,6 +36,7 @@
           :href="buttonLink"
           :target="newTab ? '_blank' : '_self'"
           :rel="newTab ? 'noopener noreferrer' : ''"
+          :aria-label="buttonText"
           class="icon-link"
         >
           <template v-if="imageSrc">

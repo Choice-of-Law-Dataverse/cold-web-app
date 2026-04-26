@@ -88,7 +88,7 @@
   );
 
   /* Nav heights - mobile defaults */
-  --nav-height: 5rem;
+  --nav-height: 3.5rem;
   --nav-height-scrolled: 3.5rem;
   --banner-height: 2.5rem;
 
@@ -194,7 +194,7 @@
 /* Desktop nav heights */
 @media (min-width: 640px) {
   :root {
-    --nav-height: 7rem;
+    --nav-height: 4rem;
     --nav-height-scrolled: 4rem;
   }
 }
@@ -1086,102 +1086,8 @@ button.cold-toggle-btn[aria-pressed="true"] {
   display: none;
 }
 
-/* Print styles ----------------------------------------------- */
-@media print {
-  /* Show print-only field values */
-  .print-field-value {
-    display: block !important;
-    white-space: pre-wrap;
-    word-wrap: break-word;
-    background: #fafafa;
-    min-height: 2em;
-    font-size: 0.75rem;
-    line-height: 1.5;
-  }
-
-  /* Hide navigation, header chrome, and interactive elements */
-  header,
-  nav,
-  .header-container,
-  button,
-  .no-print,
-  [class*="UButton"],
-  footer,
-  .arrow-container,
-  .arrow-icon {
-    display: none !important;
-  }
-
-  /* Ensure content is visible and properly formatted */
-  body,
-  main {
-    width: 100%;
-    max-width: 100%;
-    margin: 0;
-    padding: 0;
-    background: white !important;
-  }
-
-  /* Preserve links but make them readable */
-  a {
-    text-decoration: underline !important;
-  }
-
-  /* Optimize page breaks */
-  h1,
-  h2,
-  h3 {
-    page-break-after: avoid;
-  }
-
-  table,
-  figure,
-  img {
-    page-break-inside: avoid;
-  }
-
-  /* Case analyzer print styles */
-  /* Make form inputs print-friendly - show values clearly */
-  textarea,
-  input[type="text"] {
-    border: 1px solid #ccc !important;
-    background: white !important;
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
-    overflow: visible !important;
-    height: auto !important;
-    min-height: auto !important;
-    white-space: pre-wrap !important;
-  }
-
-  /* Ensure text content is visible */
-  textarea {
-    resize: none !important;
-  }
-
-  /* Show full grid width when sidebar is hidden */
-  .print\:col-span-3 {
-    grid-column: span 3 / span 3 !important;
-  }
-
-  /* Hide card footers with action buttons */
-  .card-footer-modern {
-    display: none !important;
-  }
-
-  /* Page hero should be more compact in print */
-  .page-hero {
-    padding: 1rem 0 !important;
-    margin-bottom: 1rem !important;
-  }
-
-  /* Remove card shadows/borders for cleaner print */
-  [data-slot="root"],
-  [class*="UCard"] {
-    box-shadow: none !important;
-    border: 1px solid #e5e7eb !important;
-  }
-}
+/* Print styles live in app/assets/print.css and are loaded via app.vue
+   with media="print" to keep them out of the render-blocking entry CSS. */
 
 /* Action button - for internal actions (cite, json, print, edit, copy, download) */
 .action-button {
@@ -2035,11 +1941,10 @@ button.cold-toggle-btn[aria-pressed="true"] {
   margin-bottom: 1.25rem;
 }
 
-/* Images - constrain to reasonable size */
+/* Images - display at their specified width, prevent overflow */
 .content-page-prose img {
-  max-width: 200px;
+  max-width: 100%;
   height: auto;
-  border-radius: 0.375rem;
   margin-top: 1rem;
   margin-bottom: 1rem;
 }

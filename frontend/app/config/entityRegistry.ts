@@ -328,7 +328,7 @@ export const entityRegistry: Record<string, EntityConfig> = {
           key: "title",
           inlineImage: {
             dataKey: "openAccess",
-            src: "https://choiceoflaw.blob.core.windows.net/assets/Open_Access_logo_PLoS_transparent.svg",
+            src: "https://assets.cold.global/assets/Open_Access_logo_PLoS_transparent.svg",
             alt: "Open Access Logo",
             class: "ml-1 inline-flex w-3",
           },
@@ -502,11 +502,12 @@ export const entityRegistry: Record<string, EntityConfig> = {
   },
   "/jurisdiction": {
     table: "Jurisdictions",
-    singularLabel: "Jurisdiction",
-    fieldOrder: ["jurisdictionSummary", "jurisdictionalDifferentiator"],
+    singularLabel: "Report",
+    fieldOrder: ["name", "jurisdictionSummary", "jurisdictionalDifferentiator"],
     labelOverrides: { jurisdictionSummary: "Summary" },
     titleKey: "name",
     process: processJurisdiction,
+    contentComponentId: "JurisdictionContent",
     variant: "jurisdiction",
   },
   "/domestic-legal-provision": {
@@ -571,6 +572,10 @@ export function getEntityConfigByTable(
   return basePath ? entityRegistry[basePath] : undefined;
 }
 
+export function getBasePathForTable(table: string): string | undefined {
+  return tableToBasePath.get(table);
+}
+
 export function getBasePathForCard(cardType: string): string | undefined {
   return tableToBasePath.get(cardType) ?? labelToBasePath.get(cardType);
 }
@@ -581,7 +586,7 @@ const VARIANT_TO_LABEL_CLASS: Record<string, string> = {
   instrument: "label-instrument",
   arbitration: "label-arbitration",
   literature: "label-literature",
-  jurisdiction: "hidden",
+  jurisdiction: "label-jurisdiction",
   specialist: "label-specialist",
 };
 

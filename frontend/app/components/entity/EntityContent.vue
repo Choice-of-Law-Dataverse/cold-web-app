@@ -25,6 +25,9 @@
     <template v-for="section in resolvedRelations" :key="section.key">
       <section v-if="section.items.length > 0">
         <DetailRow :label="section.label" :variant="section.variant">
+          <template v-if="section.items.length > 1" #label-subtitle>
+            {{ section.items.length }} items
+          </template>
           <RelatedItemsList
             :items="section.items"
             :base-path="section.basePath"

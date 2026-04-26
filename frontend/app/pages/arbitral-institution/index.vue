@@ -1,6 +1,7 @@
 <template>
   <BaseDetailLayout
     table="Arbitral Institutions"
+    page-heading="Arbitral Institutions"
     :loading="isLoading"
     :data="resultData"
   >

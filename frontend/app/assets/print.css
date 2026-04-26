@@ -1,0 +1,83 @@
+@media print {
+  .print-field-value {
+    display: block !important;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    background: #fafafa;
+    min-height: 2em;
+    font-size: 0.75rem;
+    line-height: 1.5;
+  }
+
+  header,
+  nav,
+  .header-container,
+  button,
+  .no-print,
+  [class*="UButton"],
+  footer,
+  .arrow-container,
+  .arrow-icon {
+    display: none !important;
+  }
+
+  body,
+  main {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+    background: white !important;
+  }
+
+  a {
+    text-decoration: underline !important;
+  }
+
+  h1,
+  h2,
+  h3 {
+    page-break-after: avoid;
+  }
+
+  table,
+  figure,
+  img {
+    page-break-inside: avoid;
+  }
+
+  textarea,
+  input[type="text"] {
+    border: 1px solid #ccc !important;
+    background: white !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    overflow: visible !important;
+    height: auto !important;
+    min-height: auto !important;
+    white-space: pre-wrap !important;
+  }
+
+  textarea {
+    resize: none !important;
+  }
+
+  .print\:col-span-3 {
+    grid-column: span 3 / span 3 !important;
+  }
+
+  .card-footer-modern {
+    display: none !important;
+  }
+
+  .page-hero {
+    padding: 1rem 0 !important;
+    margin-bottom: 1rem !important;
+  }
+
+  [data-slot="root"],
+  [class*="UCard"] {
+    box-shadow: none !important;
+    border: 1px solid #e5e7eb !important;
+  }
+}

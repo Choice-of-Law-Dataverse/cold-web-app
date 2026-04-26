@@ -40,24 +40,13 @@ RUN NODE_OPTIONS="--max_old_space_size=4096" pnpm run build
 # ============================================
 FROM node:22.18-alpine
 
-# Set working directory
 WORKDIR /app
 
-# Install pnpm
-RUN npm install -g pnpm
-
-# Copy package manifest and lockfile
-COPY package.json pnpm-lock.yaml ./
-
-# Install only production dependencies
-RUN pnpm install --frozen-lockfile --prod
-
-# Copy built application from builder stage
-# This excludes all build-time secrets and source code
+# Nuxt's .output is self-contained (Nitro bundles all server deps),
+# so no extra `pnpm install` is needed in this stage.
 COPY --from=builder /app/.output ./.output
 
-# Expose the application port
+ENV NODE_ENV=production
 EXPOSE 3000
 
-# Command to run the app in production mode
 CMD ["node", "--max_old_space_size=2048", "./.output/server/index.mjs"]

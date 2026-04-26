@@ -6,6 +6,7 @@
           :href="String(value)"
           target="_blank"
           rel="noopener noreferrer"
+          :aria-label="`${value} (opens in new tab)`"
           class="text-primary break-all hover:underline"
         >
           {{ value }}

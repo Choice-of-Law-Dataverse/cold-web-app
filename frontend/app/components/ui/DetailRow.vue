@@ -1,7 +1,7 @@
 <template>
   <div class="detail-row @container" :class="variant ? `type-${variant}` : ''">
-    <div class="flex flex-col gap-3 @md:flex-row @md:items-start @md:gap-10">
-      <div class="label-key @md:w-48 @md:shrink-0">
+    <div class="flex flex-col gap-2 @md:flex-row @md:items-start @md:gap-10">
+      <div class="label-key flex flex-col items-start @md:w-48 @md:shrink-0">
         <span class="flex items-center gap-1.5">
           <span class="mono-font">
             {{ label }}
@@ -9,6 +9,9 @@
           <slot name="label-actions" />
           <InfoPopover v-if="tooltip" :text="tooltip" />
         </span>
+        <div v-if="$slots['label-subtitle']" class="label-subtitle">
+          <slot name="label-subtitle" />
+        </div>
       </div>
 
       <div class="detail-value w-full @md:flex-1">
@@ -51,13 +54,13 @@ defineProps({
 <style scoped>
 .detail-row {
   position: relative;
-  padding: 1rem 1rem;
+  padding: 0.75rem 1rem;
   margin: 0 -1rem;
   border-radius: 2px;
   transition: background 0.15s ease;
 
   @media (min-width: 640px) {
-    padding: 1rem 1.5rem;
+    padding: 0.75rem 1.5rem;
     margin: 0 -1.5rem;
   }
 }
@@ -106,5 +109,16 @@ defineProps({
 
 .label-key:hover :deep(svg) {
   color: var(--color-cold-night-alpha);
+}
+
+.label-subtitle {
+  display: block;
+  margin-top: 0.125rem;
+  font-size: 0.7rem;
+  font-weight: 400;
+  color: var(--color-cold-night-alpha);
+  text-transform: none;
+  letter-spacing: normal;
+  opacity: 0.6;
 }
 </style>

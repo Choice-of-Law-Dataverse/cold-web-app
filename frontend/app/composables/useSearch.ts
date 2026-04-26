@@ -5,55 +5,40 @@ import { useApiClient } from "@/composables/useApiClient";
 import type { SearchParams, SearchResponse } from "@/types/api";
 import type { paths } from "@/types/api-schema";
 
+const TYPE_FILTER_MAPPING: Record<string, string> = {
+  Questions: "Answers",
+  "Court Decisions": "Court Decisions",
+  "Legal Instruments": "Domestic Instruments",
+  "Domestic Instruments": "Domestic Instruments",
+  "Regional Instruments": "Regional Instruments",
+  "International Instruments": "International Instruments",
+  Literature: "Literature",
+  "Arbitral Awards": "Arbitral Awards",
+  "Arbitral Rules": "Arbitral Rules",
+};
+
+const splitCsv = (value: string | undefined): string[] | undefined =>
+  value ? value.split(",").filter(Boolean) : undefined;
+
 const fetchSearchResults = async (
   client: ReturnType<typeof createClient<paths>>,
   { query, filters, page = 1, pageSize = 10 }: SearchParams,
 ): Promise<SearchResponse> => {
-  const searchFilters: { column: string; values: string[] }[] = [];
+  const types = splitCsv(filters.type)?.map(
+    (type) => TYPE_FILTER_MAPPING[type] || type,
+  );
 
-  if (filters.jurisdiction) {
-    searchFilters.push({
-      column: "jurisdictions",
-      values: filters.jurisdiction.split(","),
-    });
-  }
-
-  if (filters.theme) {
-    searchFilters.push({
-      column: "themes",
-      values: filters.theme.split(","),
-    });
-  }
-
-  const typeFilterMapping: Record<string, string> = {
-    Questions: "Answers",
-    "Court Decisions": "Court Decisions",
-    "Legal Instruments": "Domestic Instruments",
-    "Domestic Instruments": "Domestic Instruments",
-    "Regional Instruments": "Regional Instruments",
-    "International Instruments": "International Instruments",
-    Literature: "Literature",
-    "Arbitral Awards": "Arbitral Awards",
-    "Arbitral Rules": "Arbitral Rules",
-  };
-
-  if (filters.type) {
-    searchFilters.push({
-      column: "tables",
-      values: filters.type
-        .split(",")
-        .map((type) => typeFilterMapping[type] || type),
-    });
-  }
-
-  const { data, error } = await client.POST("/search/", {
-    body: {
-      search_string: query || "",
-      page,
-      page_size: pageSize,
-      filters: searchFilters,
-      sort_by_date: filters.sortBy === "date",
-      response_type: null,
+  const { data, error } = await client.GET("/search/", {
+    params: {
+      query: {
+        search_string: query || "",
+        page,
+        page_size: pageSize,
+        sort_by_date: filters.sortBy === "date",
+        jurisdictions: splitCsv(filters.jurisdiction),
+        themes: splitCsv(filters.theme),
+        tables: types,
+      },
     },
   });
 

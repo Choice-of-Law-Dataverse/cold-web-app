@@ -4,8 +4,9 @@ title: Supporters — CoLD
 
 ## Who Supports CoLD?
 
-- <img src="https://choiceoflaw.blob.core.windows.net/assets/snf-logo.svg" width="250"/>
-  Swiss National Science Foundation: “The Hague Principles and Beyond”, Project No. 179515 (2018–2021)
+<div><img src="https://assets.cold.global/assets/snf-logo.svg" alt="Swiss National Science Foundation logo" style="width: 250px; margin-bottom: 0.5rem"/></div>
+
+- Swiss National Science Foundation: “The Hague Principles and Beyond”, Project No. 179515 (2018–2021)
 - Forschungskommission der Universität Luzern: Start up funding (2022)
 - Swiss National Science Foundation: “Choice of Law Dataverse: promoting transparency and access in private international law data”, Project No. 215469 (2023-2026)
 - Provost's administrative support, University of Lucerne (2023-2026)

@@ -278,13 +278,9 @@ const comments = ref("");
 
 const loadJurisdictions = async () => {
   try {
-    const response = await fetch(`/api/proxy/search/full_table`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ table: "Jurisdictions", filters: [] }),
-    });
+    const response = await fetch(
+      `/api/proxy/search/full_table?table=Jurisdictions`,
+    );
 
     if (!response.ok) throw new Error("Failed to load jurisdictions");
 
