@@ -215,7 +215,7 @@ class EntityListService:
 
         if jurisdiction and cfg.has_jurisdiction:
             params["juris"] = jurisdiction.upper()
-            where_parts.append('UPPER(b."jurisdictions_alpha_3_code") = :juris')
+            where_parts.append('b."jurisdictions_alpha_3_code" = :juris')
 
         if theme and cfg.has_theme:
             params["theme"] = theme
@@ -273,7 +273,7 @@ class EntityListService:
             where_sql = ""
             if jurisdiction and has_jurisdiction:
                 params["juris"] = jurisdiction.upper()
-                where_sql = ' WHERE UPPER("jurisdictions_alpha_3_code") = :juris'
+                where_sql = ' WHERE "jurisdictions_alpha_3_code" = :juris'
             unions.append(f"SELECT '{key}' AS k, COUNT(*) AS n FROM {view}{where_sql}")
 
         sql = " UNION ALL ".join(unions)
