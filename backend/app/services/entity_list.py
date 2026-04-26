@@ -30,29 +30,7 @@ _SAFE_IDENTIFIER = re.compile(r"^[a-z_][a-z0-9_.]*$")
 _SAFE_COLUMN = re.compile(r"^[a-z_][a-z0-9_]*$")
 
 
-def _theme_exists_clause(slug: str, schema: str) -> str | None:
-    """WHERE fragment using :theme, referencing base-view alias 'b'."""
-    if slug == "literature":
-        return (
-            f'EXISTS (SELECT 1 FROM "{schema}"."_nc_m2m_Themes_Literature" m '
-            f'JOIN "{schema}"."Themes" t ON t.id = m."Themes_id" '
-            f'WHERE m."Literature_id" = b.id AND t."Theme" = :theme)'
-        )
-    if slug == "arbitral-awards":
-        return (
-            f'EXISTS (SELECT 1 FROM "{schema}"."_nc_m2m_Themes_Arbitral_Awards" m '
-            f'JOIN "{schema}"."Themes" t ON t.id = m."Themes_id" '
-            f'WHERE m."Arbitral_Awards_id" = b.id AND t."Theme" = :theme)'
-        )
-    if slug == "court-decisions":
-        return (
-            f'EXISTS (SELECT 1 FROM "{schema}"."_nc_m2m_Answers_Court_Decisions" acd '
-            f'JOIN "{schema}"."_nc_m2m_Questions_Answers" qa ON qa."Answers_id" = acd."Answers_id" '
-            f'JOIN "{schema}"."_nc_m2m_Themes_Questions" tq ON tq."Questions_id" = qa."Questions_id" '
-            f'JOIN "{schema}"."Themes" t ON t.id = tq."Themes_id" '
-            f'WHERE acd."Court_Decisions_id" = b.id AND t."Theme" = :theme)'
-        )
-    return None
+_THEME_FILTER_SQL = "data_views.entity_has_theme(:theme_slug, b.id, :theme)"
 
 
 @dataclass(frozen=True)
@@ -239,12 +217,10 @@ class EntityListService:
             params["juris"] = jurisdiction.upper()
             where_parts.append("b.\"jurisdictions_alpha_3_code\" ILIKE '%' || :juris || '%'")
 
-        schema = config.NOCODB_POSTGRES_SCHEMA
-        if theme and cfg.has_theme and schema:
-            theme_clause = _theme_exists_clause(cfg.slug, schema)
-            if theme_clause:
-                params["theme"] = theme
-                where_parts.append(theme_clause)
+        if theme and cfg.has_theme:
+            params["theme"] = theme
+            params["theme_slug"] = cfg.slug
+            where_parts.append(_THEME_FILTER_SQL)
 
         if extra_filters:
             for raw_key, raw_val in extra_filters.items():
