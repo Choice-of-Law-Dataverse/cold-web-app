@@ -1,12 +1,28 @@
-from fastapi import APIRouter, Depends, Query
+from typing import Annotated
+
+from fastapi import APIRouter, Depends, HTTPException, Query
+from pydantic import BaseModel, ConfigDict
+from pydantic.alias_generators import to_camel
 
 from app.schemas.responses import JurisdictionCount, JurisdictionCoverage
+from app.services.entity_list import EntityListService
 from app.services.statistics import StatisticsService
 
 
 def get_statistics_service() -> StatisticsService:
     """Dependency function to lazily instantiate the StatisticsService."""
     return StatisticsService()
+
+
+def get_entity_list_service() -> EntityListService:
+    return EntityListService()
+
+
+class EntityCountsResponse(BaseModel):
+    model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
+
+    counts: dict[str, int]
+    jurisdiction: str | None = None
 
 
 router = APIRouter(prefix="/statistics", tags=["Statistics"])
@@ -83,3 +99,27 @@ def count_by_jurisdiction(
     """Returns count of rows grouped by jurisdiction for the specified table."""
 
     return statistics_service.count_by_jurisdiction(table, limit)
+
+
+@router.get(
+    "/counts",
+    summary="Counts for every entity in the dataverse",
+    description=(
+        "Returns counts per entity type, optionally scoped to a jurisdiction. "
+        "Plain GET so it can be cached at the edge by Cloudflare."
+    ),
+    response_model=EntityCountsResponse,
+)
+def get_entity_counts(
+    jurisdiction: Annotated[
+        str | None,
+        Query(description="Optional Alpha-3 code; only counts entities tagged to it."),
+    ] = None,
+    service: EntityListService = Depends(get_entity_list_service),
+) -> EntityCountsResponse:
+    try:
+        counts = service.count_all(jurisdiction)
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail="Failed to compute counts") from exc
+
+    return EntityCountsResponse(counts=counts, jurisdiction=jurisdiction)

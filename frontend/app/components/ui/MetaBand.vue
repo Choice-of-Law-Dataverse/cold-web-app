@@ -439,10 +439,15 @@ function positionPicker() {
   const el = typeChipRef.value;
   if (!el) return;
   const rect = el.getBoundingClientRect();
+  const offset = 4;
+  const collisionPadding = 8;
+  const availableHeight =
+    window.innerHeight - rect.bottom - offset - collisionPadding;
   pickerStyle.value = {
-    top: `${rect.bottom + 4}px`,
+    top: `${rect.bottom + offset}px`,
     left: `${rect.left}px`,
     minWidth: `${Math.max(rect.width, 260)}px`,
+    maxHeight: `${availableHeight}px`,
   };
 }
 
@@ -820,7 +825,6 @@ function printPage() {
   position: fixed;
   width: 300px;
   max-width: calc(100vw - 1rem);
-  max-height: 360px;
   display: flex;
   flex-direction: column;
   background: white;

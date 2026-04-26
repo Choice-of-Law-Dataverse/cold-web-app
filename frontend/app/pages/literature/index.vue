@@ -1,18 +1,14 @@
 <template>
   <BaseDetailLayout
-    table="Arbitral Awards"
-    page-heading="Arbitral Awards"
+    table="Literature"
+    page-heading="Literature"
     :loading="isLoading"
     :data="resultData"
   >
     <template #full-width>
       <div class="gradient-top-border" />
       <div class="w-full px-6 py-6">
-        <EntityListFilters
-          v-model:jurisdiction="selectedJurisdiction"
-          v-model:theme="selectedTheme"
-          :filters="['jurisdiction', 'theme']"
-        />
+        <EntityListFilters v-model:theme="selectedTheme" :filters="['theme']" />
 
         <EntityListTable
           v-model:page="page"
@@ -20,10 +16,22 @@
           v-model:order-dir="orderDir"
           :columns="columns"
           :rows="rows"
-          link-base="/arbitral-award"
+          link-base="/literature"
           :total="data?.total"
           :loading="isLoading"
-        />
+        >
+          <template #cell-title="{ row }">
+            <span class="result-value-small entity-list__cell">
+              {{ row.title || "—" }}
+              <img
+                v-if="row.openAccess"
+                src="https://assets.cold.global/assets/Open_Access_logo_PLoS_transparent.svg"
+                alt="Open Access"
+                class="ml-1 inline-flex w-3 align-middle"
+              />
+            </span>
+          </template>
+        </EntityListTable>
       </div>
     </template>
   </BaseDetailLayout>
@@ -38,31 +46,24 @@ import EntityListTable, {
 } from "@/components/entity-list/EntityListTable.vue";
 import { useEntityList } from "@/composables/useEntityList";
 import { sanitizeCell } from "@/utils/format";
-import type { JurisdictionOption } from "@/types/analyzer";
 
 useHead({
-  title: "Arbitral Awards — CoLD",
+  title: "Literature — CoLD",
 });
 
 const page = ref(1);
 const resultData = null;
 
-const selectedJurisdiction = ref<JurisdictionOption | undefined>(undefined);
 const selectedTheme = ref<string | undefined>(undefined);
 const orderBy = ref<string | undefined>(undefined);
 const orderDir = ref<"asc" | "desc" | undefined>(undefined);
 
-const jurisdictionCode = computed(
-  () => selectedJurisdiction.value?.coldId?.toUpperCase() || "",
-);
-
-watch([jurisdictionCode, selectedTheme], () => {
+watch(selectedTheme, () => {
   page.value = 1;
 });
 
-const { data, isLoading } = useEntityList("arbitral-awards", {
+const { data, isLoading } = useEntityList("literature", {
   page,
-  jurisdiction: jurisdictionCode,
   theme: selectedTheme,
   orderBy,
   orderDir,
@@ -70,18 +71,22 @@ const { data, isLoading } = useEntityList("arbitral-awards", {
 
 const rows = computed(() =>
   (data.value?.items ?? []).map((item) => ({
-    caseNumber: sanitizeCell(item.caseNumber),
-    year: sanitizeCell(item.year),
-    seatTown: sanitizeCell(item.seatTown),
-    source: sanitizeCell(item.source),
+    title: sanitizeCell(item.title),
+    author: sanitizeCell(item.author),
+    publicationYear: sanitizeCell(item.publicationYear),
+    openAccess: Boolean(item.oupJdChapter),
     coldId: sanitizeCell(item.coldId),
   })),
 );
 
 const columns: EntityListColumn[] = [
-  { key: "caseNumber", header: "Case Number", width: "20%", sortable: true },
-  { key: "year", header: "Year", width: "100px", sortable: true },
-  { key: "seatTown", header: "Seat (Town)", width: "20%", sortable: true },
-  { key: "source", header: "Source", sortable: true },
+  { key: "title", header: "Title", width: "50%", sortable: true },
+  { key: "author", header: "Author(s)", sortable: true },
+  {
+    key: "publicationYear",
+    header: "Year",
+    width: "120px",
+    sortable: true,
+  },
 ];
 </script>

@@ -1,7 +1,7 @@
 <template>
   <BaseDetailLayout
-    table="Arbitral Awards"
-    page-heading="Arbitral Awards"
+    table="Court Decisions"
+    page-heading="Court Decisions"
     :loading="isLoading"
     :data="resultData"
   >
@@ -20,7 +20,7 @@
           v-model:order-dir="orderDir"
           :columns="columns"
           :rows="rows"
-          link-base="/arbitral-award"
+          link-base="/court-decision"
           :total="data?.total"
           :loading="isLoading"
         />
@@ -31,18 +31,21 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
+import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layout/BaseDetailLayout.vue";
 import EntityListFilters from "@/components/entity-list/EntityListFilters.vue";
 import EntityListTable, {
   type EntityListColumn,
 } from "@/components/entity-list/EntityListTable.vue";
 import { useEntityList } from "@/composables/useEntityList";
-import { sanitizeCell } from "@/utils/format";
+import { formatDate, sanitizeCell } from "@/utils/format";
 import type { JurisdictionOption } from "@/types/analyzer";
 
 useHead({
-  title: "Arbitral Awards — CoLD",
+  title: "Court Decisions — CoLD",
 });
+
+const route = useRoute();
 
 const page = ref(1);
 const resultData = null;
@@ -56,32 +59,46 @@ const jurisdictionCode = computed(
   () => selectedJurisdiction.value?.coldId?.toUpperCase() || "",
 );
 
-watch([jurisdictionCode, selectedTheme], () => {
+const caseRank = computed(() => {
+  const raw = route.query.caseRank;
+  const value = Array.isArray(raw) ? raw[0] : raw;
+  return value ? String(value) : undefined;
+});
+
+watch([jurisdictionCode, selectedTheme, caseRank], () => {
   page.value = 1;
 });
 
-const { data, isLoading } = useEntityList("arbitral-awards", {
+const { data, isLoading } = useEntityList("court-decisions", {
   page,
   jurisdiction: jurisdictionCode,
   theme: selectedTheme,
+  caseRank,
   orderBy,
   orderDir,
 });
 
 const rows = computed(() =>
   (data.value?.items ?? []).map((item) => ({
-    caseNumber: sanitizeCell(item.caseNumber),
-    year: sanitizeCell(item.year),
-    seatTown: sanitizeCell(item.seatTown),
-    source: sanitizeCell(item.source),
+    caseTitle: sanitizeCell(item.caseTitle),
+    caseCitation: sanitizeCell(item.caseCitation),
+    date:
+      formatDate(sanitizeCell(item.publicationDateIso), {
+        monthStyle: "short",
+      }) || "",
     coldId: sanitizeCell(item.coldId),
   })),
 );
 
 const columns: EntityListColumn[] = [
-  { key: "caseNumber", header: "Case Number", width: "20%", sortable: true },
-  { key: "year", header: "Year", width: "100px", sortable: true },
-  { key: "seatTown", header: "Seat (Town)", width: "20%", sortable: true },
-  { key: "source", header: "Source", sortable: true },
+  { key: "caseTitle", header: "Case Title", width: "50%", sortable: true },
+  { key: "caseCitation", header: "Citation", sortable: true },
+  {
+    key: "date",
+    header: "Date",
+    width: "140px",
+    sortable: "publicationDateIso",
+    align: "right",
+  },
 ];
 </script>

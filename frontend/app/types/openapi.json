@@ -1097,6 +1097,220 @@
         }
       }
     },
+    "/statistics/counts": {
+      "get": {
+        "tags": ["Statistics"],
+        "summary": "Counts for every entity in the dataverse",
+        "description": "Returns counts per entity type, optionally scoped to a jurisdiction. Plain GET so it can be cached at the edge by Cloudflare.",
+        "operationId": "get_entity_counts_api_v1_statistics_counts_get",
+        "parameters": [
+          {
+            "name": "jurisdiction",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Optional Alpha-3 code; only counts entities tagged to it.",
+              "title": "Jurisdiction"
+            },
+            "description": "Optional Alpha-3 code; only counts entities tagged to it."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EntityCountsResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/entities/{slug}": {
+      "get": {
+        "tags": ["Entities"],
+        "summary": "List entities of a given type with optional jurisdiction filter",
+        "description": "Returns a paginated, slim list of entities using the relation contract (`*Relation` shapes used inside detail responses). Supports jurisdiction filtering for entities that expose `jurisdictions_alpha_3_code`. Court Decisions additionally accepts a `case_rank` filter.",
+        "operationId": "list_entity_api_v1_entities__slug__get",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Entity slug, e.g. 'court-decisions'",
+              "title": "Slug"
+            },
+            "description": "Entity slug, e.g. 'court-decisions'"
+          },
+          {
+            "name": "jurisdiction",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by jurisdiction Alpha-3 code (case-insensitive).",
+              "title": "Jurisdiction"
+            },
+            "description": "Filter by jurisdiction Alpha-3 code (case-insensitive)."
+          },
+          {
+            "name": "theme",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by theme name (substring, case-insensitive).",
+              "title": "Theme"
+            },
+            "description": "Filter by theme name (substring, case-insensitive)."
+          },
+          {
+            "name": "case_rank",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Court Decisions only: filter by case rank.",
+              "title": "Case Rank"
+            },
+            "description": "Court Decisions only: filter by case rank."
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "1-indexed page number.",
+              "default": 1,
+              "title": "Page"
+            },
+            "description": "1-indexed page number."
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 250,
+              "minimum": 1,
+              "description": "Items per page (max 250).",
+              "default": 250,
+              "title": "Page Size"
+            },
+            "description": "Items per page (max 250)."
+          },
+          {
+            "name": "order_by",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Override default order column (snake or camelCase).",
+              "title": "Order By"
+            },
+            "description": "Override default order column (snake or camelCase)."
+          },
+          {
+            "name": "order_dir",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": ["asc", "desc"],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Override default order direction.",
+              "title": "Order Dir"
+            },
+            "description": "Override default order direction."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Items, total, page, pageSize.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EntityListResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Unknown entity slug."
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/suggestions/": {
       "post": {
         "tags": ["Suggestions"],
@@ -2808,6 +3022,43 @@
         "type": "object",
         "title": "AnswerSearchResult"
       },
+      "AnyEntityListItem": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/ArbitralAwardRelation"
+          },
+          {
+            "$ref": "#/components/schemas/ArbitralInstitutionRelation"
+          },
+          {
+            "$ref": "#/components/schemas/ArbitralRuleRelation"
+          },
+          {
+            "$ref": "#/components/schemas/CourtDecisionRelation"
+          },
+          {
+            "$ref": "#/components/schemas/DomesticInstrumentRelation"
+          },
+          {
+            "$ref": "#/components/schemas/InternationalInstrumentRelation"
+          },
+          {
+            "$ref": "#/components/schemas/JurisdictionRelation"
+          },
+          {
+            "$ref": "#/components/schemas/LiteratureRelation"
+          },
+          {
+            "$ref": "#/components/schemas/QuestionRelation"
+          },
+          {
+            "$ref": "#/components/schemas/RegionalInstrumentRelation"
+          },
+          {
+            "$ref": "#/components/schemas/SpecialistRelation"
+          }
+        ]
+      },
       "ArbitralAwardDetail": {
         "properties": {
           "coldId": {
@@ -3343,6 +3594,26 @@
               },
               {
                 "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "seatTown": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "source": {
+            "anyOf": [
+              {
+                "type": "string"
               },
               {
                 "type": "null"
@@ -5733,6 +6004,26 @@
                 "type": "null"
               }
             ]
+          },
+          "publicationDateIso": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "jurisdictionsAlpha3Code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "type": "object",
@@ -6871,6 +7162,16 @@
                 "type": "null"
               }
             ]
+          },
+          "date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "type": "object",
@@ -7783,6 +8084,51 @@
         "type": "object",
         "required": ["draftId", "status"],
         "title": "DraftRecoveryResponse"
+      },
+      "EntityCountsResponse": {
+        "properties": {
+          "counts": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object"
+          },
+          "jurisdiction": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": ["counts"],
+        "title": "EntityCountsResponse"
+      },
+      "EntityListResponse": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/AnyEntityListItem"
+            },
+            "type": "array"
+          },
+          "total": {
+            "type": "integer"
+          },
+          "page": {
+            "type": "integer"
+          },
+          "pageSize": {
+            "type": "integer"
+          }
+        },
+        "type": "object",
+        "required": ["items", "total", "page", "pageSize"],
+        "title": "EntityListResponse"
       },
       "EntityRelations": {
         "properties": {
@@ -8997,6 +9343,26 @@
             ]
           },
           "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "abbreviation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "date": {
             "anyOf": [
               {
                 "type": "string"
@@ -12891,6 +13257,16 @@
                 "type": "null"
               }
             ]
+          },
+          "date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "type": "object",
@@ -14495,6 +14871,10 @@
     {
       "name": "Statistics",
       "description": "Data aggregation and statistics endpoints."
+    },
+    {
+      "name": "Entities",
+      "description": "Slim list endpoints per entity type and entity counts."
     },
     {
       "name": "Submarine",

@@ -47,33 +47,68 @@
 
     <!-- Explore Data Stats Strip -->
     <div class="animate-fade-up animate-delay-1 col-span-12">
-      <div class="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-3">
+      <div class="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-3">
         <NumberCard
           title="Court Decisions"
           button-text="See all"
-          button-link="/search?type=Court+Decisions"
-          table-name="Court Decisions"
+          button-link="/court-decision"
+          :override-number="counts?.courtDecisions"
+        />
+
+        <NumberCard
+          title="Literature"
+          button-text="See all"
+          button-link="/literature"
+          :override-number="counts?.literature"
+        />
+
+        <NumberCard
+          title="Specialists"
+          button-text="See all"
+          button-link="/specialist"
+          :override-number="counts?.specialists"
         />
 
         <NumberCard
           title="Domestic Instruments"
           button-text="See all"
-          button-link="/search?type=Domestic+Instruments"
-          table-name="Domestic Instruments"
+          button-link="/domestic-instrument"
+          :override-number="counts?.domesticInstruments"
+        />
+
+        <NumberCard
+          title="Regional Instruments"
+          button-text="See all"
+          button-link="/regional-instrument"
+          :override-number="counts?.regionalInstruments"
+        />
+
+        <NumberCard
+          title="International Instruments"
+          button-text="See all"
+          button-link="/international-instrument"
+          :override-number="counts?.internationalInstruments"
         />
 
         <NumberCard
           title="Arbitral Awards"
           button-text="See all"
           button-link="/arbitral-award"
-          table-name="Arbitral Awards"
+          :override-number="counts?.arbitralAwards"
+        />
+
+        <NumberCard
+          title="Arbitral Institutions"
+          button-text="See all"
+          button-link="/arbitral-institution"
+          :override-number="counts?.arbitralInstitutions"
         />
 
         <NumberCard
           title="Arbitral Rules"
           button-text="See all"
           button-link="/arbitral-rule"
-          table-name="Arbitral Rules"
+          :override-number="counts?.arbitralRules"
         />
       </div>
     </div>
@@ -257,6 +292,7 @@ import NumberCard from "@/components/landing-page/NumberCard.vue";
 import CompareJurisdictionsCard from "@/components/landing-page/CompareJurisdictionsCard.vue";
 import StayConnectedCard from "@/components/landing-page/StayConnectedCard.vue";
 import { useHead, useRuntimeConfig } from "#imports";
+import { useEntityCounts } from "@/composables/useEntityCounts";
 
 const JurisdictionMap = defineAsyncComponent(
   () => import("@/components/landing-page/JurisdictionMap.vue"),
@@ -278,6 +314,7 @@ const PlotCourtDecisionsJurisdiction = defineAsyncComponent(
 );
 
 const config = useRuntimeConfig();
+const { data: counts } = useEntityCounts();
 
 const mapMountTrigger = ref<HTMLElement | null>(null);
 const shouldMountMap = ref(false);

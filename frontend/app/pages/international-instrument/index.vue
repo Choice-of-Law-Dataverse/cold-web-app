@@ -1,7 +1,7 @@
 <template>
   <BaseDetailLayout
-    table="Arbitral Institutions"
-    page-heading="Arbitral Institutions"
+    table="International Instruments"
+    page-heading="International Instruments"
     :loading="isLoading"
     :data="resultData"
   >
@@ -14,7 +14,7 @@
           v-model:order-dir="orderDir"
           :columns="columns"
           :rows="rows"
-          link-base="/arbitral-institution"
+          link-base="/international-instrument"
           :total="data?.total"
           :loading="isLoading"
         />
@@ -30,10 +30,10 @@ import EntityListTable, {
   type EntityListColumn,
 } from "@/components/entity-list/EntityListTable.vue";
 import { useEntityList } from "@/composables/useEntityList";
-import { sanitizeCell } from "@/utils/format";
+import { formatDate, sanitizeCell } from "@/utils/format";
 
 useHead({
-  title: "Arbitral Institutions — CoLD",
+  title: "International Instruments — CoLD",
 });
 
 const page = ref(1);
@@ -41,7 +41,7 @@ const resultData = null;
 const orderBy = ref<string | undefined>(undefined);
 const orderDir = ref<"asc" | "desc" | undefined>(undefined);
 
-const { data, isLoading } = useEntityList("arbitral-institutions", {
+const { data, isLoading } = useEntityList("international-instruments", {
   page,
   orderBy,
   orderDir,
@@ -49,14 +49,22 @@ const { data, isLoading } = useEntityList("arbitral-institutions", {
 
 const rows = computed(() =>
   (data.value?.items ?? []).map((item) => ({
-    institution: sanitizeCell(item.institution),
+    name: sanitizeCell(item.name),
     abbreviation: sanitizeCell(item.abbreviation),
+    date: formatDate(sanitizeCell(item.date), { monthStyle: "short" }) || "",
     coldId: sanitizeCell(item.coldId),
   })),
 );
 
 const columns: EntityListColumn[] = [
-  { key: "institution", header: "Institution", width: "60%", sortable: true },
+  { key: "name", header: "Title", width: "60%", sortable: true },
   { key: "abbreviation", header: "Abbreviation", sortable: true },
+  {
+    key: "date",
+    header: "Date",
+    width: "140px",
+    sortable: true,
+    align: "right",
+  },
 ];
 </script>

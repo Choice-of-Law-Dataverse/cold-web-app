@@ -132,7 +132,7 @@ function formatValue(value: unknown): string {
     return String(value.length) + " items";
   }
   if (typeof value === "string" && ISO_DATE_RE.test(value)) {
-    return formatDate(value) ?? "\u2014";
+    return formatDate(value, { monthStyle: "short" }) ?? "\u2014";
   }
   return String(value);
 }
