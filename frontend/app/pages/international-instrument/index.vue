@@ -50,15 +50,13 @@ const { data, isLoading } = useEntityList("international-instruments", {
 const rows = computed(() =>
   (data.value?.items ?? []).map((item) => ({
     name: sanitizeCell(item.name),
-    abbreviation: sanitizeCell(item.abbreviation),
     date: formatDate(sanitizeCell(item.date), { monthStyle: "short" }) || "",
     coldId: sanitizeCell(item.coldId),
   })),
 );
 
 const columns: EntityListColumn[] = [
-  { key: "name", header: "Title", width: "60%", sortable: true },
-  { key: "abbreviation", header: "Abbreviation", sortable: true },
+  { key: "name", header: "Title", width: "80%", sortable: true },
   {
     key: "date",
     header: "Date",
