@@ -265,16 +265,11 @@ async function fetchInstrument() {
       return;
     }
 
-    const response = await fetch(`/api/proxy/search/details`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        table: "International Instruments",
-        id: instrumentId.value,
-      }),
+    const params = new URLSearchParams({
+      table: "International Instruments",
+      id: instrumentId.value,
     });
+    const response = await fetch(`/api/proxy/search/details?${params}`);
     const responseText = await response.text();
     if (!response.ok) throw new Error("Failed to fetch instrument");
     const data = JSON.parse(responseText);

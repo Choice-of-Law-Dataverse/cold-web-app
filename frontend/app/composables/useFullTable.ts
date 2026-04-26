@@ -29,8 +29,7 @@ const encodeFilter = <T extends TableName>(filter: TypedFilter<T>): string => {
   if (serialized.includes(",")) {
     throw new Error(
       `Filter value for column "${String(filter.column)}" contains a comma; ` +
-        "the GET /search/full_table wire format reserves ',' as a multi-value separator. " +
-        "Use the POST endpoint for values containing commas.",
+        "the GET /search/full_table wire format reserves ',' as a multi-value separator.",
     );
   }
   return `${String(filter.column)}:${serialized}`;
