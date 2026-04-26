@@ -267,7 +267,7 @@
         title="CoLD Newsletter"
         button-text="Subscribe"
         :button-link="links.substack"
-        icon-name="i-bi:substack"
+        icon-name="i-simple-icons:substack"
         button-icon="i-material-symbols:open-in-new"
       />
     </div>
@@ -277,7 +277,7 @@
         title="CoLD on LinkedIn"
         button-text="Follow Us"
         :button-link="links.linkedin"
-        icon-name="i-mdi:linkedin"
+        icon-name="i-simple-icons:linkedin"
         button-icon="i-material-symbols:open-in-new"
       />
     </div>

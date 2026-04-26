@@ -30,6 +30,7 @@ export default defineNuxtConfig({
       registry: {
         plausibleAnalytics: {
           domain: "cold.global",
+          trigger: "onNuxtReady",
         },
       },
     },
