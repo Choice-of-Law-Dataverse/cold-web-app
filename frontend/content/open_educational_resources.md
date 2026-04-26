@@ -83,4 +83,4 @@ Consult the <a href="https://www.hcch.net/en/instruments/conventions/specialised
     class="external-link-icon"
   /></a>
 
-Help us expand this list. If you've authored or come across an open-access work on choice of law that fits here, please add the new literature entry under [submit new data](/submit) 
+Help us expand this list. If you've authored or come across an open-access work on choice of law that fits here, please add the new literature entry under [submit new data](/submit)
