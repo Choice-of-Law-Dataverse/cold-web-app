@@ -1,5 +1,7 @@
 import pytest
+from fastapi import HTTPException
 
+from app.routes.search import _coerce_filter_value, _parse_full_table_filter
 from app.schemas.details import TABLE_DETAIL_MODELS
 from app.schemas.entities import EntityBase
 from app.schemas.records import TABLE_RECORD_MODELS
@@ -149,3 +151,67 @@ class TestFullTextSearchResponseSerialization:
         dumped = response.model_dump(by_alias=True)
         assert dumped["results"] == []
         assert dumped["totalMatches"] == 0
+
+
+class TestCoerceFilterValue:
+    @pytest.mark.parametrize(
+        ("raw", "expected"),
+        [
+            ("true", True),
+            ("True", True),
+            ("false", False),
+            ("False", False),
+            ("0", 0),
+            ("10", 10),
+            ("-3", -3),
+            ("Switzerland", "Switzerland"),
+            ("12abc", "12abc"),
+            ("", ""),
+            ("Party autonomy", "Party autonomy"),
+        ],
+    )
+    def test_coerces_expected(self, raw: str, expected):
+        result = _coerce_filter_value(raw)
+        assert result == expected
+        assert type(result) is type(expected)
+
+
+class TestParseFullTableFilter:
+    def test_single_string_value(self):
+        f = _parse_full_table_filter("jurisdiction:Switzerland")
+        assert f.column == "jurisdiction"
+        assert f.value == "Switzerland"
+
+    def test_single_int_value(self):
+        f = _parse_full_table_filter("caseRank:10")
+        assert f.column == "caseRank"
+        assert f.value == 10
+
+    def test_single_bool_value(self):
+        f = _parse_full_table_filter("isPublic:true")
+        assert f.column == "isPublic"
+        assert f.value is True
+
+    def test_csv_values_become_list(self):
+        f = _parse_full_table_filter("jurisdiction:Switzerland,France,Germany")
+        assert f.column == "jurisdiction"
+        assert f.value == ["Switzerland", "France", "Germany"]
+
+    def test_csv_values_with_mixed_types(self):
+        f = _parse_full_table_filter("flag:true,false")
+        assert f.value == [True, False]
+
+    def test_value_with_colon_keeps_remainder(self):
+        f = _parse_full_table_filter("title:Smith v. Jones: A Case")
+        assert f.column == "title"
+        assert f.value == "Smith v. Jones: A Case"
+
+    def test_missing_colon_raises(self):
+        with pytest.raises(HTTPException) as exc:
+            _parse_full_table_filter("invalid")
+        assert exc.value.status_code == 400
+
+    def test_empty_column_raises(self):
+        with pytest.raises(HTTPException) as exc:
+            _parse_full_table_filter(":value")
+        assert exc.value.status_code == 400

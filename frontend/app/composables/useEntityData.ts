@@ -62,8 +62,8 @@ export function useEntityData(
       const cfg = config.value;
       const table = resolvedTable.value;
       if (!cfg || !table) return null;
-      const { data, error } = await client.POST("/search/details", {
-        body: { table, id: toValue(coldId) },
+      const { data, error } = await client.GET("/search/details", {
+        params: { query: { table, id: toValue(coldId) } },
       });
       if (error) {
         const detail = (error as { detail?: unknown }).detail;

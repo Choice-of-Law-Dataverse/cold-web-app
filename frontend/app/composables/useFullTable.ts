@@ -24,25 +24,33 @@ export interface FullTableQueryParams {
   orderDir?: "asc" | "desc";
 }
 
+const encodeFilter = <T extends TableName>(filter: TypedFilter<T>): string => {
+  const serialized = String(filter.value);
+  if (serialized.includes(",")) {
+    throw new Error(
+      `Filter value for column "${String(filter.column)}" contains a comma; ` +
+        "the GET /search/full_table wire format reserves ',' as a multi-value separator. " +
+        "Use the POST endpoint for values containing commas.",
+    );
+  }
+  return `${String(filter.column)}:${serialized}`;
+};
+
 export async function fetchFullTableData<T extends TableName>(
   client: ApiClient,
   table: T,
   filters: TypedFilter<T>[] = [],
   params: FullTableQueryParams = {},
 ): Promise<TableResponseMap[T][]> {
-  const { data, error } = await client.POST("/search/full_table", {
-    body: {
-      table,
-      filters: filters.length
-        ? filters.map((f) => ({
-            column: String(f.column),
-            value: f.value,
-          }))
-        : null,
-      response_type: null,
-      limit: params.limit ?? null,
-      order_by: params.orderBy ?? null,
-      order_dir: params.orderDir ?? null,
+  const { data, error } = await client.GET("/search/full_table", {
+    params: {
+      query: {
+        table,
+        filter: filters.length ? filters.map(encodeFilter) : undefined,
+        limit: params.limit ?? undefined,
+        order_by: params.orderBy ?? undefined,
+        order_dir: params.orderDir ?? undefined,
+      },
     },
   });
   if (error) throw error;
@@ -72,7 +80,7 @@ export function useFullTable<
   return useQuery({
     queryKey: [
       table,
-      filters ? filters.map((f) => f.value).join(",") : undefined,
+      filters ? JSON.stringify(filters) : undefined,
       limit ?? null,
       orderBy ?? null,
       orderDir ?? null,
@@ -109,7 +117,7 @@ export function useFullTableWithFilters<
   return useQuery({
     queryKey: computed(() => [
       table,
-      filters.value.map((f) => f.value).join(","),
+      JSON.stringify(filters.value),
       limit ?? null,
       orderBy ?? null,
       orderDir ?? null,
