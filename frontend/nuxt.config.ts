@@ -121,23 +121,36 @@ export default defineNuxtConfig({
   colorMode: {
     preference: "light",
   },
+  ui: {
+    fonts: false,
+  },
   fonts: {
-    defaults: {
-      styles: ["normal"],
-      subsets: ["latin"],
-      preload: false,
-    },
     families: [
       {
         name: "DM Sans",
-        provider: "google",
-        weights: [400, 500, 600, 700],
+        weight: "400",
         preload: true,
+        src: "/fonts/dm-sans-latin-400-normal.woff2",
+      },
+      {
+        name: "DM Sans",
+        weight: "500",
+        src: "/fonts/dm-sans-latin-500-normal.woff2",
+      },
+      {
+        name: "DM Sans",
+        weight: "600",
+        src: "/fonts/dm-sans-latin-600-normal.woff2",
+      },
+      {
+        name: "DM Sans",
+        weight: "700",
+        src: "/fonts/dm-sans-latin-700-normal.woff2",
       },
       {
         name: "IBM Plex Mono",
-        provider: "google",
-        weights: [400],
+        weight: "400",
+        src: "/fonts/ibm-plex-mono-latin-400-normal.woff2",
       },
     ],
   },
