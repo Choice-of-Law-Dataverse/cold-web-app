@@ -81,17 +81,24 @@ const user = useUser();
         >
           <h3 class="footer-heading my-2">Admin</h3>
           <div class="flex flex-col gap-3 text-right md:text-left">
-            <a
-              v-if="user"
-              href="/auth/logout"
-              class="footer-link cursor-pointer"
-            >
-              Logout
-            </a>
+            <ClientOnly>
+              <a
+                v-if="user"
+                href="/auth/logout"
+                class="footer-link cursor-pointer"
+              >
+                Logout
+              </a>
+              <a v-else href="/auth/login" class="footer-link cursor-pointer">
+                Login
+              </a>
 
-            <a v-else href="/auth/login" class="footer-link cursor-pointer">
-              Login
-            </a>
+              <template #fallback>
+                <a href="/auth/login" class="footer-link cursor-pointer">
+                  Login
+                </a>
+              </template>
+            </ClientOnly>
 
             <NuxtLink to="/moderation" class="footer-link">
               Moderation
