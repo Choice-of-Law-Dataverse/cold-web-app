@@ -12,18 +12,12 @@ export interface paths {
       cookie?: never;
     };
     /**
-     * Full-text search across CoLD data (GET alternative)
-     * @description Searches across multiple domains (Answers, HCCH Answers, Court Decisions, Domestic Instruments, Regional Instruments, International Instruments, Literature, Arbitral Awards, and Arbitral Rules). Filters support user-facing fields like 'tables', 'Jurisdictions', or 'Themes'. You can sort by date and paginate results.
-     *
-     *     Filter columns are exposed as dedicated repeatable query parameters: `tables`, `jurisdictions`, `themes`. Pass each value separately, e.g. `?tables=Answers&tables=Court%20Decisions&jurisdictions=Switzerland`.
-     */
-    get: operations["handle_full_text_search_get_api_v1_search__get"];
-    put?: never;
-    /**
      * Full-text search across CoLD data
-     * @description Searches across multiple domains (Answers, HCCH Answers, Court Decisions, Domestic Instruments, Regional Instruments, International Instruments, Literature, Arbitral Awards, and Arbitral Rules). Filters support user-facing fields like 'tables', 'Jurisdictions', or 'Themes'. You can sort by date and paginate results.
+     * @description Searches across multiple domains (Answers, HCCH Answers, Court Decisions, Domestic Instruments, Regional Instruments, International Instruments, Literature, Arbitral Awards, and Arbitral Rules). Filter columns are exposed as dedicated repeatable query parameters: `tables`, `jurisdictions`, `themes`. Pass each value separately, e.g. `?tables=Answers&tables=Court%20Decisions&jurisdictions=Switzerland`. You can sort by date and paginate results.
      */
-    post: operations["handle_full_text_search_api_v1_search__post"];
+    get: operations["handle_full_text_search_api_v1_search__get"];
+    put?: never;
+    post?: never;
     delete?: never;
     options?: never;
     head?: never;
@@ -38,16 +32,12 @@ export interface paths {
       cookie?: never;
     };
     /**
-     * Fetch a curated record by CoLD ID (GET alternative)
-     * @description Given a table and a CoLD ID, returns the record with all first-hop relations in a standardized shape.
-     */
-    get: operations["handle_entity_detail_get_api_v1_search_details_get"];
-    put?: never;
-    /**
      * Fetch a curated record by CoLD ID including relations
      * @description Given a table and a CoLD ID, returns the record with all first-hop relations in a standardized shape.
      */
-    post: operations["handle_entity_detail_api_v1_search_details_post"];
+    get: operations["handle_entity_detail_api_v1_search_details_get"];
+    put?: never;
+    post?: never;
     delete?: never;
     options?: never;
     head?: never;
@@ -62,18 +52,12 @@ export interface paths {
       cookie?: never;
     };
     /**
-     * Return full or filtered table (GET alternative)
-     * @description Returns all records from the specified table or a filtered subset. Filters accept user-facing field names and values (mapping-aware).
-     *
-     *     Filters use the repeatable `filter` query parameter with format `column:value` or `column:val1,val2` for multiple values. Values matching `true`/`false` are parsed as booleans; pure-digit strings as integers; everything else stays a string. Example: `?table=Court%20Decisions&filter=caseRank:10&filter=jurisdiction:Switzerland`.
-     */
-    get: operations["return_full_table_get_api_v1_search_full_table_get"];
-    put?: never;
-    /**
      * Return full or filtered table
-     * @description Returns all records from the specified table or a filtered subset. Filters accept user-facing field names and values (mapping-aware).
+     * @description Returns all records from the specified table or a filtered subset. Filters use the repeatable `filter` query parameter with format `column:value` or `column:val1,val2` for multiple values. Values matching `true`/`false` are parsed as booleans; pure-digit strings as integers; everything else stays a string. Example: `?table=Court%20Decisions&filter=caseRank:10&filter=jurisdiction:Switzerland`.
      */
-    post: operations["return_full_table_api_v1_search_full_table_post"];
+    get: operations["return_full_table_api_v1_search_full_table_get"];
+    put?: never;
+    post?: never;
     delete?: never;
     options?: never;
     head?: never;
@@ -108,16 +92,12 @@ export interface paths {
       cookie?: never;
     };
     /**
-     * Classify a free-text user query (GET alternative)
+     * Classify a free-text user query into a predefined category
      * @description Uses an external model to classify the user's query into one of the predefined CoLD categories.
      */
     get: operations["classify_query_get_api_v1_ai_classify_query_get"];
     put?: never;
-    /**
-     * Classify a free-text user query into a predefined category
-     * @description Uses an external model to classify the user's query into one of the predefined CoLD categories.
-     */
-    post: operations["classify_query_api_v1_ai_classify_query_post"];
+    post?: never;
     delete?: never;
     options?: never;
     head?: never;
@@ -1038,15 +1018,6 @@ export interface components {
       themes?: string | null;
       arbitralInstitutions?: string | null;
     };
-    /**
-     * ClassifyQueryRequest
-     * @example {
-     *       "query": "How do courts treat party autonomy?"
-     *     }
-     */
-    ClassifyQueryRequest: {
-      query: string;
-    };
     /** ConfirmAnalysisRequest */
     ConfirmAnalysisRequest: {
       /** @description Draft ID from upload response */
@@ -1249,17 +1220,6 @@ export interface components {
       submitter_email?: string | null;
       /** @description Submitter comments */
       submitter_comments?: string | null;
-    };
-    /**
-     * CuratedDetailsRequest
-     * @example {
-     *       "id": "CHE_15-TC",
-     *       "table": "Answers"
-     *     }
-     */
-    CuratedDetailsRequest: {
-      table: string;
-      id: string;
     };
     /** DetailBase */
     DetailBase: {
@@ -1600,11 +1560,6 @@ export interface components {
       | "arbitral_rule"
       | "question"
       | "jurisdiction";
-    /** FTFilterOption */
-    FTFilterOption: {
-      column: string;
-      value: string | number | boolean | (string | number | boolean)[];
-    };
     /** FTSFilterOption */
     FTSFilterOption: {
       column: string;
@@ -1669,97 +1624,6 @@ export interface components {
     /** FeedbackUpdate */
     FeedbackUpdate: {
       moderationStatus: components["schemas"]["FeedbackModerationStatus"];
-    };
-    /**
-     * FullTableRequest
-     * @example {
-     *       "filters": [
-     *         {
-     *           "column": "Jurisdictions",
-     *           "value": "Switzerland"
-     *         }
-     *       ],
-     *       "limit": 10,
-     *       "order_by": "date",
-     *       "order_dir": "desc",
-     *       "response_type": "parsed",
-     *       "table": "Answers"
-     *     }
-     */
-    FullTableRequest: {
-      table: string;
-      filters?: components["schemas"]["FTFilterOption"][] | null;
-      /**
-       * @description Response data format. Only 'parsed' is supported.
-       * @default parsed
-       */
-      response_type: "parsed" | null;
-      /** @description Maximum number of rows to return. Omit for no limit. */
-      limit?: number | null;
-      /** @description Column name to sort by (camelCase or snake_case). Unknown columns are ignored. */
-      order_by?: string | null;
-      /**
-       * @description Sort direction when order_by is provided.
-       * @default desc
-       */
-      order_dir: ("asc" | "desc") | null;
-    };
-    /**
-     * FullTextSearchRequest
-     * @example {
-     *       "filters": [
-     *         {
-     *           "column": "tables",
-     *           "values": [
-     *             "Answers",
-     *             "Court Decisions"
-     *           ]
-     *         },
-     *         {
-     *           "column": "jurisdictions",
-     *           "values": [
-     *             "Switzerland",
-     *             "France"
-     *           ]
-     *         },
-     *         {
-     *           "column": "Themes",
-     *           "values": [
-     *             "Party autonomy",
-     *             "Freedom of choice"
-     *           ]
-     *         }
-     *       ],
-     *       "page": 1,
-     *       "page_size": 100,
-     *       "response_type": "parsed",
-     *       "search_string": "",
-     *       "sort_by_date": true
-     *     }
-     */
-    FullTextSearchRequest: {
-      search_string?: string | null;
-      filters?: components["schemas"]["FTSFilterOption"][] | null;
-      /**
-       * @description Page number, must be >= 1
-       * @default 1
-       */
-      page: number;
-      /**
-       * @description Number of results per page
-       * @default 50
-       */
-      page_size: number;
-      /**
-       * @description Sort results by date descending if True.
-       * @default false
-       */
-      sort_by_date: boolean | null;
-      /**
-       * @description Response data format. Only 'parsed' is supported.
-       * @default parsed
-       */
-      response_type: "parsed" | null;
     };
     /** FullTextSearchResponse */
     FullTextSearchResponse: {
@@ -2913,7 +2777,7 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
-  handle_full_text_search_get_api_v1_search__get: {
+  handle_full_text_search_api_v1_search__get: {
     parameters: {
       query?: {
         /** @description Free-text query string */
@@ -2985,70 +2849,7 @@ export interface operations {
       };
     };
   };
-  handle_full_text_search_api_v1_search__post: {
-    parameters: {
-      query?: never;
-      header?: {
-        "X-API-Key"?: string;
-      };
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["FullTextSearchRequest"];
-      };
-    };
-    responses: {
-      /** @description Search results including pagination and total matches. */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          /**
-           * @example {
-           *       "query": "example search",
-           *       "filters": [
-           *         {
-           *           "column": "tables",
-           *           "values": [
-           *             "Answers"
-           *           ]
-           *         }
-           *       ],
-           *       "total_matches": 2,
-           *       "page": 1,
-           *       "page_size": 2,
-           *       "results": [
-           *         {
-           *           "source_table": "Answers",
-           *           "id": "CHE_15-TC",
-           *           "Title": "…"
-           *         },
-           *         {
-           *           "source_table": "Court Decisions",
-           *           "id": "CD-GBR-1167",
-           *           "Title": "…"
-           *         }
-           *       ]
-           *     }
-           */
-          "application/json": components["schemas"]["FullTextSearchResponse"];
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
-  handle_entity_detail_get_api_v1_search_details_get: {
+  handle_entity_detail_api_v1_search_details_get: {
     parameters: {
       query: {
         /** @description Source table name (e.g. 'Answers') */
@@ -3107,67 +2908,7 @@ export interface operations {
       };
     };
   };
-  handle_entity_detail_api_v1_search_details_post: {
-    parameters: {
-      query?: never;
-      header?: {
-        "X-API-Key"?: string;
-      };
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["CuratedDetailsRequest"];
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json":
-            | components["schemas"]["AnswerDetail"]
-            | components["schemas"]["HcchAnswerDetail"]
-            | components["schemas"]["QuestionDetail"]
-            | components["schemas"]["JurisdictionDetail"]
-            | components["schemas"]["CourtDecisionDetail"]
-            | components["schemas"]["DomesticInstrumentDetail"]
-            | components["schemas"]["DomesticLegalProvisionDetail"]
-            | components["schemas"]["RegionalInstrumentDetail"]
-            | components["schemas"]["RegionalLegalProvisionDetail"]
-            | components["schemas"]["InternationalInstrumentDetail"]
-            | components["schemas"]["InternationalLegalProvisionDetail"]
-            | components["schemas"]["LiteratureDetail"]
-            | components["schemas"]["ArbitralAwardDetail"]
-            | components["schemas"]["ArbitralInstitutionDetail"]
-            | components["schemas"]["ArbitralRuleDetail"]
-            | components["schemas"]["ArbitralProvisionDetail"]
-            | components["schemas"]["SpecialistDetail"]
-            | components["schemas"]["DetailBase"];
-        };
-      };
-      /** @description Record not found. */
-      404: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-      /** @description Validation Error */
-      422: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
-  return_full_table_get_api_v1_search_full_table_get: {
+  return_full_table_api_v1_search_full_table_get: {
     parameters: {
       query: {
         /** @description Source table name */
@@ -3186,85 +2927,6 @@ export interface operations {
       cookie?: never;
     };
     requestBody?: never;
-    responses: {
-      /** @description Array of transformed records from the requested table. */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          /**
-           * @example [
-           *       {
-           *         "source_table": "Answers",
-           *         "id": "CHE_15-TC",
-           *         "Jurisdictions": [
-           *           "Switzerland"
-           *         ],
-           *         "Title": "…"
-           *       }
-           *     ]
-           */
-          "application/json": (
-            | components["schemas"]["AnswerRecord"]
-            | components["schemas"]["CourtDecisionRecord"]
-            | components["schemas"]["DomesticInstrumentRecord"]
-            | components["schemas"]["InternationalInstrumentRecord"]
-            | components["schemas"]["RegionalInstrumentRecord"]
-            | components["schemas"]["LiteratureRecord"]
-            | components["schemas"]["ArbitralAwardRecord"]
-            | components["schemas"]["ArbitralInstitutionRecord"]
-            | components["schemas"]["ArbitralProvisionRecord"]
-            | components["schemas"]["ArbitralRuleRecord"]
-            | components["schemas"]["DomesticLegalProvisionRecord"]
-            | components["schemas"]["InternationalLegalProvisionRecord"]
-            | components["schemas"]["RegionalLegalProvisionRecord"]
-            | components["schemas"]["JurisdictionRecord"]
-            | components["schemas"]["QuestionRecord"]
-            | components["schemas"]["SpecialistRecord"]
-            | components["schemas"]["RecordBase"]
-          )[];
-        };
-      };
-      /** @description Missing or invalid table parameter. */
-      400: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-      /** @description Validation Error */
-      422: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-      /** @description Server error while querying the table. */
-      500: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  return_full_table_api_v1_search_full_table_post: {
-    parameters: {
-      query?: never;
-      header?: {
-        "X-API-Key"?: string;
-      };
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["FullTableRequest"];
-      };
-    };
     responses: {
       /** @description Array of transformed records from the requested table. */
       200: {
@@ -3404,49 +3066,6 @@ export interface operations {
       cookie?: never;
     };
     requestBody?: never;
-    responses: {
-      /** @description Classification result */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          /** @example Party autonomy (concept) */
-          "application/json": string;
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-      /** @description Upstream AI service error. */
-      502: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  classify_query_api_v1_ai_classify_query_post: {
-    parameters: {
-      query?: never;
-      header?: {
-        "X-API-Key"?: string;
-      };
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["ClassifyQueryRequest"];
-      };
-    };
     responses: {
       /** @description Classification result */
       200: {
