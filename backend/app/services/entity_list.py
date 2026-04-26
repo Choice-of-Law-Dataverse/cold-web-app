@@ -46,10 +46,11 @@ def _theme_exists_clause(slug: str, schema: str) -> str | None:
         )
     if slug == "court-decisions":
         return (
-            f'EXISTS (SELECT 1 FROM "{schema}"."_nc_m2m_Questions_Court_Decisions" qcd '
-            f'JOIN "{schema}"."_nc_m2m_Themes_Questions" tq ON tq."Questions_id" = qcd."Questions_id" '
+            f'EXISTS (SELECT 1 FROM "{schema}"."_nc_m2m_Answers_Court_Decisions" acd '
+            f'JOIN "{schema}"."_nc_m2m_Questions_Answers" qa ON qa."Answers_id" = acd."Answers_id" '
+            f'JOIN "{schema}"."_nc_m2m_Themes_Questions" tq ON tq."Questions_id" = qa."Questions_id" '
             f'JOIN "{schema}"."Themes" t ON t.id = tq."Themes_id" '
-            f'WHERE qcd."Court_Decisions_id" = b.id AND t."Theme" = :theme)'
+            f'WHERE acd."Court_Decisions_id" = b.id AND t."Theme" = :theme)'
         )
     return None
 
