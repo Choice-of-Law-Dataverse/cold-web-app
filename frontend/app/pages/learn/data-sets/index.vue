@@ -8,6 +8,10 @@
 import ContentPageLayout from "@/components/layout/ContentPageLayout.vue";
 import { learnNavLinks } from "@/config/navigation";
 
+useHead({
+  title: "Data Sets — CoLD",
+});
+
 const { data: page } = await useAsyncData("data_sets", () =>
   queryCollection("content").path("/data_sets").first(),
 );

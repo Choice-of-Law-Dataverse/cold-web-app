@@ -1,5 +1,10 @@
 <template>
-  <BaseDetailLayout table="Specialists" :loading="isLoading" :data="resultData">
+  <BaseDetailLayout
+    table="Specialists"
+    page-heading="Specialists"
+    :loading="isLoading"
+    :data="resultData"
+  >
     <template #full-width>
       <div class="gradient-top-border" />
       <div class="w-full px-6 py-6">

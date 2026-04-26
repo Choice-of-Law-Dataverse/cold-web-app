@@ -1,34 +1,37 @@
 <template>
-  <DetailDisplay
-    :loading="props.loading"
-    :error="props.error ?? undefined"
-    :result-data="resultDataForDisplay"
-    :base-path="basePath"
-    :formatted-source-table="props.table"
-    :formatted-jurisdiction="props.formattedJurisdiction"
-    :formatted-theme="props.formattedTheme"
-    :legal-family="props.legalFamily"
-    :show-header="true"
-    :show-cite="props.showCite"
-    :show-json="props.showJson"
-    :show-print="props.showPrint"
-    :show-legal-family="props.showLegalFamily"
-    :header-mode="props.headerMode"
-    :show-notification-banner="props.showNotificationBanner"
-    :notification-banner-message="props.notificationBannerMessage"
-    :icon="props.icon"
-    :entity-type="props.entityType"
-    :entity-id="props.entityId"
-    :entity-title="props.entityTitle"
-    @save="emit('save')"
-    @open-save-modal="emit('open-save-modal')"
-    @open-cancel-modal="emit('open-cancel-modal')"
-  >
-    <slot />
-    <template v-for="(_, name) in $slots" :key="name" #[name]="slotData">
-      <slot :name="name" v-bind="slotData" />
-    </template>
-  </DetailDisplay>
+  <div>
+    <h1 v-if="props.pageHeading" class="sr-only">{{ props.pageHeading }}</h1>
+    <DetailDisplay
+      :loading="props.loading"
+      :error="props.error ?? undefined"
+      :result-data="resultDataForDisplay"
+      :base-path="basePath"
+      :formatted-source-table="props.table"
+      :formatted-jurisdiction="props.formattedJurisdiction"
+      :formatted-theme="props.formattedTheme"
+      :legal-family="props.legalFamily"
+      :show-header="true"
+      :show-cite="props.showCite"
+      :show-json="props.showJson"
+      :show-print="props.showPrint"
+      :show-legal-family="props.showLegalFamily"
+      :header-mode="props.headerMode"
+      :show-notification-banner="props.showNotificationBanner"
+      :notification-banner-message="props.notificationBannerMessage"
+      :icon="props.icon"
+      :entity-type="props.entityType"
+      :entity-id="props.entityId"
+      :entity-title="props.entityTitle"
+      @save="emit('save')"
+      @open-save-modal="emit('open-save-modal')"
+      @open-cancel-modal="emit('open-cancel-modal')"
+    >
+      <slot />
+      <template v-for="(_, name) in $slots" :key="name" #[name]="slotData">
+        <slot :name="name" v-bind="slotData" />
+      </template>
+    </DetailDisplay>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -60,6 +63,7 @@ const props = withDefaults(
     entityType?: string;
     entityId?: string;
     entityTitle?: string;
+    pageHeading?: string;
   }>(),
   {
     error: undefined,
@@ -79,6 +83,7 @@ const props = withDefaults(
     entityType: "",
     entityId: "",
     entityTitle: "",
+    pageHeading: "",
   },
 );
 

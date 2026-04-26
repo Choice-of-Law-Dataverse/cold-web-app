@@ -220,7 +220,7 @@
               color="neutral"
               variant="soft"
               class="text-md cursor-pointer hover:bg-gray-200"
-              :title="jurisdiction.name"
+              :aria-label="`Remove ${jurisdiction.name} from comparison`"
               @click="removeJurisdiction(jurisdiction.coldId)"
             >
               <div class="inline-flex items-center gap-2">
@@ -277,7 +277,7 @@
                 <button
                   type="button"
                   class="jurisdiction-action-button removable"
-                  :title="jurisdiction.name"
+                  :aria-label="`Remove ${jurisdiction.name} from comparison`"
                   @click="removeJurisdiction(jurisdiction.coldId)"
                 >
                   <img

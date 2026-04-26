@@ -4,6 +4,8 @@
       v-if="sourceUrl"
       :to="sourceUrl as string"
       target="_blank"
+      rel="noopener noreferrer"
+      :aria-label="`${label} (opens in new tab)`"
       variant="ghost"
       color="primary"
       size="xs"
