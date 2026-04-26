@@ -25,6 +25,9 @@
     <template v-for="section in resolvedRelations" :key="section.key">
       <section v-if="section.items.length > 0">
         <DetailRow :label="section.label" :variant="section.variant">
+          <template v-if="section.items.length > 1" #label-subtitle>
+            {{ section.items.length }} items
+          </template>
           <RelatedItemsList
             :items="section.items"
             :base-path="section.basePath"
@@ -129,7 +132,7 @@ function formatValue(value: unknown): string {
     return String(value.length) + " items";
   }
   if (typeof value === "string" && ISO_DATE_RE.test(value)) {
-    return formatDate(value) ?? "\u2014";
+    return formatDate(value, { monthStyle: "short" }) ?? "\u2014";
   }
   return String(value);
 }

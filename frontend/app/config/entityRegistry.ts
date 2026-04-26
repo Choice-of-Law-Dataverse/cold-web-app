@@ -168,6 +168,8 @@ export interface EntityConfig {
   contentComponentId?: string;
   excludeRelations?: string[];
   hasDetailPage?: boolean;
+  hasIndexPage?: boolean;
+  hasNewPage?: boolean;
   variant?: string;
   searchCard?: SearchCardConfig;
 }
@@ -243,6 +245,7 @@ export const entityRegistry: Record<string, EntityConfig> = {
     titleKey: "caseTitle",
     process: processCourtDecision,
     contentComponentId: "CourtDecisionContent",
+    hasNewPage: true,
     variant: "court-decision",
     searchCard: {
       fields: [
@@ -283,6 +286,7 @@ export const entityRegistry: Record<string, EntityConfig> = {
     process: processQuestion,
     contentComponentId: "QuestionContent",
     excludeRelations: ["questions"],
+    hasIndexPage: false,
     variant: "question",
     searchCard: {
       fields: [
@@ -321,6 +325,7 @@ export const entityRegistry: Record<string, EntityConfig> = {
     titleKey: "title",
     process: processLiterature,
     contentComponentId: "LiteratureContent",
+    hasNewPage: true,
     variant: "literature",
     searchCard: {
       fields: [
@@ -328,7 +333,7 @@ export const entityRegistry: Record<string, EntityConfig> = {
           key: "title",
           inlineImage: {
             dataKey: "openAccess",
-            src: "https://choiceoflaw.blob.core.windows.net/assets/Open_Access_logo_PLoS_transparent.svg",
+            src: "https://assets.cold.global/assets/Open_Access_logo_PLoS_transparent.svg",
             alt: "Open Access Logo",
             class: "ml-1 inline-flex w-3",
           },
@@ -365,6 +370,7 @@ export const entityRegistry: Record<string, EntityConfig> = {
     titleKey: "titleInEnglish",
     process: processDomesticInstrument,
     contentComponentId: "DomesticInstrumentContent",
+    hasNewPage: true,
     variant: "instrument",
     searchCard: {
       fields: [
@@ -395,6 +401,7 @@ export const entityRegistry: Record<string, EntityConfig> = {
     titleKey: "title",
     process: processRegionalInstrument,
     contentComponentId: "RegionalInstrumentContent",
+    hasNewPage: true,
     variant: "instrument",
     searchCard: {
       fields: [
@@ -416,6 +423,7 @@ export const entityRegistry: Record<string, EntityConfig> = {
     titleKey: "name",
     process: processInternationalInstrument,
     contentComponentId: "InternationalInstrumentContent",
+    hasNewPage: true,
     variant: "instrument",
     searchCard: {
       fields: [
@@ -499,14 +507,17 @@ export const entityRegistry: Record<string, EntityConfig> = {
     process: processHcchAnswer,
     excludeRelations: ["questions"],
     hasDetailPage: false,
+    hasIndexPage: false,
   },
   "/jurisdiction": {
     table: "Jurisdictions",
-    singularLabel: "Jurisdiction",
-    fieldOrder: ["jurisdictionSummary", "jurisdictionalDifferentiator"],
+    singularLabel: "Report",
+    fieldOrder: ["name", "jurisdictionSummary", "jurisdictionalDifferentiator"],
     labelOverrides: { jurisdictionSummary: "Summary" },
     titleKey: "name",
     process: processJurisdiction,
+    contentComponentId: "JurisdictionContent",
+    hasIndexPage: false,
     variant: "jurisdiction",
   },
   "/domestic-legal-provision": {
@@ -571,8 +582,28 @@ export function getEntityConfigByTable(
   return basePath ? entityRegistry[basePath] : undefined;
 }
 
+export function getBasePathForTable(table: string): string | undefined {
+  return tableToBasePath.get(table);
+}
+
 export function getBasePathForCard(cardType: string): string | undefined {
   return tableToBasePath.get(cardType) ?? labelToBasePath.get(cardType);
+}
+
+export function getIndexPathForCard(cardType: string): string | undefined {
+  const basePath = getBasePathForCard(cardType);
+  if (!basePath) return undefined;
+  const config = entityRegistry[basePath];
+  if (config?.hasIndexPage === false) return undefined;
+  return basePath;
+}
+
+export function getNewPathForCard(cardType: string): string | undefined {
+  const basePath = getBasePathForCard(cardType);
+  if (!basePath) return undefined;
+  const config = entityRegistry[basePath];
+  if (!config?.hasNewPage) return undefined;
+  return `${basePath}/new`;
 }
 
 const VARIANT_TO_LABEL_CLASS: Record<string, string> = {
@@ -581,7 +612,7 @@ const VARIANT_TO_LABEL_CLASS: Record<string, string> = {
   instrument: "label-instrument",
   arbitration: "label-arbitration",
   literature: "label-literature",
-  jurisdiction: "hidden",
+  jurisdiction: "label-jurisdiction",
   specialist: "label-specialist",
 };
 

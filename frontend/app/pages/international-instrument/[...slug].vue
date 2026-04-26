@@ -5,9 +5,6 @@
       :loading="loading"
       :data="null"
       header-mode="new"
-      :show-notification-banner="true"
-      :notification-banner-message="notificationBannerMessage"
-      :icon="'i-material-symbols:warning-outline'"
       @open-save-modal="openSaveModal"
       @open-cancel-modal="showCancelModal = true"
     >
@@ -167,8 +164,6 @@ const errors = ref<Record<string, string>>({});
 const saveModalErrors = ref<Record<string, string>>({});
 const showSaveModal = ref(false);
 const showCancelModal = ref(false);
-const notificationBannerMessage =
-  "Please back up your data when working here. Closing or reloading this window will delete everything. Data is only saved after you submit.";
 const instrumentApiId = ref<string | null>(null);
 
 const formSchema = z.object({
@@ -265,16 +260,11 @@ async function fetchInstrument() {
       return;
     }
 
-    const response = await fetch(`/api/proxy/search/details`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        table: "International Instruments",
-        id: instrumentId.value,
-      }),
+    const params = new URLSearchParams({
+      table: "International Instruments",
+      id: instrumentId.value,
     });
+    const response = await fetch(`/api/proxy/search/details?${params}`);
     const responseText = await response.text();
     if (!response.ok) throw new Error("Failed to fetch instrument");
     const data = JSON.parse(responseText);

@@ -6,7 +6,7 @@
     :error="error"
   >
     <FlagTitleYearItem
-      v-for="instrument in domesticInstruments?.slice(0, 9)"
+      v-for="instrument in domesticInstruments"
       :key="String(instrument.id || '')"
       :to="`/domestic-instrument/${instrument.id}`"
       :iso3="instrument.jurisdictionsAlpha3Code || ''"
@@ -35,5 +35,6 @@ const {
   error,
 } = useDomesticInstruments({
   filterCompatible,
+  limit: 9,
 });
 </script>

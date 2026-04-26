@@ -1,211 +1,95 @@
 <template>
   <BaseDetailLayout
     table="Arbitral Awards"
+    page-heading="Arbitral Awards"
     :loading="isLoading"
     :data="resultData"
   >
     <template #full-width>
       <div class="gradient-top-border" />
       <div class="w-full px-6 py-6">
-        <div class="awards-table">
-          <UTable :columns="columns" :data="rows">
-            <template #caseNumber-cell="{ row }">
-              <NuxtLink
-                v-if="row.original.coldId"
-                :to="`/arbitral-award/${row.original.coldId}`"
-                class="table-row-link"
-              >
-                <span
-                  class="result-value-small block truncate whitespace-nowrap"
-                  >{{ row.original.caseNumber }}</span
-                >
-              </NuxtLink>
-              <span
-                v-else
-                class="result-value-small block truncate whitespace-nowrap"
-                >{{ row.original.caseNumber }}</span
-              >
-            </template>
-            <template #year-cell="{ row }">
-              <NuxtLink
-                v-if="row.original.coldId"
-                :to="`/arbitral-award/${row.original.coldId}`"
-                class="table-row-link"
-              >
-                <span class="result-value-small">{{ row.original.year }}</span>
-              </NuxtLink>
-              <span v-else class="result-value-small">{{
-                row.original.year
-              }}</span>
-            </template>
-            <template #seatTown-cell="{ row }">
-              <NuxtLink
-                v-if="row.original.coldId"
-                :to="`/arbitral-award/${row.original.coldId}`"
-                class="table-row-link"
-              >
-                <span class="result-value-small">{{
-                  row.original.seatTown
-                }}</span>
-              </NuxtLink>
-              <span v-else class="result-value-small">{{
-                row.original.seatTown
-              }}</span>
-            </template>
-            <template #source-cell="{ row }">
-              <NuxtLink
-                v-if="row.original.coldId"
-                :to="`/arbitral-award/${row.original.coldId}`"
-                class="table-row-link"
-              >
-                <span class="result-value-small">{{
-                  row.original.source
-                }}</span>
-              </NuxtLink>
-              <span v-else class="result-value-small">{{
-                row.original.source
-              }}</span>
-            </template>
-            <template #open-cell="{ row }">
-              <NuxtLink
-                v-if="row.original.coldId"
-                :to="`/arbitral-award/${row.original.coldId}`"
-                class="table-row-link arrow-cell"
-              >
-                <UIcon
-                  name="i-material-symbols:arrow-forward"
-                  class="arrow-icon"
-                />
-              </NuxtLink>
-              <span v-else class="text-gray-400">—</span>
-            </template>
-          </UTable>
-        </div>
+        <EntityListFilters
+          v-model:jurisdiction="selectedJurisdiction"
+          v-model:theme="selectedTheme"
+          :filters="['jurisdiction', 'theme']"
+          :count="data?.total"
+          :loading="isFetching"
+        />
+
+        <EntityListTable
+          v-model:page="page"
+          v-model:order-by="orderBy"
+          v-model:order-dir="orderDir"
+          :columns="columns"
+          :rows="rows"
+          link-base="/arbitral-award"
+          :total="data?.total"
+          :loading="isFetching"
+        />
       </div>
     </template>
   </BaseDetailLayout>
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref, watch } from "vue";
 import BaseDetailLayout from "@/components/layout/BaseDetailLayout.vue";
-import { useFullTable } from "@/composables/useFullTable";
-import type { ArbitralAwardResponse } from "@/types/entities/arbitral-award";
+import EntityListFilters from "@/components/entity-list/EntityListFilters.vue";
+import EntityListTable, {
+  type EntityListColumn,
+} from "@/components/entity-list/EntityListTable.vue";
+import { useEntityList } from "@/composables/useEntityList";
+import { sanitizeCell } from "@/utils/format";
+import type { JurisdictionOption } from "@/types/analyzer";
 
 useHead({
   title: "Arbitral Awards — CoLD",
 });
 
-const { data: rawData, isLoading } = useFullTable("Arbitral Awards");
+const page = ref(1);
 const resultData = null;
 
-const columns = [
-  { id: "caseNumber", accessorKey: "caseNumber", header: "Case Number" },
-  { id: "year", accessorKey: "year", header: "Year" },
-  { id: "seatTown", accessorKey: "seatTown", header: "Seat (Town)" },
-  { id: "source", accessorKey: "source", header: "Source" },
-  { id: "open", accessorKey: "coldId", header: "" },
-];
+const selectedJurisdiction = ref<JurisdictionOption | undefined>(undefined);
+const selectedTheme = ref<string | undefined>(undefined);
+const orderBy = ref<string | undefined>(undefined);
+const orderDir = ref<"asc" | "desc" | undefined>(undefined);
 
-const sanitize = (v: string | number | null | undefined) =>
-  !v || v === "NA" ? "" : String(v).trim();
+const jurisdictionCode = computed(
+  () => selectedJurisdiction.value?.coldId?.toUpperCase() || "",
+);
+
+watch([jurisdictionCode, selectedTheme], () => {
+  page.value = 1;
+});
+
+const { data, isLoading, isFetching } = useEntityList("arbitral-awards", {
+  page,
+  jurisdiction: jurisdictionCode,
+  theme: selectedTheme,
+  orderBy,
+  orderDir,
+});
 
 const rows = computed(() =>
-  (rawData.value || []).map((r: ArbitralAwardResponse) => ({
-    caseNumber: sanitize(r.caseNumber),
-    year: sanitize(r.year),
-    seatTown: sanitize(r.seatTown),
-    source: sanitize(r.source),
-    coldId: sanitize(r.coldId),
+  (data.value?.items ?? []).map((item) => ({
+    caseNumber: sanitizeCell(item.caseNumber),
+    year: sanitizeCell(item.year),
+    seatTown: sanitizeCell(item.seatTown),
+    source: sanitizeCell(item.source),
+    coldId: sanitizeCell(item.coldId),
   })),
 );
+
+const columns: EntityListColumn[] = [
+  { key: "caseNumber", header: "Case Number", width: "20%", sortable: true },
+  { key: "seatTown", header: "Seat (Town)", width: "20%", sortable: true },
+  { key: "source", header: "Source", sortable: true },
+  {
+    key: "year",
+    header: "Year",
+    width: "100px",
+    sortable: true,
+    align: "right",
+  },
+];
 </script>
-
-<style scoped>
-.awards-table :deep(table) {
-  table-layout: fixed;
-  width: 100%;
-}
-
-.awards-table :deep(th),
-.awards-table :deep(td) {
-  box-sizing: border-box;
-  width: 125px;
-  min-width: 125px;
-  max-width: 125px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  padding-right: 16px;
-}
-
-.awards-table :deep(th:nth-child(4)),
-.awards-table :deep(td:nth-child(4)) {
-  width: 225px;
-  min-width: 225px;
-  max-width: 225px;
-}
-
-.awards-table :deep(th:last-child),
-.awards-table :deep(td:last-child) {
-  padding-right: 16px;
-  text-align: right;
-}
-
-.awards-table :deep(td:last-child a.label) {
-  font-weight: 600;
-  font-size: 12px;
-}
-
-.awards-table :deep(tbody tr) {
-  height: 72px;
-}
-.awards-table :deep(tbody td) {
-  height: 72px;
-  vertical-align: top;
-}
-
-.awards-table :deep(tbody td:first-child) {
-  padding-top: 10px;
-}
-
-.awards-table :deep(tbody tr:hover) {
-  background-color: rgba(0, 0, 0, 0.02);
-  cursor: pointer;
-}
-
-.awards-table :deep(tbody tr:hover .arrow-icon) {
-  animation: bounce-right 0.4s ease-out;
-}
-
-.awards-table :deep(thead th) {
-  font-weight: 700;
-  font-size: 12px;
-  letter-spacing: 0.01em;
-  text-transform: uppercase;
-  color: var(--color-cold-night);
-}
-
-.awards-table :deep(thead th span),
-.awards-table :deep(thead th button),
-.awards-table :deep(thead th button span) {
-  font-weight: 700;
-  font-size: 12px;
-  letter-spacing: 0.01em;
-  text-transform: uppercase;
-  color: var(--color-cold-night);
-}
-
-.awards-table :deep(thead th button:hover),
-.awards-table :deep(thead th a:hover) {
-  background-color: transparent;
-  color: inherit;
-  text-decoration: none;
-  box-shadow: none;
-}
-.awards-table :deep(thead th button:hover span),
-.awards-table :deep(thead th a:hover span) {
-  color: inherit;
-  text-decoration: none;
-}
-</style>

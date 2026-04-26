@@ -4,13 +4,13 @@
     subtitle="Read top-ranked court decisions"
     :loading="isLoading"
     :error="error"
-    header-link="/court-decision/leading-cases"
+    header-link="/court-decision?caseRank=10"
     header-class="cursor-pointer text-left md:whitespace-nowrap"
   >
     <FlagTitleYearItem
-      v-for="decision in leadingCases?.slice(0, 6)"
-      :key="String(decision.id || '')"
-      :to="`/court-decision/${decision.id}`"
+      v-for="decision in leadingCases"
+      :key="String(decision.coldId || decision.id || '')"
+      :to="`/court-decision/${decision.coldId}`"
       :iso3="decision.jurisdictionsAlpha3Code || ''"
       :title="decision.caseTitle || ''"
       :year="
@@ -24,10 +24,16 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from "vue";
 import LandingCardShell from "@/components/landing-page/LandingCardShell.vue";
 import FlagTitleYearItem from "@/components/landing-page/FlagTitleYearItem.vue";
-import { useLeadingCases } from "@/composables/useFullTable";
+import { useEntityList } from "@/composables/useEntityList";
 import { formatYear } from "@/utils/format";
 
-const { data: leadingCases, isLoading, error } = useLeadingCases();
+const { data, isLoading, error } = useEntityList("court-decisions", {
+  caseRank: "10",
+  pageSize: 6,
+});
+
+const leadingCases = computed(() => data.value?.items ?? []);
 </script>

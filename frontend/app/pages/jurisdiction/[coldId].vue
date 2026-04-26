@@ -5,20 +5,12 @@
       :loading="isLoading"
       :error="error"
       :data="data"
-      :formatted-jurisdiction="[data?.name ?? '']"
       :show-suggest-edit="true"
+      entity-type="jurisdiction"
+      :entity-id="coldId"
+      :entity-title="data?.name ?? undefined"
     >
-      <DetailRow label="">
-        <h1 class="mb-4 text-3xl font-semibold md:text-4xl">
-          Country Report for {{ data?.name || "N/A" }}
-        </h1>
-      </DetailRow>
-
-      <EntityContent v-if="data" base-path="/jurisdiction" :data="data" />
-
-      <template #footer>
-        <LastModified :date="data?.updatedAt" />
-      </template>
+      <JurisdictionContent v-if="data" :data="data" />
     </BaseDetailLayout>
     <ClientOnly>
       <div class="mt-8">
@@ -79,13 +71,7 @@
       </template>
     </ClientOnly>
 
-    <PageSeoMeta :title-candidates="[data?.name]" fallback="Country Report" />
-
-    <EntityFeedback
-      entity-type="jurisdiction"
-      :entity-id="coldId"
-      :entity-title="data?.name ?? undefined"
-    />
+    <PageSeoMeta :title-candidates="[data?.name]" fallback="Jurisdiction" />
   </div>
 </template>
 
@@ -93,13 +79,10 @@
 import { computed, ref } from "vue";
 import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layout/BaseDetailLayout.vue";
-import DetailRow from "@/components/ui/DetailRow.vue";
-import EntityContent from "@/components/entity/EntityContent.vue";
+import JurisdictionContent from "@/components/entity/content/JurisdictionContent.vue";
 import JurisdictionComparisonTable from "@/components/jurisdiction/JurisdictionComparisonTable.vue";
-import LastModified from "@/components/ui/LastModified.vue";
 import LoadingBar from "@/components/layout/LoadingBar.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
-import EntityFeedback from "@/components/ui/EntityFeedback.vue";
 import { useEntityData } from "@/composables/useEntityData";
 import { flagUrl } from "@/config/assets";
 

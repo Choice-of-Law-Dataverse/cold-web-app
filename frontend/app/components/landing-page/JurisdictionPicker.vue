@@ -1,13 +1,19 @@
 <template>
-  <div ref="wrapperRef" class="hero-picker-wrapper">
-    <button class="hero-action" type="button" @click="isOpen = !isOpen">
-      <Icon name="i-material-symbols:public" class="hero-action-icon" />
-      <span>
-        <span class="hero-action-title">Open a jurisdiction report</span>
-        <span class="hero-action-desc"
-          >Browse choice-of-law rules by jurisdiction</span
-        >
-      </span>
+  <div ref="wrapperRef" class="picker-wrapper">
+    <button
+      type="button"
+      class="picker-trigger"
+      :aria-expanded="isOpen"
+      aria-haspopup="listbox"
+      @click="isOpen = !isOpen"
+    >
+      <Icon name="i-material-symbols:public" class="picker-trigger-icon" />
+      <span class="picker-trigger-label">Open a jurisdiction report</span>
+      <Icon
+        name="i-material-symbols:expand-more-rounded"
+        class="picker-trigger-chevron"
+        :class="{ 'picker-trigger-chevron--open': isOpen }"
+      />
     </button>
 
     <Teleport to="body">
@@ -21,12 +27,14 @@
             variant="none"
             class="picker-search"
           />
-          <div class="picker-list">
+          <div class="picker-list" role="listbox">
             <button
               v-for="item in filtered"
               :key="item.coldId || item.name"
               class="picker-item"
               type="button"
+              role="option"
+              :disabled="!hasCoverage(item.answerCoverage)"
               @click="selectItem(item)"
             >
               <JurisdictionFlag
@@ -36,8 +44,9 @@
                 class="picker-flag"
               />
               <span
-                :style="{
-                  color: hasCoverage(item.answerCoverage) ? undefined : 'gray',
+                class="picker-item-label"
+                :class="{
+                  'picker-item-label--faded': !hasCoverage(item.answerCoverage),
                 }"
               >
                 {{ item.label }}
@@ -55,16 +64,15 @@
 
 <script setup lang="ts">
 import { computed, ref, watch, nextTick } from "vue";
-import type { JurisdictionOption } from "@/types/analyzer";
+import { useRouter } from "#imports";
+import {
+  useJurisdictions,
+  type ProcessedJurisdiction,
+} from "@/composables/useJurisdictions";
 import JurisdictionFlag from "@/components/ui/JurisdictionFlag.vue";
 
-const props = defineProps<{
-  jurisdictions: JurisdictionOption[];
-}>();
-
-const emit = defineEmits<{
-  (event: "jurisdiction-selected", value: JurisdictionOption | undefined): void;
-}>();
+const router = useRouter();
+const { data: jurisdictions } = useJurisdictions();
 
 const isOpen = ref(false);
 const search = ref("");
@@ -75,9 +83,10 @@ const panelStyle = ref<Record<string, string>>({});
 const hasCoverage = (coverage?: number) => (coverage ?? 0) > 0;
 
 const filtered = computed(() => {
+  const list = jurisdictions.value ?? [];
   const q = search.value.toLowerCase().trim();
-  if (!q) return props.jurisdictions;
-  return props.jurisdictions.filter((j) => j.label.toLowerCase().includes(q));
+  if (!q) return list;
+  return list.filter((j) => j.label.toLowerCase().includes(q));
 });
 
 watch(isOpen, async (open) => {
@@ -92,67 +101,90 @@ watch(isOpen, async (open) => {
 function positionPanel() {
   if (!wrapperRef.value) return;
   const rect = wrapperRef.value.getBoundingClientRect();
+  const offset = 4;
+  const collisionPadding = 8;
+  const availableHeight =
+    window.innerHeight - rect.bottom - offset - collisionPadding;
   panelStyle.value = {
-    top: `${rect.bottom + 4}px`,
+    top: `${rect.bottom + offset}px`,
     left: `${rect.left}px`,
     minWidth: `${rect.width}px`,
+    maxHeight: `${availableHeight}px`,
   };
 }
 
-function selectItem(item: JurisdictionOption) {
+async function selectItem(item: ProcessedJurisdiction) {
+  if (!hasCoverage(item.answerCoverage) || !item.coldId) return;
   isOpen.value = false;
-  emit("jurisdiction-selected", item);
+  await router.push(`/jurisdiction/${item.coldId.toUpperCase()}`);
 }
 </script>
 
 <style scoped>
-.hero-picker-wrapper {
+.picker-wrapper {
   position: relative;
 }
 
-.hero-action {
-  display: flex;
+.picker-trigger {
+  display: inline-flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.5rem 0.75rem;
-  border-radius: 0.5rem;
-  background: color-mix(in srgb, white 60%, transparent);
-  text-decoration: none;
-  transition: all 0.15s ease;
-  cursor: pointer;
-  width: 100%;
-  border: none;
-}
-
-.hero-action:hover {
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem 0.5rem 0.875rem;
   background: white;
-  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.06);
+  border: 1px solid color-mix(in srgb, var(--color-cold-night) 12%, transparent);
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-family: "DM Sans", sans-serif;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-cold-night);
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.04);
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
-.hero-action-icon {
+.picker-trigger:hover {
+  border-color: color-mix(in srgb, var(--color-cold-purple) 35%, transparent);
+  box-shadow: 0 2px 6px -2px rgb(0 0 0 / 0.08);
+}
+
+.picker-trigger:focus-visible {
+  outline: 2px solid var(--color-cold-purple);
+  outline-offset: 2px;
+}
+
+.picker-trigger-icon {
   flex-shrink: 0;
-  font-size: 1.125rem;
+  font-size: 1rem;
   color: var(--color-cold-purple);
 }
 
-.hero-action-title {
-  display: block;
-  font-family: "DM Sans", sans-serif;
-  font-size: 0.8125rem;
-  font-weight: 600;
-  color: var(--color-cold-night);
-  line-height: 1.3;
-  text-align: left;
+.picker-trigger-label {
+  white-space: nowrap;
 }
 
-.hero-action-desc {
-  display: block;
-  font-family: "DM Sans", sans-serif;
-  font-size: 0.6875rem;
-  font-weight: 400;
-  color: var(--color-cold-slate);
-  line-height: 1.3;
-  text-align: left;
+.picker-trigger-chevron {
+  flex-shrink: 0;
+  font-size: 1rem;
+  color: color-mix(in srgb, var(--color-cold-night) 50%, transparent);
+  transition: transform 0.2s ease;
+}
+
+.picker-trigger-chevron--open {
+  transform: rotate(180deg);
+}
+
+@media (max-width: 480px) {
+  .picker-trigger {
+    padding: 0.4375rem 0.625rem 0.4375rem 0.75rem;
+    font-size: 0.8125rem;
+  }
+  .picker-trigger-label {
+    max-width: 11rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 }
 
 .picker-overlay {
@@ -163,17 +195,17 @@ function selectItem(item: JurisdictionOption) {
 
 .picker-panel {
   position: fixed;
-  width: 300px;
-  max-height: 360px;
+  width: 320px;
   display: flex;
   flex-direction: column;
   background: white;
-  border-radius: 0.5rem;
+  border-radius: 0.625rem;
   border: 1px solid var(--color-cold-gray);
   box-shadow:
-    0 4px 12px rgb(0 0 0 / 0.08),
-    0 1px 3px rgb(0 0 0 / 0.04);
+    0 12px 32px -12px rgb(0 0 0 / 0.18),
+    0 4px 12px -6px rgb(0 0 0 / 0.08);
   z-index: 101;
+  overflow: hidden;
 }
 
 .picker-search {
@@ -206,8 +238,16 @@ function selectItem(item: JurisdictionOption) {
   background: none;
 }
 
-.picker-item:hover {
+.picker-item:hover:not(:disabled) {
   background: var(--gradient-subtle-hover);
+}
+
+.picker-item:disabled {
+  cursor: not-allowed;
+}
+
+.picker-item-label--faded {
+  color: var(--color-cold-slate);
 }
 
 .picker-flag {

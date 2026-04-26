@@ -32,26 +32,49 @@ describe("RelatedItemsList", () => {
     expect(wrapper.findComponent({ name: "LoadingBar" }).exists()).toBe(true);
   });
 
-  it("renders all items even when many", () => {
-    const manyItems = Array.from({ length: 15 }, (_, i) => ({
+  it("renders all items without ShowMoreLess when at or below threshold", () => {
+    const items = Array.from({ length: 20 }, (_, i) => ({
       id: `${i + 1}`,
       title: `Item ${i + 1}`,
     }));
 
     const wrapper = mount(RelatedItemsList, {
       props: {
-        items: manyItems,
+        items,
         basePath: "/test",
       },
     });
 
     expect(wrapper.text()).toContain("Item 1");
-    expect(wrapper.text()).toContain("Item 10");
-    expect(wrapper.text()).toContain("Item 11");
-    expect(wrapper.text()).toContain("Item 15");
+    expect(wrapper.text()).toContain("Item 20");
     expect(wrapper.findComponent({ name: "ShowMoreLess" }).exists()).toBe(
       false,
     );
+  });
+
+  it("collapses items above the threshold and expands via ShowMoreLess", async () => {
+    const items = Array.from({ length: 25 }, (_, i) => ({
+      id: `${i + 1}`,
+      title: `Item ${i + 1}`,
+    }));
+
+    const wrapper = mount(RelatedItemsList, {
+      props: {
+        items,
+        basePath: "/test",
+      },
+    });
+
+    expect(wrapper.text()).toContain("Item 20");
+    expect(wrapper.text()).not.toContain("Item 21");
+    expect(wrapper.text()).not.toContain("Item 25");
+
+    const toggle = wrapper.findComponent({ name: "ShowMoreLess" });
+    expect(toggle.exists()).toBe(true);
+
+    await toggle.vm.$emit("update:isExpanded", true);
+    expect(wrapper.text()).toContain("Item 21");
+    expect(wrapper.text()).toContain("Item 25");
   });
 
   it("constructs correct link paths with basePath", () => {

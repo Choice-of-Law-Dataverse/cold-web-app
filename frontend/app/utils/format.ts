@@ -5,6 +5,7 @@ import { format } from "date-fns";
  */
 export function formatDate(
   dateString: string | null | undefined,
+  options: { monthStyle?: "long" | "short" } = {},
 ): string | undefined {
   if (!dateString) return undefined;
 
@@ -18,8 +19,8 @@ export function formatDate(
 
   return date.toLocaleDateString("en-GB", {
     year: "numeric",
-    month: "long",
-    day: "numeric",
+    month: options.monthStyle ?? "long",
+    day: "2-digit",
   });
 }
 
@@ -56,6 +57,14 @@ export function formatDateShort(dateString: string | null | undefined): string {
   } catch {
     return dateString;
   }
+}
+
+/**
+ * Coerce list-cell values: drop nullish and the legacy "NA" sentinel, otherwise stringify and trim.
+ */
+export function sanitizeCell(value: unknown): string {
+  if (value == null || value === "NA") return "";
+  return String(value).trim();
 }
 
 /**

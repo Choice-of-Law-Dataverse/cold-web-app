@@ -5,14 +5,14 @@ title: Disclaimer — CoLD
 ## 1. Copyright and Licensing Disclaimer
 
 **Copyright:**  
-2025 Choice of Law Dataverse
+2026 Choice of Law Dataverse
 
 **License:**  
 The data published on this website is made available under the terms of the Creative Commons Attribution-ShareAlike (CC BY-SA) license. You are free to reuse, distribute, remix, adapt, and build upon the data, even commercially, provided you clearly attribute the original source and distribute any derivative works under the same or a compatible license.
 
 For details of the CC BY-SA license, see:
 <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank">https://creativecommons.org/licenses/by-sa/4.0/<img
-     src="https://choiceoflaw.blob.core.windows.net/assets/external_link.svg"
+     src="https://assets.cold.global/assets/external_link.svg"
      alt="external link"
      class="external-link-icon"
    /></a>
