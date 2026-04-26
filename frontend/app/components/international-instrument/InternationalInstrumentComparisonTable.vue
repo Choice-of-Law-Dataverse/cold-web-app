@@ -89,7 +89,7 @@
                 authorities may have when implementing, interpreting, or
                 applying a specific rule regarding an issue addressed in the
                 <NuxtLink to="/learn/methodology#questionnaire">
-                  Questionnaire </NuxtLink
+                  Questionnaire</NuxtLink
                 >.
               </li>
               <li>
