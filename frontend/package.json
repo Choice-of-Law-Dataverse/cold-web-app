@@ -30,7 +30,7 @@
     "@auth0/auth0-nuxt": "^1.1.0",
     "@aws-sdk/client-s3": "^3.1037.0",
     "@aws-sdk/s3-request-presigner": "^3.1037.0",
-    "@fontsource-variable/dm-sans": "^5.2.8",
+    "@fontsource/dm-sans": "^5.2.8",
     "@fontsource/ibm-plex-mono": "^5.2.7",
     "@iconify-json/heroicons": "^1.2.3",
     "@iconify-json/material-symbols": "^1.2.69",
