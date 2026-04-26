@@ -139,7 +139,7 @@ useHead({
 });
 
 const page = ref(1);
-const pageSize = 200;
+const pageSize = 250;
 const resultData = null;
 
 const selectedJurisdiction = ref<JurisdictionOption | undefined>(undefined);

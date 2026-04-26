@@ -90,7 +90,7 @@ def list_entity(
         Query(description="Court Decisions only: filter by case rank."),
     ] = None,
     page: Annotated[int, Query(ge=1, description="1-indexed page number.")] = 1,
-    page_size: Annotated[int, Query(ge=1, le=200, description="Items per page (max 200).")] = 200,
+    page_size: Annotated[int, Query(ge=1, le=250, description="Items per page (max 250).")] = 250,
     order_by: Annotated[
         str | None,
         Query(description="Override default order column (snake or camelCase)."),

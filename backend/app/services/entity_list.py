@@ -75,7 +75,7 @@ ENTITY_LIST_CONFIGS: dict[str, EntityListConfig] = {
         view="data_views.base_court_decisions",
         relation_model=CourtDecisionRelation,
         columns=("case_citation", "case_title", "date"),
-        default_order_by="sort_date",
+        default_order_by="publication_date_iso",
         default_order_dir="desc",
         has_theme=True,
         extra_filter_columns=("case_rank",),
@@ -86,7 +86,7 @@ ENTITY_LIST_CONFIGS: dict[str, EntityListConfig] = {
         view="data_views.base_literature",
         relation_model=LiteratureRelation,
         columns=("author", "title", "publication_year", "oup_jd_chapter"),
-        default_order_by="sort_date",
+        default_order_by="publication_year",
         default_order_dir="desc",
         has_jurisdiction=False,
         has_theme=True,
@@ -97,7 +97,7 @@ ENTITY_LIST_CONFIGS: dict[str, EntityListConfig] = {
         view="data_views.base_domestic_instruments",
         relation_model=DomesticInstrumentRelation,
         columns=("title_in_english", "official_title", "abbreviation", "date"),
-        default_order_by="sort_date",
+        default_order_by="date",
         default_order_dir="desc",
     ),
     "regional-instruments": EntityListConfig(
@@ -106,7 +106,7 @@ ENTITY_LIST_CONFIGS: dict[str, EntityListConfig] = {
         view="data_views.base_regional_instruments",
         relation_model=RegionalInstrumentRelation,
         columns=("title", "abbreviation", "date"),
-        default_order_by="sort_date",
+        default_order_by="date",
         default_order_dir="desc",
         has_jurisdiction=False,
     ),
@@ -116,7 +116,7 @@ ENTITY_LIST_CONFIGS: dict[str, EntityListConfig] = {
         view="data_views.base_international_instruments",
         relation_model=InternationalInstrumentRelation,
         columns=("name", "abbreviation", "date"),
-        default_order_by="sort_date",
+        default_order_by="date",
         default_order_dir="desc",
         has_jurisdiction=False,
     ),
@@ -126,7 +126,7 @@ ENTITY_LIST_CONFIGS: dict[str, EntityListConfig] = {
         view="data_views.base_arbitral_awards",
         relation_model=ArbitralAwardRelation,
         columns=("case_number", "year", "seat_town", "source"),
-        default_order_by="sort_date",
+        default_order_by="year",
         default_order_dir="desc",
         has_theme=True,
     ),
@@ -194,7 +194,7 @@ def _safe_column_for(cfg: EntityListConfig, value: str) -> str | None:
         return None
     if snake in cfg.columns or snake == cfg.default_order_by or snake in cfg.extra_filter_columns:
         return snake
-    if snake in {"id", "cold_id", "sort_date"}:
+    if snake in {"id", "cold_id"}:
         return snake
     return None
 
@@ -261,7 +261,7 @@ class EntityListService:
         order_sql = f' ORDER BY b."{order_col}" {direction.upper()} NULLS LAST'
 
         page = max(1, page)
-        page_size = max(1, min(200, page_size))
+        page_size = max(1, min(250, page_size))
         offset = (page - 1) * page_size
 
         projection = ", ".join(f'b."{col}"' for col in ("id", "cold_id", *cfg.columns))
