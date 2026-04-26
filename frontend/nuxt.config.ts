@@ -71,6 +71,7 @@ export default defineNuxtConfig({
   },
   modules: [
     "@nuxt/ui",
+    "@nuxt/fonts",
     "@nuxtjs/leaflet",
     "@nuxt/icon",
     "@nuxt/content",
@@ -122,6 +123,36 @@ export default defineNuxtConfig({
   },
   ui: {
     fonts: false,
+  },
+  fonts: {
+    families: [
+      {
+        name: "DM Sans",
+        weight: "400",
+        preload: true,
+        src: "/fonts/dm-sans-latin-400-normal.woff2",
+      },
+      {
+        name: "DM Sans",
+        weight: "500",
+        src: "/fonts/dm-sans-latin-500-normal.woff2",
+      },
+      {
+        name: "DM Sans",
+        weight: "600",
+        src: "/fonts/dm-sans-latin-600-normal.woff2",
+      },
+      {
+        name: "DM Sans",
+        weight: "700",
+        src: "/fonts/dm-sans-latin-700-normal.woff2",
+      },
+      {
+        name: "IBM Plex Mono",
+        weight: "400",
+        src: "/fonts/ibm-plex-mono-latin-400-normal.woff2",
+      },
+    ],
   },
   css: ["@/assets/styles.css"],
   app: {
