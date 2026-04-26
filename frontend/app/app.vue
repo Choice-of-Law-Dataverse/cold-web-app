@@ -5,6 +5,8 @@
 </template>
 
 <script setup lang="ts">
+import printCss from "@/assets/print.css?url";
+
 useSeoMeta({
   description: "Choice of Law Dataverse",
   ogTitle: "Choice of Law Dataverse",
@@ -27,6 +29,11 @@ useHead({
       rel: "preconnect",
       href: "https://assets.cold.global",
       crossorigin: "",
+    },
+    {
+      rel: "stylesheet",
+      href: printCss,
+      media: "print",
     },
     {
       rel: "icon",
