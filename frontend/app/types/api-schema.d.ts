@@ -2931,9 +2931,7 @@ export interface operations {
         /** @description Sort results by date descending if True. */
         sort_by_date?: boolean;
       };
-      header?: {
-        "X-API-Key"?: string;
-      };
+      header?: never;
       path?: never;
       cookie?: never;
     };
@@ -3058,9 +3056,7 @@ export interface operations {
         /** @description CoLD ID for the record */
         id: string;
       };
-      header?: {
-        "X-API-Key"?: string;
-      };
+      header?: never;
       path?: never;
       cookie?: never;
     };
@@ -3185,9 +3181,7 @@ export interface operations {
         /** @description Sort direction when order_by is provided. */
         order_dir?: ("asc" | "desc") | null;
       };
-      header?: {
-        "X-API-Key"?: string;
-      };
+      header?: never;
       path?: never;
       cookie?: never;
     };
@@ -3339,9 +3333,7 @@ export interface operations {
   get_specialists_by_jurisdiction_api_v1_search_specialists__jurisdiction_alpha_code__get: {
     parameters: {
       query?: never;
-      header?: {
-        "X-API-Key"?: string;
-      };
+      header?: never;
       path: {
         jurisdiction_alpha_code: string;
       };
@@ -3681,9 +3673,7 @@ export interface operations {
   get_all_frontend_urls_api_v1_sitemap_urls_get: {
     parameters: {
       query?: never;
-      header?: {
-        "X-API-Key"?: string;
-      };
+      header?: never;
       path?: never;
       cookie?: never;
     };
@@ -3698,23 +3688,12 @@ export interface operations {
           "application/json": components["schemas"]["SitemapEntry"][];
         };
       };
-      /** @description Validation Error */
-      422: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
     };
   };
   get_jurisdictions_api_v1_landing_page_jurisdictions_get: {
     parameters: {
       query?: never;
-      header?: {
-        "X-API-Key"?: string;
-      };
+      header?: never;
       path?: never;
       cookie?: never;
     };
@@ -3737,23 +3716,12 @@ export interface operations {
           "application/json": components["schemas"]["LandingPageJurisdiction"][];
         };
       };
-      /** @description Validation Error */
-      422: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
     };
   };
   get_jurisdictions_with_answer_coverage_api_v1_statistics_jurisdictions_with_answer_percentage_get: {
     parameters: {
       query?: never;
-      header?: {
-        "X-API-Key"?: string;
-      };
+      header?: never;
       path?: never;
       cookie?: never;
     };
@@ -3786,15 +3754,6 @@ export interface operations {
           "application/json": components["schemas"]["JurisdictionCoverage"][];
         };
       };
-      /** @description Validation Error */
-      422: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
     };
   };
   count_by_jurisdiction_api_v1_statistics_count_by_jurisdiction_get: {
@@ -3805,9 +3764,7 @@ export interface operations {
         /** @description Optional limit on number of results to return */
         limit?: number | null;
       };
-      header?: {
-        "X-API-Key"?: string;
-      };
+      header?: never;
       path?: never;
       cookie?: never;
     };
