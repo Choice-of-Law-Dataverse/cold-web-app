@@ -9,7 +9,7 @@ title: Team — CoLD
 **Daniel Girsberger** Project Leader
 
 <a href="https://www.unilu.ch/en/faculties/faculty-of-law/professorships/girsberger-daniel/" target="_blank">Daniel<img
-    src="https://choiceoflaw.blob.core.windows.net/assets/external_link.svg"
+    src="https://assets.cold.global/assets/external_link.svg"
     alt="external link"
     class="external-link-icon"
   /></a> is the grant holder of the SNF Project. He oversees the strategic and operational decisions and is responsible for data quality control for the Dataverse. Daniel steers the Scientific Board, composed of legal experts from all continents.
@@ -19,7 +19,7 @@ title: Team — CoLD
 **Agatha Brandão de Oliveira** Project Coordinator
 
 <a href="https://www.unilu.ch/en/faculties/faculty-of-law/professorships/girsberger-daniel/staff/agatha-brandao-de-oliveira-mlaw" target="_blank">Agatha<img
-    src="https://choiceoflaw.blob.core.windows.net/assets/external_link.svg"
+    src="https://assets.cold.global/assets/external_link.svg"
     alt="external link"
     class="external-link-icon"
   /></a> is responsible for the strategic vision and practical execution of the project. She manages a multidisciplinary staff and is in charge of fostering partnerships. Agatha also acts as a Senior Researcher for the Dataverse, with a focus on data input.
@@ -29,7 +29,7 @@ title: Team — CoLD
 **Rorick Daniel Tovar Galván** Senior Researcher
 
 <a href="https://www.unilu.ch/en/faculties/faculty-of-law/professorships/girsberger-daniel/staff/dr-rorick-daniel-tovar-galvan-llm/" target="_blank">Rorick<img
-    src="https://choiceoflaw.blob.core.windows.net/assets/external_link.svg"
+    src="https://assets.cold.global/assets/external_link.svg"
     alt="external link"
     class="external-link-icon"
   /></a> holds a Ph.D. from the University of Bern, Switzerland. He oversees data input from Latin American countries into the Dataverse.
@@ -39,7 +39,7 @@ title: Team — CoLD
 **Anna Ptitsina** Editorial Assistant
 
 <a href="https://www.unilu.ch/en/faculties/faculty-of-law/professorships/girsberger-daniel/staff/anna-ptitsina/#tab=c163381" target="_blank">Anna<img
-    src="https://choiceoflaw.blob.core.windows.net/assets/external_link.svg"
+    src="https://assets.cold.global/assets/external_link.svg"
     alt="external link"
     class="external-link-icon"
   /></a> is in charge of integrating the Dataverse information into academic publications.
@@ -49,7 +49,7 @@ title: Team — CoLD
 **Dominic McMahon** Legal NLP Specialist & Data Analytics Lead
 
 <a href="https://www.unilu.ch/fakultaeten/rf/professuren/girsberger-daniel/mitarbeitende/dominic-mcmahon-mlaw/" target="_blank">Dominic<img
-    src="https://choiceoflaw.blob.core.windows.net/assets/external_link.svg"
+    src="https://assets.cold.global/assets/external_link.svg"
     alt="external link"
     class="external-link-icon"
   /></a> has recently completed his Master's degree in Law at the University of Lucerne. He acts as a Researcher for the Dataverse, with a focus on data analysis and data input. Dominic is also responsible for administrative tasks and event coordination.

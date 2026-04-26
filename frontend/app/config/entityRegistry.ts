@@ -328,7 +328,7 @@ export const entityRegistry: Record<string, EntityConfig> = {
           key: "title",
           inlineImage: {
             dataKey: "openAccess",
-            src: "https://choiceoflaw.blob.core.windows.net/assets/Open_Access_logo_PLoS_transparent.svg",
+            src: "https://assets.cold.global/assets/Open_Access_logo_PLoS_transparent.svg",
             alt: "Open Access Logo",
             class: "ml-1 inline-flex w-3",
           },

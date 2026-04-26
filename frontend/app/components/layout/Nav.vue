@@ -23,7 +23,7 @@
           class="desktop-logo"
         >
           <img
-            src="https://choiceoflaw.blob.core.windows.net/assets/cold_logo.svg"
+            src="https://assets.cold.global/assets/cold_logo.svg"
             alt="CoLD Logo"
             class="logo-img h-12 w-auto"
           />
@@ -35,7 +35,7 @@
           aria-label="Home"
         >
           <img
-            src="https://choiceoflaw.blob.core.windows.net/assets/cold_logo.svg"
+            src="https://assets.cold.global/assets/cold_logo.svg"
             alt="CoLD Logo"
             class="h-8 w-auto"
           />
