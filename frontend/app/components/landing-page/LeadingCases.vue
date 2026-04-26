@@ -4,7 +4,7 @@
     subtitle="Read top-ranked court decisions"
     :loading="isLoading"
     :error="error"
-    header-link="/court-decision/leading-cases"
+    header-link="/court-decision?caseRank=10"
     header-class="cursor-pointer text-left md:whitespace-nowrap"
   >
     <FlagTitleYearItem

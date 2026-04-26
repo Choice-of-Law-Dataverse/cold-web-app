@@ -29,16 +29,6 @@
               class="w-56"
             />
           </div>
-          <div class="filter-control">
-            <label class="filter-label">Case rank</label>
-            <USelectMenu
-              v-model="selectedCaseRank"
-              :items="caseRankOptions"
-              placeholder="Any"
-              size="xl"
-              class="w-40"
-            />
-          </div>
           <div v-if="hasActiveFilter" class="filter-control filter-reset">
             <UButton
               variant="ghost"
@@ -125,6 +115,7 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
+import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layout/BaseDetailLayout.vue";
 import EntityListPagination from "@/components/layout/EntityListPagination.vue";
 import JurisdictionSelectMenu from "@/components/jurisdiction/JurisdictionSelectMenu.vue";
@@ -138,14 +129,20 @@ useHead({
   title: "Court Decisions — CoLD",
 });
 
+const route = useRoute();
+
 const page = ref(1);
 const pageSize = 250;
 const resultData = null;
 
 const selectedJurisdiction = ref<JurisdictionOption | undefined>(undefined);
 const selectedTheme = ref<string | undefined>(undefined);
-const caseRankOptions = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"];
-const selectedCaseRank = ref<string | undefined>(undefined);
+
+const caseRank = computed(() => {
+  const raw = route.query.caseRank;
+  const value = Array.isArray(raw) ? raw[0] : raw;
+  return value ? String(value) : undefined;
+});
 
 const { data: jurisdictions } = useJurisdictions();
 
@@ -154,13 +151,10 @@ const jurisdictionCode = computed(
 );
 
 const hasActiveFilter = computed(
-  () =>
-    Boolean(jurisdictionCode.value) ||
-    Boolean(selectedTheme.value) ||
-    Boolean(selectedCaseRank.value),
+  () => Boolean(jurisdictionCode.value) || Boolean(selectedTheme.value),
 );
 
-watch([jurisdictionCode, selectedTheme, selectedCaseRank], () => {
+watch([jurisdictionCode, selectedTheme, caseRank], () => {
   page.value = 1;
 });
 
@@ -171,7 +165,6 @@ function onJurisdictionChange(j: JurisdictionOption | undefined) {
 function resetFilters() {
   selectedJurisdiction.value = undefined;
   selectedTheme.value = undefined;
-  selectedCaseRank.value = undefined;
 }
 
 const { data, isLoading } = useEntityList("court-decisions", {
@@ -179,7 +172,7 @@ const { data, isLoading } = useEntityList("court-decisions", {
   pageSize,
   jurisdiction: jurisdictionCode,
   theme: selectedTheme,
-  caseRank: selectedCaseRank,
+  caseRank,
 });
 
 const sanitize = (v: unknown) =>
