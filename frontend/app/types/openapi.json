@@ -213,15 +213,6 @@
               "title": "Sort By Date"
             },
             "description": "Sort results by date descending if True."
-          },
-          {
-            "name": "X-API-Key",
-            "in": "header",
-            "required": false,
-            "schema": {
-              "type": "string",
-              "title": "X-Api-Key"
-            }
           }
         ],
         "responses": {
@@ -408,15 +399,6 @@
               "title": "Id"
             },
             "description": "CoLD ID for the record"
-          },
-          {
-            "name": "X-API-Key",
-            "in": "header",
-            "required": false,
-            "schema": {
-              "type": "string",
-              "title": "X-Api-Key"
-            }
           }
         ],
         "responses": {
@@ -717,15 +699,6 @@
               "title": "Order Dir"
             },
             "description": "Sort direction when order_by is provided."
-          },
-          {
-            "name": "X-API-Key",
-            "in": "header",
-            "required": false,
-            "schema": {
-              "type": "string",
-              "title": "X-Api-Key"
-            }
           }
         ],
         "responses": {
@@ -836,15 +809,6 @@
             "schema": {
               "type": "string",
               "title": "Jurisdiction Alpha Code"
-            }
-          },
-          {
-            "name": "X-API-Key",
-            "in": "header",
-            "required": false,
-            "schema": {
-              "type": "string",
-              "title": "X-Api-Key"
             }
           }
         ],
@@ -1320,38 +1284,17 @@
         "tags": ["Sitemap"],
         "summary": "Get All Frontend Urls",
         "operationId": "get_all_frontend_urls_api_v1_sitemap_urls_get",
-        "parameters": [
-          {
-            "name": "X-API-Key",
-            "in": "header",
-            "required": false,
-            "schema": {
-              "type": "string",
-              "title": "X-Api-Key"
-            }
-          }
-        ],
         "responses": {
           "200": {
             "description": "Successful Response",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
                   "items": {
                     "$ref": "#/components/schemas/SitemapEntry"
                   },
+                  "type": "array",
                   "title": "Response Get All Frontend Urls Api V1 Sitemap Urls Get"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
                 }
               }
             }
@@ -1365,27 +1308,16 @@
         "summary": "Jurisdictions with data availability",
         "description": "Returns ISO Alpha-3 codes and a has_data flag (1/0) depending on whether non-'No data' answers exist.",
         "operationId": "get_jurisdictions_api_v1_landing_page_jurisdictions_get",
-        "parameters": [
-          {
-            "name": "X-API-Key",
-            "in": "header",
-            "required": false,
-            "schema": {
-              "type": "string",
-              "title": "X-Api-Key"
-            }
-          }
-        ],
         "responses": {
           "200": {
             "description": "Array of jurisdictions and availability flag.",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
                   "items": {
                     "$ref": "#/components/schemas/LandingPageJurisdiction"
                   },
+                  "type": "array",
                   "title": "Response Get Jurisdictions Api V1 Landing Page Jurisdictions Get"
                 },
                 "example": [
@@ -1394,16 +1326,6 @@
                     "has_data": 1
                   }
                 ]
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
               }
             }
           }
@@ -1416,27 +1338,16 @@
         "summary": "Get all jurisdictions with answer data percentage",
         "description": "Returns all jurisdictions with their complete data plus the percentage of answers that contain data (not 'no data'). Percentage is calculated per jurisdiction.",
         "operationId": "get_jurisdictions_with_answer_coverage_api_v1_statistics_jurisdictions_with_answer_percentage_get",
-        "parameters": [
-          {
-            "name": "X-API-Key",
-            "in": "header",
-            "required": false,
-            "schema": {
-              "type": "string",
-              "title": "X-Api-Key"
-            }
-          }
-        ],
         "responses": {
           "200": {
             "description": "Array of jurisdictions with all fields plus answer_coverage.",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
                   "items": {
                     "$ref": "#/components/schemas/JurisdictionCoverage"
                   },
+                  "type": "array",
                   "title": "Response Get Jurisdictions With Answer Coverage Api V1 Statistics Jurisdictions With Answer Percentage Get"
                 },
                 "example": [
@@ -1455,16 +1366,6 @@
                     "Answer_Coverage": 85.5
                   }
                 ]
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
               }
             }
           }
@@ -1507,15 +1408,6 @@
               "title": "Limit"
             },
             "description": "Optional limit on number of results to return"
-          },
-          {
-            "name": "X-API-Key",
-            "in": "header",
-            "required": false,
-            "schema": {
-              "type": "string",
-              "title": "X-Api-Key"
-            }
           }
         ],
         "responses": {

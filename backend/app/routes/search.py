@@ -71,7 +71,6 @@ def get_search_service() -> SearchService:
 router = APIRouter(
     prefix="/search",
     tags=["Search"],
-    dependencies=[Depends(verify_frontend_request)],
 )
 
 
@@ -184,6 +183,7 @@ _FULL_TEXT_SEARCH_DESCRIPTION = (
     summary="Full-text search across CoLD data",
     description=_FULL_TEXT_SEARCH_DESCRIPTION,
     responses=_FULL_TEXT_SEARCH_RESPONSES,
+    dependencies=[Depends(verify_frontend_request)],
 )
 def handle_full_text_search(
     body: FullTextSearchRequest,
@@ -248,6 +248,7 @@ _ENTITY_DETAIL_DESCRIPTION = (
     description=_ENTITY_DETAIL_DESCRIPTION,
     response_model=AnyDetail,
     responses=_ENTITY_DETAIL_RESPONSES,
+    dependencies=[Depends(verify_frontend_request)],
 )
 def handle_entity_detail(
     body: CuratedDetailsRequest,
@@ -301,6 +302,7 @@ _FULL_TABLE_DESCRIPTION = (
     summary="Return full or filtered table",
     description=_FULL_TABLE_DESCRIPTION,
     responses=_FULL_TABLE_RESPONSES,
+    dependencies=[Depends(verify_frontend_request)],
 )
 def return_full_table(
     body: FullTableRequest,
