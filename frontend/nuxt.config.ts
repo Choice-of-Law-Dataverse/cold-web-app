@@ -71,7 +71,6 @@ export default defineNuxtConfig({
   },
   modules: [
     "@nuxt/ui",
-    "@nuxt/fonts",
     "@nuxtjs/leaflet",
     "@nuxt/icon",
     "@nuxt/content",
@@ -120,26 +119,6 @@ export default defineNuxtConfig({
   },
   colorMode: {
     preference: "light",
-  },
-  fonts: {
-    defaults: {
-      styles: ["normal"],
-      subsets: ["latin"],
-      preload: false,
-    },
-    families: [
-      {
-        name: "DM Sans",
-        provider: "google",
-        weights: [400, 500, 600, 700],
-        preload: true,
-      },
-      {
-        name: "IBM Plex Mono",
-        provider: "google",
-        weights: [400],
-      },
-    ],
   },
   css: ["@/assets/styles.css"],
   app: {
