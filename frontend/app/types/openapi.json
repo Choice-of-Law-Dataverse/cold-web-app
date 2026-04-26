@@ -6014,6 +6014,16 @@
                 "type": "null"
               }
             ]
+          },
+          "jurisdictionsAlpha3Code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "type": "object",

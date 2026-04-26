@@ -53,6 +53,7 @@ class CourtDecisionRelation(_RelationBase):
     case_title: str | None = None
     date: str | None = None
     publication_date_iso: str | None = None
+    jurisdictions_alpha_3_code: str | None = None
 
 
 class DomesticInstrumentRelation(_RelationBase):

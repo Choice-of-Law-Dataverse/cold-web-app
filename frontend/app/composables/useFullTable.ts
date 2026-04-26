@@ -14,7 +14,6 @@ import {
   type LiteratureDisplay,
   processLiteratureRecord,
 } from "@/types/entities/literature";
-import { formatYear } from "@/utils/format";
 
 type ApiClient = ReturnType<typeof createClient<paths>>;
 
@@ -150,23 +149,6 @@ export function useInternationalLegalProvisions() {
         const bOrder = Number(b.rankingDisplayOrder) || 0;
         return aOrder - bOrder;
       });
-    },
-  });
-}
-
-export function useLeadingCases(options: { limit?: number } = {}) {
-  const { limit } = options;
-  return useFullTable("Court Decisions", {
-    filters: [{ column: "caseRank", value: 10 }],
-    limit,
-    orderBy: limit ? "publicationDateIso" : undefined,
-    orderDir: limit ? "desc" : undefined,
-    select: (data) => {
-      return data.sort(
-        (a, b) =>
-          (formatYear(b.publicationDateIso) ?? 0) -
-          (formatYear(a.publicationDateIso) ?? 0),
-      );
     },
   });
 }

@@ -1192,6 +1192,7 @@ export interface components {
       caseTitle?: string | null;
       date?: string | null;
       publicationDateIso?: string | null;
+      jurisdictionsAlpha3Code?: string | null;
     };
     /** CourtDecisionSearchResult */
     CourtDecisionSearchResult: {
