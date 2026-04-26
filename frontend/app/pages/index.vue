@@ -30,7 +30,7 @@
               class="hero-badge"
             >
               <img
-                src="https://choiceoflaw.blob.core.windows.net/assets/Prix-ORD-DEF_2025.png"
+                src="https://assets.cold.global/assets/Prix-ORD-DEF_2025.png"
                 alt="Swiss National ORD Prize 2025"
                 class="hero-badge-img"
                 width="64"
@@ -198,7 +198,7 @@
         subtitle="Authoritative Instrument on Choice of Law"
         button-text="HCCH Principles"
         button-link="/international-instrument/II-Pri-1"
-        image-src="https://choiceoflaw.blob.core.windows.net/assets/hcch-logo-circle.svg"
+        image-src="https://assets.cold.global/assets/hcch-logo-circle.svg"
         :new-tab="false"
         :center-title="false"
         :show-top-border="true"

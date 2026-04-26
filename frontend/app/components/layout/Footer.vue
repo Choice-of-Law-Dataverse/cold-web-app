@@ -16,7 +16,7 @@ const user = useUser();
         <!-- Left: Flag + Title -->
         <div class="flex items-center gap-4">
           <img
-            src="https://choiceoflaw.blob.core.windows.net/assets/cold_flag_footer.svg"
+            src="https://assets.cold.global/assets/cold_flag_footer.svg"
             class="h-12 w-auto sm:h-14"
             alt="Choice of Law Dataverse flag"
           />
