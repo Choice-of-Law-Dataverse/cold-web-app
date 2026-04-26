@@ -6,7 +6,6 @@
       :error="error"
       :data="data"
       :show-suggest-edit="true"
-      :show-legal-family="false"
       entity-type="jurisdiction"
       :entity-id="coldId"
       :entity-title="data?.name ?? undefined"

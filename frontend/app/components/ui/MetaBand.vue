@@ -45,7 +45,7 @@
             <span class="schip-text">{{ typeChip.label }}</span>
           </button>
           <NuxtLink
-            v-else-if="typeChip"
+            v-else-if="typeChip && typeChip.to"
             :to="typeChip.to"
             :class="['schip', 'schip--type', typeChip.colorClass]"
           >
@@ -54,9 +54,23 @@
             </span>
             <span class="schip-text">{{ typeChip.label }}</span>
             <span class="schip-affordance" aria-hidden="true">
-              <UIcon name="i-material-symbols:search" />
+              <UIcon name="i-material-symbols:arrow-forward" />
             </span>
           </NuxtLink>
+          <span
+            v-else-if="typeChip"
+            :class="[
+              'schip',
+              'schip--type',
+              'schip--static',
+              typeChip.colorClass,
+            ]"
+          >
+            <span class="schip-tag" aria-hidden="true">
+              <UIcon name="i-lucide:tag" />
+            </span>
+            <span class="schip-text">{{ typeChip.label }}</span>
+          </span>
           <NuxtLink
             v-for="(j, idx) in resolvedJurisdiction"
             :key="`jur-${idx}`"
@@ -82,7 +96,7 @@
             :class="chip.class"
           >
             <span class="schip-tag" aria-hidden="true">
-              <UIcon name="i-lucide:tag" />
+              <UIcon name="i-lucide:bookmark" />
             </span>
             <span class="schip-text">{{ chip.label }}</span>
             <span class="schip-affordance" aria-hidden="true">
@@ -209,9 +223,9 @@ import {
 } from "@/utils/jurisdictionParser";
 import {
   getBasePathForCard,
+  getIndexPathForCard,
   getLabelColorClass,
   getSingularLabel,
-  getTableName,
 } from "@/config/entityRegistry";
 
 type EntityType = components["schemas"]["EntityType"];
@@ -226,12 +240,10 @@ const props = withDefaults(
     cardType?: string;
     formattedJurisdiction?: string[];
     formattedTheme?: string[];
-    legalFamily?: string[];
     headerMode?: string;
     showCite?: boolean;
     showJson?: boolean;
     showPrint?: boolean;
-    showLegalFamily?: boolean;
     entityType?: string;
     entityId?: string;
     entityTitle?: string;
@@ -242,12 +254,10 @@ const props = withDefaults(
     cardType: "",
     formattedJurisdiction: () => [],
     formattedTheme: () => [],
-    legalFamily: () => [],
     headerMode: "default",
     showCite: true,
     showJson: true,
     showPrint: true,
-    showLegalFamily: true,
     entityType: "",
     entityId: "",
     entityTitle: "",
@@ -323,20 +333,21 @@ const resolvedJurisdiction = computed<ResolvedJurisdiction[]>(() => {
   return [];
 });
 
-const resolvedLegalFamily = computed<string[]>(() => {
-  if (!props.showLegalFamily) return [];
-  if (props.legalFamily.length > 0) return props.legalFamily;
-  const value = String(props.resultData.legalFamily || "");
-  if (!value || value === "N/A") return [];
-  return value
-    .split(",")
-    .map((f) => f.trim())
-    .filter((f) => f);
-});
-
 const resolvedTheme = computed<string[]>(() => {
   const fromProps = props.formattedTheme ?? [];
   if (fromProps.length > 0) return fromProps;
+
+  const relations = (props.resultData as { relations?: unknown }).relations;
+  const relationThemes =
+    relations &&
+    typeof relations === "object" &&
+    Array.isArray((relations as { themes?: unknown }).themes)
+      ? (relations as { themes: Array<{ theme?: string | null }> }).themes
+          .map((t) => t?.theme?.trim())
+          .filter((t): t is string => !!t && t !== "null" && t !== "None")
+      : [];
+  if (relationThemes.length > 0) return [...new Set(relationThemes)];
+
   if (props.cardType === "Literature" && props.resultData.themes) {
     return String(props.resultData.themes)
       .split(/[,|]/)
@@ -364,11 +375,10 @@ const typeChip = computed(() => {
   if (colorClass === "hidden") return null;
   const label = getSingularLabel(cardType);
   if (!label) return null;
-  const searchType = getTableName(cardType);
   return {
     label,
     colorClass,
-    to: `/search?type=${searchParam(searchType)}`,
+    to: getIndexPathForCard(cardType) ?? "",
   };
 });
 
@@ -379,20 +389,14 @@ interface TaggedSearchChip {
   label: string;
 }
 
-const taggedSearchChips = computed<TaggedSearchChip[]>(() => [
-  ...resolvedLegalFamily.value.map((f, idx) => ({
-    key: `family-${idx}`,
-    to: `/search?type=Jurisdictions&legalFamily=${searchParam(f)}`,
-    class: "schip schip--family",
-    label: f,
-  })),
-  ...resolvedTheme.value.map((theme, idx) => ({
+const taggedSearchChips = computed<TaggedSearchChip[]>(() =>
+  resolvedTheme.value.map((theme, idx) => ({
     key: `theme-${idx}`,
     to: `/search?theme=${searchParam(theme)}`,
     class: "schip schip--theme",
     label: theme,
   })),
-]);
+);
 
 const isJurisdictionType = computed(
   () => typeChip.value?.colorClass === "label-jurisdiction",
@@ -458,10 +462,7 @@ function selectPickerJurisdiction(item: { coldId?: string }) {
 }
 
 const hasFirstLine = computed(
-  () =>
-    !!typeChip.value ||
-    resolvedJurisdiction.value.length > 0 ||
-    resolvedLegalFamily.value.length > 0,
+  () => !!typeChip.value || resolvedJurisdiction.value.length > 0,
 );
 
 const hasAnyChips = computed(
@@ -666,10 +667,14 @@ function printPage() {
     color 0.15s ease;
 }
 
-.schip:hover {
+.schip:not(.schip--static):hover {
   background: color-mix(in srgb, var(--schip-color) 14%, white);
   border-color: color-mix(in srgb, var(--schip-color) 30%, white);
   color: color-mix(in srgb, var(--schip-color) 95%, black);
+}
+
+.schip--static {
+  cursor: default;
 }
 
 .schip--type {
@@ -707,16 +712,6 @@ function printPage() {
 
 .schip--jur {
   --schip-color: var(--color-cold-night);
-}
-
-.schip--family {
-  --schip-color: #b07000;
-  background: transparent;
-  font-weight: 500;
-}
-
-.schip--family:hover {
-  background: color-mix(in srgb, var(--schip-color) 10%, white);
 }
 
 .schip--theme {

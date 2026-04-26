@@ -80,8 +80,14 @@ const rows = computed(() =>
 
 const columns: EntityListColumn[] = [
   { key: "caseNumber", header: "Case Number", width: "20%", sortable: true },
-  { key: "year", header: "Year", width: "100px", sortable: true },
   { key: "seatTown", header: "Seat (Town)", width: "20%", sortable: true },
   { key: "source", header: "Source", sortable: true },
+  {
+    key: "year",
+    header: "Year",
+    width: "100px",
+    sortable: true,
+    align: "right",
+  },
 ];
 </script>

@@ -27,7 +27,7 @@
                 v-if="row.openAccess"
                 src="https://assets.cold.global/assets/Open_Access_logo_PLoS_transparent.svg"
                 alt="Open Access"
-                class="ml-1 inline-flex w-3 align-middle"
+                class="ml-1 inline-block h-4 w-4 shrink-0 object-contain align-middle"
               />
             </span>
           </template>
@@ -87,6 +87,7 @@ const columns: EntityListColumn[] = [
     header: "Year",
     width: "120px",
     sortable: true,
+    align: "right",
   },
 ];
 </script>
