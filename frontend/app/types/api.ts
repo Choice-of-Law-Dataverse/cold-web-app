@@ -2,37 +2,30 @@ import type { components } from "./api-schema";
 import type { AnySearchResult as AnySearchResultType } from "./search";
 import type { AnswerResponse, AnswerDetailResponse } from "./entities/answer";
 import type {
-  ArbitralAward,
   ArbitralAwardResponse,
   ArbitralAwardDetailResponse,
 } from "./entities/arbitral-award";
 import type {
-  ArbitralInstitution,
   ArbitralInstitutionResponse,
   ArbitralInstitutionDetailResponse,
 } from "./entities/arbitral-institution";
 import type {
-  ArbitralRule,
   ArbitralRuleResponse,
   ArbitralRuleDetailResponse,
 } from "./entities/arbitral-rule";
 import type {
-  CourtDecision,
   CourtDecisionResponse,
   CourtDecisionDetailResponse,
 } from "./entities/court-decision";
 import type {
-  DomesticInstrument,
   DomesticInstrumentResponse,
   DomesticInstrumentDetailResponse,
 } from "./entities/domestic-instrument";
 import type {
-  InternationalInstrument,
   InternationalInstrumentResponse,
   InternationalInstrumentDetailResponse,
 } from "./entities/international-instrument";
 import type {
-  Jurisdiction,
   JurisdictionResponse,
   JurisdictionDetailResponse,
 } from "./entities/jurisdiction";
@@ -45,27 +38,19 @@ import type {
   RegionalLegalProvisionDetailResponse,
 } from "./entities/legal-provision";
 import type {
-  Literature,
   LiteratureResponse,
   LiteratureDetailResponse,
 } from "./entities/literature";
-import type { Question, QuestionResponse } from "./entities/question";
+import type { QuestionResponse } from "./entities/question";
 import type {
-  RegionalInstrument,
   RegionalInstrumentResponse,
   RegionalInstrumentDetailResponse,
 } from "./entities/regional-instrument";
 import type {
-  Specialist,
   SpecialistResponse,
   SpecialistDetailResponse,
 } from "./entities/specialist";
-import type {
-  HcchAnswer,
-  HcchAnswerDetailResponse,
-} from "./entities/hcch-answer";
-
-export { ApiError } from "./errors";
+import type { HcchAnswerDetailResponse } from "./entities/hcch-answer";
 
 export interface SearchFilters {
   jurisdiction?: string;
@@ -148,32 +133,10 @@ export type TableDetailMap = {
   Specialists: SpecialistDetailResponse;
 };
 
-export type TableProcessedMap = {
-  Answers: AnswerDetailResponse;
-  "Arbitral Awards": ArbitralAward;
-  "Arbitral Institutions": ArbitralInstitution;
-  "Arbitral Rules": ArbitralRule;
-  "Court Decisions": CourtDecision;
-  "Domestic Instruments": DomesticInstrument;
-  "Domestic Legal Provisions": DomesticLegalProvisionDetailResponse;
-  "HCCH Answers": HcchAnswer;
-  "International Instruments": InternationalInstrument;
-  "International Legal Provisions": InternationalLegalProvisionDetailResponse;
-  Jurisdictions: Jurisdiction;
-  "Leading Cases": CourtDecision;
-  Literature: Literature;
-  Questions: Question;
-  "Regional Instruments": RegionalInstrument;
-  "Regional Legal Provisions": RegionalLegalProvisionDetailResponse;
-  Specialists: Specialist;
-};
-
 export type TypedFilter<T extends TableName> = {
   column: keyof TableResponseMap[T] & string;
   value: string | number | boolean;
 };
-
-export type FilterColumn = "jurisdictions" | "themes" | "tables" | "type";
 
 export type { AnySearchResult } from "./search";
 

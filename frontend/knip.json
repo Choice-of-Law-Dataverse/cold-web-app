@@ -13,5 +13,6 @@
     "@iconify-json/lucide",
     "@iconify-json/simple-icons"
   ],
-  "ignoreBinaries": ["uv"]
+  "ignoreBinaries": ["uv"],
+  "ignore": ["app/components/ProseImg.vue", "content.config.ts"]
 }
