@@ -47,12 +47,26 @@
 
     <!-- Explore Data Stats Strip -->
     <div class="animate-fade-up animate-delay-1 col-span-12">
-      <div class="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-3">
+      <div class="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-3">
         <NumberCard
           title="Court Decisions"
           button-text="See all"
           button-link="/court-decision"
           :override-number="counts?.courtDecisions"
+        />
+
+        <NumberCard
+          title="Literature"
+          button-text="See all"
+          button-link="/literature"
+          :override-number="counts?.literature"
+        />
+
+        <NumberCard
+          title="Specialists"
+          button-text="See all"
+          button-link="/specialist"
+          :override-number="counts?.specialists"
         />
 
         <NumberCard
@@ -63,10 +77,31 @@
         />
 
         <NumberCard
+          title="Regional Instruments"
+          button-text="See all"
+          button-link="/regional-instrument"
+          :override-number="counts?.regionalInstruments"
+        />
+
+        <NumberCard
+          title="International Instruments"
+          button-text="See all"
+          button-link="/international-instrument"
+          :override-number="counts?.internationalInstruments"
+        />
+
+        <NumberCard
           title="Arbitral Awards"
           button-text="See all"
           button-link="/arbitral-award"
           :override-number="counts?.arbitralAwards"
+        />
+
+        <NumberCard
+          title="Arbitral Institutions"
+          button-text="See all"
+          button-link="/arbitral-institution"
+          :override-number="counts?.arbitralInstitutions"
         />
 
         <NumberCard

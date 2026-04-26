@@ -8,6 +8,28 @@
     <template #full-width>
       <div class="gradient-top-border" />
       <div class="w-full px-6 py-6">
+        <div class="literature-filters mb-6 flex flex-wrap gap-4">
+          <div class="filter-control">
+            <label class="filter-label">Theme</label>
+            <USelectMenu
+              v-model="selectedTheme"
+              :items="themeOptions"
+              placeholder="Any"
+              size="xl"
+              class="w-56"
+            />
+          </div>
+          <div v-if="hasActiveFilter" class="filter-control filter-reset">
+            <UButton
+              variant="ghost"
+              size="sm"
+              icon="i-material-symbols:close"
+              @click="resetFilters"
+            >
+              Clear filters
+            </UButton>
+          </div>
+        </div>
         <div class="literature-table">
           <UTable :columns="columns" :data="rows">
             <template #title-cell="{ row }">
@@ -88,10 +110,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import BaseDetailLayout from "@/components/layout/BaseDetailLayout.vue";
 import EntityListPagination from "@/components/layout/EntityListPagination.vue";
 import { useEntityList } from "@/composables/useEntityList";
+import themeOptions from "@/assets/themeOptions.json";
 
 useHead({
   title: "Literature — CoLD",
@@ -101,9 +124,22 @@ const page = ref(1);
 const pageSize = 200;
 const resultData = null;
 
+const selectedTheme = ref<string | undefined>(undefined);
+
+const hasActiveFilter = computed(() => Boolean(selectedTheme.value));
+
+watch(selectedTheme, () => {
+  page.value = 1;
+});
+
+function resetFilters() {
+  selectedTheme.value = undefined;
+}
+
 const { data, isLoading } = useEntityList("literature", {
   page,
   pageSize,
+  theme: selectedTheme,
 });
 
 const sanitize = (v: unknown) =>
@@ -132,6 +168,26 @@ const columns = [
 </script>
 
 <style scoped>
+.filter-label {
+  display: block;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  color: var(--color-cold-night);
+  margin-bottom: 4px;
+}
+
+.filter-control {
+  min-width: 200px;
+}
+
+.filter-reset {
+  display: flex;
+  align-items: flex-end;
+  min-width: auto;
+}
+
 .literature-table :deep(table) {
   table-layout: fixed;
   width: 100%;

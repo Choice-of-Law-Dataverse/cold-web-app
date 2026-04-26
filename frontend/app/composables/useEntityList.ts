@@ -41,6 +41,7 @@ export interface EntityListPage<S extends EntitySlug> {
 
 export interface UseEntityListParams {
   jurisdiction?: MaybeRefOrGetter<string | null | undefined>;
+  theme?: MaybeRefOrGetter<string | null | undefined>;
   caseRank?: MaybeRefOrGetter<string | null | undefined>;
   page?: MaybeRefOrGetter<number>;
   pageSize?: MaybeRefOrGetter<number>;
@@ -60,6 +61,7 @@ export function useEntityList<S extends EntitySlug>(
       "entityList",
       slug,
       toValue(params.jurisdiction) ?? null,
+      toValue(params.theme) ?? null,
       toValue(params.caseRank) ?? null,
       toValue(params.page) ?? 1,
       toValue(params.pageSize) ?? 200,
@@ -72,6 +74,7 @@ export function useEntityList<S extends EntitySlug>(
           path: { slug },
           query: {
             jurisdiction: toValue(params.jurisdiction) || undefined,
+            theme: toValue(params.theme) || undefined,
             case_rank: toValue(params.caseRank) || undefined,
             page: toValue(params.page) || 1,
             page_size: toValue(params.pageSize) || 200,

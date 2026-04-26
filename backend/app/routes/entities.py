@@ -81,6 +81,10 @@ def list_entity(
         str | None,
         Query(description="Filter by jurisdiction Alpha-3 code (case-insensitive)."),
     ] = None,
+    theme: Annotated[
+        str | None,
+        Query(description="Filter by theme name (substring, case-insensitive)."),
+    ] = None,
     case_rank: Annotated[
         str | None,
         Query(description="Court Decisions only: filter by case rank."),
@@ -112,6 +116,7 @@ def list_entity(
         items, total = service.list_entity(
             cfg,
             jurisdiction=jurisdiction,
+            theme=theme,
             page=page,
             page_size=page_size,
             order_by=order_by,

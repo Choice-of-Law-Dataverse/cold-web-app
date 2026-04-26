@@ -40,6 +40,7 @@ class EntityListConfig:
     default_order_by: str
     default_order_dir: Literal["asc", "desc"] = "desc"
     has_jurisdiction: bool = True
+    has_theme: bool = False
     extra_filter_columns: tuple[str, ...] = field(default_factory=tuple)
 
 
@@ -52,6 +53,7 @@ ENTITY_LIST_CONFIGS: dict[str, EntityListConfig] = {
         columns=("case_citation", "case_title", "date"),
         default_order_by="sort_date",
         default_order_dir="desc",
+        has_theme=True,
         extra_filter_columns=("case_rank",),
     ),
     "literature": EntityListConfig(
@@ -63,6 +65,7 @@ ENTITY_LIST_CONFIGS: dict[str, EntityListConfig] = {
         default_order_by="sort_date",
         default_order_dir="desc",
         has_jurisdiction=False,
+        has_theme=True,
     ),
     "domestic-instruments": EntityListConfig(
         slug="domestic-instruments",
@@ -101,6 +104,7 @@ ENTITY_LIST_CONFIGS: dict[str, EntityListConfig] = {
         columns=("case_number", "year", "seat_town", "source"),
         default_order_by="sort_date",
         default_order_dir="desc",
+        has_theme=True,
     ),
     "arbitral-institutions": EntityListConfig(
         slug="arbitral-institutions",
@@ -187,6 +191,7 @@ class EntityListService:
         cfg: EntityListConfig,
         *,
         jurisdiction: str | None = None,
+        theme: str | None = None,
         page: int = 1,
         page_size: int = 200,
         order_by: str | None = None,
@@ -202,6 +207,10 @@ class EntityListService:
         if jurisdiction and cfg.has_jurisdiction:
             params["juris"] = jurisdiction.upper()
             where_parts.append("\"jurisdictions_alpha_3_code\" ILIKE '%' || :juris || '%'")
+
+        if theme and cfg.has_theme:
+            params["theme"] = theme
+            where_parts.append("\"themes\" ILIKE '%' || :theme || '%'")
 
         if extra_filters:
             for raw_key, raw_val in extra_filters.items():

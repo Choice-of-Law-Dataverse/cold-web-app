@@ -8,6 +8,38 @@
     <template #full-width>
       <div class="gradient-top-border" />
       <div class="w-full px-6 py-6">
+        <div class="awards-filters mb-6 flex flex-wrap gap-4">
+          <div class="filter-control">
+            <label class="filter-label">Jurisdiction</label>
+            <JurisdictionSelectMenu
+              v-if="jurisdictions"
+              :jurisdictions="jurisdictions"
+              :model-value="selectedJurisdiction"
+              placeholder="All jurisdictions"
+              @update:model-value="onJurisdictionChange"
+            />
+          </div>
+          <div class="filter-control">
+            <label class="filter-label">Theme</label>
+            <USelectMenu
+              v-model="selectedTheme"
+              :items="themeOptions"
+              placeholder="Any"
+              size="xl"
+              class="w-56"
+            />
+          </div>
+          <div v-if="hasActiveFilter" class="filter-control filter-reset">
+            <UButton
+              variant="ghost"
+              size="sm"
+              icon="i-material-symbols:close"
+              @click="resetFilters"
+            >
+              Clear filters
+            </UButton>
+          </div>
+        </div>
         <div class="awards-table">
           <UTable :columns="columns" :data="rows">
             <template #caseNumber-cell="{ row }">
@@ -95,10 +127,14 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import BaseDetailLayout from "@/components/layout/BaseDetailLayout.vue";
 import EntityListPagination from "@/components/layout/EntityListPagination.vue";
+import JurisdictionSelectMenu from "@/components/jurisdiction/JurisdictionSelectMenu.vue";
 import { useEntityList } from "@/composables/useEntityList";
+import { useJurisdictions } from "@/composables/useJurisdictions";
+import type { JurisdictionOption } from "@/types/analyzer";
+import themeOptions from "@/assets/themeOptions.json";
 
 useHead({
   title: "Arbitral Awards — CoLD",
@@ -108,9 +144,37 @@ const page = ref(1);
 const pageSize = 200;
 const resultData = null;
 
+const selectedJurisdiction = ref<JurisdictionOption | undefined>(undefined);
+const selectedTheme = ref<string | undefined>(undefined);
+
+const { data: jurisdictions } = useJurisdictions();
+
+const jurisdictionCode = computed(
+  () => selectedJurisdiction.value?.coldId?.toUpperCase() || "",
+);
+
+const hasActiveFilter = computed(
+  () => Boolean(jurisdictionCode.value) || Boolean(selectedTheme.value),
+);
+
+watch([jurisdictionCode, selectedTheme], () => {
+  page.value = 1;
+});
+
+function onJurisdictionChange(j: JurisdictionOption | undefined) {
+  selectedJurisdiction.value = j;
+}
+
+function resetFilters() {
+  selectedJurisdiction.value = undefined;
+  selectedTheme.value = undefined;
+}
+
 const { data, isLoading } = useEntityList("arbitral-awards", {
   page,
   pageSize,
+  jurisdiction: jurisdictionCode,
+  theme: selectedTheme,
 });
 
 const sanitize = (v: unknown) =>
@@ -136,6 +200,26 @@ const columns = [
 </script>
 
 <style scoped>
+.filter-label {
+  display: block;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  color: var(--color-cold-night);
+  margin-bottom: 4px;
+}
+
+.filter-control {
+  min-width: 200px;
+}
+
+.filter-reset {
+  display: flex;
+  align-items: flex-end;
+  min-width: auto;
+}
+
 .awards-table :deep(table) {
   table-layout: fixed;
   width: 100%;

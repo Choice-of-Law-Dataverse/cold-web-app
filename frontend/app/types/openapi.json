@@ -1184,6 +1184,24 @@
             "description": "Filter by jurisdiction Alpha-3 code (case-insensitive)."
           },
           {
+            "name": "theme",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by theme name (substring, case-insensitive).",
+              "title": "Theme"
+            },
+            "description": "Filter by theme name (substring, case-insensitive)."
+          },
+          {
             "name": "case_rank",
             "in": "query",
             "required": false,

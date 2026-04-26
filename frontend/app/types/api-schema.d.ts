@@ -3537,6 +3537,8 @@ export interface operations {
       query?: {
         /** @description Filter by jurisdiction Alpha-3 code (case-insensitive). */
         jurisdiction?: string | null;
+        /** @description Filter by theme name (substring, case-insensitive). */
+        theme?: string | null;
         /** @description Court Decisions only: filter by case rank. */
         case_rank?: string | null;
         /** @description 1-indexed page number. */

@@ -20,6 +20,16 @@
             />
           </div>
           <div class="filter-control">
+            <label class="filter-label">Theme</label>
+            <USelectMenu
+              v-model="selectedTheme"
+              :items="themeOptions"
+              placeholder="Any"
+              size="xl"
+              class="w-56"
+            />
+          </div>
+          <div class="filter-control">
             <label class="filter-label">Case rank</label>
             <USelectMenu
               v-model="selectedCaseRank"
@@ -122,6 +132,7 @@ import { useEntityList } from "@/composables/useEntityList";
 import { useJurisdictions } from "@/composables/useJurisdictions";
 import { formatDate } from "@/utils/format";
 import type { JurisdictionOption } from "@/types/analyzer";
+import themeOptions from "@/assets/themeOptions.json";
 
 useHead({
   title: "Court Decisions — CoLD",
@@ -132,6 +143,7 @@ const pageSize = 200;
 const resultData = null;
 
 const selectedJurisdiction = ref<JurisdictionOption | undefined>(undefined);
+const selectedTheme = ref<string | undefined>(undefined);
 const caseRankOptions = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"];
 const selectedCaseRank = ref<string | undefined>(undefined);
 
@@ -142,10 +154,13 @@ const jurisdictionCode = computed(
 );
 
 const hasActiveFilter = computed(
-  () => Boolean(jurisdictionCode.value) || Boolean(selectedCaseRank.value),
+  () =>
+    Boolean(jurisdictionCode.value) ||
+    Boolean(selectedTheme.value) ||
+    Boolean(selectedCaseRank.value),
 );
 
-watch([jurisdictionCode, selectedCaseRank], () => {
+watch([jurisdictionCode, selectedTheme, selectedCaseRank], () => {
   page.value = 1;
 });
 
@@ -155,6 +170,7 @@ function onJurisdictionChange(j: JurisdictionOption | undefined) {
 
 function resetFilters() {
   selectedJurisdiction.value = undefined;
+  selectedTheme.value = undefined;
   selectedCaseRank.value = undefined;
 }
 
@@ -162,6 +178,7 @@ const { data, isLoading } = useEntityList("court-decisions", {
   page,
   pageSize,
   jurisdiction: jurisdictionCode,
+  theme: selectedTheme,
   caseRank: selectedCaseRank,
 });
 
