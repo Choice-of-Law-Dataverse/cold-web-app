@@ -11,6 +11,8 @@
         <EntityListFilters
           v-model:jurisdiction="selectedJurisdiction"
           :filters="['jurisdiction']"
+          :count="data?.total"
+          :loading="isFetching"
         />
 
         <EntityListTable
@@ -21,7 +23,7 @@
           :rows="rows"
           link-base="/domestic-instrument"
           :total="data?.total"
-          :loading="isLoading"
+          :loading="isFetching"
         />
       </div>
     </template>
@@ -58,7 +60,7 @@ watch(jurisdictionCode, () => {
   page.value = 1;
 });
 
-const { data, isLoading } = useEntityList("domestic-instruments", {
+const { data, isLoading, isFetching } = useEntityList("domestic-instruments", {
   page,
   jurisdiction: jurisdictionCode,
   orderBy,

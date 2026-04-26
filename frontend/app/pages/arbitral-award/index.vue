@@ -12,6 +12,8 @@
           v-model:jurisdiction="selectedJurisdiction"
           v-model:theme="selectedTheme"
           :filters="['jurisdiction', 'theme']"
+          :count="data?.total"
+          :loading="isFetching"
         />
 
         <EntityListTable
@@ -22,7 +24,7 @@
           :rows="rows"
           link-base="/arbitral-award"
           :total="data?.total"
-          :loading="isLoading"
+          :loading="isFetching"
         />
       </div>
     </template>
@@ -60,7 +62,7 @@ watch([jurisdictionCode, selectedTheme], () => {
   page.value = 1;
 });
 
-const { data, isLoading } = useEntityList("arbitral-awards", {
+const { data, isLoading, isFetching } = useEntityList("arbitral-awards", {
   page,
   jurisdiction: jurisdictionCode,
   theme: selectedTheme,

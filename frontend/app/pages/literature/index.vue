@@ -8,7 +8,12 @@
     <template #full-width>
       <div class="gradient-top-border" />
       <div class="w-full px-6 py-6">
-        <EntityListFilters v-model:theme="selectedTheme" :filters="['theme']" />
+        <EntityListFilters
+          v-model:theme="selectedTheme"
+          :filters="['theme']"
+          :count="data?.total"
+          :loading="isFetching"
+        />
 
         <EntityListTable
           v-model:page="page"
@@ -18,7 +23,7 @@
           :rows="rows"
           link-base="/literature"
           :total="data?.total"
-          :loading="isLoading"
+          :loading="isFetching"
         >
           <template #cell-title="{ row }">
             <span class="result-value-small entity-list__cell">
@@ -62,7 +67,7 @@ watch(selectedTheme, () => {
   page.value = 1;
 });
 
-const { data, isLoading } = useEntityList("literature", {
+const { data, isLoading, isFetching } = useEntityList("literature", {
   page,
   theme: selectedTheme,
   orderBy,

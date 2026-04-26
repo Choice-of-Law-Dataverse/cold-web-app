@@ -115,6 +115,54 @@
       </template>
       <template v-else>
         <UButton
+          v-if="newEntityHref && isLoggedIn"
+          :to="newEntityHref"
+          variant="ghost"
+          color="neutral"
+          size="xs"
+          leading-icon="i-material-symbols:add"
+          trailing-icon="i-material-symbols:add"
+          class="meta-btn"
+        >
+          New
+        </UButton>
+        <UPopover
+          v-else-if="newEntityHref"
+          :content="{ side: 'bottom', align: 'end', sideOffset: 8 }"
+        >
+          <UButton
+            variant="ghost"
+            color="neutral"
+            size="xs"
+            leading-icon="i-material-symbols:lock-outline"
+            trailing-icon="i-material-symbols:lock-outline"
+            class="meta-btn"
+            aria-label="Sign in to add new entry"
+          >
+            Submit data
+          </UButton>
+          <template #content>
+            <div class="login-popover">
+              <p class="login-popover__text">
+                A free CoLD account is required to keep the dataverse
+                trustworthy &mdash; we use it to prevent automated spam and
+                preserve the integrity of every record. Sign-up takes under a
+                minute.
+              </p>
+              <UButton
+                :to="loginRedirectHref"
+                external
+                block
+                color="primary"
+                size="sm"
+                leading-icon="i-material-symbols:login"
+              >
+                Sign in to continue
+              </UButton>
+            </div>
+          </template>
+        </UPopover>
+        <UButton
           v-if="showCite"
           variant="ghost"
           color="neutral"
@@ -225,6 +273,7 @@ import {
   getBasePathForCard,
   getIndexPathForCard,
   getLabelColorClass,
+  getNewPathForCard,
   getSingularLabel,
 } from "@/config/entityRegistry";
 
@@ -271,11 +320,31 @@ const emit = defineEmits<{
 
 const route = useRoute();
 const router = useRouter();
+const user = useUser();
 const { findJurisdictionByCode, findJurisdictionByName } =
   useJurisdictionLookup();
 
 const isCiteOpen = ref(false);
 const isNewMode = computed(() => props.headerMode === "new");
+const isLoggedIn = computed(() => !!user.value);
+
+const newEntityHref = computed(() => {
+  if (props.headerMode === "new") return undefined;
+  const cardType =
+    props.cardType || String(props.resultData?.sourceTable ?? "");
+  if (!cardType) return undefined;
+  const indexPath = getIndexPathForCard(cardType);
+  const newPath = getNewPathForCard(cardType);
+  if (!indexPath || !newPath) return undefined;
+  if (route.path.replace(/\/$/, "") !== indexPath) return undefined;
+  return newPath;
+});
+
+const loginRedirectHref = computed(() =>
+  newEntityHref.value
+    ? `/auth/login?returnTo=${encodeURIComponent(newEntityHref.value)}`
+    : undefined,
+);
 
 const searchParam = (value: string) =>
   encodeURIComponent(value).replace(/%20/g, "+");
@@ -477,6 +546,7 @@ const isVisible = computed(() => {
 const hasActions = computed(() => {
   if (props.headerMode === "new") return true;
   return (
+    !!newEntityHref.value ||
     props.showCite ||
     props.showJson ||
     props.showPrint ||
@@ -611,11 +681,11 @@ function printPage() {
   width: 10px;
 }
 
-.meta-band--compact .schip:hover .schip-tag {
+.meta-band--compact .schip:not(.schip--static):hover .schip-tag {
   width: 0;
 }
 
-.meta-band--compact .schip:hover .schip-affordance {
+.meta-band--compact .schip:not(.schip--static):hover .schip-affordance {
   width: 10px;
 }
 
@@ -644,149 +714,6 @@ function printPage() {
   flex-shrink: 0;
 }
 
-.schip {
-  --schip-color: var(--color-cold-purple);
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  font-family: "IBM Plex Mono", monospace;
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  padding: 2px 9px;
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--schip-color) 8%, white);
-  color: color-mix(in srgb, var(--schip-color) 80%, black);
-  text-decoration: none;
-  white-space: nowrap;
-  border: 1px solid transparent;
-  transition:
-    background 0.15s ease,
-    border-color 0.15s ease,
-    color 0.15s ease;
-}
-
-.schip:not(.schip--static):hover {
-  background: color-mix(in srgb, var(--schip-color) 14%, white);
-  border-color: color-mix(in srgb, var(--schip-color) 30%, white);
-  color: color-mix(in srgb, var(--schip-color) 95%, black);
-}
-
-.schip--static {
-  cursor: default;
-}
-
-.schip--type {
-  --schip-color: var(--color-cold-purple);
-}
-
-.schip--type.label-court-decision {
-  --schip-color: var(--color-label-court-decision);
-}
-.schip--type.label-question {
-  --schip-color: var(--color-label-question);
-}
-.schip--type.label-instrument {
-  --schip-color: var(--color-label-instrument);
-}
-.schip--type.label-arbitration {
-  --schip-color: var(--color-label-arbitration);
-}
-.schip--type.label-literature {
-  --schip-color: var(--color-label-literature);
-}
-.schip--type.label-specialist {
-  --schip-color: var(--color-label-specialist);
-}
-.schip--type.label-jurisdiction {
-  --schip-color: var(--color-cold-night);
-}
-
-.schip--button {
-  cursor: pointer;
-  appearance: none;
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-.schip--jur {
-  --schip-color: var(--color-cold-night);
-}
-
-.schip--theme {
-  --schip-color: var(--color-cold-purple);
-}
-
-.schip-flag-wrap,
-.schip-arrow-wrap {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  width: 16px;
-  height: 11px;
-  overflow: hidden;
-  transition:
-    width 0.18s ease,
-    opacity 0.15s ease;
-}
-
-.schip-flag {
-  width: 16px;
-  height: 11px;
-  object-fit: contain;
-}
-
-.schip-arrow-wrap {
-  width: 0;
-  opacity: 0;
-  font-size: 12px;
-}
-
-.schip--jur:hover .schip-flag-wrap {
-  width: 0;
-  opacity: 0;
-}
-
-.schip--jur:hover .schip-arrow-wrap {
-  width: 16px;
-  opacity: 0.9;
-}
-
-.schip-tag,
-.schip-affordance {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  width: 11px;
-  font-size: 11px;
-  overflow: hidden;
-  transition:
-    width 0.15s ease,
-    opacity 0.15s ease;
-}
-
-.schip-tag {
-  opacity: 0.65;
-}
-
-.schip-affordance {
-  width: 0;
-  opacity: 0;
-}
-
-.schip:hover .schip-tag {
-  width: 0;
-  opacity: 0;
-}
-
-.schip:hover .schip-affordance {
-  width: 11px;
-  opacity: 0.9;
-}
-
 .meta-actions {
   display: flex;
   align-items: center;
@@ -806,6 +733,22 @@ function printPage() {
 
 :deep(.meta-btn:hover) {
   background: color-mix(in srgb, var(--color-cold-purple) 6%, white);
+}
+
+.login-popover {
+  width: 20rem;
+  max-width: calc(100vw - 1rem);
+  padding: 0.875rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.login-popover__text {
+  font-family: "DM Sans", sans-serif;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--color-cold-night-alpha);
 }
 </style>
 

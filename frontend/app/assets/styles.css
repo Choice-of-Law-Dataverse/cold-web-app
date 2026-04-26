@@ -1779,6 +1779,154 @@ button.cold-toggle-btn[aria-pressed="true"] {
   text-decoration-color: var(--color-cold-night);
 }
 
+/* Search/filter chip ("schip") - shared monospace pill chip used across
+   MetaBand, SearchResultsHeader, EntityListFilters, etc. Recolor by setting
+   --schip-color on the element or via a .schip--type.label-* modifier. */
+.schip {
+  --schip-color: var(--color-cold-purple);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 2px 9px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--schip-color) 8%, white);
+  color: color-mix(in srgb, var(--schip-color) 80%, black);
+  text-decoration: none;
+  white-space: nowrap;
+  border: 1px solid transparent;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.schip:not(.schip--static):hover {
+  background: color-mix(in srgb, var(--schip-color) 14%, white);
+  border-color: color-mix(in srgb, var(--schip-color) 30%, white);
+  color: color-mix(in srgb, var(--schip-color) 95%, black);
+}
+
+.schip--static {
+  cursor: default;
+}
+
+.schip--button {
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.schip--theme {
+  --schip-color: var(--color-cold-purple);
+}
+
+.schip--type {
+  --schip-color: var(--color-cold-purple);
+}
+
+.schip--type.label-court-decision {
+  --schip-color: var(--color-label-court-decision);
+}
+.schip--type.label-question {
+  --schip-color: var(--color-label-question);
+}
+.schip--type.label-instrument {
+  --schip-color: var(--color-label-instrument);
+}
+.schip--type.label-arbitration {
+  --schip-color: var(--color-label-arbitration);
+}
+.schip--type.label-literature {
+  --schip-color: var(--color-label-literature);
+}
+.schip--type.label-specialist {
+  --schip-color: var(--color-label-specialist);
+}
+.schip--type.label-jurisdiction {
+  --schip-color: var(--color-cold-night);
+}
+
+.schip--jur {
+  --schip-color: var(--color-cold-night);
+}
+
+/* Flag/arrow swap on hover for jurisdiction chips */
+.schip-flag-wrap,
+.schip-arrow-wrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 16px;
+  height: 11px;
+  overflow: hidden;
+  transition:
+    width 0.18s ease,
+    opacity 0.15s ease;
+}
+
+.schip-flag {
+  width: 16px;
+  height: 11px;
+  object-fit: contain;
+}
+
+.schip-arrow-wrap {
+  width: 0;
+  opacity: 0;
+  font-size: 12px;
+}
+
+.schip--jur:hover .schip-flag-wrap {
+  width: 0;
+  opacity: 0;
+}
+
+.schip--jur:hover .schip-arrow-wrap {
+  width: 16px;
+  opacity: 0.9;
+}
+
+/* Tag/affordance icon swap (bookmark → search) for interactive chips */
+.schip-tag,
+.schip-affordance {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 11px;
+  font-size: 11px;
+  overflow: hidden;
+  transition:
+    width 0.15s ease,
+    opacity 0.15s ease;
+}
+
+.schip-tag {
+  opacity: 0.65;
+}
+
+.schip-affordance {
+  width: 0;
+  opacity: 0;
+}
+
+.schip:not(.schip--static):hover .schip-tag {
+  width: 0;
+  opacity: 0;
+}
+
+.schip:not(.schip--static):hover .schip-affordance {
+  width: 11px;
+  opacity: 0.9;
+}
+
 /* Navigation tabs - unified style for region badges and section navigation */
 .nav-tab {
   cursor: pointer;

@@ -1,24 +1,9 @@
 <template>
-  <div class="py-12">
-    <!-- Page Header -->
-    <PageHero
-      title="Case Analyzer"
-      subtitle="Upload a court decision and let AI automatically extract jurisdiction, choice of law provisions, and key PIL elements."
-      badge="AI-Powered"
-    >
-      <template #content>
-        <NuxtLink
-          to="/court-decision/my-analyses"
-          class="text-cold-purple mt-4 inline-flex items-center gap-1 text-sm hover:underline"
-        >
-          <UIcon name="i-heroicons-document-text" class="h-4 w-4" />
-          View My Analyses
-        </NuxtLink>
-      </template>
-      <template #illustration>
-        <AnalyzerIllustration />
-      </template>
-    </PageHero>
+  <div>
+    <SubmissionDisclaimer
+      :show-autosave-note="false"
+      :extra-notes="caseAnalyzerNotes"
+    />
 
     <!-- Error Display -->
     <UAlert
@@ -154,10 +139,30 @@ import FileUploadCard from "@/components/case-analyzer/FileUploadCard.vue";
 import JurisdictionConfirmCard from "@/components/case-analyzer/JurisdictionConfirmCard.vue";
 import AnalysisReviewForm from "@/components/case-analyzer/AnalysisReviewForm.vue";
 import AnalysisStepTracker from "@/components/case-analyzer/AnalysisStepTracker.vue";
-import PageHero from "@/components/ui/PageHero.vue";
-import AnalyzerIllustration from "@/components/case-analyzer/AnalyzerIllustration.vue";
+import SubmissionDisclaimer, {
+  type SubmissionNote,
+} from "@/components/ui/SubmissionDisclaimer.vue";
 
 useHead({ title: "AI Case Analyzer — CoLD" });
+
+const caseAnalyzerNotes: SubmissionNote[] = [
+  {
+    icon: "i-material-symbols:auto-awesome-outline",
+    variant: "teal",
+    title: "Case Analyzer",
+    badge: "AI-Powered",
+    description:
+      "Upload a court decision and let AI automatically extract jurisdiction, choice of law provisions, and key PIL elements.",
+  },
+  {
+    icon: "i-material-symbols:list-alt-outline",
+    variant: "purple",
+    title: "View my analyses",
+    description:
+      "Pick up where you left off — past uploads and drafts stay accessible from your account.",
+    to: "/court-decision/my-analyses",
+  },
+];
 
 const user = useUser();
 const route = useRoute();

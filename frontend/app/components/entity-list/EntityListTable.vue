@@ -1,61 +1,72 @@
 <template>
   <div class="w-full">
     <div
-      :class="[
-        'border-cold-gray relative border-y transition-opacity duration-150',
-        props.loading && 'pointer-events-none opacity-50',
-      ]"
+      class="entity-list-table border-cold-gray relative border-y"
+      :class="{ 'entity-list-table--loading': props.loading }"
       :style="widthVars"
+      :aria-busy="props.loading || undefined"
     >
-      <UTable :columns="utableColumns" :data="props.rows" :ui="utableUi">
-        <template
-          v-for="col in props.columns"
-          #[`${col.key}-cell`]="{ row }"
-          :key="col.key"
-        >
-          <component
-            :is="row.original.coldId ? 'a' : 'span'"
-            :href="
-              row.original.coldId ? rowHref(row.original.coldId) : undefined
-            "
-            class="table-row-link"
-            :class="row.original.coldId ? '' : 'text-gray-400'"
-            @click="
-              row.original.coldId && handleRowClick($event, row.original.coldId)
-            "
+      <div
+        v-if="props.loading"
+        class="entity-list-table__progress"
+        aria-hidden="true"
+      >
+        <span class="entity-list-table__progress-shuttle" />
+      </div>
+      <div class="entity-list-table__body">
+        <UTable :columns="utableColumns" :data="props.rows" :ui="utableUi">
+          <template
+            v-for="col in props.columns"
+            #[`${col.key}-cell`]="{ row }"
+            :key="col.key"
           >
-            <slot :name="`cell-${col.key}`" :row="row.original" :column="col">
-              <span
-                class="text-cold-night block overflow-hidden text-sm font-medium text-ellipsis whitespace-nowrap"
-              >
-                {{ row.original[col.key] || "—" }}
-              </span>
-            </slot>
-          </component>
-        </template>
+            <component
+              :is="row.original.coldId ? 'a' : 'span'"
+              :href="
+                row.original.coldId ? rowHref(row.original.coldId) : undefined
+              "
+              class="table-row-link"
+              :class="row.original.coldId ? '' : 'text-gray-400'"
+              @click="
+                row.original.coldId &&
+                handleRowClick($event, row.original.coldId)
+              "
+            >
+              <slot :name="`cell-${col.key}`" :row="row.original" :column="col">
+                <span
+                  class="text-cold-night block overflow-hidden text-sm font-medium text-ellipsis whitespace-nowrap"
+                >
+                  {{ row.original[col.key] || "—" }}
+                </span>
+              </slot>
+            </component>
+          </template>
 
-        <template #open-cell="{ row }">
-          <a
-            v-if="row.original.coldId"
-            :href="rowHref(row.original.coldId)"
-            class="table-row-link flex h-full items-center justify-end pr-1"
-            aria-label="Open"
-            @click="handleRowClick($event, row.original.coldId)"
-          >
-            <UIcon
-              :name="ICON_OPEN"
-              class="text-cold-night-alpha group-hover/row:text-cold-purple text-xl transition-colors group-hover/row:animate-[bounce-right_0.4s_ease-out]"
-            />
-          </a>
-          <span v-else class="text-gray-400">—</span>
-        </template>
+          <template #open-cell="{ row }">
+            <a
+              v-if="row.original.coldId"
+              :href="rowHref(row.original.coldId)"
+              class="table-row-link flex h-full items-center justify-end pr-1"
+              aria-label="Open"
+              @click="handleRowClick($event, row.original.coldId)"
+            >
+              <UIcon
+                :name="ICON_OPEN"
+                class="text-cold-night-alpha group-hover/row:text-cold-purple text-xl transition-colors group-hover/row:animate-[bounce-right_0.4s_ease-out]"
+              />
+            </a>
+            <span v-else class="text-gray-400">—</span>
+          </template>
 
-        <template #empty>
-          <span v-if="!props.loading">
-            {{ props.emptyMessage ?? "No results match the selected filters." }}
-          </span>
-        </template>
-      </UTable>
+          <template #empty>
+            <span v-if="!props.loading">
+              {{
+                props.emptyMessage ?? "No results match the selected filters."
+              }}
+            </span>
+          </template>
+        </UTable>
+      </div>
     </div>
 
     <EntityListPagination
@@ -212,3 +223,66 @@ const widthVars = computed<CSSProperties>(() => {
   return vars as CSSProperties;
 });
 </script>
+
+<style scoped>
+.entity-list-table--loading {
+  cursor: progress;
+}
+
+.entity-list-table__body {
+  transition: opacity 220ms ease;
+}
+
+.entity-list-table--loading .entity-list-table__body {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.entity-list-table__progress {
+  position: absolute;
+  top: -1px;
+  left: 0;
+  right: 0;
+  height: 1.5px;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 2;
+  background: color-mix(in srgb, var(--color-cold-purple) 8%, transparent);
+}
+
+.entity-list-table__progress-shuttle {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    color-mix(in srgb, var(--color-cold-purple) 70%, white) 40%,
+    var(--color-cold-purple) 50%,
+    var(--color-cold-green) 58%,
+    transparent 100%
+  );
+  animation: entity-list-table-shuttle 1.3s cubic-bezier(0.45, 0, 0.55, 1)
+    infinite;
+  transform: translateX(-100%);
+}
+
+@keyframes entity-list-table-shuttle {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .entity-list-table__body {
+    transition: none;
+  }
+  .entity-list-table__progress-shuttle {
+    animation: none;
+    transform: none;
+    background: color-mix(in srgb, var(--color-cold-purple) 50%, transparent);
+  }
+}
+</style>

@@ -16,7 +16,7 @@
           :rows="rows"
           link-base="/regional-instrument"
           :total="data?.total"
-          :loading="isLoading"
+          :loading="isFetching"
         />
       </div>
     </template>
@@ -41,7 +41,7 @@ const resultData = null;
 const orderBy = ref<string | undefined>(undefined);
 const orderDir = ref<"asc" | "desc" | undefined>(undefined);
 
-const { data, isLoading } = useEntityList("regional-instruments", {
+const { data, isLoading, isFetching } = useEntityList("regional-instruments", {
   page,
   orderBy,
   orderDir,
