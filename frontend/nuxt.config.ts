@@ -122,11 +122,22 @@ export default defineNuxtConfig({
     preference: "light",
   },
   fonts: {
+    defaults: {
+      styles: ["normal"],
+      subsets: ["latin"],
+      preload: false,
+    },
     families: [
       {
         name: "DM Sans",
         provider: "google",
-        weights: [300, 400, 500, 600, 700],
+        weights: [400, 500, 600, 700],
+        preload: true,
+      },
+      {
+        name: "IBM Plex Mono",
+        provider: "google",
+        weights: [400],
       },
     ],
   },

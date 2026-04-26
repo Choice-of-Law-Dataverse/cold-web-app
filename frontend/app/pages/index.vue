@@ -76,17 +76,8 @@
       </div>
     </div>
 
-    <div class="animate-fade-up animate-delay-1 col-span-12">
-      <ClientOnly>
-        <JurisdictionMap />
-        <template #fallback>
-          <div class="map-ssr-placeholder" aria-hidden="true" />
-        </template>
-      </ClientOnly>
-    </div>
-
     <!-- Explore Data Section -->
-    <div class="animate-fade-in animate-delay-3 col-span-12">
+    <div class="animate-fade-in animate-delay-1 col-span-12">
       <SectionHeader
         title="Explore Our Data"
         subtitle="Browse thousands of court decisions, instruments, and legal resources"
@@ -95,7 +86,7 @@
     </div>
 
     <!-- Number Cards Grid -->
-    <div class="animate-fade-up animate-delay-4 col-span-12">
+    <div class="animate-fade-up animate-delay-2 col-span-12">
       <div class="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
         <NumberCard
           title="Available Court Decisions"
@@ -125,6 +116,19 @@
           table-name="Arbitral Rules"
         />
       </div>
+    </div>
+
+    <div
+      ref="mapMountTrigger"
+      class="animate-fade-up animate-delay-3 col-span-12"
+    >
+      <ClientOnly>
+        <JurisdictionMap v-if="shouldMountMap" />
+        <div v-else class="map-ssr-placeholder" aria-hidden="true" />
+        <template #fallback>
+          <div class="map-ssr-placeholder" aria-hidden="true" />
+        </template>
+      </ClientOnly>
     </div>
 
     <!-- Contribute & Analyze Section -->
@@ -285,7 +289,7 @@
 </template>
 
 <script setup lang="ts">
-import { defineAsyncComponent } from "vue";
+import { defineAsyncComponent, onBeforeUnmount, onMounted, ref } from "vue";
 import HeroJurisdictionPicker from "@/components/landing-page/HeroJurisdictionPicker.vue";
 import ConnectCard from "@/components/landing-page/ConnectCard.vue";
 import NumberCard from "@/components/landing-page/NumberCard.vue";
@@ -323,6 +327,38 @@ const config = useRuntimeConfig();
 const router = useRouter();
 
 const { data: jurisdictions } = useJurisdictions();
+
+const mapMountTrigger = ref<HTMLElement | null>(null);
+const shouldMountMap = ref(false);
+let mapObserver: IntersectionObserver | null = null;
+
+onMounted(() => {
+  if (typeof IntersectionObserver === "undefined") {
+    shouldMountMap.value = true;
+    return;
+  }
+  const target = mapMountTrigger.value;
+  if (!target) {
+    shouldMountMap.value = true;
+    return;
+  }
+  mapObserver = new IntersectionObserver(
+    (entries) => {
+      if (entries.some((entry) => entry.isIntersecting)) {
+        shouldMountMap.value = true;
+        mapObserver?.disconnect();
+        mapObserver = null;
+      }
+    },
+    { rootMargin: "400px 0px" },
+  );
+  mapObserver.observe(target);
+});
+
+onBeforeUnmount(() => {
+  mapObserver?.disconnect();
+  mapObserver = null;
+});
 
 const navigateToJurisdiction = async (
   jurisdiction: JurisdictionOption | undefined,
