@@ -21,6 +21,7 @@
           v-if="!isMobile && !isExpanded && !(isMobile && navMenu?.showMenu)"
           to="/"
           class="desktop-logo"
+          aria-label="Home"
         >
           <img
             src="https://assets.cold.global/assets/cold_logo.svg"

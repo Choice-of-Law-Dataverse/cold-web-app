@@ -1,6 +1,7 @@
 <template>
   <BaseDetailLayout
     table="Arbitral Rules"
+    page-heading="Arbitral Rules"
     :loading="isLoading"
     :data="resultData"
   >

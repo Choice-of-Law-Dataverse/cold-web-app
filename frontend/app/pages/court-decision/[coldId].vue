@@ -1,10 +1,8 @@
 <template>
   <div>
-    <h1 v-if="data?.caseTitle" class="sr-only">
-      {{ data.caseTitle }}
-    </h1>
     <BaseDetailLayout
       table="Court Decisions"
+      :page-heading="data?.caseTitle ?? ''"
       :loading="isLoading"
       :error="error"
       :data="data"

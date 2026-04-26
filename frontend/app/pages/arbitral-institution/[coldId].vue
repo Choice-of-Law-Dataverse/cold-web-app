@@ -1,10 +1,8 @@
 <template>
   <div>
-    <h1 v-if="data?.institution" class="sr-only">
-      {{ data.institution }}
-    </h1>
     <BaseDetailLayout
       table="Arbitral Institutions"
+      :page-heading="data?.institution ?? ''"
       :loading="isLoading"
       :error="error"
       :data="data"
