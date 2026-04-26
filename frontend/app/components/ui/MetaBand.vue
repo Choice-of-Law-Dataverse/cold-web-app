@@ -45,7 +45,7 @@
             <span class="schip-text">{{ typeChip.label }}</span>
           </button>
           <NuxtLink
-            v-else-if="typeChip"
+            v-else-if="typeChip && typeChip.to"
             :to="typeChip.to"
             :class="['schip', 'schip--type', typeChip.colorClass]"
           >
@@ -54,9 +54,23 @@
             </span>
             <span class="schip-text">{{ typeChip.label }}</span>
             <span class="schip-affordance" aria-hidden="true">
-              <UIcon name="i-material-symbols:search" />
+              <UIcon name="i-material-symbols:arrow-forward" />
             </span>
           </NuxtLink>
+          <span
+            v-else-if="typeChip"
+            :class="[
+              'schip',
+              'schip--type',
+              'schip--static',
+              typeChip.colorClass,
+            ]"
+          >
+            <span class="schip-tag" aria-hidden="true">
+              <UIcon name="i-lucide:tag" />
+            </span>
+            <span class="schip-text">{{ typeChip.label }}</span>
+          </span>
           <NuxtLink
             v-for="(j, idx) in resolvedJurisdiction"
             :key="`jur-${idx}`"
@@ -209,9 +223,9 @@ import {
 } from "@/utils/jurisdictionParser";
 import {
   getBasePathForCard,
+  getIndexPathForCard,
   getLabelColorClass,
   getSingularLabel,
-  getTableName,
 } from "@/config/entityRegistry";
 
 type EntityType = components["schemas"]["EntityType"];
@@ -322,6 +336,18 @@ const resolvedJurisdiction = computed<ResolvedJurisdiction[]>(() => {
 const resolvedTheme = computed<string[]>(() => {
   const fromProps = props.formattedTheme ?? [];
   if (fromProps.length > 0) return fromProps;
+
+  const relations = (props.resultData as { relations?: unknown }).relations;
+  const relationThemes =
+    relations &&
+    typeof relations === "object" &&
+    Array.isArray((relations as { themes?: unknown }).themes)
+      ? (relations as { themes: Array<{ theme?: string | null }> }).themes
+          .map((t) => t?.theme?.trim())
+          .filter((t): t is string => !!t && t !== "null" && t !== "None")
+      : [];
+  if (relationThemes.length > 0) return [...new Set(relationThemes)];
+
   if (props.cardType === "Literature" && props.resultData.themes) {
     return String(props.resultData.themes)
       .split(/[,|]/)
@@ -349,11 +375,10 @@ const typeChip = computed(() => {
   if (colorClass === "hidden") return null;
   const label = getSingularLabel(cardType);
   if (!label) return null;
-  const searchType = getTableName(cardType);
   return {
     label,
     colorClass,
-    to: `/search?type=${searchParam(searchType)}`,
+    to: getIndexPathForCard(cardType) ?? "",
   };
 });
 
@@ -642,10 +667,14 @@ function printPage() {
     color 0.15s ease;
 }
 
-.schip:hover {
+.schip:not(.schip--static):hover {
   background: color-mix(in srgb, var(--schip-color) 14%, white);
   border-color: color-mix(in srgb, var(--schip-color) 30%, white);
   color: color-mix(in srgb, var(--schip-color) 95%, black);
+}
+
+.schip--static {
+  cursor: default;
 }
 
 .schip--type {

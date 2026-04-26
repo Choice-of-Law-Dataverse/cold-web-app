@@ -168,6 +168,7 @@ export interface EntityConfig {
   contentComponentId?: string;
   excludeRelations?: string[];
   hasDetailPage?: boolean;
+  hasIndexPage?: boolean;
   variant?: string;
   searchCard?: SearchCardConfig;
 }
@@ -283,6 +284,7 @@ export const entityRegistry: Record<string, EntityConfig> = {
     process: processQuestion,
     contentComponentId: "QuestionContent",
     excludeRelations: ["questions"],
+    hasIndexPage: false,
     variant: "question",
     searchCard: {
       fields: [
@@ -499,6 +501,7 @@ export const entityRegistry: Record<string, EntityConfig> = {
     process: processHcchAnswer,
     excludeRelations: ["questions"],
     hasDetailPage: false,
+    hasIndexPage: false,
   },
   "/jurisdiction": {
     table: "Jurisdictions",
@@ -508,6 +511,7 @@ export const entityRegistry: Record<string, EntityConfig> = {
     titleKey: "name",
     process: processJurisdiction,
     contentComponentId: "JurisdictionContent",
+    hasIndexPage: false,
     variant: "jurisdiction",
   },
   "/domestic-legal-provision": {
@@ -578,6 +582,14 @@ export function getBasePathForTable(table: string): string | undefined {
 
 export function getBasePathForCard(cardType: string): string | undefined {
   return tableToBasePath.get(cardType) ?? labelToBasePath.get(cardType);
+}
+
+export function getIndexPathForCard(cardType: string): string | undefined {
+  const basePath = getBasePathForCard(cardType);
+  if (!basePath) return undefined;
+  const config = entityRegistry[basePath];
+  if (config?.hasIndexPage === false) return undefined;
+  return basePath;
 }
 
 const VARIANT_TO_LABEL_CLASS: Record<string, string> = {
