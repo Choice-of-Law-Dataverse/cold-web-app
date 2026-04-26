@@ -1,10 +1,8 @@
 <template>
   <div>
-    <h1 v-if="data?.setOfRules" class="sr-only">
-      {{ data.setOfRules }}
-    </h1>
     <BaseDetailLayout
       table="Arbitral Rules"
+      :page-heading="data?.setOfRules ?? ''"
       :loading="isLoading"
       :error="error"
       :data="data"

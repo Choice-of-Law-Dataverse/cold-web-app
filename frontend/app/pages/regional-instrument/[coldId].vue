@@ -1,10 +1,8 @@
 <template>
   <div>
-    <h1 v-if="data?.abbreviation" class="sr-only">
-      {{ data.abbreviation }}
-    </h1>
     <BaseDetailLayout
       table="Regional Instruments"
+      :page-heading="data?.abbreviation ?? ''"
       :loading="isLoading"
       :error="error"
       :data="data"
