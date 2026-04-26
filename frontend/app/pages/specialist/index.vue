@@ -56,47 +56,52 @@
             </template>
           </UTable>
         </div>
+
+        <EntityListPagination
+          v-if="data && data.total > pageSize"
+          v-model:page="page"
+          :total="data.total"
+          :page-size="pageSize"
+        />
       </div>
     </template>
   </BaseDetailLayout>
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import BaseDetailLayout from "@/components/layout/BaseDetailLayout.vue";
-import { useFullTable } from "@/composables/useFullTable";
-import type { SpecialistResponse } from "@/types/entities/specialist";
+import EntityListPagination from "@/components/layout/EntityListPagination.vue";
+import { useEntityList } from "@/composables/useEntityList";
 
 useHead({
   title: "Specialists — CoLD",
 });
 
-const { data: rawData, isLoading } = useFullTable("Specialists");
+const page = ref(1);
+const pageSize = 200;
 const resultData = null;
+
+const { data, isLoading } = useEntityList("specialists", { page, pageSize });
+
+const sanitize = (v: unknown) =>
+  v == null || v === "NA" ? "" : String(v).trim();
+
+const rows = computed(() =>
+  (data.value?.items ?? [])
+    .map((item) => ({
+      specialist: sanitize(item.specialist),
+      affiliation: sanitize(item.affiliation),
+      coldId: sanitize(item.coldId),
+    }))
+    .filter((r) => Boolean(r.specialist)),
+);
 
 const columns = [
   { id: "specialist", accessorKey: "specialist", header: "Name" },
   { id: "affiliation", accessorKey: "affiliation", header: "Affiliation" },
   { id: "open", accessorKey: "coldId", header: "" },
 ];
-
-const sanitize = (v: string | number | null | undefined) =>
-  !v || v === "NA" ? "" : String(v).trim();
-
-const rows = computed(() =>
-  (rawData.value || [])
-    .map((r: SpecialistResponse) => ({
-      specialist: sanitize(r.specialist),
-      affiliation: sanitize(r.affiliation),
-      coldId: sanitize(r.coldId),
-    }))
-    .filter((r) => Boolean(r.specialist))
-    .sort((a, b) =>
-      a.specialist.localeCompare(b.specialist, undefined, {
-        sensitivity: "base",
-      }),
-    ),
-);
 </script>
 
 <style scoped>

@@ -56,6 +56,13 @@
             </template>
           </UTable>
         </div>
+
+        <EntityListPagination
+          v-if="data && data.total > pageSize"
+          v-model:page="page"
+          :total="data.total"
+          :page-size="pageSize"
+        />
       </div>
     </template>
   </BaseDetailLayout>
@@ -64,33 +71,39 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
 import BaseDetailLayout from "@/components/layout/BaseDetailLayout.vue";
-import { useFullTable } from "@/composables/useFullTable";
+import EntityListPagination from "@/components/layout/EntityListPagination.vue";
+import { useEntityList } from "@/composables/useEntityList";
 import { formatDate } from "@/utils/format";
-import type { ArbitralRuleResponse } from "@/types/entities/arbitral-rule";
 
 useHead({
   title: "Arbitral Rules — CoLD",
 });
 
-const { data: rawData, isLoading } = useFullTable("Arbitral Rules");
+const page = ref(1);
+const pageSize = 200;
 const resultData = null;
+
+const { data, isLoading } = useEntityList("arbitral-rules", {
+  page,
+  pageSize,
+});
+
+const sanitize = (v: unknown) =>
+  v == null || v === "NA" ? "" : String(v).trim();
+
+const rows = computed(() =>
+  (data.value?.items ?? []).map((item) => ({
+    setOfRules: sanitize(item.setOfRules),
+    inForceFrom: sanitize(item.inForceFrom),
+    coldId: sanitize(item.coldId),
+  })),
+);
 
 const columns = [
   { id: "setOfRules", accessorKey: "setOfRules", header: "Set of Rules" },
   { id: "inForceFrom", accessorKey: "inForceFrom", header: "In Force From" },
   { id: "open", accessorKey: "coldId", header: "" },
 ];
-
-const sanitize = (v: string | number | null | undefined) =>
-  !v || v === "NA" ? "" : String(v).trim();
-
-const rows = computed(() =>
-  (rawData.value || []).map((r: ArbitralRuleResponse) => ({
-    setOfRules: sanitize(r.setOfRules),
-    inForceFrom: sanitize(r.inForceFrom),
-    coldId: sanitize(r.coldId),
-  })),
-);
 
 const setColWidth = ref<string>("125px");
 

@@ -1,50 +1,69 @@
 <template>
   <BaseDetailLayout
-    table="Arbitral Institutions"
-    page-heading="Arbitral Institutions"
+    table="Literature"
+    page-heading="Literature"
     :loading="isLoading"
     :data="resultData"
   >
     <template #full-width>
       <div class="gradient-top-border" />
       <div class="w-full px-6 py-6">
-        <div class="institutions-table">
+        <div class="literature-table">
           <UTable :columns="columns" :data="rows">
-            <template #institution-cell="{ row }">
+            <template #title-cell="{ row }">
               <NuxtLink
                 v-if="row.original.coldId"
-                :to="`/arbitral-institution/${row.original.coldId}`"
+                :to="`/literature/${row.original.coldId}`"
+                class="table-row-link"
+              >
+                <span class="result-value-small">{{ row.original.title }}</span>
+                <img
+                  v-if="row.original.openAccess"
+                  src="https://assets.cold.global/assets/Open_Access_logo_PLoS_transparent.svg"
+                  alt="Open Access"
+                  class="ml-1 inline-flex w-3"
+                />
+              </NuxtLink>
+              <span v-else class="result-value-small">{{
+                row.original.title
+              }}</span>
+            </template>
+            <template #author-cell="{ row }">
+              <NuxtLink
+                v-if="row.original.coldId"
+                :to="`/literature/${row.original.coldId}`"
                 class="table-row-link"
               >
                 <span
                   class="result-value-small block truncate whitespace-nowrap"
-                  >{{ row.original.institution }}</span
                 >
+                  {{ row.original.author }}
+                </span>
               </NuxtLink>
               <span
                 v-else
                 class="result-value-small block truncate whitespace-nowrap"
-                >{{ row.original.institution }}</span
+                >{{ row.original.author }}</span
               >
             </template>
-            <template #abbreviation-cell="{ row }">
+            <template #publicationYear-cell="{ row }">
               <NuxtLink
                 v-if="row.original.coldId"
-                :to="`/arbitral-institution/${row.original.coldId}`"
+                :to="`/literature/${row.original.coldId}`"
                 class="table-row-link"
               >
                 <span class="result-value-small">{{
-                  row.original.abbreviation
+                  row.original.publicationYear
                 }}</span>
               </NuxtLink>
               <span v-else class="result-value-small">{{
-                row.original.abbreviation
+                row.original.publicationYear
               }}</span>
             </template>
             <template #open-cell="{ row }">
               <NuxtLink
                 v-if="row.original.coldId"
-                :to="`/arbitral-institution/${row.original.coldId}`"
+                :to="`/literature/${row.original.coldId}`"
                 class="table-row-link arrow-cell"
               >
                 <UIcon
@@ -75,14 +94,14 @@ import EntityListPagination from "@/components/layout/EntityListPagination.vue";
 import { useEntityList } from "@/composables/useEntityList";
 
 useHead({
-  title: "Arbitral Institutions — CoLD",
+  title: "Literature — CoLD",
 });
 
 const page = ref(1);
 const pageSize = 200;
 const resultData = null;
 
-const { data, isLoading } = useEntityList("arbitral-institutions", {
+const { data, isLoading } = useEntityList("literature", {
   page,
   pageSize,
 });
@@ -92,27 +111,34 @@ const sanitize = (v: unknown) =>
 
 const rows = computed(() =>
   (data.value?.items ?? []).map((item) => ({
-    institution: sanitize(item.institution),
-    abbreviation: sanitize(item.abbreviation),
+    title: sanitize(item.title),
+    author: sanitize(item.author),
+    publicationYear: sanitize(item.publicationYear),
+    openAccess: Boolean(item.oupJdChapter),
     coldId: sanitize(item.coldId),
   })),
 );
 
 const columns = [
-  { id: "institution", accessorKey: "institution", header: "Institution" },
-  { id: "abbreviation", accessorKey: "abbreviation", header: "Abbreviation" },
+  { id: "title", accessorKey: "title", header: "Title" },
+  { id: "author", accessorKey: "author", header: "Author(s)" },
+  {
+    id: "publicationYear",
+    accessorKey: "publicationYear",
+    header: "Year",
+  },
   { id: "open", accessorKey: "coldId", header: "" },
 ];
 </script>
 
 <style scoped>
-.institutions-table :deep(table) {
+.literature-table :deep(table) {
   table-layout: fixed;
   width: 100%;
 }
 
-.institutions-table :deep(th),
-.institutions-table :deep(td) {
+.literature-table :deep(th),
+.literature-table :deep(td) {
   box-sizing: border-box;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -120,51 +146,50 @@ const columns = [
   padding-right: 16px;
 }
 
-.institutions-table :deep(th:first-child),
-.institutions-table :deep(td:first-child) {
+.literature-table :deep(th:first-child),
+.literature-table :deep(td:first-child) {
   width: 50%;
 }
 
-.institutions-table :deep(th:nth-child(2)),
-.institutions-table :deep(td:nth-child(2)) {
-  width: 200px;
-  min-width: 200px;
-  max-width: 200px;
+.literature-table :deep(th:nth-child(2)),
+.literature-table :deep(td:nth-child(2)) {
+  width: auto;
 }
 
-.institutions-table :deep(th:last-child),
-.institutions-table :deep(td:last-child) {
+.literature-table :deep(th:nth-child(3)),
+.literature-table :deep(td:nth-child(3)) {
+  width: 120px;
+  min-width: 120px;
+  max-width: 120px;
+}
+
+.literature-table :deep(th:last-child),
+.literature-table :deep(td:last-child) {
+  width: 80px;
+  min-width: 80px;
+  max-width: 80px;
   padding-right: 16px;
   text-align: right;
 }
 
-.institutions-table :deep(td:last-child a.label) {
-  font-weight: 600;
-  font-size: 12px;
-}
-
-.institutions-table :deep(tbody tr) {
+.literature-table :deep(tbody tr) {
   height: 72px;
 }
-.institutions-table :deep(tbody td) {
+.literature-table :deep(tbody td) {
   height: 72px;
-  vertical-align: top;
+  vertical-align: middle;
 }
 
-.institutions-table :deep(tbody td:first-child) {
-  padding-top: 10px;
-}
-
-.institutions-table :deep(tbody tr:hover) {
+.literature-table :deep(tbody tr:hover) {
   background-color: rgba(0, 0, 0, 0.02);
   cursor: pointer;
 }
 
-.institutions-table :deep(tbody tr:hover .arrow-icon) {
+.literature-table :deep(tbody tr:hover .arrow-icon) {
   animation: bounce-right 0.4s ease-out;
 }
 
-.institutions-table :deep(thead th) {
+.literature-table :deep(thead th) {
   font-weight: 700;
   font-size: 12px;
   letter-spacing: 0.01em;
@@ -172,9 +197,9 @@ const columns = [
   color: var(--color-cold-night);
 }
 
-.institutions-table :deep(thead th span),
-.institutions-table :deep(thead th button),
-.institutions-table :deep(thead th button span) {
+.literature-table :deep(thead th span),
+.literature-table :deep(thead th button),
+.literature-table :deep(thead th button span) {
   font-weight: 700;
   font-size: 12px;
   letter-spacing: 0.01em;
@@ -182,15 +207,15 @@ const columns = [
   color: var(--color-cold-night);
 }
 
-.institutions-table :deep(thead th button:hover),
-.institutions-table :deep(thead th a:hover) {
+.literature-table :deep(thead th button:hover),
+.literature-table :deep(thead th a:hover) {
   background-color: transparent;
   color: inherit;
   text-decoration: none;
   box-shadow: none;
 }
-.institutions-table :deep(thead th button:hover span),
-.institutions-table :deep(thead th a:hover span) {
+.literature-table :deep(thead th button:hover span),
+.literature-table :deep(thead th a:hover span) {
   color: inherit;
   text-decoration: none;
 }

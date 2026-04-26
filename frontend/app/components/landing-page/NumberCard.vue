@@ -24,7 +24,7 @@
               <span class="sr-only">Loading content</span>
             </span>
           </span>
-          <span v-else>Error</span>
+          <span v-else>—</span>
         </div>
       </div>
     </UCard>
@@ -33,28 +33,17 @@
 
 <script setup lang="ts">
 import { computed, ref, watch, onMounted, onUnmounted } from "vue";
-import { useNumberCount } from "~/composables/useNumberCount";
-import type { TableName } from "@/types/api";
 
 const props = defineProps<{
   title: string;
   buttonText: string;
   buttonLink: string;
-  tableName: TableName;
   overrideNumber?: number | string | null;
 }>();
 
-const {
-  data: number,
-  isLoading: loading,
-  error,
-} = useNumberCount(
-  computed(() =>
-    props.overrideNumber
-      ? (undefined as unknown as TableName)
-      : props.tableName,
-  ),
-);
+const loading = computed(() => props.overrideNumber == null);
+const error = computed(() => false);
+const number = computed(() => props.overrideNumber ?? null);
 
 const displayNumber = ref(0);
 const cardRef = ref<{ $el?: HTMLElement } | null>(null);

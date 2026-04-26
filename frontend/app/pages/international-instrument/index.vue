@@ -1,76 +1,62 @@
 <template>
   <BaseDetailLayout
-    table="Arbitral Awards"
-    page-heading="Arbitral Awards"
+    table="International Instruments"
+    page-heading="International Instruments"
     :loading="isLoading"
     :data="resultData"
   >
     <template #full-width>
       <div class="gradient-top-border" />
       <div class="w-full px-6 py-6">
-        <div class="awards-table">
+        <div class="instrument-table">
           <UTable :columns="columns" :data="rows">
-            <template #caseNumber-cell="{ row }">
+            <template #name-cell="{ row }">
               <NuxtLink
                 v-if="row.original.coldId"
-                :to="`/arbitral-award/${row.original.coldId}`"
+                :to="`/international-instrument/${row.original.coldId}`"
                 class="table-row-link"
               >
                 <span
                   class="result-value-small block truncate whitespace-nowrap"
-                  >{{ row.original.caseNumber }}</span
+                  >{{ row.original.name }}</span
                 >
               </NuxtLink>
               <span
                 v-else
                 class="result-value-small block truncate whitespace-nowrap"
-                >{{ row.original.caseNumber }}</span
+                >{{ row.original.name }}</span
               >
             </template>
-            <template #year-cell="{ row }">
+            <template #abbreviation-cell="{ row }">
               <NuxtLink
                 v-if="row.original.coldId"
-                :to="`/arbitral-award/${row.original.coldId}`"
-                class="table-row-link"
-              >
-                <span class="result-value-small">{{ row.original.year }}</span>
-              </NuxtLink>
-              <span v-else class="result-value-small">{{
-                row.original.year
-              }}</span>
-            </template>
-            <template #seatTown-cell="{ row }">
-              <NuxtLink
-                v-if="row.original.coldId"
-                :to="`/arbitral-award/${row.original.coldId}`"
+                :to="`/international-instrument/${row.original.coldId}`"
                 class="table-row-link"
               >
                 <span class="result-value-small">{{
-                  row.original.seatTown
+                  row.original.abbreviation
                 }}</span>
               </NuxtLink>
               <span v-else class="result-value-small">{{
-                row.original.seatTown
+                row.original.abbreviation
               }}</span>
             </template>
-            <template #source-cell="{ row }">
+            <template #date-cell="{ row }">
               <NuxtLink
                 v-if="row.original.coldId"
-                :to="`/arbitral-award/${row.original.coldId}`"
+                :to="`/international-instrument/${row.original.coldId}`"
                 class="table-row-link"
               >
-                <span class="result-value-small">{{
-                  row.original.source
-                }}</span>
+                <span class="result-value-small">{{ row.original.date }}</span>
               </NuxtLink>
               <span v-else class="result-value-small">{{
-                row.original.source
+                row.original.date
               }}</span>
             </template>
             <template #open-cell="{ row }">
               <NuxtLink
                 v-if="row.original.coldId"
-                :to="`/arbitral-award/${row.original.coldId}`"
+                :to="`/international-instrument/${row.original.coldId}`"
                 class="table-row-link arrow-cell"
               >
                 <UIcon
@@ -99,16 +85,17 @@ import { computed, ref } from "vue";
 import BaseDetailLayout from "@/components/layout/BaseDetailLayout.vue";
 import EntityListPagination from "@/components/layout/EntityListPagination.vue";
 import { useEntityList } from "@/composables/useEntityList";
+import { formatDate } from "@/utils/format";
 
 useHead({
-  title: "Arbitral Awards — CoLD",
+  title: "International Instruments — CoLD",
 });
 
 const page = ref(1);
 const pageSize = 200;
 const resultData = null;
 
-const { data, isLoading } = useEntityList("arbitral-awards", {
+const { data, isLoading } = useEntityList("international-instruments", {
   page,
   pageSize,
 });
@@ -118,81 +105,80 @@ const sanitize = (v: unknown) =>
 
 const rows = computed(() =>
   (data.value?.items ?? []).map((item) => ({
-    caseNumber: sanitize(item.caseNumber),
-    year: sanitize(item.year),
-    seatTown: sanitize(item.seatTown),
-    source: sanitize(item.source),
+    name: sanitize(item.name),
+    abbreviation: sanitize(item.abbreviation),
+    date: formatDate(sanitize(item.date)) || "",
     coldId: sanitize(item.coldId),
   })),
 );
 
 const columns = [
-  { id: "caseNumber", accessorKey: "caseNumber", header: "Case Number" },
-  { id: "year", accessorKey: "year", header: "Year" },
-  { id: "seatTown", accessorKey: "seatTown", header: "Seat (Town)" },
-  { id: "source", accessorKey: "source", header: "Source" },
+  { id: "name", accessorKey: "name", header: "Title" },
+  { id: "abbreviation", accessorKey: "abbreviation", header: "Abbreviation" },
+  { id: "date", accessorKey: "date", header: "Date" },
   { id: "open", accessorKey: "coldId", header: "" },
 ];
 </script>
 
 <style scoped>
-.awards-table :deep(table) {
+.instrument-table :deep(table) {
   table-layout: fixed;
   width: 100%;
 }
 
-.awards-table :deep(th),
-.awards-table :deep(td) {
+.instrument-table :deep(th),
+.instrument-table :deep(td) {
   box-sizing: border-box;
-  width: 125px;
-  min-width: 125px;
-  max-width: 125px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   padding-right: 16px;
 }
 
-.awards-table :deep(th:nth-child(4)),
-.awards-table :deep(td:nth-child(4)) {
-  width: 225px;
-  min-width: 225px;
-  max-width: 225px;
+.instrument-table :deep(th:first-child),
+.instrument-table :deep(td:first-child) {
+  width: 60%;
 }
 
-.awards-table :deep(th:last-child),
-.awards-table :deep(td:last-child) {
+.instrument-table :deep(th:nth-child(2)),
+.instrument-table :deep(td:nth-child(2)) {
+  width: auto;
+}
+
+.instrument-table :deep(th:nth-child(3)),
+.instrument-table :deep(td:nth-child(3)) {
+  width: 130px;
+  min-width: 130px;
+  max-width: 130px;
+}
+
+.instrument-table :deep(th:last-child),
+.instrument-table :deep(td:last-child) {
+  width: 80px;
+  min-width: 80px;
+  max-width: 80px;
   padding-right: 16px;
   text-align: right;
 }
 
-.awards-table :deep(td:last-child a.label) {
-  font-weight: 600;
-  font-size: 12px;
-}
-
-.awards-table :deep(tbody tr) {
+.instrument-table :deep(tbody tr) {
   height: 72px;
 }
-.awards-table :deep(tbody td) {
+.instrument-table :deep(tbody td) {
   height: 72px;
-  vertical-align: top;
+  vertical-align: middle;
 }
 
-.awards-table :deep(tbody td:first-child) {
-  padding-top: 10px;
-}
-
-.awards-table :deep(tbody tr:hover) {
+.instrument-table :deep(tbody tr:hover) {
   background-color: rgba(0, 0, 0, 0.02);
   cursor: pointer;
 }
 
-.awards-table :deep(tbody tr:hover .arrow-icon) {
+.instrument-table :deep(tbody tr:hover .arrow-icon) {
   animation: bounce-right 0.4s ease-out;
 }
 
-.awards-table :deep(thead th) {
+.instrument-table :deep(thead th) {
   font-weight: 700;
   font-size: 12px;
   letter-spacing: 0.01em;
@@ -200,9 +186,9 @@ const columns = [
   color: var(--color-cold-night);
 }
 
-.awards-table :deep(thead th span),
-.awards-table :deep(thead th button),
-.awards-table :deep(thead th button span) {
+.instrument-table :deep(thead th span),
+.instrument-table :deep(thead th button),
+.instrument-table :deep(thead th button span) {
   font-weight: 700;
   font-size: 12px;
   letter-spacing: 0.01em;
@@ -210,15 +196,15 @@ const columns = [
   color: var(--color-cold-night);
 }
 
-.awards-table :deep(thead th button:hover),
-.awards-table :deep(thead th a:hover) {
+.instrument-table :deep(thead th button:hover),
+.instrument-table :deep(thead th a:hover) {
   background-color: transparent;
   color: inherit;
   text-decoration: none;
   box-shadow: none;
 }
-.awards-table :deep(thead th button:hover span),
-.awards-table :deep(thead th a:hover span) {
+.instrument-table :deep(thead th button:hover span),
+.instrument-table :deep(thead th a:hover span) {
   color: inherit;
   text-decoration: none;
 }

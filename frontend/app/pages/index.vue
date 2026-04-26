@@ -91,29 +91,29 @@
         <NumberCard
           title="Available Court Decisions"
           button-text="See all"
-          button-link="/search?type=Court+Decisions"
-          table-name="Court Decisions"
+          button-link="/court-decision"
+          :override-number="counts?.courtDecisions"
         />
 
         <NumberCard
           title="Available Domestic Instruments"
           button-text="See all"
-          button-link="/search?type=Domestic+Instruments"
-          table-name="Domestic Instruments"
+          button-link="/domestic-instrument"
+          :override-number="counts?.domesticInstruments"
         />
 
         <NumberCard
           title="Available Arbitral Awards"
           button-text="See all"
           button-link="/arbitral-award"
-          table-name="Arbitral Awards"
+          :override-number="counts?.arbitralAwards"
         />
 
         <NumberCard
           title="Available Arbitral Rules"
           button-text="See all"
           button-link="/arbitral-rule"
-          table-name="Arbitral Rules"
+          :override-number="counts?.arbitralRules"
         />
       </div>
     </div>
@@ -298,6 +298,7 @@ import SectionHeader from "@/components/ui/SectionHeader.vue";
 import { externalLinks } from "@/utils/externalLinks";
 import { useHead, useRuntimeConfig, useRouter } from "#imports";
 import { useJurisdictions } from "@/composables/useJurisdictions";
+import { useEntityCounts } from "@/composables/useEntityCounts";
 import type { JurisdictionOption } from "@/types/analyzer";
 
 const JurisdictionMap = defineAsyncComponent(
@@ -327,6 +328,7 @@ const config = useRuntimeConfig();
 const router = useRouter();
 
 const { data: jurisdictions } = useJurisdictions();
+const { data: counts } = useEntityCounts();
 
 const mapMountTrigger = ref<HTMLElement | null>(null);
 const shouldMountMap = ref(false);

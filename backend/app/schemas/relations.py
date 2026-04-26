@@ -45,6 +45,7 @@ class DomesticInstrumentRelation(_RelationBase):
     title_in_english: str | None = None
     official_title: str | None = None
     abbreviation: str | None = None
+    date: str | None = None
 
 
 class DomesticLegalProvisionRelation(_RelationBase):
@@ -55,6 +56,7 @@ class DomesticLegalProvisionRelation(_RelationBase):
 class RegionalInstrumentRelation(_RelationBase):
     title: str | None = None
     abbreviation: str | None = None
+    date: str | None = None
 
 
 class RegionalLegalProvisionRelation(_RelationBase):
@@ -64,6 +66,8 @@ class RegionalLegalProvisionRelation(_RelationBase):
 
 class InternationalInstrumentRelation(_RelationBase):
     name: str | None = None
+    abbreviation: str | None = None
+    date: str | None = None
 
 
 class InternationalLegalProvisionRelation(_RelationBase):
@@ -83,6 +87,8 @@ class LiteratureRelation(_RelationBase):
 class ArbitralAwardRelation(_RelationBase):
     case_number: str | None = None
     year: str | int | None = None
+    seat_town: str | None = None
+    source: str | None = None
 
 
 class ArbitralInstitutionRelation(_RelationBase):

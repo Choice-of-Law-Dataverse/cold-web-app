@@ -298,6 +298,46 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/statistics/counts": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Counts for every entity in the dataverse
+     * @description Returns counts per entity type, optionally scoped to a jurisdiction. Plain GET so it can be cached at the edge by Cloudflare.
+     */
+    get: operations["get_entity_counts_api_v1_statistics_counts_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/entities/{slug}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * List entities of a given type with optional jurisdiction filter
+     * @description Returns a paginated, slim list of entities using the relation contract (`*Relation` shapes used inside detail responses). Supports jurisdiction filtering for entities that expose `jurisdictions_alpha_3_code`. Court Decisions additionally accepts a `case_rank` filter.
+     */
+    get: operations["list_entity_api_v1_entities__slug__get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/suggestions/": {
     parameters: {
       query?: never;
@@ -673,6 +713,18 @@ export interface components {
       created?: string | null;
       questionsThemeCode?: string | null;
     };
+    AnyEntityListItem:
+      | components["schemas"]["ArbitralAwardRelation"]
+      | components["schemas"]["ArbitralInstitutionRelation"]
+      | components["schemas"]["ArbitralRuleRelation"]
+      | components["schemas"]["CourtDecisionRelation"]
+      | components["schemas"]["DomesticInstrumentRelation"]
+      | components["schemas"]["InternationalInstrumentRelation"]
+      | components["schemas"]["JurisdictionRelation"]
+      | components["schemas"]["LiteratureRelation"]
+      | components["schemas"]["QuestionRelation"]
+      | components["schemas"]["RegionalInstrumentRelation"]
+      | components["schemas"]["SpecialistRelation"];
     /** ArbitralAwardDetail */
     ArbitralAwardDetail: {
       coldId?: string | null;
@@ -763,6 +815,8 @@ export interface components {
       coldId?: string | null;
       caseNumber?: string | null;
       year?: string | number | null;
+      seatTown?: string | null;
+      source?: string | null;
     };
     /** ArbitralAwardSearchResult */
     ArbitralAwardSearchResult: {
@@ -1344,6 +1398,7 @@ export interface components {
       titleInEnglish?: string | null;
       officialTitle?: string | null;
       abbreviation?: string | null;
+      date?: string | null;
     };
     /** DomesticInstrumentSearchResult */
     DomesticInstrumentSearchResult: {
@@ -1508,6 +1563,20 @@ export interface components {
       };
       caseCitation?: string | null;
       createdAt?: string | null;
+    };
+    /** EntityCountsResponse */
+    EntityCountsResponse: {
+      counts: {
+        [key: string]: number;
+      };
+      jurisdiction?: string | null;
+    };
+    /** EntityListResponse */
+    EntityListResponse: {
+      items: components["schemas"]["AnyEntityListItem"][];
+      total: number;
+      page: number;
+      pageSize: number;
     };
     /** EntityRelations */
     EntityRelations: {
@@ -1789,6 +1858,8 @@ export interface components {
       id: number;
       coldId?: string | null;
       name?: string | null;
+      abbreviation?: string | null;
+      date?: string | null;
     };
     /** InternationalInstrumentSearchResult */
     InternationalInstrumentSearchResult: {
@@ -2422,6 +2493,7 @@ export interface components {
       coldId?: string | null;
       title?: string | null;
       abbreviation?: string | null;
+      date?: string | null;
     };
     /** RegionalInstrumentSearchResult */
     RegionalInstrumentSearchResult: {
@@ -3412,6 +3484,90 @@ export interface operations {
       };
       /** @description Invalid table name provided. */
       400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  get_entity_counts_api_v1_statistics_counts_get: {
+    parameters: {
+      query?: {
+        /** @description Optional Alpha-3 code; only counts entities tagged to it. */
+        jurisdiction?: string | null;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["EntityCountsResponse"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  list_entity_api_v1_entities__slug__get: {
+    parameters: {
+      query?: {
+        /** @description Filter by jurisdiction Alpha-3 code (case-insensitive). */
+        jurisdiction?: string | null;
+        /** @description Court Decisions only: filter by case rank. */
+        case_rank?: string | null;
+        /** @description 1-indexed page number. */
+        page?: number;
+        /** @description Items per page (max 200). */
+        page_size?: number;
+        /** @description Override default order column (snake or camelCase). */
+        order_by?: string | null;
+        /** @description Override default order direction. */
+        order_dir?: ("asc" | "desc") | null;
+      };
+      header?: never;
+      path: {
+        /** @description Entity slug, e.g. 'court-decisions' */
+        slug: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Items, total, page, pageSize. */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["EntityListResponse"];
+        };
+      };
+      /** @description Unknown entity slug. */
+      404: {
         headers: {
           [name: string]: unknown;
         };
