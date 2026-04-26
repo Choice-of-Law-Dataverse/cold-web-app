@@ -4,13 +4,16 @@
     <div class="p-4 sm:p-6">
       <!-- Map Container -->
       <div class="map-container">
+        <div class="map-picker-container">
+          <JurisdictionPicker />
+        </div>
         <!-- Dropdown for selecting region -->
         <div class="select-menu-container">
           <USelectMenu
             :model-value="selectedRegion"
-            class="w-60"
+            class="region-select"
             placeholder="Select a Region"
-            size="xl"
+            size="md"
             :items="regionOptions"
             aria-label="Select map region"
             @update:model-value="updateSelectedRegion"
@@ -83,6 +86,7 @@
 
 <script setup lang="ts">
 import { defineAsyncComponent, h, ref } from "vue";
+import JurisdictionPicker from "@/components/landing-page/JurisdictionPicker.vue";
 
 // Loading placeholder for async map components
 const MapLoadingPlaceholder = {
@@ -201,6 +205,59 @@ const updateSelectedRegion = (option: RegionOption) => {
 
 .select-menu-container .u-select-menu-dropdown {
   z-index: 2001;
+}
+
+.select-menu-container :deep(.region-select) {
+  width: 11rem;
+}
+
+.select-menu-container :deep(.region-select > button) {
+  background: white;
+  border: 1px solid color-mix(in srgb, var(--color-cold-night) 12%, transparent);
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem 0.5rem 0.875rem;
+  font-family: "DM Sans", sans-serif;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-cold-night);
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.04);
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+  min-height: 39px;
+}
+
+.select-menu-container :deep(.region-select > button:hover) {
+  border-color: color-mix(in srgb, var(--color-cold-purple) 35%, transparent);
+  box-shadow: 0 2px 6px -2px rgb(0 0 0 / 0.08);
+}
+
+.select-menu-container :deep(.region-select > button:focus-visible) {
+  outline: 2px solid var(--color-cold-purple);
+  outline-offset: 2px;
+}
+
+.map-picker-container {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 2000;
+}
+
+@media (max-width: 640px) {
+  .map-picker-container {
+    top: 12px;
+    left: 12px;
+    right: 12px;
+  }
+  .select-menu-container {
+    top: 60px;
+    right: 12px;
+    left: 12px;
+  }
+  .select-menu-container > * {
+    width: 100% !important;
+  }
 }
 
 /* Map Transition */
