@@ -69,6 +69,11 @@ export const RELATION_RENDERERS: Record<string, RelationRendererConfig> = {
     basePath: "/specialist",
     variant: "specialist",
   },
+  jurisdictions: {
+    label: "Jurisdictions",
+    basePath: "/jurisdiction",
+    variant: "jurisdiction",
+  },
   questions: {
     label: "Questions",
     basePath: "/question",
@@ -245,6 +250,7 @@ export const entityRegistry: Record<string, EntityConfig> = {
     titleKey: "caseTitle",
     process: processCourtDecision,
     contentComponentId: "CourtDecisionContent",
+    excludeRelations: ["jurisdictions"],
     hasNewPage: true,
     variant: "court-decision",
     searchCard: {
@@ -370,6 +376,7 @@ export const entityRegistry: Record<string, EntityConfig> = {
     titleKey: "titleInEnglish",
     process: processDomesticInstrument,
     contentComponentId: "DomesticInstrumentContent",
+    excludeRelations: ["jurisdictions"],
     hasNewPage: true,
     variant: "instrument",
     searchCard: {
@@ -461,6 +468,7 @@ export const entityRegistry: Record<string, EntityConfig> = {
     fieldOrder: ["institution", "abbreviation"],
     titleKey: "institution",
     process: processArbitralInstitution,
+    excludeRelations: ["jurisdictions"],
     variant: "arbitration",
   },
   "/arbitral-award": {
@@ -483,6 +491,7 @@ export const entityRegistry: Record<string, EntityConfig> = {
     },
     titleKey: "caseNumber",
     process: processArbitralAward,
+    excludeRelations: ["jurisdictions"],
     variant: "arbitration",
     searchCard: {
       fields: [
@@ -535,6 +544,7 @@ export const entityRegistry: Record<string, EntityConfig> = {
     },
     titleKey: "article",
     process: processDomesticLegalProvision,
+    excludeRelations: ["jurisdictions"],
     hasDetailPage: false,
   },
   "/regional-legal-provision": {

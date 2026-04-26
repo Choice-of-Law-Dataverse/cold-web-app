@@ -97,7 +97,6 @@ const resolvedRelations = computed<ResolvedRelation[]>(() => {
   if (!relData) return [];
   const exclude = new Set(entityConfig.value?.excludeRelations ?? []);
   return Object.entries(RELATION_RENDERERS)
-    .filter(([key]) => !exclude.has(key))
     .map(([key, config]) => {
       const rawItems = relData[key] ?? [];
       const sorted = [...rawItems].sort(
@@ -111,7 +110,11 @@ const resolvedRelations = computed<ResolvedRelation[]>(() => {
         items: sorted.map(mapRelationToItem).filter((item) => item.id),
       };
     })
-    .filter((s) => s.items.length > 0);
+    .filter((s) => {
+      if (s.items.length === 0) return false;
+      if (!exclude.has(s.key)) return true;
+      return s.key === "jurisdictions" && s.items.length > 1;
+    });
 });
 
 function shouldDisplayValue(value: unknown): boolean {
