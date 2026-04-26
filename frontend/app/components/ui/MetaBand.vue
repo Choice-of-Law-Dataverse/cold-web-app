@@ -115,7 +115,7 @@
       </template>
       <template v-else>
         <UButton
-          v-if="newEntityHref && isLoggedIn"
+          v-if="showNew && newEntityHref && isLoggedIn"
           :to="newEntityHref"
           variant="ghost"
           color="neutral"
@@ -127,7 +127,7 @@
           New
         </UButton>
         <UPopover
-          v-else-if="newEntityHref"
+          v-else-if="showNew && newEntityHref"
           :content="{ side: 'bottom', align: 'end', sideOffset: 8 }"
         >
           <UButton
@@ -293,6 +293,7 @@ const props = withDefaults(
     showCite?: boolean;
     showJson?: boolean;
     showPrint?: boolean;
+    showNew?: boolean;
     entityType?: string;
     entityId?: string;
     entityTitle?: string;
@@ -307,6 +308,7 @@ const props = withDefaults(
     showCite: true,
     showJson: true,
     showPrint: true,
+    showNew: true,
     entityType: "",
     entityId: "",
     entityTitle: "",
@@ -546,7 +548,7 @@ const isVisible = computed(() => {
 const hasActions = computed(() => {
   if (props.headerMode === "new") return true;
   return (
-    !!newEntityHref.value ||
+    (props.showNew && !!newEntityHref.value) ||
     props.showCite ||
     props.showJson ||
     props.showPrint ||

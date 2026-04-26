@@ -58,6 +58,7 @@
             :show-cite="false"
             :show-json="false"
             :show-print="false"
+            :show-new="false"
             compact
           />
         </header>
