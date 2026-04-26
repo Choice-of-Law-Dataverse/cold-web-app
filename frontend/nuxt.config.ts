@@ -120,6 +120,9 @@ export default defineNuxtConfig({
   colorMode: {
     preference: "light",
   },
+  ui: {
+    fonts: false,
+  },
   css: ["@/assets/styles.css"],
   app: {
     head: {
