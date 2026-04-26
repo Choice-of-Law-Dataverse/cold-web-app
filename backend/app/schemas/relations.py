@@ -1,4 +1,7 @@
-from pydantic import BaseModel, ConfigDict
+from datetime import date, datetime
+from typing import Any
+
+from pydantic import BaseModel, ConfigDict, model_validator
 from pydantic.alias_generators import to_camel
 
 
@@ -7,6 +10,16 @@ class _RelationBase(BaseModel):
 
     id: int
     cold_id: str | None = None
+
+    @model_validator(mode="before")
+    @classmethod
+    def _coerce_dates_to_iso(cls, data: Any) -> Any:
+        if not isinstance(data, dict):
+            return data
+        for key, value in data.items():
+            if isinstance(value, (date, datetime)):
+                data[key] = value.isoformat()
+        return data
 
 
 class AnswerRelation(_RelationBase):
