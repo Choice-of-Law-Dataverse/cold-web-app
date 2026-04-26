@@ -60,24 +60,31 @@
 
       <UCard :ui="{ body: 'p-0' }">
         <table class="w-full">
+          <caption class="sr-only">
+            Submitted case analyses with date, citation, status, and action
+          </caption>
           <thead>
             <tr class="border-b border-gray-200 dark:border-gray-700">
               <th
+                scope="col"
                 class="px-4 py-3 text-left text-sm font-medium text-gray-600 dark:text-gray-400"
               >
                 Date
               </th>
               <th
+                scope="col"
                 class="px-4 py-3 text-left text-sm font-medium text-gray-600 dark:text-gray-400"
               >
                 Case Citation
               </th>
               <th
+                scope="col"
                 class="px-4 py-3 text-left text-sm font-medium text-gray-600 dark:text-gray-400"
               >
                 Status
               </th>
               <th
+                scope="col"
                 class="px-4 py-3 text-right text-sm font-medium text-gray-600 dark:text-gray-400"
               >
                 Action
@@ -134,7 +141,7 @@
                 <span
                   v-else
                   class="text-xs text-gray-400"
-                  :title="
+                  :aria-label="
                     analysis.moderationStatus === 'approved'
                       ? 'Analysis has been approved'
                       : analysis.moderationStatus === 'rejected'

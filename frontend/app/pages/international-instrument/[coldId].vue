@@ -1,10 +1,8 @@
 <template>
   <div>
-    <h1 v-if="data?.name" class="sr-only">
-      {{ data.name }}
-    </h1>
     <BaseDetailLayout
       table="International Instruments"
+      :page-heading="data?.name ?? ''"
       :loading="isLoading"
       :error="error"
       :data="data"

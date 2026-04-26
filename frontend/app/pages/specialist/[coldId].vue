@@ -1,10 +1,8 @@
 <template>
   <div>
-    <h1 v-if="data?.specialist" class="sr-only">
-      {{ data.specialist }}
-    </h1>
     <BaseDetailLayout
       table="Specialists"
+      :page-heading="data?.specialist ?? ''"
       :loading="isLoading"
       :error="error"
       :data="data"

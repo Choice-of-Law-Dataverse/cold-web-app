@@ -250,7 +250,11 @@
                   ? 'text-md cursor-pointer hover:bg-gray-200'
                   : 'text-md'
               "
-              :title="jurisdiction.name"
+              :aria-label="
+                index > 0
+                  ? `Remove ${jurisdiction.name} from comparison`
+                  : jurisdiction.name
+              "
               @click="
                 index > 0 ? removeJurisdiction(jurisdiction.coldId) : null
               "
@@ -296,7 +300,11 @@
                   type="button"
                   class="jurisdiction-action-button"
                   :class="{ removable: index > 0 }"
-                  :title="jurisdiction.name"
+                  :aria-label="
+                    index > 0
+                      ? `Remove ${jurisdiction.name} from comparison`
+                      : jurisdiction.name
+                  "
                   :disabled="index === 0"
                   @click="
                     index > 0 ? removeJurisdiction(jurisdiction.coldId) : null

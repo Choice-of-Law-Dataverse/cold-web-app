@@ -1,10 +1,8 @@
 <template>
   <div>
-    <h1 v-if="data?.titleInEnglish" class="sr-only">
-      {{ data.titleInEnglish }}
-    </h1>
     <BaseDetailLayout
       table="Domestic Instruments"
+      :page-heading="data?.titleInEnglish ?? ''"
       :loading="isLoading"
       :error="error"
       :data="data"

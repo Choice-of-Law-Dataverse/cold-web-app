@@ -1,10 +1,10 @@
 <template>
   <div>
-    <h1 v-if="data?.caseNumber" class="sr-only">
-      Arbitral Award: {{ data.caseNumber }}
-    </h1>
     <BaseDetailLayout
       table="Arbitral Awards"
+      :page-heading="
+        data?.caseNumber ? `Arbitral Award: ${data.caseNumber}` : ''
+      "
       :loading="isLoading"
       :error="error"
       :data="data"

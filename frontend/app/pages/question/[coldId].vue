@@ -1,10 +1,8 @@
 <template>
   <div>
-    <h1 v-if="data?.question" class="sr-only">
-      {{ data.question }}
-    </h1>
     <BaseDetailLayout
       table="Questions"
+      :page-heading="data?.question ?? ''"
       :loading="isLoading"
       :error="error"
       :data="data"

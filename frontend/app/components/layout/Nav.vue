@@ -21,10 +21,11 @@
           v-if="!isMobile && !isExpanded && !(isMobile && navMenu?.showMenu)"
           to="/"
           class="desktop-logo"
+          aria-label="Home"
         >
           <img
             src="https://choiceoflaw.blob.core.windows.net/assets/cold_logo.svg"
-            alt="CoLD Logo"
+            alt=""
             class="logo-img h-12 w-auto"
           />
         </NuxtLink>
@@ -36,7 +37,7 @@
         >
           <img
             src="https://choiceoflaw.blob.core.windows.net/assets/cold_logo.svg"
-            alt="CoLD Logo"
+            alt=""
             class="h-8 w-auto"
           />
         </NuxtLink>
