@@ -169,6 +169,7 @@ export interface EntityConfig {
   excludeRelations?: string[];
   hasDetailPage?: boolean;
   hasIndexPage?: boolean;
+  hasNewPage?: boolean;
   variant?: string;
   searchCard?: SearchCardConfig;
 }
@@ -244,6 +245,7 @@ export const entityRegistry: Record<string, EntityConfig> = {
     titleKey: "caseTitle",
     process: processCourtDecision,
     contentComponentId: "CourtDecisionContent",
+    hasNewPage: true,
     variant: "court-decision",
     searchCard: {
       fields: [
@@ -323,6 +325,7 @@ export const entityRegistry: Record<string, EntityConfig> = {
     titleKey: "title",
     process: processLiterature,
     contentComponentId: "LiteratureContent",
+    hasNewPage: true,
     variant: "literature",
     searchCard: {
       fields: [
@@ -367,6 +370,7 @@ export const entityRegistry: Record<string, EntityConfig> = {
     titleKey: "titleInEnglish",
     process: processDomesticInstrument,
     contentComponentId: "DomesticInstrumentContent",
+    hasNewPage: true,
     variant: "instrument",
     searchCard: {
       fields: [
@@ -397,6 +401,7 @@ export const entityRegistry: Record<string, EntityConfig> = {
     titleKey: "title",
     process: processRegionalInstrument,
     contentComponentId: "RegionalInstrumentContent",
+    hasNewPage: true,
     variant: "instrument",
     searchCard: {
       fields: [
@@ -418,6 +423,7 @@ export const entityRegistry: Record<string, EntityConfig> = {
     titleKey: "name",
     process: processInternationalInstrument,
     contentComponentId: "InternationalInstrumentContent",
+    hasNewPage: true,
     variant: "instrument",
     searchCard: {
       fields: [
@@ -590,6 +596,14 @@ export function getIndexPathForCard(cardType: string): string | undefined {
   const config = entityRegistry[basePath];
   if (config?.hasIndexPage === false) return undefined;
   return basePath;
+}
+
+export function getNewPathForCard(cardType: string): string | undefined {
+  const basePath = getBasePathForCard(cardType);
+  if (!basePath) return undefined;
+  const config = entityRegistry[basePath];
+  if (!config?.hasNewPage) return undefined;
+  return `${basePath}/new`;
 }
 
 const VARIANT_TO_LABEL_CLASS: Record<string, string> = {

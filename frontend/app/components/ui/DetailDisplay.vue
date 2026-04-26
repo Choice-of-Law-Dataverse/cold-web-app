@@ -1,5 +1,7 @@
 <template>
   <article>
+    <SubmissionDisclaimer v-if="headerMode === 'new'" />
+
     <NotificationBanner
       v-if="showNotificationBanner"
       :notification-banner-message="notificationBannerMessage"
@@ -65,6 +67,7 @@ import { formatDate } from "@/utils/format";
 import MetaBand from "@/components/ui/MetaBand.vue";
 import ContributeBanner from "@/components/ui/ContributeBanner.vue";
 import NotificationBanner from "@/components/ui/NotificationBanner.vue";
+import SubmissionDisclaimer from "@/components/ui/SubmissionDisclaimer.vue";
 import LoadingCard from "@/components/layout/LoadingCard.vue";
 import InlineError from "@/components/ui/InlineError.vue";
 

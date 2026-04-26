@@ -1,46 +1,88 @@
 <template>
-  <div class="filters-header mt-[-24px] !mb-2 ml-[-1px] flex flex-col gap-4">
-    <div class="flex w-full flex-col flex-wrap gap-5 sm:flex-row">
-      <SearchFilters
-        :model-value="currentJurisdictionFilter"
-        :options="jurisdictions || []"
-        class="w-full flex-shrink-0 lg:w-60"
-        :show-avatars="true"
-        :multiple="false"
-        :highlight-jurisdictions="true"
-        :placeholder="'Jurisdiction'"
-        @update:model-value="currentJurisdictionFilter = $event"
-      />
-      <SearchFilters
-        :model-value="currentThemeFilter"
-        :options="themeOptions"
-        class="w-full flex-shrink-0 lg:w-60"
-        :placeholder="'Themes'"
-        :searchable="false"
-        @update:model-value="currentThemeFilter = $event"
-      />
-      <SearchFilters
-        :model-value="currentTypeFilter"
-        :options="typeOptions"
-        class="w-full flex-shrink-0 lg:w-60"
-        :multiple="false"
-        :placeholder="'Types'"
-        :searchable="false"
-        @update:model-value="currentTypeFilter = $event"
-      />
-      <UButton
-        v-if="hasActiveFilters"
-        variant="link"
-        class="w-full sm:w-auto"
-        @click="resetFilters"
-      >
-        Reset
-      </UButton>
+  <div class="search-results-header">
+    <div class="entity-filters">
+      <div class="entity-filters__control">
+        <JurisdictionSelectMenu
+          v-if="jurisdictions"
+          :jurisdictions="jurisdictions"
+          :model-value="jurisdictionOption"
+          placeholder="Jurisdiction"
+          @update:model-value="onJurisdictionChange"
+        />
+      </div>
+
+      <div class="entity-filters__control">
+        <USelectMenu
+          v-model="themeValues"
+          multiple
+          :items="themeOptions"
+          placeholder="Theme"
+          size="xl"
+          class="w-56"
+          :ui="{
+            content:
+              'max-h-(--reka-combobox-content-available-height) w-max min-w-(--reka-combobox-trigger-width)',
+            item: 'data-highlighted:bg-transparent',
+          }"
+        >
+          <template #item-label="{ item }">
+            <span class="schip schip--theme schip--static">
+              <span class="schip-tag" aria-hidden="true">
+                <UIcon name="i-lucide:bookmark" />
+              </span>
+              <span class="schip-text">{{ item }}</span>
+            </span>
+          </template>
+        </USelectMenu>
+      </div>
+
+      <div class="entity-filters__control">
+        <USelectMenu
+          v-model="typeValues"
+          multiple
+          :items="typeOptions"
+          placeholder="Type"
+          size="xl"
+          class="w-56"
+          :ui="{
+            content:
+              'max-h-(--reka-combobox-content-available-height) w-max min-w-(--reka-combobox-trigger-width)',
+            item: 'data-highlighted:bg-transparent',
+          }"
+        >
+          <template #item-label="{ item }">
+            <span
+              :class="[
+                'schip',
+                'schip--type',
+                'schip--static',
+                getLabelColorClass(item),
+              ]"
+            >
+              <span class="schip-tag" aria-hidden="true">
+                <UIcon name="i-lucide:tag" />
+              </span>
+              <span class="schip-text">{{ item }}</span>
+            </span>
+          </template>
+        </USelectMenu>
+      </div>
+
+      <div v-if="hasActiveFilters" class="entity-filters__reset">
+        <UButton
+          variant="ghost"
+          size="sm"
+          :icon="ICON_CLEAR"
+          @click="resetFilters"
+        >
+          Clear filters
+        </UButton>
+      </div>
     </div>
 
     <div
       v-if="props.hasQuery || hasActiveFilters"
-      class="result-value-small results-margin-fix flex w-full items-center gap-2 whitespace-nowrap"
+      class="result-value-small flex w-full items-center gap-2 whitespace-nowrap"
     >
       <template v-if="!props.loading">
         <template v-if="props.totalMatches > 1">
@@ -94,10 +136,21 @@ import { useRoute, useRouter } from "vue-router";
 import { useSearchFilters } from "@/composables/useSearchFilters";
 import importedThemeOptions from "@/assets/themeOptions.json";
 import importedTypeOptions from "@/assets/typeOptions.json";
-import SearchFilters from "@/components/search-results/SearchFilters.vue";
-import { useJurisdictions } from "@/composables/useJurisdictions";
+import JurisdictionSelectMenu from "@/components/jurisdiction/JurisdictionSelectMenu.vue";
+import {
+  useJurisdictions,
+  useJurisdictionLookup,
+} from "@/composables/useJurisdictions";
 import { useScreenAnnouncer } from "@/composables/useScreenAnnouncer";
-import type { SearchFilters as SearchFiltersType } from "@/types/api";
+import { getLabelColorClass } from "@/config/entityRegistry";
+import type {
+  FilterObjectOption,
+  FilterOption,
+  SearchFilters as SearchFiltersType,
+} from "@/types/api";
+import type { JurisdictionOption } from "@/types/analyzer";
+
+const ICON_CLEAR = "i-material-symbols:close";
 
 const props = withDefaults(
   defineProps<{
@@ -145,7 +198,48 @@ const resultLabel = computed(() =>
 );
 
 const { data: jurisdictions } = useJurisdictions();
+const { findJurisdictionByName } = useJurisdictionLookup();
 const { announce } = useScreenAnnouncer();
+
+const optionLabel = (item: FilterOption): string =>
+  typeof item === "object" && item !== null ? item.label : String(item);
+
+const jurisdictionOption = computed<JurisdictionOption | undefined>(() => {
+  const first = currentJurisdictionFilter.value[0];
+  if (!first) return undefined;
+  const label = optionLabel(first);
+  return findJurisdictionByName(label);
+});
+
+function onJurisdictionChange(jurisdiction: JurisdictionOption | undefined) {
+  if (!jurisdiction) {
+    currentJurisdictionFilter.value = [];
+    return;
+  }
+  const next: FilterObjectOption = {
+    label: jurisdiction.label,
+    coldId: jurisdiction.coldId,
+  };
+  currentJurisdictionFilter.value = [next];
+}
+
+const themeValues = computed<string[]>({
+  get() {
+    return currentThemeFilter.value.map(optionLabel);
+  },
+  set(values) {
+    currentThemeFilter.value = values;
+  },
+});
+
+const typeValues = computed<string[]>({
+  get() {
+    return currentTypeFilter.value.map(optionLabel);
+  },
+  set(values) {
+    currentTypeFilter.value = values;
+  },
+});
 
 watch(
   () => [props.totalMatches, props.loading],
@@ -217,23 +311,31 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.filters-header {
+.search-results-header {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-bottom: 12px;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: -24px;
 }
 
-.filters-header h2 {
-  margin: 0;
-  padding-bottom: 0;
+.entity-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.entity-filters__control {
+  min-width: 14rem;
+}
+
+.entity-filters__reset {
+  display: flex;
+  align-items: center;
 }
 
 .result-value-small {
   font-weight: 600;
-}
-
-.results-margin-fix {
-  margin-top: 1.5rem;
+  margin-top: 0.5rem;
 }
 </style>

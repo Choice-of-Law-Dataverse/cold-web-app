@@ -16,7 +16,7 @@
           :rows="rows"
           link-base="/arbitral-institution"
           :total="data?.total"
-          :loading="isLoading"
+          :loading="isFetching"
         />
       </div>
     </template>
@@ -41,7 +41,7 @@ const resultData = null;
 const orderBy = ref<string | undefined>(undefined);
 const orderDir = ref<"asc" | "desc" | undefined>(undefined);
 
-const { data, isLoading } = useEntityList("arbitral-institutions", {
+const { data, isLoading, isFetching } = useEntityList("arbitral-institutions", {
   page,
   orderBy,
   orderDir,

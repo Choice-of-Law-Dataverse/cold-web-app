@@ -16,7 +16,7 @@
           :rows="rows"
           link-base="/international-instrument"
           :total="data?.total"
-          :loading="isLoading"
+          :loading="isFetching"
         />
       </div>
     </template>
@@ -41,11 +41,14 @@ const resultData = null;
 const orderBy = ref<string | undefined>(undefined);
 const orderDir = ref<"asc" | "desc" | undefined>(undefined);
 
-const { data, isLoading } = useEntityList("international-instruments", {
-  page,
-  orderBy,
-  orderDir,
-});
+const { data, isLoading, isFetching } = useEntityList(
+  "international-instruments",
+  {
+    page,
+    orderBy,
+    orderDir,
+  },
+);
 
 const rows = computed(() =>
   (data.value?.items ?? []).map((item) => ({

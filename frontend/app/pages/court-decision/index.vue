@@ -12,6 +12,8 @@
           v-model:jurisdiction="selectedJurisdiction"
           v-model:theme="selectedTheme"
           :filters="['jurisdiction', 'theme']"
+          :count="data?.total"
+          :loading="isFetching"
         />
 
         <EntityListTable
@@ -22,7 +24,7 @@
           :rows="rows"
           link-base="/court-decision"
           :total="data?.total"
-          :loading="isLoading"
+          :loading="isFetching"
         />
       </div>
     </template>
@@ -69,7 +71,7 @@ watch([jurisdictionCode, selectedTheme, caseRank], () => {
   page.value = 1;
 });
 
-const { data, isLoading } = useEntityList("court-decisions", {
+const { data, isLoading, isFetching } = useEntityList("court-decisions", {
   page,
   jurisdiction: jurisdictionCode,
   theme: selectedTheme,

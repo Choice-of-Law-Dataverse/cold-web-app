@@ -1,34 +1,37 @@
 <template>
-  <div class="entity-filters">
+  <div
+    class="entity-filters"
+    :class="{ 'entity-filters--loading': props.loading }"
+    :aria-busy="props.loading || undefined"
+  >
     <div
       v-if="props.filters.includes('jurisdiction')"
       class="entity-filters__control"
     >
-      <label class="entity-filters__label">Jurisdiction</label>
       <JurisdictionSelectMenu
         v-if="jurisdictions"
         :jurisdictions="jurisdictions"
         :model-value="jurisdiction"
-        placeholder="Any"
+        placeholder="Jurisdiction"
         @update:model-value="jurisdiction = $event"
       />
     </div>
 
     <div v-if="props.filters.includes('theme')" class="entity-filters__control">
-      <label class="entity-filters__label">Theme</label>
       <USelectMenu
         v-model="theme"
         :items="themeOptions"
-        placeholder="Any"
+        placeholder="Theme"
         size="xl"
         class="w-56"
         :ui="{
-          content: 'max-h-none w-max min-w-(--reka-combobox-trigger-width)',
+          content:
+            'max-h-(--reka-combobox-content-available-height) w-max min-w-(--reka-combobox-trigger-width)',
           item: 'data-highlighted:bg-transparent',
         }"
       >
         <template #item-label="{ item }">
-          <span class="schip schip--theme">
+          <span class="schip schip--theme schip--static">
             <span class="schip-tag" aria-hidden="true">
               <UIcon name="i-lucide:bookmark" />
             </span>
@@ -39,7 +42,26 @@
     </div>
 
     <div v-if="hasActiveFilter" class="entity-filters__reset">
-      <UButton variant="ghost" size="sm" :icon="ICON_CLEAR" @click="reset">
+      <span
+        v-if="props.loading"
+        class="entity-filters__status"
+        role="status"
+        aria-live="polite"
+      >
+        <span class="entity-filters__pulse" aria-hidden="true" />
+        Updating
+      </span>
+      <span v-else-if="formattedCount" class="entity-filters__count">
+        {{ formattedCount }} {{ count === 1 ? "result" : "results" }}
+      </span>
+      <UButton
+        variant="ghost"
+        size="sm"
+        :leading-icon="ICON_CLEAR"
+        :trailing-icon="ICON_CLEAR"
+        :disabled="props.loading"
+        @click="reset"
+      >
         Clear filters
       </UButton>
     </div>
@@ -59,6 +81,8 @@ const ICON_CLEAR = "i-material-symbols:close";
 
 const props = defineProps<{
   filters: EntityListFilterKey[];
+  count?: number;
+  loading?: boolean;
 }>();
 
 const jurisdiction = defineModel<JurisdictionOption | undefined>(
@@ -73,6 +97,12 @@ const { data: jurisdictions } = useJurisdictions(wantsJurisdiction);
 
 const hasActiveFilter = computed(
   () => Boolean(jurisdiction.value?.coldId) || Boolean(theme.value),
+);
+
+const formattedCount = computed(() =>
+  typeof props.count === "number"
+    ? props.count.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "'")
+    : "",
 );
 
 const reset = () => {
@@ -91,52 +121,71 @@ const reset = () => {
 
 .entity-filters__control {
   min-width: 14rem;
+  transition: opacity 200ms ease;
 }
 
-.entity-filters__label {
-  display: block;
-  font-weight: 700;
-  font-size: 11px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--color-cold-night-alpha);
-  margin-bottom: 4px;
+.entity-filters--loading .entity-filters__control {
+  opacity: 0.55;
+  pointer-events: none;
 }
 
 .entity-filters__reset {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
+  gap: 0.5rem;
 }
 
-.schip {
-  --schip-color: var(--color-cold-purple);
+.entity-filters__count {
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--color-cold-night-alpha);
+}
+
+.entity-filters__status {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 0.5rem;
   font-family: "IBM Plex Mono", monospace;
   font-size: 11px;
   font-weight: 600;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  padding: 2px 9px;
+  color: var(--color-cold-night-alpha);
+}
+
+.entity-filters__pulse {
+  width: 6px;
+  height: 6px;
   border-radius: 999px;
-  background: color-mix(in srgb, var(--schip-color) 8%, white);
-  color: color-mix(in srgb, var(--schip-color) 80%, black);
-  white-space: nowrap;
-  border: 1px solid transparent;
+  background: var(--color-cold-purple);
+  animation: entity-filters-pulse 1.1s ease-in-out infinite;
+  box-shadow: 0 0 0 0
+    color-mix(in srgb, var(--color-cold-purple) 30%, transparent);
 }
 
-.schip--theme {
-  --schip-color: var(--color-cold-purple);
+@keyframes entity-filters-pulse {
+  0%,
+  100% {
+    transform: scale(0.55);
+    opacity: 0.45;
+    box-shadow: 0 0 0 0
+      color-mix(in srgb, var(--color-cold-purple) 30%, transparent);
+  }
+  50% {
+    transform: scale(1);
+    opacity: 1;
+    box-shadow: 0 0 0 4px
+      color-mix(in srgb, var(--color-cold-purple) 0%, transparent);
+  }
 }
 
-.schip-tag {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  width: 11px;
-  font-size: 11px;
-  opacity: 0.65;
+@media (prefers-reduced-motion: reduce) {
+  .entity-filters__control {
+    transition: none;
+  }
+  .entity-filters__pulse {
+    animation: none;
+    opacity: 0.85;
+  }
 }
 </style>

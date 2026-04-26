@@ -6,7 +6,6 @@
     :placeholder="placeholder"
     :items="selectItems"
     :disabled="disabled"
-    :leading="!!internalSelected?.original?.coldId"
     size="xl"
     :ui="{
       content:
@@ -14,7 +13,6 @@
     }"
     @update:model-value="onInternalSelect"
   >
-    <!-- Custom item rendering with avatars -->
     <template #item="{ item }">
       <div class="flex items-center">
         <JurisdictionFlag
@@ -33,13 +31,21 @@
       </div>
     </template>
 
-    <template #leading>
-      <JurisdictionFlag
+    <template #default>
+      <span
         v-if="internalSelected?.original?.coldId"
-        :iso3="internalSelected.original.coldId"
-        :faded="!hasCoverage(internalSelected.original.answerCoverage)"
-        class="mr-1.5"
-      />
+        class="flex w-full items-center overflow-hidden whitespace-nowrap"
+      >
+        <JurisdictionFlag
+          :iso3="internalSelected.original.coldId"
+          :faded="!hasCoverage(internalSelected.original.answerCoverage)"
+          class="mr-1.5"
+        />
+        <span class="truncate">{{ internalSelected.label }}</span>
+      </span>
+      <span v-else class="truncate text-(--ui-text-muted)">
+        {{ placeholder }}
+      </span>
     </template>
   </USelectMenu>
 </template>

@@ -5,9 +5,6 @@
       :loading="false"
       :data="null"
       header-mode="new"
-      :show-notification-banner="true"
-      :notification-banner-message="notificationBannerMessage"
-      :icon="'i-material-symbols:warning-outline'"
       @open-save-modal="openSaveModal"
       @open-cancel-modal="showCancelModal = true"
     >
@@ -128,8 +125,6 @@ const saveModalErrors = ref<Record<string, string>>({});
 const router = useRouter();
 const showSaveModal = ref(false);
 const showCancelModal = ref(false);
-const notificationBannerMessage =
-  "Please back up your data when working here. Leaving, closing or reloading this window will delete everything. Data is only saved after you submit.";
 
 useHead({ title: "New International Instrument — CoLD" });
 
