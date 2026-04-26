@@ -33,19 +33,20 @@ describe("useApiClient", () => {
     );
 
     const { client } = useApiClient();
-    await client.POST("/search/", {
-      body: {
-        search_string: "test",
-        page: 1,
-        page_size: 10,
-        sort_by_date: false,
-        response_type: null,
+    await client.GET("/search/", {
+      params: {
+        query: {
+          search_string: "test",
+          page: 1,
+          page_size: 10,
+          sort_by_date: false,
+        },
       },
     });
 
     expect(fetch).toHaveBeenCalledOnce();
     const request = vi.mocked(fetch).mock.calls[0]![0] as Request;
     expect(request.url).toContain("/api/proxy/search/");
-    expect(request.method).toBe("POST");
+    expect(request.method).toBe("GET");
   });
 });

@@ -17,8 +17,8 @@ async function fetchRecordDetails<
   id: string | number,
   process?: (raw: TableDetailMap[T]) => TProcessed,
 ) {
-  const { data, error } = await client.POST("/search/details", {
-    body: { table, id: String(id) },
+  const { data, error } = await client.GET("/search/details", {
+    params: { query: { table, id: String(id) } },
   });
   if (error) throw error;
   const raw = data as unknown as TableDetailMap[T];
@@ -55,8 +55,8 @@ export function useAnswer(id: Ref<string | number>) {
   return useQuery({
     queryKey: computed(() => [table.value, id.value]),
     queryFn: async () => {
-      const { data, error } = await client.POST("/search/details", {
-        body: { table: table.value, id: String(id.value) },
+      const { data, error } = await client.GET("/search/details", {
+        params: { query: { table: table.value, id: String(id.value) } },
       });
       if (error) throw error;
       return processQuestion(data as Parameters<typeof processQuestion>[0]);

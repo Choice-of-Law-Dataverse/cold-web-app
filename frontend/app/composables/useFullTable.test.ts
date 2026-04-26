@@ -13,7 +13,7 @@ vi.mock("@tanstack/vue-query", () => ({
 vi.mock("./useApiClient", () => ({
   useApiClient: vi.fn(() => ({
     client: {
-      POST: vi.fn().mockResolvedValue({ data: [], error: null }),
+      GET: vi.fn().mockResolvedValue({ data: [], error: null }),
     },
   })),
 }));
@@ -43,9 +43,27 @@ describe("useFullTable", () => {
 
     expect(useQuery).toHaveBeenCalledWith(
       expect.objectContaining({
-        queryKey: ["Questions", "Test", null, null, null],
+        queryKey: ["Questions", JSON.stringify(filters), null, null, null],
       }),
     );
+  });
+
+  it("disambiguates filter sets that previously collided on join", () => {
+    const singleCsvValue = [{ column: "question" as const, value: "a,b" }];
+    const twoSeparateValues = [
+      { column: "question" as const, value: "a" },
+      { column: "question" as const, value: "b" },
+    ];
+
+    useFullTable("Questions", { filters: singleCsvValue });
+    const [firstArg] = vi.mocked(useQuery).mock.calls.at(-1)!;
+    const firstKey = (firstArg as { queryKey: unknown }).queryKey;
+
+    useFullTable("Questions", { filters: twoSeparateValues });
+    const [secondArg] = vi.mocked(useQuery).mock.calls.at(-1)!;
+    const secondKey = (secondArg as { queryKey: unknown }).queryKey;
+
+    expect(firstKey).not.toEqual(secondKey);
   });
 
   it("includes pagination params in query key when provided", () => {
