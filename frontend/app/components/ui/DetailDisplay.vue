@@ -21,12 +21,10 @@
             :card-type="formattedSourceTable"
             :formatted-jurisdiction="formattedJurisdiction"
             :formatted-theme="formattedTheme"
-            :legal-family="legalFamily"
             :header-mode="headerMode"
             :show-cite="showCite"
             :show-json="showJson"
             :show-print="showPrint"
-            :show-legal-family="showLegalFamily"
             :entity-type="entityType"
             :entity-id="entityId"
             :entity-title="entityTitle"
@@ -79,10 +77,8 @@ interface Props {
   showCite?: boolean;
   showJson?: boolean;
   showPrint?: boolean;
-  showLegalFamily?: boolean;
   formattedJurisdiction: string[];
   formattedTheme: string[];
-  legalFamily?: string[];
   headerMode: string;
   showNotificationBanner: boolean;
   notificationBannerMessage: string;
@@ -101,10 +97,8 @@ const props = withDefaults(defineProps<Props>(), {
   showCite: true,
   showJson: true,
   showPrint: true,
-  showLegalFamily: true,
   formattedJurisdiction: () => [],
   formattedTheme: () => [],
-  legalFamily: () => [],
   headerMode: "default",
   showNotificationBanner: false,
   notificationBannerMessage: "",

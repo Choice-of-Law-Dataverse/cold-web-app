@@ -55,7 +55,6 @@
             :result-data="entityData"
             :card-type="headerSourceTable"
             :formatted-jurisdiction="headerJurisdictions"
-            :legal-family="headerLegalFamily"
             :show-cite="false"
             :show-json="false"
             :show-print="false"
@@ -192,17 +191,6 @@ const headerJurisdictions = computed<string[]>(() => {
 });
 
 const headerSourceTable = computed(() => config.value?.singularLabel ?? "");
-
-const headerLegalFamily = computed<string[]>(() => {
-  const data = entityData.value;
-  if (!data || !("legalFamily" in data)) return [];
-  const value = String(data.legalFamily || "");
-  if (!value || value === "N/A") return [];
-  return value
-    .split(",")
-    .map((f: string) => f.trim())
-    .filter((f: string) => f);
-});
 
 const isJurisdiction = computed(
   () => entity.value?.basePath === "/jurisdiction",

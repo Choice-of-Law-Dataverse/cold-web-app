@@ -82,7 +82,7 @@
             :class="chip.class"
           >
             <span class="schip-tag" aria-hidden="true">
-              <UIcon name="i-lucide:tag" />
+              <UIcon name="i-lucide:bookmark" />
             </span>
             <span class="schip-text">{{ chip.label }}</span>
             <span class="schip-affordance" aria-hidden="true">
@@ -226,12 +226,10 @@ const props = withDefaults(
     cardType?: string;
     formattedJurisdiction?: string[];
     formattedTheme?: string[];
-    legalFamily?: string[];
     headerMode?: string;
     showCite?: boolean;
     showJson?: boolean;
     showPrint?: boolean;
-    showLegalFamily?: boolean;
     entityType?: string;
     entityId?: string;
     entityTitle?: string;
@@ -242,12 +240,10 @@ const props = withDefaults(
     cardType: "",
     formattedJurisdiction: () => [],
     formattedTheme: () => [],
-    legalFamily: () => [],
     headerMode: "default",
     showCite: true,
     showJson: true,
     showPrint: true,
-    showLegalFamily: true,
     entityType: "",
     entityId: "",
     entityTitle: "",
@@ -323,17 +319,6 @@ const resolvedJurisdiction = computed<ResolvedJurisdiction[]>(() => {
   return [];
 });
 
-const resolvedLegalFamily = computed<string[]>(() => {
-  if (!props.showLegalFamily) return [];
-  if (props.legalFamily.length > 0) return props.legalFamily;
-  const value = String(props.resultData.legalFamily || "");
-  if (!value || value === "N/A") return [];
-  return value
-    .split(",")
-    .map((f) => f.trim())
-    .filter((f) => f);
-});
-
 const resolvedTheme = computed<string[]>(() => {
   const fromProps = props.formattedTheme ?? [];
   if (fromProps.length > 0) return fromProps;
@@ -379,20 +364,14 @@ interface TaggedSearchChip {
   label: string;
 }
 
-const taggedSearchChips = computed<TaggedSearchChip[]>(() => [
-  ...resolvedLegalFamily.value.map((f, idx) => ({
-    key: `family-${idx}`,
-    to: `/search?type=Jurisdictions&legalFamily=${searchParam(f)}`,
-    class: "schip schip--family",
-    label: f,
-  })),
-  ...resolvedTheme.value.map((theme, idx) => ({
+const taggedSearchChips = computed<TaggedSearchChip[]>(() =>
+  resolvedTheme.value.map((theme, idx) => ({
     key: `theme-${idx}`,
     to: `/search?theme=${searchParam(theme)}`,
     class: "schip schip--theme",
     label: theme,
   })),
-]);
+);
 
 const isJurisdictionType = computed(
   () => typeChip.value?.colorClass === "label-jurisdiction",
@@ -458,10 +437,7 @@ function selectPickerJurisdiction(item: { coldId?: string }) {
 }
 
 const hasFirstLine = computed(
-  () =>
-    !!typeChip.value ||
-    resolvedJurisdiction.value.length > 0 ||
-    resolvedLegalFamily.value.length > 0,
+  () => !!typeChip.value || resolvedJurisdiction.value.length > 0,
 );
 
 const hasAnyChips = computed(
@@ -707,16 +683,6 @@ function printPage() {
 
 .schip--jur {
   --schip-color: var(--color-cold-night);
-}
-
-.schip--family {
-  --schip-color: #b07000;
-  background: transparent;
-  font-weight: 500;
-}
-
-.schip--family:hover {
-  background: color-mix(in srgb, var(--schip-color) 10%, white);
 }
 
 .schip--theme {

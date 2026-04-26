@@ -9,12 +9,10 @@
       :formatted-source-table="props.table"
       :formatted-jurisdiction="props.formattedJurisdiction"
       :formatted-theme="props.formattedTheme"
-      :legal-family="props.legalFamily"
       :show-header="true"
       :show-cite="props.showCite"
       :show-json="props.showJson"
       :show-print="props.showPrint"
-      :show-legal-family="props.showLegalFamily"
       :header-mode="props.headerMode"
       :show-notification-banner="props.showNotificationBanner"
       :notification-banner-message="props.notificationBannerMessage"
@@ -50,7 +48,6 @@ const props = withDefaults(
     data: ProcessedEntity | null;
     formattedJurisdiction?: string[];
     formattedTheme?: string[];
-    legalFamily?: string[];
     headerMode?: string;
     showNotificationBanner?: boolean;
     notificationBannerMessage?: string;
@@ -59,7 +56,6 @@ const props = withDefaults(
     showCite?: boolean;
     showJson?: boolean;
     showPrint?: boolean;
-    showLegalFamily?: boolean;
     entityType?: string;
     entityId?: string;
     entityTitle?: string;
@@ -70,7 +66,6 @@ const props = withDefaults(
     data: null,
     formattedJurisdiction: () => [],
     formattedTheme: () => [],
-    legalFamily: () => [],
     headerMode: "default",
     showNotificationBanner: false,
     notificationBannerMessage: "",
@@ -79,7 +74,6 @@ const props = withDefaults(
     showCite: true,
     showJson: true,
     showPrint: true,
-    showLegalFamily: true,
     entityType: "",
     entityId: "",
     entityTitle: "",

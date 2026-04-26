@@ -24,8 +24,18 @@
         class="w-56"
         :ui="{
           content: 'max-h-none w-max min-w-(--reka-combobox-trigger-width)',
+          item: 'data-highlighted:bg-transparent',
         }"
-      />
+      >
+        <template #item-label="{ item }">
+          <span class="schip schip--theme">
+            <span class="schip-tag" aria-hidden="true">
+              <UIcon name="i-lucide:bookmark" />
+            </span>
+            <span class="schip-text">{{ item }}</span>
+          </span>
+        </template>
+      </USelectMenu>
     </div>
 
     <div v-if="hasActiveFilter" class="entity-filters__reset">
@@ -96,5 +106,37 @@ const reset = () => {
 .entity-filters__reset {
   display: flex;
   align-items: flex-end;
+}
+
+.schip {
+  --schip-color: var(--color-cold-purple);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 2px 9px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--schip-color) 8%, white);
+  color: color-mix(in srgb, var(--schip-color) 80%, black);
+  white-space: nowrap;
+  border: 1px solid transparent;
+}
+
+.schip--theme {
+  --schip-color: var(--color-cold-purple);
+}
+
+.schip-tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 11px;
+  font-size: 11px;
+  opacity: 0.65;
 }
 </style>
