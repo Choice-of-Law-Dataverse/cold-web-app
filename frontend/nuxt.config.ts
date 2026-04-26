@@ -8,6 +8,7 @@ export default defineNuxtConfig({
   devtools: { enabled: process.env.NODE_ENV === "development" },
   ssr: true,
   nitro: {
+    compressPublicAssets: { brotli: true, gzip: true },
     prerender: {
       crawlLinks: false,
       routes: [],
@@ -29,6 +30,7 @@ export default defineNuxtConfig({
       registry: {
         plausibleAnalytics: {
           domain: "cold.global",
+          trigger: "onNuxtReady",
         },
       },
     },
@@ -49,6 +51,7 @@ export default defineNuxtConfig({
         "mitt",
         "openapi-fetch",
         "date-fns",
+        "@vue-leaflet/vue-leaflet",
       ],
       exclude: ["@opentelemetry/api"],
     },
@@ -120,11 +123,6 @@ export default defineNuxtConfig({
   },
   fonts: {
     families: [
-      {
-        name: "DM Serif Display",
-        provider: "google",
-        weights: [400],
-      },
       {
         name: "DM Sans",
         provider: "google",

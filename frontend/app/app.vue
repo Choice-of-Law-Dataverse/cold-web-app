@@ -9,13 +9,12 @@ useSeoMeta({
   description: "Choice of Law Dataverse",
   ogTitle: "Choice of Law Dataverse",
   ogDescription: "Navigate private international law issues with precision",
-  ogImage: "https://choiceoflaw.blob.core.windows.net/assets/cold_og_image.svg",
+  ogImage: "https://assets.cold.global/assets/cold_og_image.svg",
   ogUrl: "www.cold.global",
   twitterTitle: "Choice of Law Dataverse",
   twitterDescription:
     "Navigate private international law issues with precision",
-  twitterImage:
-    "https://choiceoflaw.blob.core.windows.net/assets/cold_og_image.svg",
+  twitterImage: "https://assets.cold.global/assets/cold_og_image.svg",
   twitterCard: "summary",
 });
 
@@ -24,6 +23,11 @@ useHead({
     lang: "en",
   },
   link: [
+    {
+      rel: "preconnect",
+      href: "https://assets.cold.global",
+      crossorigin: "",
+    },
     {
       rel: "icon",
       type: "image/png",

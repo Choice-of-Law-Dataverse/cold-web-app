@@ -1,6 +1,7 @@
 <template>
   <BaseDetailLayout
     table="Arbitral Awards"
+    page-heading="Arbitral Awards"
     :loading="isLoading"
     :data="resultData"
   >

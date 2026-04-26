@@ -68,6 +68,108 @@
               />
             </div>
           </div>
+
+          <div v-if="matchStats" class="comparison-match-stats-wrapper">
+            <div class="comparison-match-stats">
+              <UIcon
+                name="i-material-symbols:check-circle-rounded"
+                class="comparison-match-stats__icon"
+              />
+              <span class="comparison-match-stats__value">
+                {{ matchStats.percentage }}%
+              </span>
+              <span class="comparison-match-stats__label">
+                matching answers
+                <span class="comparison-match-stats__detail">
+                  ({{ matchStats.matching }} of {{ matchStats.total }}
+                  {{ matchStats.total === 1 ? "question" : "questions" }})
+                </span>
+              </span>
+              <span
+                class="comparison-match-stats__divider"
+                aria-hidden="true"
+              />
+              <button
+                type="button"
+                class="comparison-caveats__trigger"
+                :aria-expanded="showCaveats"
+                @click="showCaveats = !showCaveats"
+              >
+                <UIcon
+                  name="i-material-symbols:info-outline"
+                  class="comparison-caveats__trigger-icon"
+                />
+                About these numbers
+              </button>
+            </div>
+          </div>
+          <div
+            v-if="matchStats && showCaveats"
+            class="comparison-caveats__body"
+          >
+            <p>A few caveats should be expressed at the outset:</p>
+            <ul>
+              <li>
+                Simplification may be necessary to concentrate on a limited
+                number of key options that legislators, courts, or further
+                authorities may have when implementing, interpreting, or
+                applying a specific rule regarding an issue addressed in the
+                <NuxtLink to="/learn/methodology#questionnaire">
+                  Questionnaire </NuxtLink
+                >.
+              </li>
+              <li>
+                Similarly, it is difficult to adequately compare the individual
+                instruments or jurisdictions in view of the different legal
+                methods used in various parts of the world, and the varying
+                degree of sophistication. A certain degree of asymmetry of
+                information must be taken into consideration; while some
+                specialists were able to rely on sophisticated codifications of
+                PIL rules, or numerous court decisions and academic writings,
+                such privileges were not available to specialists of some of the
+                countries where party choice of law is limited, or rarely
+                practiced.
+              </li>
+              <li>
+                Finally, CoLD deals with legal cultures that address choice of
+                law problems in different ways, as prominently illustrated by
+                the dichotomy between common-law and civil-law jurisdictions.
+                For example, various jurisdictions based in the common-law
+                tradition have not enacted PIL codifications addressing party
+                choice of law, whereas many civil law-based jurisdictions have
+                enacted, or are in the process of enacting, such codifications.
+                These differences have a direct impact on the methods used by
+                courts and practitioners to apply, and interpret, rules dealing
+                with choice of law, the results of which are sometimes difficult
+                to compare.
+              </li>
+              <li>
+                At times, a sophisticated user may find that the Jurisdiction
+                Comparison tool is an attempt to compare apples with oranges.
+                This phenomenon is not atypical in comparative law. We strongly
+                recommend consulting the additional information linked to the
+                answers (by clicking on it).
+              </li>
+            </ul>
+            <h4 class="comparison-caveats__heading">
+              Availability of information
+            </h4>
+            <p>
+              Many specialists in private international law, with a focus on
+              their respective jurisdictions, have contributed to the data
+              collection. Their names are indicated in the country report.
+              Nevertheless, certain jurisdictions may contain more data points
+              than others. This might be related to:
+            </p>
+            <ul>
+              <li>availability of information about choice of law rules;</li>
+              <li>
+                importance of the jurisdiction from an economic, social, or
+                cultural perspective;
+              </li>
+              <li>availability of specialists.</li>
+            </ul>
+          </div>
         </div>
 
         <div
@@ -85,41 +187,55 @@
         />
 
         <div v-else-if="isSingleJurisdiction" class="question-list">
-          <div
-            v-for="row in rows"
-            :id="`question-${row.id}`"
-            :key="row.id"
-            class="question-row flex flex-col gap-2 py-3.5 md:flex-row md:items-center md:gap-4"
-            :style="{ paddingLeft: `calc(1.5rem + ${row.level * 2}em)` }"
-          >
+          <template v-for="item in groupedRows" :key="item.key">
+            <div v-if="item.type === 'theme-header'" class="theme-header">
+              <span class="theme-header__name">{{ item.theme }}</span>
+            </div>
             <div
-              class="min-w-0 flex-1 text-sm whitespace-pre-line"
-              :class="{ 'font-semibold': isBoldQuestion(row.id) }"
+              v-else
+              :id="`question-${item.row.id}`"
+              class="question-row flex flex-col gap-2 py-3.5 md:flex-row md:items-center md:gap-4"
+              :style="{ paddingLeft: `calc(1.5rem + ${item.row.level * 2}em)` }"
             >
-              <span class="inline-block max-w-[68ch]">{{ row.question }}</span>
-            </div>
-
-            <div class="flex shrink-0 items-center md:w-[200px] md:justify-end">
-              <UTooltip
-                v-if="row.answer"
-                :text="row.answer"
-                :disabled="shouldShowDash(row.answer)"
-                :delay-duration="300"
+              <div
+                class="min-w-0 flex-1 text-sm whitespace-pre-line"
+                :class="{ 'font-semibold': isBoldQuestion(item.row.id) }"
               >
-                <a
-                  :href="row.answerLink"
-                  class="answer-button max-w-full truncate"
-                  @click="
-                    handleAnswerClick($event, jurisdictionCodes[0]!, row.id)
-                  "
+                <span class="inline-block max-w-[68ch]">{{
+                  item.row.question
+                }}</span>
+              </div>
+
+              <div
+                class="flex shrink-0 items-center md:w-[200px] md:justify-end"
+              >
+                <UTooltip
+                  v-if="item.row.answer"
+                  :text="item.row.answer"
+                  :disabled="shouldShowDash(item.row.answer)"
+                  :delay-duration="300"
                 >
-                  <template v-if="shouldShowDash(row.answer)">—</template>
-                  <span v-else class="truncate">{{ row.answer }}</span>
-                </a>
-              </UTooltip>
-              <span v-else class="answer-button text-gray-400">—</span>
+                  <a
+                    :href="item.row.answerLink"
+                    class="answer-button max-w-full truncate"
+                    @click="
+                      handleAnswerClick(
+                        $event,
+                        jurisdictionCodes[0]!,
+                        item.row.id,
+                      )
+                    "
+                  >
+                    <template v-if="shouldShowDash(item.row.answer)">
+                      —
+                    </template>
+                    <span v-else class="truncate">{{ item.row.answer }}</span>
+                  </a>
+                </UTooltip>
+                <span v-else class="answer-button text-gray-400">—</span>
+              </div>
             </div>
-          </div>
+          </template>
         </div>
 
         <div v-else>
@@ -134,7 +250,11 @@
                   ? 'text-md cursor-pointer hover:bg-gray-200'
                   : 'text-md'
               "
-              :title="jurisdiction.name"
+              :aria-label="
+                index > 0
+                  ? `Remove ${jurisdiction.name} from comparison`
+                  : jurisdiction.name
+              "
               @click="
                 index > 0 ? removeJurisdiction(jurisdiction.coldId) : null
               "
@@ -180,7 +300,11 @@
                   type="button"
                   class="jurisdiction-action-button"
                   :class="{ removable: index > 0 }"
-                  :title="jurisdiction.name"
+                  :aria-label="
+                    index > 0
+                      ? `Remove ${jurisdiction.name} from comparison`
+                      : jurisdiction.name
+                  "
                   :disabled="index === 0"
                   @click="
                     index > 0 ? removeJurisdiction(jurisdiction.coldId) : null
@@ -202,133 +326,227 @@
                   />
                 </button>
               </div>
+              <div
+                class="comparison-header-cell comparison-header-cell--match sticky top-0 bg-white py-3"
+                :class="isScrollable ? 'sticky-col-match' : ''"
+                aria-hidden="true"
+              />
 
-              <div v-for="row in rows" :key="row.id" class="comparison-row">
+              <template v-for="item in groupedRows" :key="item.key">
                 <div
-                  :id="`question-${row.id}`"
-                  class="comparison-cell comparison-cell--question text-sm whitespace-pre-line"
-                  :class="[
-                    { 'font-semibold': isBoldQuestion(row.id) },
-                    { 'sticky-col-1': isScrollable },
-                  ]"
-                  :style="{ paddingLeft: `${row.level * 2}em` }"
+                  v-if="item.type === 'theme-header'"
+                  class="comparison-theme-header"
                 >
-                  {{ row.question }}
+                  <span class="theme-header__name">{{ item.theme }}</span>
+                  <span v-if="item.stats" class="theme-header__stats">
+                    {{ item.stats.percentage }}% match
+                    <span class="theme-header__stats-detail">
+                      ({{ item.stats.matching }} of {{ item.stats.total }})
+                    </span>
+                  </span>
                 </div>
-
-                <div
-                  v-for="(jurisdiction, jIndex) in jurisdictions"
-                  :key="jurisdiction.coldId || jurisdiction.name"
-                  class="comparison-cell comparison-cell--answer"
-                  :class="{ 'sticky-col-2': jIndex === 0 && isScrollable }"
-                  :style="
-                    jIndex === 0 && isScrollable ? { left: stickyColLeft } : {}
-                  "
-                >
+                <div v-else class="comparison-row">
                   <div
-                    v-if="
-                      answersLoading &&
-                      !hasAnswersForJurisdiction(jurisdiction.coldId)
-                    "
+                    :id="`question-${item.row.id}`"
+                    class="comparison-cell comparison-cell--question text-sm whitespace-pre-line"
+                    :class="[
+                      { 'font-semibold': isBoldQuestion(item.row.id) },
+                      { 'sticky-col-1': isScrollable },
+                    ]"
+                    :style="{ paddingLeft: `${item.row.level * 2}em` }"
                   >
-                    <USkeleton class="h-4 w-16" />
+                    {{ item.row.question }}
                   </div>
-                  <UTooltip
-                    v-else-if="
-                      jurisdiction.coldId && row.answers?.[jurisdiction.coldId]
+
+                  <div
+                    v-for="(jurisdiction, jIndex) in jurisdictions"
+                    :key="jurisdiction.coldId || jurisdiction.name"
+                    class="comparison-cell comparison-cell--answer"
+                    :class="{ 'sticky-col-2': jIndex === 0 && isScrollable }"
+                    :style="
+                      jIndex === 0 && isScrollable
+                        ? { left: stickyColLeft }
+                        : {}
                     "
-                    :text="row.answers[jurisdiction.coldId]"
-                    :disabled="shouldShowDash(row.answers[jurisdiction.coldId])"
-                    :delay-duration="300"
                   >
-                    <a
-                      :href="getAnswerLink(jurisdiction.coldId, row.id)"
-                      class="answer-button"
-                      @click="
-                        handleAnswerClick($event, jurisdiction.coldId, row.id)
+                    <div
+                      v-if="
+                        answersLoading &&
+                        !hasAnswersForJurisdiction(jurisdiction.coldId)
                       "
                     >
-                      <template
-                        v-if="shouldShowDash(row.answers[jurisdiction.coldId])"
+                      <USkeleton class="h-4 w-16" />
+                    </div>
+                    <UTooltip
+                      v-else-if="
+                        jurisdiction.coldId &&
+                        item.row.answers?.[jurisdiction.coldId]
+                      "
+                      :text="item.row.answers[jurisdiction.coldId]"
+                      :disabled="
+                        shouldShowDash(item.row.answers[jurisdiction.coldId])
+                      "
+                      :delay-duration="300"
+                    >
+                      <a
+                        :href="getAnswerLink(jurisdiction.coldId, item.row.id)"
+                        class="answer-button"
+                        @click="
+                          handleAnswerClick(
+                            $event,
+                            jurisdiction.coldId,
+                            item.row.id,
+                          )
+                        "
                       >
-                        —
-                      </template>
-                      <span v-else class="line-clamp-2">{{
-                        row.answers[jurisdiction.coldId]
-                      }}</span>
-                    </a>
-                  </UTooltip>
-                  <span v-else class="text-gray-400">—</span>
+                        <template
+                          v-if="
+                            shouldShowDash(
+                              item.row.answers[jurisdiction.coldId],
+                            )
+                          "
+                        >
+                          —
+                        </template>
+                        <span v-else class="line-clamp-2">{{
+                          item.row.answers[jurisdiction.coldId]
+                        }}</span>
+                      </a>
+                    </UTooltip>
+                    <span v-else class="text-gray-400">—</span>
+                  </div>
+
+                  <div
+                    class="comparison-cell comparison-cell--match"
+                    :class="isScrollable ? 'sticky-col-match' : ''"
+                  >
+                    <USkeleton
+                      v-if="!allJurisdictionsHaveAnswersLoaded"
+                      class="h-4 w-4 rounded-full"
+                    />
+                    <UIcon
+                      v-else-if="item.row.matchStatus === 'match'"
+                      name="i-material-symbols:check-circle-rounded"
+                      class="match-indicator match-indicator--match"
+                      :title="`All ${jurisdictions.length} jurisdictions agree`"
+                    />
+                    <UIcon
+                      v-else-if="item.row.matchStatus === 'mismatch'"
+                      name="i-material-symbols:remove-rounded"
+                      class="match-indicator match-indicator--mismatch"
+                      title="Answers differ"
+                    />
+                  </div>
                 </div>
-              </div>
+              </template>
             </div>
           </div>
 
           <div class="question-list block md:hidden">
-            <div
-              v-for="row in rows"
-              :id="`question-${row.id}`"
-              :key="row.id"
-              class="question-row py-3.5"
-              :style="{ paddingLeft: `calc(1.5rem + ${row.level * 2}em)` }"
-            >
-              <div
-                class="mb-3 text-sm whitespace-pre-line"
-                :class="{ 'font-semibold': isBoldQuestion(row.id) }"
-              >
-                {{ row.question }}
+            <template v-for="item in groupedRows" :key="item.key">
+              <div v-if="item.type === 'theme-header'" class="theme-header">
+                <span class="theme-header__name">{{ item.theme }}</span>
+                <span v-if="item.stats" class="theme-header__stats">
+                  {{ item.stats.percentage }}% match
+                  <span class="theme-header__stats-detail">
+                    ({{ item.stats.matching }} of {{ item.stats.total }})
+                  </span>
+                </span>
               </div>
-
-              <div class="flex flex-wrap gap-4">
+              <div
+                v-else
+                :id="`question-${item.row.id}`"
+                class="question-row py-3.5"
+                :style="{
+                  paddingLeft: `calc(1.5rem + ${item.row.level * 2}em)`,
+                }"
+              >
                 <div
-                  v-for="jurisdiction in jurisdictions"
-                  :key="jurisdiction.coldId || jurisdiction.name"
-                  class="flex items-center gap-2"
+                  class="mb-3 flex items-start gap-2 text-sm whitespace-pre-line"
+                  :class="{ 'font-semibold': isBoldQuestion(item.row.id) }"
                 >
-                  <div
+                  <span class="min-w-0 flex-1">{{ item.row.question }}</span>
+                  <UIcon
                     v-if="
-                      answersLoading &&
-                      !hasAnswersForJurisdiction(jurisdiction.coldId)
+                      allJurisdictionsHaveAnswersLoaded &&
+                      item.row.matchStatus === 'match'
                     "
+                    name="i-material-symbols:check-circle-rounded"
+                    class="match-indicator match-indicator--match mt-0.5 shrink-0"
+                  />
+                  <UIcon
+                    v-else-if="
+                      allJurisdictionsHaveAnswersLoaded &&
+                      item.row.matchStatus === 'mismatch'
+                    "
+                    name="i-material-symbols:remove-rounded"
+                    class="match-indicator match-indicator--mismatch mt-0.5 shrink-0"
+                  />
+                  <span
+                    v-else
+                    class="match-indicator match-indicator--spacer shrink-0"
+                    aria-hidden="true"
+                  />
+                </div>
+
+                <div class="flex flex-wrap gap-4">
+                  <div
+                    v-for="jurisdiction in jurisdictions"
+                    :key="jurisdiction.coldId || jurisdiction.name"
                     class="flex items-center gap-2"
                   >
-                    <img
-                      v-if="jurisdiction.avatar"
-                      :src="jurisdiction.avatar"
-                      :alt="`${jurisdiction.name} flag`"
-                      class="h-2 w-3 object-cover"
-                    />
-                    <USkeleton class="h-4 w-16" />
-                  </div>
-                  <a
-                    v-else-if="
-                      jurisdiction.coldId && row.answers?.[jurisdiction.coldId]
-                    "
-                    :href="getAnswerLink(jurisdiction.coldId, row.id)"
-                    class="answer-button !inline-flex max-w-[10rem] items-center gap-2"
-                    @click="
-                      handleAnswerClick($event, jurisdiction.coldId, row.id)
-                    "
-                  >
-                    <img
-                      v-if="jurisdiction.avatar"
-                      :src="jurisdiction.avatar"
-                      :alt="`${jurisdiction.name} flag`"
-                      class="h-2 w-3 flex-shrink-0 object-cover"
-                    />
-                    <template
-                      v-if="shouldShowDash(row.answers[jurisdiction.coldId])"
+                    <div
+                      v-if="
+                        answersLoading &&
+                        !hasAnswersForJurisdiction(jurisdiction.coldId)
+                      "
+                      class="flex items-center gap-2"
                     >
-                      —
-                    </template>
-                    <span v-else class="min-w-0 truncate">{{
-                      row.answers[jurisdiction.coldId]
-                    }}</span>
-                  </a>
-                  <span v-else class="text-gray-400">—</span>
+                      <img
+                        v-if="jurisdiction.avatar"
+                        :src="jurisdiction.avatar"
+                        :alt="`${jurisdiction.name} flag`"
+                        class="h-2 w-3 object-cover"
+                      />
+                      <USkeleton class="h-4 w-16" />
+                    </div>
+                    <a
+                      v-else-if="
+                        jurisdiction.coldId &&
+                        item.row.answers?.[jurisdiction.coldId]
+                      "
+                      :href="getAnswerLink(jurisdiction.coldId, item.row.id)"
+                      class="answer-button !inline-flex max-w-[10rem] items-center gap-2"
+                      @click="
+                        handleAnswerClick(
+                          $event,
+                          jurisdiction.coldId,
+                          item.row.id,
+                        )
+                      "
+                    >
+                      <img
+                        v-if="jurisdiction.avatar"
+                        :src="jurisdiction.avatar"
+                        :alt="`${jurisdiction.name} flag`"
+                        class="h-2 w-3 flex-shrink-0 object-cover"
+                      />
+                      <template
+                        v-if="
+                          shouldShowDash(item.row.answers[jurisdiction.coldId])
+                        "
+                      >
+                        —
+                      </template>
+                      <span v-else class="min-w-0 truncate">{{
+                        item.row.answers[jurisdiction.coldId]
+                      }}</span>
+                    </a>
+                    <span v-else class="text-gray-400">—</span>
+                  </div>
                 </div>
               </div>
-            </div>
+            </template>
           </div>
         </div>
       </div>
@@ -375,6 +593,8 @@ const comparisonJurisdictions = ref<JurisdictionOption[]>([]);
 
 // Track selected value for the selector (to reset after selection)
 const selectedJurisdiction = ref<JurisdictionOption | undefined>(undefined);
+
+const showCaveats = ref(false);
 
 // Get all available jurisdictions
 const {
@@ -506,6 +726,8 @@ const useShortLabels = computed(() => jurisdictions.value.length >= 4);
 
 const isScrollable = computed(() => jurisdictions.value.length >= 5);
 
+const MATCH_COL_WIDTH = 44;
+
 const gridTemplateColumns = computed(() => {
   const count = jurisdictions.value.length;
   let questionCol: string;
@@ -521,7 +743,7 @@ const gridTemplateColumns = computed(() => {
     answerCol = "minmax(0, 1fr)";
   }
   const answerCols = Array(count).fill(answerCol).join(" ");
-  return `${questionCol} ${answerCols}`;
+  return `${questionCol} ${answerCols} ${MATCH_COL_WIDTH}px`;
 });
 
 const stickyColLeft = computed(() => {
@@ -549,7 +771,81 @@ const hasAnswersForJurisdiction = (coldId?: string) => {
   return loadedJurisdictions.value.has(upperCode);
 };
 
-const rows = computed(() => {
+const allJurisdictionsHaveAnswersLoaded = computed(() =>
+  jurisdictionCodes.value.every((code) => hasAnswersForJurisdiction(code)),
+);
+
+type MatchStatus = "match" | "mismatch" | "na";
+
+const normalizeAnswerForMatch = (value: string) =>
+  !value || DASH_ANSWERS.has(value) ? "—" : value;
+
+const getMatchStatus = (answers: Record<string, string>): MatchStatus => {
+  const values = Object.values(answers);
+  if (values.length < 2) return "na";
+  const normalized = values.map(normalizeAnswerForMatch);
+  return new Set(normalized).size === 1 ? "match" : "mismatch";
+};
+
+type Row = {
+  id: string;
+  question: string | null | undefined;
+  answer?: string;
+  answerLink?: string;
+  answers?: Record<string, string>;
+  matchStatus: MatchStatus;
+  level: number;
+  theme: string;
+};
+
+type MatchStats = { matching: number; total: number; percentage: number };
+
+type GroupedRow =
+  | {
+      type: "theme-header";
+      theme: string;
+      stats: MatchStats | null;
+      key: string;
+    }
+  | { type: "question"; row: Row; key: string };
+
+function aggregateMatchStats(items: Row[]): MatchStats | null {
+  let total = 0;
+  let matching = 0;
+  for (const row of items) {
+    if (row.matchStatus === "na") continue;
+    total++;
+    if (row.matchStatus === "match") matching++;
+  }
+  if (total === 0) return null;
+  return {
+    total,
+    matching,
+    percentage: Math.round((matching / total) * 100),
+  };
+}
+
+const THEME_NAME_BY_CODE: Record<string, string> = {
+  P: "Codification",
+  PA: "Party Autonomy",
+  FoC: "Freedom of Choice",
+  TC: "Tacit Choice",
+  AoC: "Absence of Choice",
+  MR: "Overriding Mandatory Rules",
+  PP: "Public Policy",
+  Arb: "Arbitration",
+};
+
+const THEME_ORDER_BY_NAME = new Map(
+  Object.values(THEME_NAME_BY_CODE).map((name, idx) => [name, idx]),
+);
+
+function themeCodeFromId(id: string): string | null {
+  const match = id.match(/-([A-Za-z]+)$/);
+  return match?.[1] ?? null;
+}
+
+const rows = computed<Row[]>(() => {
   if (!questionsData.value || !Array.isArray(questionsData.value)) {
     return [];
   }
@@ -560,26 +856,30 @@ const rows = computed(() => {
     return aId.localeCompare(bId);
   });
 
-  return sorted.map((item) => {
+  return sorted.flatMap<Row>((item) => {
     const id = String(item.id ?? "");
-    const level = typeof id === "string" ? id.match(/\./g)?.length || 0 : 0;
+    const code = themeCodeFromId(id);
+    const themeName = code ? THEME_NAME_BY_CODE[code] : undefined;
+    if (!code || !themeName) return [];
+    const level = id.match(/\./g)?.length || 0;
 
-    // Backward compatible format for single jurisdiction
     if (isSingleJurisdiction.value) {
       const iso3 = jurisdictionCodes.value[0]?.toUpperCase();
       const answerText = iso3 ? answersMap.value?.get(iso3)?.get(id) || "" : "";
       const answerDisplay = processAnswerText(answerText);
 
-      return {
+      const row: Row = {
         id,
         question: item.question,
         answer: answerDisplay,
         answerLink: `/question/${iso3}_${id}`,
+        matchStatus: "na",
         level,
+        theme: themeName,
       };
+      return [row];
     }
 
-    // Answers map for multiple jurisdictions
     const answers: Record<string, string> = {};
     for (const jurisdiction of jurisdictions.value) {
       const iso3 = jurisdiction.coldId?.toUpperCase();
@@ -589,13 +889,53 @@ const rows = computed(() => {
       }
     }
 
-    return {
+    const row: Row = {
       id,
       question: item.question,
       answers,
+      matchStatus: getMatchStatus(answers),
       level,
+      theme: themeName,
     };
+    return [row];
   });
+});
+
+const groupedRows = computed<GroupedRow[]>(() => {
+  const groups = new Map<string, Row[]>();
+  for (const row of rows.value) {
+    const bucket = groups.get(row.theme) ?? [];
+    bucket.push(row);
+    groups.set(row.theme, bucket);
+  }
+
+  const ordered = [...groups.entries()].sort(([a], [b]) => {
+    const ai = THEME_ORDER_BY_NAME.get(a) ?? Number.MAX_SAFE_INTEGER;
+    const bi = THEME_ORDER_BY_NAME.get(b) ?? Number.MAX_SAFE_INTEGER;
+    return ai - bi;
+  });
+
+  const showStats =
+    !isSingleJurisdiction.value && allJurisdictionsHaveAnswersLoaded.value;
+  const out: GroupedRow[] = [];
+  for (const [theme, themeRows] of ordered) {
+    out.push({
+      type: "theme-header",
+      theme,
+      stats: showStats ? aggregateMatchStats(themeRows) : null,
+      key: `theme:${theme}`,
+    });
+    for (const row of themeRows) {
+      out.push({ type: "question", row, key: `q:${row.id}` });
+    }
+  }
+  return out;
+});
+
+const matchStats = computed(() => {
+  if (isSingleJurisdiction.value) return null;
+  if (!allJurisdictionsHaveAnswersLoaded.value) return null;
+  return aggregateMatchStats(rows.value);
 });
 </script>
 
@@ -623,7 +963,67 @@ const rows = computed(() => {
 }
 
 .question-row:hover {
-  background: var(--gradient-subtle-hover);
+  background: linear-gradient(
+    315deg,
+    color-mix(in srgb, var(--color-cold-purple) 2%, white),
+    color-mix(in srgb, var(--color-cold-green) 1%, white)
+  );
+}
+
+.theme-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-cold-night-alpha);
+}
+
+.theme-header:first-child {
+  padding-top: 0.25rem;
+}
+
+.comparison-theme-header {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.25rem 0.5rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-cold-night-alpha);
+  border-bottom: 1px solid var(--color-gray-100, #f3f4f6);
+}
+
+.comparison-theme-header:first-of-type {
+  padding-top: 0.25rem;
+}
+
+.theme-header__name {
+  min-width: 0;
+}
+
+.theme-header__stats {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--color-cold-night-alpha);
+  white-space: nowrap;
+}
+
+.theme-header__stats-detail {
+  font-size: 0.6875rem;
 }
 
 .comparison-grid {
@@ -655,7 +1055,11 @@ const rows = computed(() => {
 }
 
 .comparison-row:hover {
-  background: var(--gradient-subtle-hover);
+  background: linear-gradient(
+    315deg,
+    color-mix(in srgb, var(--color-cold-purple) 2%, white),
+    color-mix(in srgb, var(--color-cold-green) 1%, white)
+  );
 }
 
 .comparison-cell {
@@ -730,6 +1134,148 @@ const rows = computed(() => {
 .answer-button:hover {
   @apply shadow;
   background: var(--gradient-subtle-emphasis);
+  color: var(--color-cold-night-alpha);
+}
+
+.comparison-header-cell--match {
+  padding-inline: 0;
+}
+
+.comparison-cell--match {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 0;
+}
+
+.match-indicator {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+.match-indicator--match {
+  color: var(--color-emerald-500, #10b981);
+}
+
+.match-indicator--mismatch {
+  color: var(--color-amber-500, #f59e0b);
+}
+
+.match-indicator--spacer {
+  display: inline-block;
+}
+
+.sticky-col-match {
+  position: sticky;
+  right: 0;
+  z-index: 35;
+  background: white;
+}
+
+.comparison-row:hover .sticky-col-match {
+  background: inherit;
+}
+
+.comparison-match-stats-wrapper {
+  margin-top: 0.875rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.comparison-match-stats {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  padding: 0.5rem 0.875rem;
+  border-radius: 6px;
+  background: var(--gradient-subtle);
+}
+
+.comparison-match-stats__icon {
+  position: relative;
+  top: 2px;
+  width: 1rem;
+  height: 1rem;
+  color: var(--color-emerald-500, #10b981);
+}
+
+.comparison-match-stats__value {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-cold-night);
+}
+
+.comparison-match-stats__label {
+  font-size: 0.8125rem;
+  color: var(--color-cold-night-alpha);
+}
+
+.comparison-match-stats__detail {
+  font-size: 0.75rem;
+}
+
+.comparison-match-stats__divider {
+  width: 1px;
+  align-self: stretch;
+  margin: 0 0.25rem;
+  background: color-mix(in srgb, var(--color-cold-night) 12%, transparent);
+}
+
+.comparison-caveats__trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-cold-night-alpha);
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  padding: 0;
+}
+
+.comparison-caveats__trigger:hover {
+  color: var(--color-cold-night);
+}
+
+.comparison-caveats__trigger-icon {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+
+.comparison-caveats__body {
+  margin-top: 0.75rem;
+  padding: 1rem 1.25rem;
+  border-radius: 6px;
+  background: var(--gradient-subtle);
+  font-size: 0.8125rem;
+  line-height: 1.55;
+  color: var(--color-cold-night);
+}
+
+.comparison-caveats__body p,
+.comparison-caveats__body ul {
+  margin: 0 0 0.75rem;
+}
+
+.comparison-caveats__body ul {
+  padding-left: 1.25rem;
+  list-style: disc;
+}
+
+.comparison-caveats__body li + li {
+  margin-top: 0.5rem;
+}
+
+.comparison-caveats__body :deep(a) {
   color: var(--color-cold-purple);
+  text-decoration: underline;
+}
+
+.comparison-caveats__heading {
+  margin: 1rem 0 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-cold-night);
 }
 </style>

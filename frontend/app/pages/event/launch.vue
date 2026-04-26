@@ -15,7 +15,7 @@
             Online via Zoom &middot; Free &amp; Open
           </p>
           <h1
-            class="text-cold-night mt-4 font-serif text-4xl leading-tight font-bold sm:text-5xl"
+            class="text-cold-night mt-4 text-4xl leading-tight font-bold sm:text-5xl"
           >
             Choice of Law Dataverse in Action
           </h1>
@@ -24,6 +24,8 @@
             <a
               href="https://www.cold.global/"
               target="_blank"
+              rel="noopener noreferrer"
+              aria-label="cold.global (opens in new tab)"
               class="text-cold-charcoal font-light underline underline-offset-2"
               >cold.global</a
             >
@@ -37,17 +39,25 @@
             <a
               :href="zoomUrl"
               target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Join Zoom (opens in new tab)"
               class="text-cold-purple inline-flex items-center gap-1.5 rounded-sm border border-[#ebe9f8] bg-[#ebe9f8] px-4 py-2 text-xs font-medium tracking-wide transition-colors hover:border-[#d8d4f5] hover:bg-[#d8d4f5]"
             >
-              <Icon name="lucide:video" class="size-3.5" />
+              <Icon name="lucide:video" class="size-3.5" aria-hidden="true" />
               Join Zoom
             </a>
             <a
               :href="calendarUrl"
               target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Add to Calendar (opens in new tab)"
               class="text-cold-purple inline-flex items-center gap-1.5 rounded-sm border border-[#ebe9f8] bg-[#ebe9f8] px-4 py-2 text-xs font-medium tracking-wide transition-colors hover:border-[#d8d4f5] hover:bg-[#d8d4f5]"
             >
-              <Icon name="lucide:calendar" class="size-3.5" />
+              <Icon
+                name="lucide:calendar"
+                class="size-3.5"
+                aria-hidden="true"
+              />
               Add to Calendar
             </a>
           </div>

@@ -1,6 +1,5 @@
 from fastapi import APIRouter, Depends, Query
 
-from app.auth import verify_frontend_request
 from app.schemas.responses import JurisdictionCount, JurisdictionCoverage
 from app.services.statistics import StatisticsService
 
@@ -10,8 +9,7 @@ def get_statistics_service() -> StatisticsService:
     return StatisticsService()
 
 
-# Define router
-router = APIRouter(prefix="/statistics", tags=["Statistics"], dependencies=[Depends(verify_frontend_request)])
+router = APIRouter(prefix="/statistics", tags=["Statistics"])
 
 
 @router.get(

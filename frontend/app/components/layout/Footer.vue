@@ -16,7 +16,7 @@ const user = useUser();
         <!-- Left: Flag + Title -->
         <div class="flex items-center gap-4">
           <img
-            src="https://choiceoflaw.blob.core.windows.net/assets/cold_flag_footer.svg"
+            src="https://assets.cold.global/assets/cold_flag_footer.svg"
             class="h-12 w-auto sm:h-14"
             alt="Choice of Law Dataverse flag"
           />
@@ -81,17 +81,24 @@ const user = useUser();
         >
           <h3 class="footer-heading my-2">Admin</h3>
           <div class="flex flex-col gap-3 text-right md:text-left">
-            <a
-              v-if="user"
-              href="/auth/logout"
-              class="footer-link cursor-pointer"
-            >
-              Logout
-            </a>
+            <ClientOnly>
+              <a
+                v-if="user"
+                href="/auth/logout"
+                class="footer-link cursor-pointer"
+              >
+                Logout
+              </a>
+              <a v-else href="/auth/login" class="footer-link cursor-pointer">
+                Login
+              </a>
 
-            <a v-else href="/auth/login" class="footer-link cursor-pointer">
-              Login
-            </a>
+              <template #fallback>
+                <a href="/auth/login" class="footer-link cursor-pointer">
+                  Login
+                </a>
+              </template>
+            </ClientOnly>
 
             <NuxtLink to="/moderation" class="footer-link">
               Moderation

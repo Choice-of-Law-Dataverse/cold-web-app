@@ -1,10 +1,8 @@
 <template>
   <div>
-    <h1 v-if="data?.institution" class="sr-only">
-      {{ data.institution }}
-    </h1>
     <BaseDetailLayout
       table="Arbitral Institutions"
+      :page-heading="data?.institution ?? ''"
       :loading="isLoading"
       :error="error"
       :data="data"
@@ -15,10 +13,6 @@
         base-path="/arbitral-institution"
         :data="data"
       />
-
-      <template #footer>
-        <LastModified :date="data?.updatedAt" />
-      </template>
     </BaseDetailLayout>
 
     <PageSeoMeta
@@ -34,7 +28,6 @@ import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layout/BaseDetailLayout.vue";
 import EntityContent from "@/components/entity/EntityContent.vue";
 import { useEntityData } from "@/composables/useEntityData";
-import LastModified from "@/components/ui/LastModified.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
 
 const route = useRoute();

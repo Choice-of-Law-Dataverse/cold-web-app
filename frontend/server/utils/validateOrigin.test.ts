@@ -26,13 +26,23 @@ function makeConfig(siteUrl = "https://cold.global", additionalOrigins = "") {
 }
 
 describe("buildAllowedOrigins", () => {
-  const originalEnv = process.env.VERCEL_URL;
+  const VERCEL_ENV_KEYS = [
+    "VERCEL_URL",
+    "VERCEL_BRANCH_URL",
+    "VERCEL_PROJECT_PRODUCTION_URL",
+  ] as const;
+  const originalEnv = Object.fromEntries(
+    VERCEL_ENV_KEYS.map((key) => [key, process.env[key]]),
+  );
 
   afterEach(() => {
-    if (originalEnv === undefined) {
-      delete process.env.VERCEL_URL;
-    } else {
-      process.env.VERCEL_URL = originalEnv;
+    for (const key of VERCEL_ENV_KEYS) {
+      const value = originalEnv[key];
+      if (value === undefined) {
+        Reflect.deleteProperty(process.env, key);
+      } else {
+        process.env[key] = value;
+      }
     }
   });
 
@@ -54,6 +64,17 @@ describe("buildAllowedOrigins", () => {
     expect(origins).toContain("https://cold.global");
     expect(origins).toContain("https://www.cold.global");
     expect(origins).toContain("https://my-app-abc123.vercel.app");
+  });
+
+  it("includes VERCEL_BRANCH_URL and VERCEL_PROJECT_PRODUCTION_URL when set", () => {
+    process.env.VERCEL_BRANCH_URL =
+      "cold-web-app-git-issue-465-colds-projects-ae07faa5.vercel.app";
+    process.env.VERCEL_PROJECT_PRODUCTION_URL = "cold-web-app.vercel.app";
+    const origins = buildAllowedOrigins(makeConfig("https://cold.global"));
+    expect(origins).toContain(
+      "https://cold-web-app-git-issue-465-colds-projects-ae07faa5.vercel.app",
+    );
+    expect(origins).toContain("https://cold-web-app.vercel.app");
   });
 
   it("preserves port in www variant", () => {

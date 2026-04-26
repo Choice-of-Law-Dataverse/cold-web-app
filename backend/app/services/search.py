@@ -2,11 +2,14 @@ import logging
 import re
 from typing import Any
 
+from pydantic.alias_generators import to_snake
+
 from app.config import config
 from app.services.database import Database
 from app.services.filter_builder import build_filter_clause
 
 _SAFE_IDENTIFIER = re.compile(r"^[a-z_][a-z0-9_.]*$")
+_SAFE_COLUMN = re.compile(r"^[a-zA-Z_][a-zA-Z0-9_]*$")
 
 logger = logging.getLogger(__name__)
 
@@ -42,6 +45,27 @@ class SearchService:
         "arbitration provision": "data_views.base_arbitral_provisions",
         "jurisdictions": "data_views.base_jurisdictions",
         "questions": "data_views.base_questions",
+        "specialists": "data_views.base_specialists",
+    }
+
+    _TABLE_TO_FTS_ENRICHMENT: dict[str, tuple[str, dict[str, str]]] = {
+        "answers": (
+            "data_views.answers",
+            {"question": "Questions", "jurisdictions": "Jurisdictions", "themes": "Themes"},
+        ),
+        "hcch answers": ("data_views.hcch_answers", {"themes": "Themes"}),
+        "court decisions": (
+            "data_views.court_decisions",
+            {"jurisdictions": "Jurisdictions", "themes": "Themes"},
+        ),
+        "domestic instruments": (
+            "data_views.domestic_instruments",
+            {"jurisdictions": "Jurisdictions"},
+        ),
+        "literature": (
+            "data_views.literature",
+            {"themes": "Themes"},
+        ),
     }
 
     def _complete_view_for_table(self, table: str) -> str:
@@ -51,6 +75,63 @@ class SearchService:
         if not view or not _SAFE_IDENTIFIER.match(view):
             raise ValueError(f"Unsupported table for full/filtered query: {table}")
         return view
+
+    def _fts_enrichment_for_table(self, table: str) -> tuple[str, dict[str, str]] | None:
+        enrichment = self._TABLE_TO_FTS_ENRICHMENT.get(table.strip().lower())
+        if not enrichment:
+            return None
+        view, fields = enrichment
+        if not _SAFE_IDENTIFIER.match(view):
+            return None
+        if any(not re.match(r"^[A-Za-z_][A-Za-z0-9_]*$", k) for k in fields):
+            return None
+        if any(not re.match(r"^[A-Za-z_][A-Za-z0-9_]*$", v) for v in fields.values()):
+            return None
+        return view, fields
+
+    @staticmethod
+    def _build_order_clause(alias: str, order_by: str | None, order_dir: str | None) -> str:
+        if not order_by:
+            return ""
+        snake = to_snake(order_by)
+        if not _SAFE_COLUMN.match(snake):
+            return ""
+        direction = "ASC" if (order_dir or "desc").lower() == "asc" else "DESC"
+        return f' ORDER BY {alias}."{snake}" {direction} NULLS LAST'
+
+    @staticmethod
+    def _build_limit_clause(limit: int | None) -> str:
+        if limit is None or limit <= 0:
+            return ""
+        return f" LIMIT {int(limit)}"
+
+    def _build_select_sql(
+        self,
+        table: str,
+        alias: str = "c",
+        where_sql: str = "",
+        order_by: str | None = None,
+        order_dir: str | None = None,
+        limit: int | None = None,
+    ) -> str:
+        view = self._complete_view_for_table(table)
+        enrichment = self._fts_enrichment_for_table(table)
+        order_sql = self._build_order_clause(alias, order_by, order_dir)
+        limit_sql = self._build_limit_clause(limit)
+        if enrichment is None:
+            return (
+                f"SELECT {alias}.id AS record_id, to_jsonb({alias}.*) AS complete_record "
+                f"FROM {view} {alias}{where_sql}{order_sql}{limit_sql}"
+            )
+        fts_view, fields = enrichment
+        pairs = ", ".join(f"'{key}', sv.\"{col}\"" for key, col in fields.items())
+        return (
+            f"SELECT {alias}.id AS record_id, "
+            f"to_jsonb({alias}.*) || jsonb_build_object({pairs}) AS complete_record "
+            f"FROM {view} {alias} "
+            f"LEFT JOIN {fts_view} sv ON sv.id = {alias}.id"
+            f"{where_sql}{order_sql}{limit_sql}"
+        )
 
     VALID_DETAIL_TABLES: set[str] = {
         "Answers",
@@ -123,22 +204,47 @@ class SearchService:
                 results.append(flat)
         return results
 
-    def full_table(self, table: str, response_type: str = "parsed") -> list[dict[str, Any]]:
+    def full_table(
+        self,
+        table: str,
+        response_type: str = "parsed",
+        order_by: str | None = None,
+        order_dir: str | None = None,
+        limit: int | None = None,
+    ) -> list[dict[str, Any]]:
         try:
-            view = self._complete_view_for_table(table)
-            sql = f"SELECT c.id AS record_id, to_jsonb(c.*) AS complete_record FROM {view} c"
+            sql = self._build_select_sql(
+                table,
+                order_by=order_by,
+                order_dir=order_dir,
+                limit=limit,
+            )
             rows = self.db.execute_query(sql, {}) or []
             return self._flatten_rows(rows, table, response_type)
         except Exception as e:
             logger.error("Error querying full table %s: %s", table, e)
             return []
 
-    def filtered_table(self, table: str, filters: list[Any], response_type: str = "parsed") -> list[dict[str, Any]]:
+    def filtered_table(
+        self,
+        table: str,
+        filters: list[Any],
+        response_type: str = "parsed",
+        order_by: str | None = None,
+        order_dir: str | None = None,
+        limit: int | None = None,
+    ) -> list[dict[str, Any]]:
         try:
-            view = self._complete_view_for_table(table)
             alias = "c"
             where_sql, params = build_filter_clause(alias, filters)
-            sql = f"SELECT {alias}.id AS record_id, to_jsonb({alias}.*) AS complete_record FROM {view} {alias}{where_sql}"
+            sql = self._build_select_sql(
+                table,
+                alias=alias,
+                where_sql=where_sql,
+                order_by=order_by,
+                order_dir=order_dir,
+                limit=limit,
+            )
             rows = self.db.execute_query(sql, params) or []
             return self._flatten_rows(rows, table, response_type)
         except Exception as e:

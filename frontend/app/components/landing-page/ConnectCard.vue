@@ -6,13 +6,22 @@
         <h2 class="card-title" :class="{ 'text-center': centerTitle }">
           {{ title }}
         </h2>
-        <p v-if="subtitle" class="card-subtitle">
+        <p
+          v-if="subtitle"
+          class="card-subtitle"
+          :class="{ 'text-center': centerTitle }"
+        >
           {{ subtitle }}
         </p>
       </div>
 
       <div class="icon-container">
-        <NuxtLink v-if="isRelativeLink" :to="buttonLink" class="icon-link">
+        <NuxtLink
+          v-if="isRelativeLink"
+          :to="buttonLink"
+          :aria-label="buttonText"
+          class="icon-link"
+        >
           <template v-if="imageSrc">
             <img :src="imageSrc" alt="" class="icon-image" />
           </template>
@@ -27,6 +36,7 @@
           :href="buttonLink"
           :target="newTab ? '_blank' : '_self'"
           :rel="newTab ? 'noopener noreferrer' : ''"
+          :aria-label="buttonText"
           class="icon-link"
         >
           <template v-if="imageSrc">

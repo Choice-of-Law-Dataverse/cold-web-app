@@ -1,4 +1,4 @@
-export const ENTITY_TYPE_LABELS: Record<string, string> = {
+const ENTITY_TYPE_LABELS: Record<string, string> = {
   court_decision: "Court Decision",
   domestic_instrument: "Domestic Instrument",
   regional_instrument: "Regional Instrument",
@@ -10,7 +10,7 @@ export const ENTITY_TYPE_LABELS: Record<string, string> = {
   jurisdiction: "Jurisdiction",
 };
 
-export const FEEDBACK_TYPE_LABELS: Record<string, string> = {
+const FEEDBACK_TYPE_LABELS: Record<string, string> = {
   improve: "Suggest Improvement",
   missing_data: "Missing Data",
   wrong_info: "Wrong Information",
