@@ -1,12 +1,10 @@
 <template>
   <UCard>
     <template #header>
-      <div class="card-header-modern">
-        <div class="card-header-modern__text">
-          <h3>Confirm Jurisdiction</h3>
-          <p>Verify detected location</p>
-        </div>
-      </div>
+      <CardHeaderModern>
+        <h3>Confirm Jurisdiction</h3>
+        <p>Verify detected location</p>
+      </CardHeaderModern>
     </template>
 
     <div v-if="jurisdictionInfo" class="space-y-6">
@@ -45,27 +43,25 @@
     </div>
 
     <template #footer>
-      <div class="card-footer-modern">
-        <p class="card-footer-modern__hint">
+      <CardFooterModern>
+        <template #hint>
           <UIcon name="i-heroicons-arrow-path" />
           You can adjust later
-        </p>
-        <div class="card-footer-modern__actions">
-          <UButton variant="ghost" color="neutral" @click="$emit('reset')">
-            Start Over
-          </UButton>
-          <UButton
-            class="btn-primary-gradient"
-            :loading="isLoading"
-            @click="$emit('continue')"
-          >
-            <template #leading>
-              <UIcon name="i-heroicons-arrow-right" class="h-4 w-4" />
-            </template>
-            Continue Analysis
-          </UButton>
-        </div>
-      </div>
+        </template>
+        <UButton variant="ghost" color="neutral" @click="$emit('reset')">
+          Start Over
+        </UButton>
+        <UButton
+          class="btn-primary-gradient"
+          :loading="isLoading"
+          @click="$emit('continue')"
+        >
+          <template #leading>
+            <UIcon name="i-heroicons-arrow-right" class="h-4 w-4" />
+          </template>
+          Continue Analysis
+        </UButton>
+      </CardFooterModern>
     </template>
   </UCard>
 </template>

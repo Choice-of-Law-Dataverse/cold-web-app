@@ -68,7 +68,7 @@
         }"
         class="mb-8"
       >
-        <div class="gradient-top-border" />
+        <GradientTopBorder />
 
         <div class="flex flex-col gap-2 px-4 py-4 sm:px-6 sm:py-6">
           <DetailRow
@@ -100,9 +100,9 @@
               :key="field.label"
               :label="field.label"
             >
-              <p class="result-value-small whitespace-pre-wrap">
-                {{ field.value }}
-              </p>
+              <ResultValue size="sm" as="p" class="whitespace-pre-wrap">{{
+                field.value
+              }}</ResultValue>
             </DetailRow>
           </template>
           <template v-else>
@@ -111,15 +111,16 @@
               :key="key"
               :label="formatFieldName(key)"
             >
-              <p
+              <ResultValue
                 v-if="isLongText(value)"
-                class="result-value-small whitespace-pre-wrap"
+                size="sm"
+                as="p"
+                class="whitespace-pre-wrap"
+                >{{ formatValue(value) }}</ResultValue
               >
-                {{ formatValue(value) }}
-              </p>
-              <p v-else class="result-value-small">
-                {{ formatValue(value) }}
-              </p>
+              <ResultValue v-else size="sm" as="p">{{
+                formatValue(value)
+              }}</ResultValue>
             </DetailRow>
           </template>
         </div>

@@ -224,7 +224,46 @@ const widthVars = computed<CSSProperties>(() => {
 });
 </script>
 
+<style>
+@keyframes bounce-right {
+  0% {
+    transform: translateX(0);
+  }
+  40% {
+    transform: translateX(8px);
+  }
+  65% {
+    transform: translateX(-2px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.arrow-icon {
+  font-size: 1.5rem;
+  color: var(--color-cold-purple);
+  transition: transform 0.3s ease;
+}
+</style>
+
 <style scoped>
+.table-row-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  width: 100%;
+  height: 100%;
+}
+
+.arrow-cell {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  height: 100%;
+  padding-right: 8px;
+}
+
 .entity-list-table--loading {
   cursor: progress;
 }

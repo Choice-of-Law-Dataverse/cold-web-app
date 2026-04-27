@@ -154,46 +154,44 @@
     </div>
 
     <template #footer>
-      <div class="card-footer-modern no-print">
-        <p class="card-footer-modern__hint">
+      <CardFooterModern class="no-print">
+        <template #hint>
           <UIcon name="i-heroicons-pencil-square" />
           Edit fields before submitting
-        </p>
-        <div class="card-footer-modern__actions">
-          <UButton variant="ghost" color="neutral" @click="$emit('reset')">
-            Start Over
-          </UButton>
-          <UButton
-            variant="ghost"
-            color="neutral"
-            :disabled="isAnalyzing"
-            @click="handlePrint"
-          >
-            <template #leading>
-              <UIcon name="i-heroicons-printer" class="h-4 w-4" />
-            </template>
-            Print
-          </UButton>
-          <UButton
-            :class="isSubmitted ? 'btn-success' : 'btn-primary-gradient'"
-            :loading="isSubmitting"
-            :disabled="isAnalyzing || isSubmitted"
-            @click="$emit('submit')"
-          >
-            <template #leading>
-              <UIcon
-                :name="
-                  isSubmitted
-                    ? 'i-heroicons-check-circle'
-                    : 'i-heroicons-paper-airplane'
-                "
-                class="h-4 w-4"
-              />
-            </template>
-            {{ isSubmitted ? "Submitted" : "Submit for Review" }}
-          </UButton>
-        </div>
-      </div>
+        </template>
+        <UButton variant="ghost" color="neutral" @click="$emit('reset')">
+          Start Over
+        </UButton>
+        <UButton
+          variant="ghost"
+          color="neutral"
+          :disabled="isAnalyzing"
+          @click="handlePrint"
+        >
+          <template #leading>
+            <UIcon name="i-heroicons-printer" class="h-4 w-4" />
+          </template>
+          Print
+        </UButton>
+        <UButton
+          :class="isSubmitted ? 'btn-success' : 'btn-primary-gradient'"
+          :loading="isSubmitting"
+          :disabled="isAnalyzing || isSubmitted"
+          @click="$emit('submit')"
+        >
+          <template #leading>
+            <UIcon
+              :name="
+                isSubmitted
+                  ? 'i-heroicons-check-circle'
+                  : 'i-heroicons-paper-airplane'
+              "
+              class="h-4 w-4"
+            />
+          </template>
+          {{ isSubmitted ? "Submitted" : "Submit for Review" }}
+        </UButton>
+      </CardFooterModern>
     </template>
   </UCard>
 </template>

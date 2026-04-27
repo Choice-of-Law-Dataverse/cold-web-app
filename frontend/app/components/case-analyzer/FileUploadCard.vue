@@ -161,28 +161,26 @@
     </div>
 
     <template #footer>
-      <div class="card-footer-modern">
-        <p class="card-footer-modern__hint">
+      <CardFooterModern>
+        <template #hint>
           <UIcon name="i-heroicons-lock-closed" />
           Securely processed with AI
-        </p>
-        <div class="card-footer-modern__actions">
-          <UButton variant="ghost" color="neutral" @click="$emit('cancel')">
-            Cancel
-          </UButton>
-          <UButton
-            class="btn-primary-gradient"
-            :disabled="!selectedFile || isUploading"
-            :loading="isUploading"
-            @click="$emit('upload')"
-          >
-            <template #leading>
-              <UIcon name="i-heroicons-sparkles" class="h-4 w-4" />
-            </template>
-            Analyze with AI
-          </UButton>
-        </div>
-      </div>
+        </template>
+        <UButton variant="ghost" color="neutral" @click="$emit('cancel')">
+          Cancel
+        </UButton>
+        <UButton
+          class="btn-primary-gradient"
+          :disabled="!selectedFile || isUploading"
+          :loading="isUploading"
+          @click="$emit('upload')"
+        >
+          <template #leading>
+            <UIcon name="i-heroicons-sparkles" class="h-4 w-4" />
+          </template>
+          Analyze with AI
+        </UButton>
+      </CardFooterModern>
     </template>
   </UCard>
 </template>

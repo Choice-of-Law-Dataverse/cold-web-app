@@ -613,59 +613,6 @@ li::marker {
   --label-color: var(--label-color-theme);
 }
 
-/* Results */
-.result-value {
-  font-weight: 500;
-  color: var(--color-cold-night);
-  word-wrap: break-word;
-  word-break: break-word;
-  white-space: pre-wrap;
-}
-
-.result-value-large {
-  font-weight: 500;
-  color: var(--color-cold-night);
-  overflow-wrap: break-word;
-  font-size: 1rem;
-  line-height: 1.7;
-  white-space: normal;
-}
-
-.result-value-medium {
-  font-weight: 500;
-  color: var(--color-cold-night);
-  overflow-wrap: break-word;
-  font-size: 0.9375rem;
-  line-height: 1.7;
-  white-space: normal;
-}
-
-.result-value-small {
-  font-weight: 500;
-  color: var(--color-cold-night);
-  word-wrap: break-word;
-  word-break: break-word;
-  font-size: 0.875rem;
-  line-height: 1.7;
-  white-space: normal;
-}
-
-.result-value-small-citation {
-  font-weight: 500;
-  color: var(--color-cold-night);
-  word-wrap: break-word;
-  word-break: break-word;
-  font-size: 0.8125rem;
-  line-height: 1.6;
-  white-space: normal;
-  font-family: "IBM Plex Mono", monospace;
-  background: var(--gradient-gray);
-  padding: 1em 1.25em;
-  border-radius: 0.5rem;
-  border: 1px solid var(--color-cold-gray);
-  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.03);
-}
-
 /* UI Elements ----------------------------------------------- */
 
 .suggestion-button {
@@ -761,12 +708,6 @@ li::marker {
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
   background-repeat: repeat;
   background-size: 256px 256px;
-}
-
-/* Gradient top border accent for special cards */
-.gradient-top-border {
-  height: 6px;
-  background: var(--gradient-theme);
 }
 
 .comparison-title {
@@ -1046,46 +987,6 @@ button.cold-toggle-btn[aria-pressed="true"] {
 
 /* Clickable table rows and arrow animations ----------------------------------------------- */
 
-/* Make table row links fill entire cell and remove default link styling */
-.table-row-link {
-  display: block;
-  text-decoration: none;
-  color: inherit;
-  width: 100%;
-  height: 100%;
-}
-
-/* Arrow cell styling for table rows */
-.arrow-cell {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  height: 100%;
-  padding-right: 8px;
-}
-
-.arrow-icon {
-  font-size: 1.5rem;
-  color: var(--color-cold-purple);
-  transition: transform 0.3s ease;
-}
-
-/* Horizontal bounce animation for arrows */
-@keyframes bounce-right {
-  0% {
-    transform: translateX(0);
-  }
-  40% {
-    transform: translateX(8px);
-  }
-  65% {
-    transform: translateX(-2px);
-  }
-  100% {
-    transform: translateX(0);
-  }
-}
-
 /* Print field value - hidden on screen, visible in print */
 .print-field-value {
   display: none;
@@ -1347,69 +1248,6 @@ button.cold-toggle-btn[aria-pressed="true"] {
   color: rgb(75 85 99);
 }
 
-/* Card header with icon badge */
-.card-header-modern {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.card-header-modern__icon {
-  display: flex;
-  height: 2.5rem;
-  width: 2.5rem;
-  align-items: center;
-  justify-content: center;
-  border-radius: 0.75rem;
-  background-image: linear-gradient(
-    to bottom right,
-    var(--color-cold-teal),
-    var(--color-cold-green)
-  );
-}
-
-.card-header-modern__text h3 {
-  font-weight: 600;
-  color: rgb(17 24 39);
-}
-
-.card-header-modern__text p {
-  font-size: 0.75rem;
-  color: rgb(107 114 128);
-}
-
-/* Card footer with helper text and actions */
-.card-footer-modern {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.card-footer-modern__hint {
-  font-size: 0.75rem;
-  color: rgb(156 163 175);
-}
-
-.card-footer-modern__hint .iconify,
-.card-footer-modern__hint svg {
-  margin-right: 0.25rem;
-  display: inline;
-  height: 0.75rem;
-  width: 0.75rem;
-}
-
-.card-footer-modern__actions {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-/* Sparkle icon for AI features */
-.sparkle-icon {
-  height: 0.75rem;
-  width: 0.75rem;
-}
-
 /* Animated glow effect */
 .glow-pulse {
   animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
@@ -1548,90 +1386,6 @@ button.cold-toggle-btn[aria-pressed="true"] {
 .hover-row--emphasis:hover > .sticky-col {
   background: inherit;
   box-shadow: none;
-}
-
-/* Label link pattern - color inherits from label type, search icon on hover */
-.label-link {
-  font-weight: 500;
-  text-decoration: none;
-  transition:
-    color 0.15s ease,
-    padding-right 0.2s ease;
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  gap: 0;
-  padding-right: 1rem;
-}
-
-.label-link:hover {
-  padding-right: 0;
-}
-
-/* Search icon that slides in on hover (uses mask for currentColor support) */
-.label-link::after {
-  content: "";
-  display: inline-block;
-  width: 0;
-  height: 12px;
-  margin-left: 0;
-  background-color: currentColor;
-  mask-image: var(--icon-search);
-  mask-size: contain;
-  mask-repeat: no-repeat;
-  mask-position: center;
-  -webkit-mask-image: var(--icon-search);
-  -webkit-mask-size: contain;
-  -webkit-mask-repeat: no-repeat;
-  -webkit-mask-position: center;
-  -webkit-mask-size: contain;
-  -webkit-mask-repeat: no-repeat;
-  -webkit-mask-position: center;
-  opacity: 0;
-  transition:
-    width 0.2s ease,
-    margin-left 0.2s ease,
-    opacity 0.15s ease;
-}
-
-.label-link:hover::after {
-  width: 12px;
-  margin-left: 4px;
-  opacity: 1;
-}
-
-/* Jurisdiction link - default night to purple */
-.label-link.label-jurisdiction {
-  color: var(--color-cold-night);
-}
-
-.label-link.label-jurisdiction:hover {
-  color: var(--color-cold-purple);
-}
-
-/* Flag icon with subtle lift on hover */
-.hover-flag {
-  display: inline-flex;
-  align-items: center;
-  transition: transform 0.15s ease;
-}
-
-.hover-flag img {
-  border-radius: 2px;
-  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
-  transition:
-    box-shadow 0.15s ease,
-    filter 0.15s ease,
-    transform 0.15s ease;
-}
-
-.hover-flag:hover {
-  transform: translateY(-1px);
-}
-
-.hover-flag:hover img {
-  box-shadow: 0 2px 4px 0 rgb(0 0 0 / 0.12);
-  filter: brightness(1.03);
 }
 
 /* Link chip - compact pill for related items and cross-references */

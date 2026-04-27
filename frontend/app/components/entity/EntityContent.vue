@@ -13,9 +13,9 @@
       </template>
       <section v-else-if="shouldDisplayValue(getValue(field.key))">
         <DetailRow :label="field.label" :tooltip="field.tooltip">
-          <p class="result-value-small whitespace-pre-line">
-            {{ formatValue(getValue(field.key)) }}
-          </p>
+          <ResultValue size="sm" as="p" class="whitespace-pre-line">{{
+            formatValue(getValue(field.key))
+          }}</ResultValue>
         </DetailRow>
       </section>
     </template>

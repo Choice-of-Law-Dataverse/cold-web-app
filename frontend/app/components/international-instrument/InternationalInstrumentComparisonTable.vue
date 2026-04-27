@@ -11,7 +11,7 @@
     </template>
 
     <template #default>
-      <div class="gradient-top-border" />
+      <GradientTopBorder />
 
       <div class="overflow-hidden px-6 py-5">
         <div class="mb-6">

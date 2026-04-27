@@ -36,7 +36,7 @@
 
         <slot name="full-width" />
 
-        <div class="gradient-top-border" />
+        <GradientTopBorder />
 
         <div class="flex">
           <div
