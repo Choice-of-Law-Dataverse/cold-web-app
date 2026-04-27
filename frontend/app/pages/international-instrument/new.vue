@@ -32,10 +32,10 @@
             </span>
           </template>
           <UPopover :popper="{ placement: 'bottom-start' }">
-            <UButton
+            <ColdDateTrigger
               icon="i-heroicons-calendar-days-20-solid"
               :label="date ? format(date, 'dd MMMM yyyy') : 'Add date'"
-              class="cold-date-trigger mt-2"
+              class="mt-2"
             />
 
             <template #content="{ close }">
