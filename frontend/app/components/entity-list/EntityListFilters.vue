@@ -31,12 +31,7 @@
         }"
       >
         <template #item-label="{ item }">
-          <span class="schip schip--theme schip--static">
-            <span class="schip-tag" aria-hidden="true">
-              <UIcon name="i-lucide:bookmark" />
-            </span>
-            <span class="schip-text">{{ item }}</span>
-          </span>
+          <SchipTheme is-static>{{ item }}</SchipTheme>
         </template>
       </USelectMenu>
     </div>
@@ -71,6 +66,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import JurisdictionSelectMenu from "@/components/jurisdiction/JurisdictionSelectMenu.vue";
+import SchipTheme from "@/components/ui/SchipTheme.vue";
 import { useJurisdictions } from "@/composables/useJurisdictions";
 import themeOptions from "@/assets/themeOptions.json";
 import type { JurisdictionOption } from "@/types/analyzer";

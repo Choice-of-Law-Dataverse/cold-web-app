@@ -40,7 +40,7 @@
       </div>
     </template>
 
-    <div class="gradient-top-border" />
+    <GradientTopBorder />
 
     <div class="flex flex-col gap-4 px-4 py-5 sm:px-6">
       <div v-if="isLoading" class="copy mt-4">Loading jurisdictions...</div>
@@ -83,6 +83,7 @@ import { useQuestionJurisdictions } from "@/composables/useQuestionJurisdictions
 import DetailRow from "@/components/ui/DetailRow.vue";
 import EntityLink from "@/components/ui/EntityLink.vue";
 import JurisdictionFlag from "@/components/ui/JurisdictionFlag.vue";
+import GradientTopBorder from "@/components/ui/GradientTopBorder.vue";
 
 const regions = [
   "All",

@@ -45,13 +45,13 @@
         }"
         class="mb-8"
       >
-        <div class="gradient-top-border" />
+        <GradientTopBorder />
 
         <div class="flex flex-col gap-2 px-4 py-4 sm:px-6 sm:py-6">
           <DetailRow label="Entity Type">
-            <p class="result-value-small">
-              {{ entityTypeLabel(feedback.entityType) }}
-            </p>
+            <ResultValue size="sm" as="p">{{
+              entityTypeLabel(feedback.entityType)
+            }}</ResultValue>
           </DetailRow>
           <DetailRow label="Entity">
             <NuxtLink
@@ -67,17 +67,19 @@
             </UBadge>
           </DetailRow>
           <DetailRow label="Message">
-            <p class="result-value-small whitespace-pre-line">
+            <ResultValue size="sm" as="p" class="whitespace-pre-line">
               {{ feedback.message }}
-            </p>
+            </ResultValue>
           </DetailRow>
           <DetailRow label="Submitter">
-            <p class="result-value-small">{{ feedback.submitterEmail }}</p>
+            <ResultValue size="sm" as="p">{{
+              feedback.submitterEmail
+            }}</ResultValue>
           </DetailRow>
           <DetailRow v-if="feedback.createdAt" label="Submitted">
-            <p class="result-value-small">
-              {{ formatDateLong(feedback.createdAt) }}
-            </p>
+            <ResultValue size="sm" as="p">{{
+              formatDateLong(feedback.createdAt)
+            }}</ResultValue>
           </DetailRow>
         </div>
       </UCard>
@@ -118,6 +120,8 @@ import { formatDateLong } from "@/utils/format";
 import DetailRow from "@/components/ui/DetailRow.vue";
 import { entityTypeLabel, feedbackTypeLabel } from "@/config/feedback";
 import { useFeedbackModeration } from "@/composables/useFeedbackModeration";
+import GradientTopBorder from "@/components/ui/GradientTopBorder.vue";
+import ResultValue from "@/components/ui/ResultValue.vue";
 
 definePageMeta({
   middleware: ["moderation"],

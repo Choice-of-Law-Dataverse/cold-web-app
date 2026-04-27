@@ -1,14 +1,4 @@
 @media print {
-  .print-field-value {
-    display: block !important;
-    white-space: pre-wrap;
-    word-wrap: break-word;
-    background: #fafafa;
-    min-height: 2em;
-    font-size: 0.75rem;
-    line-height: 1.5;
-  }
-
   header,
   nav,
   .header-container,

@@ -1,6 +1,6 @@
 <template>
   <UCard class="connect-card h-full w-full" :ui="{ body: '!p-0' }">
-    <div v-if="showTopBorder" class="gradient-top-border" />
+    <GradientTopBorder v-if="showTopBorder" />
     <div class="flex h-full flex-col justify-between gap-4 p-4 sm:p-6">
       <div>
         <h2 class="card-title" :class="{ 'text-center': centerTitle }">
@@ -68,6 +68,7 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
+import GradientTopBorder from "@/components/ui/GradientTopBorder.vue";
 
 const props = withDefaults(
   defineProps<{
@@ -103,7 +104,7 @@ const isRelativeLink = computed(() => {
 </script>
 
 <style scoped>
-@reference "tailwindcss";
+@reference "@/assets/styles.css";
 
 .connect-card {
   @apply transition-shadow duration-200;

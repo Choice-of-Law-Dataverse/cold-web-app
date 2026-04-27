@@ -26,12 +26,7 @@
           }"
         >
           <template #item-label="{ item }">
-            <span class="schip schip--theme schip--static">
-              <span class="schip-tag" aria-hidden="true">
-                <UIcon name="i-lucide:bookmark" />
-              </span>
-              <span class="schip-text">{{ item }}</span>
-            </span>
+            <SchipTheme is-static>{{ item }}</SchipTheme>
           </template>
         </USelectMenu>
       </div>
@@ -51,19 +46,9 @@
           }"
         >
           <template #item-label="{ item }">
-            <span
-              :class="[
-                'schip',
-                'schip--type',
-                'schip--static',
-                getLabelColorClass(item),
-              ]"
-            >
-              <span class="schip-tag" aria-hidden="true">
-                <UIcon name="i-lucide:tag" />
-              </span>
-              <span class="schip-text">{{ item }}</span>
-            </span>
+            <SchipType is-static :color-class="getLabelColorClass(item)">
+              {{ item }}
+            </SchipType>
           </template>
         </USelectMenu>
       </div>
@@ -137,6 +122,8 @@ import { useSearchFilters } from "@/composables/useSearchFilters";
 import importedThemeOptions from "@/assets/themeOptions.json";
 import importedTypeOptions from "@/assets/typeOptions.json";
 import JurisdictionSelectMenu from "@/components/jurisdiction/JurisdictionSelectMenu.vue";
+import SchipTheme from "@/components/ui/SchipTheme.vue";
+import SchipType from "@/components/ui/SchipType.vue";
 import {
   useJurisdictions,
   useJurisdictionLookup,

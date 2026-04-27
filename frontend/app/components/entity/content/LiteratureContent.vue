@@ -24,7 +24,9 @@
     <template #author="{ value, label }">
       <section v-if="value && value !== data.editor">
         <DetailRow :label="label">
-          <p class="result-value-small whitespace-pre-line">{{ value }}</p>
+          <ResultValue size="sm" as="p" class="whitespace-pre-line">{{
+            value
+          }}</ResultValue>
         </DetailRow>
       </section>
     </template>
@@ -32,7 +34,9 @@
     <template #itemType="{ value, label }">
       <section v-if="value">
         <DetailRow :label="label">
-          <p class="result-value-small">{{ formatItemType(String(value)) }}</p>
+          <ResultValue size="sm" as="p">{{
+            formatItemType(String(value))
+          }}</ResultValue>
         </DetailRow>
       </section>
     </template>
@@ -84,6 +88,7 @@ import SourceExternalLink from "@/components/sources/SourceExternalLink.vue";
 import type { Literature } from "@/types/entities/literature";
 import { generateBibTeX, sanitizeFilename, downloadFile } from "@/utils/bibtex";
 import { camelCaseToLabel } from "@/utils/camelCaseToLabel";
+import ResultValue from "@/components/ui/ResultValue.vue";
 
 function formatItemType(value: string): string {
   return camelCaseToLabel(value);

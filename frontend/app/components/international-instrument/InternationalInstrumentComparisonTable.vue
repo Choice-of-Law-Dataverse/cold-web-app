@@ -11,7 +11,7 @@
     </template>
 
     <template #default>
-      <div class="gradient-top-border" />
+      <GradientTopBorder />
 
       <div class="overflow-hidden px-6 py-5">
         <div class="mb-6">
@@ -593,6 +593,7 @@ import {
   useAnswersByJurisdictions,
   processAnswerText,
 } from "~/composables/useAnswers";
+import GradientTopBorder from "@/components/ui/GradientTopBorder.vue";
 import { useJurisdictions } from "@/composables/useJurisdictions";
 import JurisdictionSelectMenu from "@/components/jurisdiction/JurisdictionSelectMenu.vue";
 import LoadingBar from "@/components/layout/LoadingBar.vue";
@@ -959,7 +960,7 @@ function handleHcchClick(event: MouseEvent, hcchColdId: string) {
 </script>
 
 <style scoped>
-@reference "tailwindcss";
+@reference "@/assets/styles.css";
 
 .comparison-label {
   font-size: 0.8125rem;

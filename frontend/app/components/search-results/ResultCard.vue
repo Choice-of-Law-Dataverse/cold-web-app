@@ -26,7 +26,7 @@
           />
         </template>
 
-        <div class="gradient-top-border" />
+        <GradientTopBorder />
 
         <div class="flex px-6 py-4">
           <slot />
@@ -54,6 +54,7 @@ import MetaBand from "@/components/ui/MetaBand.vue";
 import { getBasePathForCard, getEntityConfig } from "@/config/entityRegistry";
 import { useEntityDrawer } from "@/composables/useEntityDrawer";
 import type { AnySearchResult } from "@/types/search";
+import GradientTopBorder from "@/components/ui/GradientTopBorder.vue";
 
 const props = withDefaults(
   defineProps<{
@@ -90,6 +91,23 @@ function handleCardClick(event: MouseEvent) {
   openDrawer(String(props.resultData.id), config.table, basePath);
 }
 </script>
+
+<style>
+@keyframes bounce-right {
+  0% {
+    transform: translateX(0);
+  }
+  40% {
+    transform: translateX(8px);
+  }
+  65% {
+    transform: translateX(-2px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+</style>
 
 <style scoped>
 .result-card-container {

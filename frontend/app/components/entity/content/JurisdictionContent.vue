@@ -53,7 +53,11 @@ const cleanValue = (value: unknown): string => {
 const subtitleTokens = computed(() => {
   const region = cleanValue(props.data?.region);
   const family = cleanValue(props.data?.legalFamily);
-  return [region, family].filter((token) => token.length > 0);
+  const familyTokens = family
+    .split(",")
+    .map((part) => part.trim())
+    .filter((part) => part.length > 0);
+  return [region, ...familyTokens].filter((token) => token.length > 0);
 });
 </script>
 

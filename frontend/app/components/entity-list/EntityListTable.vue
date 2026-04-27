@@ -211,7 +211,7 @@ const utableUi = {
   tbody:
     "divide-cold-gray-alpha [&>tr]:h-16 [&>tr]:cursor-pointer [&>tr]:transition-colors [&>tr]:hover:bg-[image:var(--gradient-row-hover)]",
   tr: "group/row",
-  td: "overflow-hidden text-ellipsis whitespace-nowrap h-16 align-middle",
+  td: "overflow-hidden text-ellipsis whitespace-nowrap h-16 align-middle !p-0",
   empty: "py-12 px-6 text-center text-sm text-cold-night-alpha",
 };
 
@@ -224,7 +224,48 @@ const widthVars = computed<CSSProperties>(() => {
 });
 </script>
 
+<style>
+@keyframes bounce-right {
+  0% {
+    transform: translateX(0);
+  }
+  40% {
+    transform: translateX(8px);
+  }
+  65% {
+    transform: translateX(-2px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.arrow-icon {
+  font-size: 1.5rem;
+  color: var(--color-cold-purple);
+  transition: transform 0.3s ease;
+}
+</style>
+
 <style scoped>
+.table-row-link {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: inherit;
+  width: 100%;
+  height: 100%;
+  padding: 0 1rem;
+}
+
+.arrow-cell {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  height: 100%;
+  padding-right: 8px;
+}
+
 .entity-list-table--loading {
   cursor: progress;
 }

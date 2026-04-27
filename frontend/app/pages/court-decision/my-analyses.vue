@@ -1,11 +1,10 @@
 <template>
   <div class="py-12">
-    <div class="page-hero mb-8">
-      <h1 class="page-hero__title">My Case Analyses</h1>
-      <p class="page-hero__subtitle">
-        View the status of your submitted case analyses
-      </p>
-    </div>
+    <PageHero
+      title="My Case Analyses"
+      subtitle="View the status of your submitted case analyses"
+      class="mb-8"
+    />
 
     <!-- Loading state -->
     <div v-if="pending" class="flex justify-center py-12">
@@ -32,13 +31,13 @@
         class="mx-auto mb-4 h-12 w-12 text-gray-400"
       />
       <p class="text-gray-600">You haven't started any case analyses yet.</p>
-      <UButton
-        class="btn-primary-gradient mt-4"
+      <AppButtonGradient
+        class="mt-4"
         to="/court-decision/new"
         icon="i-heroicons-plus"
       >
         Start New Analysis
-      </UButton>
+      </AppButtonGradient>
     </div>
 
     <!-- Analyses list -->
@@ -169,6 +168,8 @@ import {
 } from "@/utils/moderationStatus";
 import { formatDateShort } from "@/utils/format";
 import { useApiClient } from "@/composables/useApiClient";
+import PageHero from "@/components/ui/PageHero.vue";
+import AppButtonGradient from "@/components/ui/AppButtonGradient.vue";
 
 definePageMeta({
   middleware: ["auth"],

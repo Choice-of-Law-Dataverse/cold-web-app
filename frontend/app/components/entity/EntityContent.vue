@@ -13,9 +13,9 @@
       </template>
       <section v-else-if="shouldDisplayValue(getValue(field.key))">
         <DetailRow :label="field.label" :tooltip="field.tooltip">
-          <p class="result-value-small whitespace-pre-line">
-            {{ formatValue(getValue(field.key)) }}
-          </p>
+          <ResultValue size="sm" as="p" class="whitespace-pre-line">{{
+            formatValue(getValue(field.key))
+          }}</ResultValue>
         </DetailRow>
       </section>
     </template>
@@ -51,6 +51,7 @@ import {
   mapRelationToItem,
   type ProcessedEntity,
 } from "@/config/entityRegistry";
+import ResultValue from "@/components/ui/ResultValue.vue";
 import type { RelatedItem } from "@/types/ui";
 import DetailRow from "@/components/ui/DetailRow.vue";
 import RelatedItemsList from "@/components/ui/RelatedItemsList.vue";

@@ -374,32 +374,83 @@ useHead({
 </script>
 
 <style scoped>
-.map-ssr-placeholder {
-  width: 100%;
-  height: 600px;
-  border-radius: 1rem;
-  background: var(--gradient-subtle);
-}
+@reference "@/assets/styles.css";
 
-@media (max-width: 640px) {
-  .map-ssr-placeholder {
-    height: 400px;
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
+@keyframes fade-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-fade-up {
+  animation: fade-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-fade-scale-in {
+  animation: fade-scale-in 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-delay-1 {
+  animation-delay: 75ms;
+}
+.animate-delay-3 {
+  animation-delay: 225ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-up,
+  .animate-fade-scale-in {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.map-ssr-placeholder {
+  @apply h-[600px] w-full rounded-2xl max-sm:h-[400px];
+  background: var(--gradient-subtle);
+}
+
 .card-ssr-placeholder {
-  width: 100%;
-  min-height: 320px;
-  border-radius: 0.75rem;
+  @apply min-h-[320px] w-full rounded-xl;
   background: var(--gradient-subtle);
 }
 
 h2 {
-  font-weight: 500;
+  @apply font-medium;
 }
 
 .hero-gradient {
-  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.05);
+  @apply relative shadow-sm;
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--color-cold-purple) 14%, white),
+    color-mix(in srgb, var(--color-cold-green) 9%, white) 60%,
+    color-mix(in srgb, var(--color-cold-teal) 6%, white)
+  );
+}
+
+.hero-gradient::before {
+  content: "";
+  @apply pointer-events-none absolute inset-0 rounded-[inherit] bg-repeat opacity-30;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  background-size: 256px 256px;
 }
 
 .hero-title {

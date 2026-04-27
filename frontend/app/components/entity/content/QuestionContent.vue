@@ -3,9 +3,9 @@
     <template #answer="{ value, label, tooltip }">
       <section v-if="value">
         <DetailRow :label="label" :tooltip="tooltip">
-          <p class="result-value-medium whitespace-pre-line">
-            {{ value }}
-          </p>
+          <ResultValue size="md" as="p" class="whitespace-pre-line">{{
+            value
+          }}</ResultValue>
         </DetailRow>
       </section>
     </template>
@@ -16,6 +16,7 @@
 import EntityContent from "@/components/entity/EntityContent.vue";
 import DetailRow from "@/components/ui/DetailRow.vue";
 import type { Question } from "@/types/entities/question";
+import ResultValue from "@/components/ui/ResultValue.vue";
 
 defineProps<{
   data: Question;

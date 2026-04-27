@@ -28,7 +28,6 @@ useHead({
     {
       rel: "preconnect",
       href: "https://assets.cold.global",
-      crossorigin: "",
     },
     {
       rel: "stylesheet",

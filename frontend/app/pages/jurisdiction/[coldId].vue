@@ -56,7 +56,7 @@
                     </span>
                   </div>
                 </template>
-                <div class="gradient-top-border" />
+                <GradientTopBorder />
                 <div class="px-4 py-5 sm:px-6">
                   <div class="flex flex-col space-y-3 py-8">
                     <LoadingBar />
@@ -85,6 +85,7 @@ import LoadingBar from "@/components/layout/LoadingBar.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
 import { useEntityData } from "@/composables/useEntityData";
 import { flagUrl } from "@/config/assets";
+import GradientTopBorder from "@/components/ui/GradientTopBorder.vue";
 
 const route = useRoute();
 const coldId = ref((route.params.coldId as string).toUpperCase());

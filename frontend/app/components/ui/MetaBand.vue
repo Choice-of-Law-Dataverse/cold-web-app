@@ -28,81 +28,51 @@
       </template>
       <template v-else>
         <div v-if="hasFirstLine || resolvedTheme.length > 0" class="meta-line">
-          <button
+          <SchipType
             v-if="typeChip && isJurisdictionType"
             ref="typeChipRef"
-            type="button"
-            :class="[
-              'schip',
-              'schip--type',
-              'schip--button',
-              typeChip.colorClass,
-            ]"
+            as-button
+            :color-class="typeChip.colorClass"
+            :compact="compact"
             :aria-expanded="pickerOpen"
             aria-haspopup="listbox"
             @click="togglePicker"
           >
-            <span class="schip-text">{{ typeChip.label }}</span>
-          </button>
-          <NuxtLink
+            {{ typeChip.label }}
+          </SchipType>
+          <SchipType
             v-else-if="typeChip && typeChip.to"
+            :color-class="typeChip.colorClass"
             :to="typeChip.to"
-            :class="['schip', 'schip--type', typeChip.colorClass]"
+            :compact="compact"
           >
-            <span class="schip-tag" aria-hidden="true">
-              <UIcon name="i-lucide:tag" />
-            </span>
-            <span class="schip-text">{{ typeChip.label }}</span>
-            <span class="schip-affordance" aria-hidden="true">
-              <UIcon name="i-material-symbols:arrow-forward" />
-            </span>
-          </NuxtLink>
-          <span
+            {{ typeChip.label }}
+          </SchipType>
+          <SchipType
             v-else-if="typeChip"
-            :class="[
-              'schip',
-              'schip--type',
-              'schip--static',
-              typeChip.colorClass,
-            ]"
+            is-static
+            :color-class="typeChip.colorClass"
+            :compact="compact"
           >
-            <span class="schip-tag" aria-hidden="true">
-              <UIcon name="i-lucide:tag" />
-            </span>
-            <span class="schip-text">{{ typeChip.label }}</span>
-          </span>
-          <NuxtLink
+            {{ typeChip.label }}
+          </SchipType>
+          <SchipJurisdiction
             v-for="(j, idx) in resolvedJurisdiction"
             :key="`jur-${idx}`"
+            :iso3="j.coldId"
             :to="`/jurisdiction/${j.coldId}`"
-            class="schip schip--jur"
+            :compact="compact"
           >
-            <span class="schip-flag-wrap">
-              <JurisdictionFlag
-                v-if="j.coldId"
-                :iso3="j.coldId"
-                class="schip-flag"
-              />
-            </span>
-            <span class="schip-text">{{ j.name }}</span>
-            <span class="schip-arrow-wrap" aria-hidden="true">
-              <UIcon name="i-material-symbols:arrow-forward" />
-            </span>
-          </NuxtLink>
-          <NuxtLink
-            v-for="chip in taggedSearchChips"
-            :key="chip.key"
-            :to="chip.to"
-            :class="chip.class"
+            {{ j.name }}
+          </SchipJurisdiction>
+          <SchipTheme
+            v-for="theme in resolvedTheme"
+            :key="`theme-${theme}`"
+            :to="`/search?theme=${searchParam(theme)}`"
+            :compact="compact"
           >
-            <span class="schip-tag" aria-hidden="true">
-              <UIcon name="i-lucide:bookmark" />
-            </span>
-            <span class="schip-text">{{ chip.label }}</span>
-            <span class="schip-affordance" aria-hidden="true">
-              <UIcon name="i-material-symbols:search" />
-            </span>
-          </NuxtLink>
+            {{ theme }}
+          </SchipTheme>
         </div>
       </template>
     </div>
@@ -260,6 +230,9 @@ import { computed, nextTick, ref, watch, defineAsyncComponent } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import JurisdictionFlag from "@/components/ui/JurisdictionFlag.vue";
 import EntityFeedback from "@/components/ui/EntityFeedback.vue";
+import SchipType from "@/components/ui/SchipType.vue";
+import SchipTheme from "@/components/ui/SchipTheme.vue";
+import SchipJurisdiction from "@/components/ui/SchipJurisdiction.vue";
 import type { components } from "@/types/api-schema";
 import {
   useJurisdictionLookup,
@@ -453,29 +426,13 @@ const typeChip = computed(() => {
   };
 });
 
-interface TaggedSearchChip {
-  key: string;
-  to: string;
-  class: string;
-  label: string;
-}
-
-const taggedSearchChips = computed<TaggedSearchChip[]>(() =>
-  resolvedTheme.value.map((theme, idx) => ({
-    key: `theme-${idx}`,
-    to: `/search?theme=${searchParam(theme)}`,
-    class: "schip schip--theme",
-    label: theme,
-  })),
-);
-
 const isJurisdictionType = computed(
   () => typeChip.value?.colorClass === "label-jurisdiction",
 );
 
 const { data: allJurisdictions } = useJurisdictions(isJurisdictionType);
 
-const typeChipRef = ref<HTMLButtonElement | null>(null);
+const typeChipRef = ref<InstanceType<typeof SchipType> | null>(null);
 const pickerOpen = ref(false);
 const pickerSearch = ref("");
 const pickerStyle = ref<Record<string, string>>({});
@@ -511,7 +468,7 @@ function togglePicker() {
 }
 
 function positionPicker() {
-  const el = typeChipRef.value;
+  const el = typeChipRef.value?.rootEl ?? null;
   if (!el) return;
   const rect = el.getBoundingClientRect();
   const offset = 4;
@@ -646,49 +603,6 @@ function printPage() {
 .meta-band--compact .meta-line {
   gap: 5px 7px;
   min-height: 0;
-}
-
-.meta-band--compact .schip {
-  font-size: 10px;
-  letter-spacing: 0.04em;
-  padding: 1px 7px;
-  gap: 4px;
-}
-
-.meta-band--compact .schip-flag-wrap,
-.meta-band--compact .schip-arrow-wrap {
-  width: 14px;
-  height: 10px;
-}
-
-.meta-band--compact .schip-arrow-wrap {
-  width: 0;
-}
-
-.meta-band--compact .schip--jur:hover .schip-arrow-wrap {
-  width: 14px;
-}
-
-.meta-band--compact .schip-flag {
-  width: 14px;
-  height: 10px;
-}
-
-.meta-band--compact .schip-tag,
-.meta-band--compact .schip-affordance {
-  font-size: 10px;
-}
-
-.meta-band--compact .schip-tag {
-  width: 10px;
-}
-
-.meta-band--compact .schip:not(.schip--static):hover .schip-tag {
-  width: 0;
-}
-
-.meta-band--compact .schip:not(.schip--static):hover .schip-affordance {
-  width: 10px;
 }
 
 .meta-chips {
