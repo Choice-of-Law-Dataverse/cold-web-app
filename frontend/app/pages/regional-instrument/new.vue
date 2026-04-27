@@ -95,6 +95,7 @@ import SaveModal from "@/components/ui/SaveModal.vue";
 import CancelModal from "@/components/ui/CancelModal.vue";
 import { format } from "date-fns";
 import { tooltips } from "@/config/tooltips";
+import ColdDateTrigger from "@/components/ui/ColdDateTrigger.vue";
 
 const tooltipRegionalInstrumentDate = tooltips.date ?? "";
 

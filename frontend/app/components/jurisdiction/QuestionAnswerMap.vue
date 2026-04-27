@@ -83,6 +83,7 @@ import { useQuestionJurisdictions } from "@/composables/useQuestionJurisdictions
 import DetailRow from "@/components/ui/DetailRow.vue";
 import EntityLink from "@/components/ui/EntityLink.vue";
 import JurisdictionFlag from "@/components/ui/JurisdictionFlag.vue";
+import GradientTopBorder from "@/components/ui/GradientTopBorder.vue";
 
 const regions = [
   "All",

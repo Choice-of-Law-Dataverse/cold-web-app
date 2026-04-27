@@ -29,6 +29,7 @@ import BaseDetailLayout from "@/components/layout/BaseDetailLayout.vue";
 import EntityListTable, {
   type EntityListColumn,
 } from "@/components/entity-list/EntityListTable.vue";
+import GradientTopBorder from "@/components/ui/GradientTopBorder.vue";
 import { useEntityList } from "@/composables/useEntityList";
 import { sanitizeCell } from "@/utils/format";
 

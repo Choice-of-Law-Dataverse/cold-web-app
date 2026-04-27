@@ -26,6 +26,7 @@
 import { resolveComponent } from "vue";
 import LoadingLandingPageCard from "@/components/layout/LoadingLandingPageCard.vue";
 import InlineError from "@/components/ui/InlineError.vue";
+import GradientTopBorder from "@/components/ui/GradientTopBorder.vue";
 
 const NuxtLink = resolveComponent("NuxtLink");
 

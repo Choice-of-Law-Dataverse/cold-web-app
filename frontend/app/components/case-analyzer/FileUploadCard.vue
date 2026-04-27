@@ -187,6 +187,8 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { formatFileSize, isPdfFile } from "~/utils/fileUtils";
+import CardFooterModern from "@/components/ui/CardFooterModern.vue";
+import AppButtonGradient from "@/components/ui/AppButtonGradient.vue";
 
 defineProps<{
   selectedFile: File | null;

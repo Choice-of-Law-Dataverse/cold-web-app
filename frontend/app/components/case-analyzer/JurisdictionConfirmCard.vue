@@ -68,6 +68,8 @@ import type { JurisdictionInfo, JurisdictionOption } from "~/types/analyzer";
 import JurisdictionSelectMenu from "@/components/jurisdiction/JurisdictionSelectMenu.vue";
 import DocumentDisplay from "@/components/case-analyzer/DocumentDisplay.vue";
 import { useJurisdictions } from "@/composables/useJurisdictions";
+import CardFooterModern from "@/components/ui/CardFooterModern.vue";
+import AppButtonGradient from "@/components/ui/AppButtonGradient.vue";
 
 const {
   data: jurisdictions,

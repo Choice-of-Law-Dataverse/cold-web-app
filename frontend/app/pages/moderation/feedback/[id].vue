@@ -120,6 +120,8 @@ import { formatDateLong } from "@/utils/format";
 import DetailRow from "@/components/ui/DetailRow.vue";
 import { entityTypeLabel, feedbackTypeLabel } from "@/config/feedback";
 import { useFeedbackModeration } from "@/composables/useFeedbackModeration";
+import GradientTopBorder from "@/components/ui/GradientTopBorder.vue";
+import ResultValue from "@/components/ui/ResultValue.vue";
 
 definePageMeta({
   middleware: ["moderation"],

@@ -68,6 +68,7 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
+import GradientTopBorder from "@/components/ui/GradientTopBorder.vue";
 
 const props = withDefaults(
   defineProps<{

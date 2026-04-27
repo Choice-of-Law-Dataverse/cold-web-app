@@ -16,6 +16,7 @@
 import EntityContent from "@/components/entity/EntityContent.vue";
 import DetailRow from "@/components/ui/DetailRow.vue";
 import type { Question } from "@/types/entities/question";
+import ResultValue from "@/components/ui/ResultValue.vue";
 
 defineProps<{
   data: Question;

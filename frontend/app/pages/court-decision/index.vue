@@ -39,6 +39,7 @@ import EntityListFilters from "@/components/entity-list/EntityListFilters.vue";
 import EntityListTable, {
   type EntityListColumn,
 } from "@/components/entity-list/EntityListTable.vue";
+import GradientTopBorder from "@/components/ui/GradientTopBorder.vue";
 import { useEntityList } from "@/composables/useEntityList";
 import { formatDate, sanitizeCell } from "@/utils/format";
 import type { JurisdictionOption } from "@/types/analyzer";

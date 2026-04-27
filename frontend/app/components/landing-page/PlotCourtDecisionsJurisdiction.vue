@@ -55,6 +55,7 @@ import {
   useJurisdictionChart,
   useJurisdictions,
 } from "@/composables/useJurisdictions";
+import GradientTopBorder from "@/components/ui/GradientTopBorder.vue";
 
 const { data, isLoading, error } = useJurisdictionChart();
 const { data: jurisdictions } = useJurisdictions();

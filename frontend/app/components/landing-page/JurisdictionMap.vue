@@ -87,6 +87,7 @@
 <script setup lang="ts">
 import { defineAsyncComponent, h, ref } from "vue";
 import JurisdictionPicker from "@/components/landing-page/JurisdictionPicker.vue";
+import GradientTopBorder from "@/components/ui/GradientTopBorder.vue";
 
 // Loading placeholder for async map components
 const MapLoadingPlaceholder = {

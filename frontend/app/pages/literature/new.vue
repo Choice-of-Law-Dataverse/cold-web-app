@@ -156,6 +156,7 @@ import SaveModal from "@/components/ui/SaveModal.vue";
 import CancelModal from "@/components/ui/CancelModal.vue";
 import { format } from "date-fns";
 import { flagUrl } from "@/config/assets";
+import ColdDateTrigger from "@/components/ui/ColdDateTrigger.vue";
 
 interface JurisdictionEntry {
   name: string;

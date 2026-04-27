@@ -208,6 +208,8 @@ import type {
   EditedAnalysisValues,
   JurisdictionOption,
 } from "~/types/analyzer";
+import CardFooterModern from "@/components/ui/CardFooterModern.vue";
+import AppButtonGradient from "@/components/ui/AppButtonGradient.vue";
 import type { SSEEventStatus } from "~/utils/sseStream";
 import AnalysisFormField from "@/components/case-analyzer/AnalysisFormField.vue";
 import DocumentDisplay from "@/components/case-analyzer/DocumentDisplay.vue";

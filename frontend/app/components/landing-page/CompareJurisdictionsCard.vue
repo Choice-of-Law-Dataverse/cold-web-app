@@ -43,6 +43,7 @@
 
 <script setup lang="ts">
 import JurisdictionFlag from "@/components/ui/JurisdictionFlag.vue";
+import GradientTopBorder from "@/components/ui/GradientTopBorder.vue";
 
 interface Comparison {
   left: string;

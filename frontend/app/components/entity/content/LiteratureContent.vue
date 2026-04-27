@@ -88,6 +88,7 @@ import SourceExternalLink from "@/components/sources/SourceExternalLink.vue";
 import type { Literature } from "@/types/entities/literature";
 import { generateBibTeX, sanitizeFilename, downloadFile } from "@/utils/bibtex";
 import { camelCaseToLabel } from "@/utils/camelCaseToLabel";
+import ResultValue from "@/components/ui/ResultValue.vue";
 
 function formatItemType(value: string): string {
   return camelCaseToLabel(value);

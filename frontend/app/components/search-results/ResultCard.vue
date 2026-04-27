@@ -54,6 +54,7 @@ import MetaBand from "@/components/ui/MetaBand.vue";
 import { getBasePathForCard, getEntityConfig } from "@/config/entityRegistry";
 import { useEntityDrawer } from "@/composables/useEntityDrawer";
 import type { AnySearchResult } from "@/types/search";
+import GradientTopBorder from "@/components/ui/GradientTopBorder.vue";
 
 const props = withDefaults(
   defineProps<{

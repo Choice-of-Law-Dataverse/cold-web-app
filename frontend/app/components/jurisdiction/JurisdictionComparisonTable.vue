@@ -562,6 +562,7 @@ import {
   useAnswersByJurisdictions,
   processAnswerText,
 } from "~/composables/useAnswers";
+import GradientTopBorder from "@/components/ui/GradientTopBorder.vue";
 import { useJurisdictions } from "@/composables/useJurisdictions";
 import JurisdictionSelectMenu from "@/components/jurisdiction/JurisdictionSelectMenu.vue";
 import LoadingBar from "@/components/layout/LoadingBar.vue";

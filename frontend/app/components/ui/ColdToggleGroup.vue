@@ -16,6 +16,8 @@ withDefaults(
 </script>
 
 <style>
+@reference "@/assets/styles.css";
+
 .cold-toggle-group-wrap {
   @apply grid w-full gap-2;
   grid-template-columns: 1fr 1fr;

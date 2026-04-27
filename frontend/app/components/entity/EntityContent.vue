@@ -51,6 +51,7 @@ import {
   mapRelationToItem,
   type ProcessedEntity,
 } from "@/config/entityRegistry";
+import ResultValue from "@/components/ui/ResultValue.vue";
 import type { RelatedItem } from "@/types/ui";
 import DetailRow from "@/components/ui/DetailRow.vue";
 import RelatedItemsList from "@/components/ui/RelatedItemsList.vue";

@@ -296,6 +296,8 @@ import { ANALYZER_FIELD_MAP } from "@/types/analyzer";
 import { extractStringFromPayload } from "@/utils/analyzerPayloadParser";
 import { getEntityConfig } from "@/config/entityRegistry";
 import { useEntityDrawer } from "@/composables/useEntityDrawer";
+import GradientTopBorder from "@/components/ui/GradientTopBorder.vue";
+import ResultValue from "@/components/ui/ResultValue.vue";
 
 definePageMeta({
   middleware: ["moderation"],

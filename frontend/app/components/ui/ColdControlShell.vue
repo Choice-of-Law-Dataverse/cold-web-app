@@ -33,6 +33,8 @@ withDefaults(
 </script>
 
 <style>
+@reference "@/assets/styles.css";
+
 .cold-control-shell {
   @apply inline-flex w-full items-center rounded-lg px-3 font-medium;
   height: 42px;

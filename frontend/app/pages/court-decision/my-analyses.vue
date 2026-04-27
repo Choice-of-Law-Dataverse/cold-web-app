@@ -169,6 +169,7 @@ import {
 import { formatDateShort } from "@/utils/format";
 import { useApiClient } from "@/composables/useApiClient";
 import PageHero from "@/components/ui/PageHero.vue";
+import AppButtonGradient from "@/components/ui/AppButtonGradient.vue";
 
 definePageMeta({
   middleware: ["auth"],

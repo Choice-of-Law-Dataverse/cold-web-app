@@ -70,6 +70,7 @@ import NotificationBanner from "@/components/ui/NotificationBanner.vue";
 import SubmissionDisclaimer from "@/components/ui/SubmissionDisclaimer.vue";
 import LoadingCard from "@/components/layout/LoadingCard.vue";
 import InlineError from "@/components/ui/InlineError.vue";
+import GradientTopBorder from "@/components/ui/GradientTopBorder.vue";
 
 interface Props {
   loading: boolean;

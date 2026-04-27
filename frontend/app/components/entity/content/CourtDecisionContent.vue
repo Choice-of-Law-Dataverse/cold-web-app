@@ -96,6 +96,7 @@ import PdfLink from "@/components/ui/PdfLink.vue";
 import SourceExternalLink from "@/components/sources/SourceExternalLink.vue";
 import ShowMoreLess from "@/components/ui/ShowMoreLess.vue";
 import type { CourtDecision } from "@/types/entities/court-decision";
+import ResultValue from "@/components/ui/ResultValue.vue";
 
 defineProps<{
   data: CourtDecision;
