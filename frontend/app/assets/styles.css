@@ -333,6 +333,52 @@ li::marker {
   max-width: 72ch;
 }
 
+.result-value {
+  font-weight: 500;
+  color: var(--color-cold-night);
+  word-wrap: break-word;
+  word-break: break-word;
+  white-space: pre-wrap;
+}
+
+.result-value-large,
+.result-value-medium,
+.result-value-small {
+  font-weight: 500;
+  color: var(--color-cold-night);
+  overflow-wrap: break-word;
+  line-height: 1.7;
+  white-space: normal;
+}
+
+.result-value-large {
+  font-size: 1rem;
+}
+
+.result-value-medium {
+  font-size: 0.9375rem;
+}
+
+.result-value-small {
+  font-size: 0.875rem;
+}
+
+.result-value-small-citation {
+  font-weight: 500;
+  color: var(--color-cold-night);
+  word-wrap: break-word;
+  word-break: break-word;
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  white-space: normal;
+  font-family: "IBM Plex Mono", monospace;
+  background: var(--gradient-gray);
+  padding: 1em 1.25em;
+  border-radius: 0.5rem;
+  border: 1px solid var(--color-cold-gray);
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.03);
+}
+
 /* Dropdown item gradient states (can't express as Tailwind utilities) */
 [data-slot="content"] [role="option"]:hover {
   background: var(--gradient-subtle-hover);
