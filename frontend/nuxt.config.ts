@@ -67,6 +67,8 @@ export default defineNuxtConfig({
         "openapi-fetch",
         "date-fns",
         "@vue-leaflet/vue-leaflet",
+        "zod",
+        "v-calendar",
       ],
       exclude: ["@opentelemetry/api"],
     },

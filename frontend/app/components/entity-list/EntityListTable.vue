@@ -211,7 +211,7 @@ const utableUi = {
   tbody:
     "divide-cold-gray-alpha [&>tr]:h-16 [&>tr]:cursor-pointer [&>tr]:transition-colors [&>tr]:hover:bg-[image:var(--gradient-row-hover)]",
   tr: "group/row",
-  td: "overflow-hidden text-ellipsis whitespace-nowrap h-16 align-middle",
+  td: "overflow-hidden text-ellipsis whitespace-nowrap h-16 align-middle !p-0",
   empty: "py-12 px-6 text-center text-sm text-cold-night-alpha",
 };
 
@@ -249,11 +249,13 @@ const widthVars = computed<CSSProperties>(() => {
 
 <style scoped>
 .table-row-link {
-  display: block;
+  display: flex;
+  align-items: center;
   text-decoration: none;
   color: inherit;
   width: 100%;
   height: 100%;
+  padding: 0 1rem;
 }
 
 .arrow-cell {

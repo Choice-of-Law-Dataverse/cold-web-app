@@ -12,6 +12,8 @@
 </template>
 
 <script setup lang="ts">
+import ColdControlShell from "@/components/ui/ColdControlShell.vue";
+
 defineOptions({ inheritAttrs: false });
 
 withDefaults(
