@@ -31,13 +31,13 @@
         class="mx-auto mb-4 h-12 w-12 text-gray-400"
       />
       <p class="text-gray-600">You haven't started any case analyses yet.</p>
-      <UButton
-        class="btn-primary-gradient mt-4"
+      <AppButtonGradient
+        class="mt-4"
         to="/court-decision/new"
         icon="i-heroicons-plus"
       >
         Start New Analysis
-      </UButton>
+      </AppButtonGradient>
     </div>
 
     <!-- Analyses list -->
