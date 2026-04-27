@@ -8,7 +8,7 @@
       @open-save-modal="openSaveModal"
       @open-cancel-modal="showCancelModal = true"
     >
-      <div class="section-gap m-0 grid grid-cols-1 gap-8 p-0 md:grid-cols-2">
+      <div class="m-0 grid grid-cols-1 gap-8 p-0 md:grid-cols-2">
         <UFormField size="lg" hint="Required" :error="errors.jurisdiction_link">
           <template #label>
             <span class="label">Jurisdiction</span>

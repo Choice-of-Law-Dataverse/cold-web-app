@@ -75,3 +75,31 @@ ul::-webkit-scrollbar {
   display: none;
 }
 </style>
+
+<style>
+@reference "tailwindcss";
+
+.nav-tab,
+.section-nav-item {
+  @apply text-cold-night relative -mb-0.5 cursor-pointer rounded-t-lg px-4 py-2.5 text-sm font-medium whitespace-nowrap transition-all duration-150;
+}
+
+.nav-tab:hover,
+.section-nav-item:hover {
+  background: var(--gradient-subtle);
+}
+
+.nav-tab:focus-visible,
+.section-nav-item:focus-visible {
+  @apply outline-cold-purple outline-2 -outline-offset-2;
+}
+
+.nav-tab--bordered {
+  @apply border-b-2 border-gray-200;
+}
+
+.nav-tab--active,
+.section-nav-item-active {
+  @apply border-cold-purple text-cold-purple border-b-2 font-semibold;
+}
+</style>

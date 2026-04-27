@@ -108,3 +108,20 @@ defineProps<{
 const showEnglishQuote = ref(true);
 const showFullText = ref(false);
 </script>
+
+<style>
+@reference "tailwindcss";
+
+.label-key-provision-article,
+.label-key-provision-toggle {
+  @apply text-cold-night-alpha inline-flex gap-1 p-0 tracking-wider normal-case;
+}
+
+.label-key-provision-article {
+  @apply text-sm font-medium;
+}
+
+.label-key-provision-toggle {
+  @apply text-[0.625rem] font-semibold capitalize;
+}
+</style>

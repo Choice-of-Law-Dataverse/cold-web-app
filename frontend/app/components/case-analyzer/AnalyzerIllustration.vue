@@ -194,3 +194,16 @@
     </svg>
   </div>
 </template>
+
+<style>
+@reference "tailwindcss";
+
+.glow-pulse {
+  @apply animate-pulse rounded-full blur-[32px];
+  background-image: linear-gradient(
+    to bottom right,
+    color-mix(in srgb, var(--color-cold-purple) 20%, transparent),
+    color-mix(in srgb, var(--color-cold-teal) 20%, transparent)
+  );
+}
+</style>

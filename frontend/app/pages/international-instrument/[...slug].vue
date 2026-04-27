@@ -8,7 +8,7 @@
       @open-save-modal="openSaveModal"
       @open-cancel-modal="showCancelModal = true"
     >
-      <div class="section-gap m-0 p-0">
+      <div class="m-0 p-0">
         <UFormField size="lg" hint="Required" :error="errors.name">
           <template #label>
             <span class="label">Name</span>

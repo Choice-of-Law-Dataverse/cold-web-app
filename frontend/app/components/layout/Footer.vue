@@ -290,3 +290,46 @@ const currentYear = new Date().getFullYear();
   }
 }
 </style>
+
+<style>
+@reference "tailwindcss";
+
+.footer-container {
+  @apply relative text-white;
+  background: var(--gradient-footer);
+}
+
+.footer-container::before {
+  content: "";
+  @apply absolute inset-x-0 top-0 h-[3px];
+  background: var(--gradient-border-horizontal);
+}
+
+.footer-container::after {
+  content: "";
+  @apply pointer-events-none absolute inset-[3px_0_0_0] bg-repeat opacity-25;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  background-size: 256px 256px;
+}
+
+.footer-border {
+  @apply border-t;
+  border-color: color-mix(in srgb, var(--color-cold-green) 15%, transparent);
+}
+
+.footer-title {
+  @apply font-bold text-white;
+}
+
+.footer-heading {
+  @apply text-[13px] font-medium tracking-widest text-white uppercase;
+}
+
+.footer-link {
+  @apply text-sm font-semibold text-white no-underline transition-all duration-150;
+}
+
+.footer-link:hover {
+  color: var(--color-cold-green);
+}
+</style>

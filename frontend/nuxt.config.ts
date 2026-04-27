@@ -18,12 +18,27 @@ export default defineNuxtConfig({
     },
   },
   routeRules: {
-    // Static pages - prerender disabled temporarily to debug build hang
-    // "/about/**": { prerender: true },
-    // "/learn/**": { prerender: true },
-    // "/disclaimer": { prerender: true },
-    // "/contact": { prerender: true },
-    // "/submit": { prerender: true },
+    "/_nuxt/**": {
+      headers: { "cache-control": "public, max-age=31536000, immutable" },
+    },
+    "/fonts/**": {
+      headers: { "cache-control": "public, max-age=31536000, immutable" },
+    },
+    "/favicon.ico": {
+      headers: { "cache-control": "public, max-age=604800" },
+    },
+    "/favicon.svg": {
+      headers: { "cache-control": "public, max-age=604800" },
+    },
+    "/favicon-96x96.png": {
+      headers: { "cache-control": "public, max-age=604800" },
+    },
+    "/apple-touch-icon.png": {
+      headers: { "cache-control": "public, max-age=604800" },
+    },
+    "/site.webmanifest": {
+      headers: { "cache-control": "public, max-age=604800" },
+    },
   },
   $production: {
     scripts: {

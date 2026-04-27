@@ -99,3 +99,73 @@ onMounted(() => {
   min-height: calc(100dvh - var(--nav-height) - var(--banner-height) - 10rem);
 }
 </style>
+
+<style>
+@reference "tailwindcss";
+
+.skip-link {
+  @apply absolute top-auto -left-[9999px] z-[9999] h-px w-px overflow-hidden rounded-br-lg px-6 py-3 font-semibold text-white no-underline;
+  background: var(--color-cold-purple);
+}
+
+.skip-link:focus-visible {
+  @apply fixed top-0 left-0 h-auto w-auto outline-2 outline-offset-2;
+  outline-color: var(--color-cold-purple);
+}
+
+.page-enter-active,
+.page-leave-active {
+  @apply transition-[opacity,transform] duration-200 ease-in-out;
+}
+
+.page-enter-from {
+  @apply translate-y-2 opacity-0;
+}
+
+.page-leave-to {
+  @apply -translate-y-1 opacity-0;
+}
+
+.page-forward-enter-active,
+.page-forward-leave-active,
+.page-back-enter-active,
+.page-back-leave-active {
+  @apply transition-[opacity,transform] duration-[220ms] ease-out;
+}
+
+.page-forward-enter-from {
+  @apply translate-x-[60px] opacity-0;
+}
+
+.page-forward-leave-to {
+  @apply -translate-x-[30px] opacity-0;
+}
+
+.page-back-enter-from {
+  @apply -translate-x-[60px] opacity-0;
+}
+
+.page-back-leave-to {
+  @apply translate-x-[30px] opacity-0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-enter-active,
+  .page-leave-active,
+  .page-forward-enter-active,
+  .page-forward-leave-active,
+  .page-back-enter-active,
+  .page-back-leave-active {
+    @apply transition-opacity duration-150 ease-in-out;
+  }
+
+  .page-enter-from,
+  .page-leave-to,
+  .page-forward-enter-from,
+  .page-forward-leave-to,
+  .page-back-enter-from,
+  .page-back-leave-to {
+    @apply transform-none;
+  }
+}
+</style>

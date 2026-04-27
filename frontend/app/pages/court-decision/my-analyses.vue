@@ -1,11 +1,10 @@
 <template>
   <div class="py-12">
-    <div class="page-hero mb-8">
-      <h1 class="page-hero__title">My Case Analyses</h1>
-      <p class="page-hero__subtitle">
-        View the status of your submitted case analyses
-      </p>
-    </div>
+    <PageHero
+      title="My Case Analyses"
+      subtitle="View the status of your submitted case analyses"
+      class="mb-8"
+    />
 
     <!-- Loading state -->
     <div v-if="pending" class="flex justify-center py-12">
@@ -169,6 +168,7 @@ import {
 } from "@/utils/moderationStatus";
 import { formatDateShort } from "@/utils/format";
 import { useApiClient } from "@/composables/useApiClient";
+import PageHero from "@/components/ui/PageHero.vue";
 
 definePageMeta({
   middleware: ["auth"],
