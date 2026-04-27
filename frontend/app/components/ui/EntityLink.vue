@@ -1,6 +1,37 @@
 <template>
+  <LinkChipNeutral
+    v-if="variant === 'chip'"
+    :class="['entity-link', { 'entity-link--cmd': isModKeyHeld }]"
+    :href="href"
+    @click="handleClick"
+  >
+    <slot>{{ title }}</slot>
+    <span
+      v-if="badge"
+      class="entity-link__badge"
+      :style="{
+        backgroundColor: `color-mix(in srgb, ${badge.color} 14%, white)`,
+        color: badge.color,
+      }"
+    >
+      {{ badge.label }}
+    </span>
+    <span
+      class="entity-link__icon entity-link__icon--panel"
+      aria-hidden="true"
+    />
+    <span
+      class="entity-link__icon entity-link__icon--arrow"
+      aria-hidden="true"
+    />
+  </LinkChipNeutral>
   <a
-    :class="['entity-link', variantClass, { 'entity-link--cmd': isModKeyHeld }]"
+    v-else
+    :class="[
+      'entity-link',
+      'label-jurisdiction',
+      { 'entity-link--cmd': isModKeyHeld },
+    ]"
     :href="href"
     @click="handleClick"
   >
@@ -27,10 +58,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
 import { useModKeyState } from "@/composables/useModKeyState";
 import { useEntityDrawer } from "@/composables/useEntityDrawer";
 import { getEntityConfig } from "@/config/entityRegistry";
+import LinkChipNeutral from "@/components/ui/LinkChipNeutral.vue";
+import { computed } from "vue";
 
 const props = withDefaults(
   defineProps<{
@@ -51,12 +83,6 @@ const props = withDefaults(
 
 const { isModKeyHeld } = useModKeyState();
 const { openDrawer } = useEntityDrawer();
-
-const variantClass = computed(() =>
-  props.variant === "jurisdiction"
-    ? "label-jurisdiction"
-    : "link-chip--neutral",
-);
 
 const href = computed(() =>
   props.id.startsWith("/") ? props.id : `${props.basePath}/${props.id}`,
