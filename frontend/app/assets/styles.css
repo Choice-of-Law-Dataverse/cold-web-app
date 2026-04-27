@@ -1094,84 +1094,6 @@ button.cold-toggle-btn[aria-pressed="true"] {
 /* Print styles live in app/assets/print.css and are loaded via app.vue
    with media="print" to keep them out of the render-blocking entry CSS. */
 
-/* Action button - for internal actions (cite, json, print, edit, copy, download) */
-.action-button {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.375rem;
-  border-radius: 0.375rem;
-  padding: 0.375rem 0.75rem;
-  font-size: 0.75rem;
-  font-weight: 500;
-  text-transform: uppercase;
-  transition: all;
-  color: var(--color-cold-night);
-  background: white;
-  border: 1.5px solid
-    color-mix(in srgb, var(--color-cold-night) 25%, transparent);
-  cursor: pointer;
-}
-
-.action-button:hover {
-  background: var(--color-cold-night);
-  color: white;
-  border-color: var(--color-cold-night);
-}
-
-.action-button:focus-visible {
-  outline: 2px solid var(--color-cold-purple);
-  outline-offset: 2px;
-}
-
-.action-button svg,
-.action-button .iconify {
-  font-size: 1.1em;
-  transition: transform 0.15s ease;
-}
-
-.action-button:hover svg,
-.action-button:hover .iconify {
-  transform: scale(1.05);
-}
-
-/* External link button - for links that open in new tab (link, pdf) */
-.action-link-external {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.375rem;
-  border-radius: 0.375rem;
-  padding: 0.375rem 0.75rem;
-  font-size: 0.75rem;
-  font-weight: 500;
-  text-transform: uppercase;
-  transition: all;
-  color: var(--color-cold-teal);
-  background: color-mix(in srgb, var(--color-cold-teal) 6%, white);
-  border: 1px solid color-mix(in srgb, var(--color-cold-teal) 20%, transparent);
-}
-
-.action-link-external:hover {
-  background: color-mix(in srgb, var(--color-cold-teal) 12%, white);
-  border-color: color-mix(in srgb, var(--color-cold-teal) 35%, transparent);
-  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.06);
-}
-
-.action-link-external:focus-visible {
-  outline: 2px solid var(--color-cold-teal);
-  outline-offset: 2px;
-}
-
-.action-link-external svg,
-.action-link-external .iconify {
-  font-size: 1.1em;
-  transition: transform 0.15s ease;
-}
-
-.action-link-external:hover svg,
-.action-link-external:hover .iconify {
-  transform: scale(1.05);
-}
-
 /* External link icon for markdown content - keeps icon inline with link text */
 .external-link-icon {
   display: inline-block;
@@ -1204,32 +1126,6 @@ button.cold-toggle-btn[aria-pressed="true"] {
 .icon-badge .icon {
   height: 1.25rem;
   width: 1.25rem;
-  color: white;
-}
-
-/* Primary action button with gradient and shadow */
-.btn-primary-gradient {
-  background-image: linear-gradient(
-    to right,
-    var(--color-cold-purple),
-    color-mix(in srgb, var(--color-cold-purple) 90%, transparent)
-  );
-  color: white;
-  box-shadow: 0 10px 15px -3px rgba(111, 77, 250, 0.25);
-  transition: all;
-}
-
-.btn-primary-gradient:hover:not(:disabled) {
-  box-shadow: 0 20px 25px -5px rgba(111, 77, 250, 0.3);
-}
-
-.btn-primary-gradient:disabled {
-  opacity: 0.6;
-}
-
-/* Success button style */
-.btn-success {
-  background-color: var(--color-cold-green);
   color: white;
 }
 

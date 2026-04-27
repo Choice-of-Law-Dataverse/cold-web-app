@@ -54,16 +54,12 @@
           <UButton variant="ghost" color="neutral" @click="$emit('reset')">
             Start Over
           </UButton>
-          <UButton
-            class="btn-primary-gradient"
-            :loading="isLoading"
-            @click="$emit('continue')"
-          >
+          <AppButtonGradient :loading="isLoading" @click="$emit('continue')">
             <template #leading>
               <UIcon name="i-heroicons-arrow-right" class="h-4 w-4" />
             </template>
             Continue Analysis
-          </UButton>
+          </AppButtonGradient>
         </div>
       </div>
     </template>

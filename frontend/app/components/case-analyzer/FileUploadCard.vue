@@ -170,8 +170,7 @@
           <UButton variant="ghost" color="neutral" @click="$emit('cancel')">
             Cancel
           </UButton>
-          <UButton
-            class="btn-primary-gradient"
+          <AppButtonGradient
             :disabled="!selectedFile || isUploading"
             :loading="isUploading"
             @click="$emit('upload')"
@@ -180,7 +179,7 @@
               <UIcon name="i-heroicons-sparkles" class="h-4 w-4" />
             </template>
             Analyze with AI
-          </UButton>
+          </AppButtonGradient>
         </div>
       </div>
     </template>

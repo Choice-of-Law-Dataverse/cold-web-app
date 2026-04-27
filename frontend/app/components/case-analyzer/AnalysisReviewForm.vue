@@ -175,23 +175,29 @@
             Print
           </UButton>
           <UButton
-            :class="isSubmitted ? 'btn-success' : 'btn-primary-gradient'"
+            v-if="isSubmitted"
+            color="success"
+            variant="solid"
             :loading="isSubmitting"
             :disabled="isAnalyzing || isSubmitted"
             @click="$emit('submit')"
           >
             <template #leading>
-              <UIcon
-                :name="
-                  isSubmitted
-                    ? 'i-heroicons-check-circle'
-                    : 'i-heroicons-paper-airplane'
-                "
-                class="h-4 w-4"
-              />
+              <UIcon name="i-heroicons-check-circle" class="h-4 w-4" />
             </template>
-            {{ isSubmitted ? "Submitted" : "Submit for Review" }}
+            Submitted
           </UButton>
+          <AppButtonGradient
+            v-else
+            :loading="isSubmitting"
+            :disabled="isAnalyzing"
+            @click="$emit('submit')"
+          >
+            <template #leading>
+              <UIcon name="i-heroicons-paper-airplane" class="h-4 w-4" />
+            </template>
+            Submit for Review
+          </AppButtonGradient>
         </div>
       </div>
     </template>

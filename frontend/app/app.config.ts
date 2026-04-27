@@ -8,6 +8,13 @@ export default defineAppConfig({
     button: {
       compoundVariants: [
         {
+          color: "success" as const,
+          variant: "solid" as const,
+          class: {
+            base: "bg-[var(--color-cold-green)] text-white",
+          },
+        },
+        {
           color: "neutral" as const,
           variant: "outline" as const,
           class: {
