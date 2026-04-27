@@ -1,5 +1,8 @@
+from ..shared import NAV_TOOLS_PREAMBLE
+
 # ===== RELEVANT FACTS =====
-FACTS_PROMPT = """
+FACTS_PROMPT = (
+    """
 TASK: Extract and synthesize factual elements essential for understanding the choice of law analysis into a single, coherent paragraph.
 INSTRUCTIONS:
 1.	Output Requirement:
@@ -21,36 +24,36 @@ Elaborate on facts including, but not limited to the following, as long as they 
 5.	CONSTRAINT:
 Base the factual narrative solely on the provided judgment text, synthesizing information from both the full text and extracted choice of law section.
 
-
-<court_decision>
-{text}
-</court_decision>
-
+"""
+    + NAV_TOOLS_PREAMBLE
+    + """
 <col_section>
 {col_section}
 </col_section>
 """
+)
 
 # ===== PIL PROVISIONS =====
-PIL_PROVISIONS_PROMPT = """
+PIL_PROVISIONS_PROMPT = (
+    """
 Your task is to extract rules related to choice of law cited in a court decision. Your response is a list of provisions sorted by the impact of the rules for the choice of law issue(s) present within the court decision. Your response consists of this list only, no explanations or other additional information. A relevant provision usually stems from the most prominent legislation dealing with private international law in the respective jurisdiction. In some countries, the relevant provisions are included in the civil code. Other countries have acts that include private international law provisions. In many cases, the relevant provisions can also be found in international treaties. If no legislative provision is found, double-check whether there is any other court decision cited as a choice of law precedent.
 LIMITATIONS:
 - If you do not find PIL provisions in the court decision or if you are not sure, use "NA". If any language other than English is used to cite a provision, use their English abbreviation.
 - No literature or other doctrinal remarks
 - Do not use the paragraph symbol (§). If necessary use the abbreviation "Para."
 
-
-<court_decision>
-{text}
-</court_decision>
-
+"""
+    + NAV_TOOLS_PREAMBLE
+    + """
 <col_section>
 {col_section}
 </col_section>
 """
+)
 
 # ===== CHOICE OF LAW ISSUE =====
-COL_ISSUE_PROMPT = """
+COL_ISSUE_PROMPT = (
+    """
 Your task is to identify the main private international law issue from a court decision. Your response will be a concise question. Examples:
 -	“Can the parties validly choose the law of a country with no connection to their contract?”
 -	"Can an implied choice of law be inferred from forum selection clauses?"
@@ -61,18 +64,18 @@ The issue you extract will have to do with choice of law and the output has to b
 <themes>
 {classification_definitions}
 </themes>
-
-<court_decision>
-{text}
-</court_decision>
-
+"""
+    + NAV_TOOLS_PREAMBLE
+    + """
 <col_section>
 {col_section}
 </col_section>
 """
+)
 
 # ===== COURT'S POSITION =====
-COURTS_POSITION_PROMPT = """
+COURTS_POSITION_PROMPT = (
+    """
 Summarize the court's position on the choice-of-law issue(s) within the decision. Your response is phrased in a general way, generalizing the issue(s) so that your generalization could be applied to other private international law cases. If any legal provisions are mentioned, use their English abbreviation. Your output is a direct answer to the following issue:
 
 <col_issue>
@@ -83,11 +86,9 @@ CONSTRAINTS:
 - Base the response on the provided judgment text and extracted sections only.
 - Maintain a neutral and objective tone.
 - Use a maximum of 300 words.
-
-<court_decision>
-{text}
-</court_decision>
-
+"""
+    + NAV_TOOLS_PREAMBLE
+    + """
 <col_section>
 {col_section}
 </col_section>
@@ -96,6 +97,7 @@ CONSTRAINTS:
 {classification}
 </themes>
 """
+)
 
 # ===== ABSTRACT =====
 ABSTRACT_PROMPT = """
@@ -121,11 +123,6 @@ Synthesize a comprehensive abstract using the analytical components you have pre
 If an official “abstract”, “headnote”/ “case note” exists in the judgment text, extract it instead of synthesizing. Please translate it into English and state that it is a verbatim translation.
 
 6.	CONSTRAINT: Base the abstract on your previous analysis of this judgment's PIL components, ensuring it captures the essential choice of law elements for legal research and reference purposes. Use a maximum of four sentences.
-
-
-<court_decision>
-{text}
-</court_decision>
 
 <themes>
 {classification}

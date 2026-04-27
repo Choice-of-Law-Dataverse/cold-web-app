@@ -1,4 +1,7 @@
-COL_SECTION_PROMPT = """
+from ..shared import NAV_TOOLS_PREAMBLE
+
+COL_SECTION_PROMPT = (
+    """
 TASK: Extract all portions of the judgment that discuss choice of law in private international law (PIL) contexts.
 INSTRUCTIONS:
 1.	Scope of Extraction: Identify and extract the most important paragraphs, sentences, or sections where the court:
@@ -30,8 +33,6 @@ More specifically, when preparing the output, prioritize: (1) The court's direct
 -	Break longer passages into separate sections if they address different choice of law issues
 -	If necessary, add brackets […] to abbreviate the text if it touches upon matters included in the exclusion list.
 4.	CONSTRAINT: Base extraction solely on the provided judgment text. Do not add interpretive commentary or external legal knowledge.
-
-<court_decision>
-{text}
-</court_decision>
 """
+    + NAV_TOOLS_PREAMBLE
+)

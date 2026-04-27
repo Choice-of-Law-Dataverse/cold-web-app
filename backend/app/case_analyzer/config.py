@@ -20,7 +20,11 @@ def get_openai_client() -> openai.AsyncOpenAI:
         set_tracing_export_api_key(config.OPENAI_API_KEY or "")
         _tracing_configured = True
     if _openai_client is None:
-        _openai_client = openai.AsyncOpenAI(api_key=config.OPENAI_API_KEY)
+        _openai_client = openai.AsyncOpenAI(
+            api_key=config.OPENAI_API_KEY,
+            timeout=60.0,
+            max_retries=3,
+        )
     return _openai_client
 
 

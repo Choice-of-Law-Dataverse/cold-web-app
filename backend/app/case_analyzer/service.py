@@ -9,8 +9,6 @@ from typing import Any, cast
 
 import logfire
 
-from .consistency_checker import check_consistency
-from .runner import retry_with_feedback
 from .tools import (
     CaseCitationOutput,
     ColIssueOutput,
@@ -35,18 +33,9 @@ from .tools import (
     extract_pil_provisions,
     extract_relevant_facts,
 )
+from .tools.document_nav import DocumentContext
 
 logger = logging.getLogger(__name__)
-
-STEP_OUTPUT_TYPES: dict[str, type[Any]] = {
-    "theme_classification": ThemeClassificationOutput,
-    "relevant_facts": RelevantFactsOutput,
-    "pil_provisions": PILProvisionsOutput,
-    "col_issue": ColIssueOutput,
-    "courts_position": CourtsPositionOutput,
-    "obiter_dicta": ObiterDictaOutput,
-    "dissenting_opinions": DissentingOpinionsOutput,
-}
 
 
 def _requires_common_law_steps(legal_system: str | None, jurisdiction: str | None) -> bool:
@@ -101,6 +90,7 @@ async def analyze_case_streaming(
     text: str,
     jurisdiction_data: JurisdictionOutput,
     cached_results: dict[str, Any] | None = None,
+    draft_id: int = 0,
 ) -> AsyncGenerator[dict[str, Any], None]:
     """
     Execute complete case analysis workflow with streaming updates.
@@ -113,9 +103,9 @@ async def analyze_case_streaming(
     run_common_law_branches = _requires_common_law_steps(legal_system, jurisdiction)
     cached = cached_results or {}
     last_response_id: str | None = None
-    response_ids: dict[str, str | None] = {}
+    doc_ctx = DocumentContext(draft_id=draft_id, text=text)
 
-    with logfire.span("case_analysis_workflow", resume=bool(cached_results)):
+    with logfire.span("case_analysis_workflow", resume=bool(cached_results), draft_id=draft_id):
         if "col_extraction" in cached and cached["col_extraction"].get("col_sections"):
             col_result = _reconstruct_col_section(cached["col_extraction"])
             yield {"step": "col_extraction", "status": "completed", "data": cached["col_extraction"]}
@@ -123,7 +113,7 @@ async def analyze_case_streaming(
         else:
             yield {"step": "col_extraction", "status": "in_progress"}
             try:
-                col_step = await extract_col_section(text, legal_system, jurisdiction)
+                col_step = await extract_col_section(doc_ctx, legal_system, jurisdiction)
                 col_result = col_step.output
                 last_response_id = col_step.response_id
                 yield {
@@ -191,26 +181,26 @@ async def analyze_case_streaming(
                 if need_theme:
                     tasks_to_run.append(
                         classify_themes(
-                            text, col_section_text, legal_system, jurisdiction, previous_response_id=last_response_id
+                            doc_ctx, col_section_text, legal_system, jurisdiction, previous_response_id=last_response_id
                         )
                     )
                     task_names.append("theme_classification")
                 if need_citation:
                     tasks_to_run.append(
-                        extract_case_citation(text, legal_system, jurisdiction, previous_response_id=last_response_id)
+                        extract_case_citation(doc_ctx, legal_system, jurisdiction, previous_response_id=last_response_id)
                     )
                     task_names.append("case_citation")
                 if need_facts:
                     tasks_to_run.append(
                         extract_relevant_facts(
-                            text, col_result, legal_system, jurisdiction, previous_response_id=last_response_id
+                            doc_ctx, col_result, legal_system, jurisdiction, previous_response_id=last_response_id
                         )
                     )
                     task_names.append("relevant_facts")
                 if need_provisions:
                     tasks_to_run.append(
                         extract_pil_provisions(
-                            text, col_result, legal_system, jurisdiction, previous_response_id=last_response_id
+                            doc_ctx, col_result, legal_system, jurisdiction, previous_response_id=last_response_id
                         )
                     )
                     task_names.append("pil_provisions")
@@ -226,7 +216,6 @@ async def analyze_case_streaming(
                         continue
 
                     step = cast(StepResult[Any], result)
-                    response_ids[task_name] = step.response_id
 
                     if task_name == "theme_classification":
                         theme_result = cast(ThemeClassificationOutput, step.output)
@@ -259,7 +248,7 @@ async def analyze_case_streaming(
             yield {"step": "col_issue", "status": "in_progress"}
             try:
                 issue_step = await extract_col_issue(
-                    text,
+                    doc_ctx,
                     col_result,
                     legal_system,
                     jurisdiction,
@@ -268,7 +257,6 @@ async def analyze_case_streaming(
                 )
                 issue_result = issue_step.output
                 last_response_id = issue_step.response_id
-                response_ids["col_issue"] = issue_step.response_id
                 yield {
                     "step": "col_issue",
                     "status": "completed",
@@ -331,7 +319,7 @@ async def analyze_case_streaming(
                         "courts_position",
                         asyncio.create_task(
                             extract_courts_position(
-                                text,
+                                doc_ctx,
                                 col_result,
                                 legal_system,
                                 jurisdiction,
@@ -349,7 +337,7 @@ async def analyze_case_streaming(
                         "obiter_dicta",
                         asyncio.create_task(
                             extract_obiter_dicta(
-                                text,
+                                doc_ctx,
                                 col_result,
                                 legal_system,
                                 jurisdiction,
@@ -367,7 +355,7 @@ async def analyze_case_streaming(
                         "dissenting_opinions",
                         asyncio.create_task(
                             extract_dissenting_opinions(
-                                text,
+                                doc_ctx,
                                 col_result,
                                 legal_system,
                                 jurisdiction,
@@ -393,7 +381,6 @@ async def analyze_case_streaming(
                     return
 
                 step = cast(StepResult[Any], result)
-                response_ids[step_name] = step.response_id
 
                 if step_name == "courts_position":
                     position_result = cast(CourtsPositionOutput, step.output)
@@ -412,75 +399,13 @@ async def analyze_case_streaming(
             yield {"step": "courts_position", "status": "error", "error": error_msg}
             return
 
-        yield {"step": "consistency_check", "status": "in_progress"}
-        consistency_result = await check_consistency(
-            themes_output=theme_result,
-            facts_output=facts_result,
-            provisions_output=provisions_result,
-            col_issue_output=issue_result,
-            position_output=position_result,
-            obiter_output=obiter_result,
-            dissent_output=dissent_result,
-            previous_response_id=last_response_id,
-        )
-
-        high_severity_issues = [i for i in consistency_result.issues if i.severity == "high"]
-        if high_severity_issues:
-            yield {
-                "step": "consistency_check",
-                "status": "completed",
-                "data": {"is_consistent": False, "retrying_steps": [i.step for i in high_severity_issues]},
-            }
-
-            for issue in high_severity_issues:
-                rid = response_ids.get(issue.step)
-                if rid is None:
-                    logger.warning("No response_id for %s, skipping consistency retry", issue.step)
-                    continue
-
-                output_type = STEP_OUTPUT_TYPES.get(issue.step)
-                if output_type is None:
-                    continue
-
-                correction = f"Consistency issue detected: {issue.description}. Please re-analyze and correct this step."
-                try:
-                    retry_step = await retry_with_feedback(issue.step, output_type, correction, rid)
-                    response_ids[issue.step] = retry_step.response_id
-
-                    if issue.step == "theme_classification":
-                        theme_result = cast(ThemeClassificationOutput, retry_step.output)
-                        yield {"step": "theme_classification", "status": "completed", "data": theme_result.model_dump()}
-                    elif issue.step == "relevant_facts":
-                        facts_result = cast(RelevantFactsOutput, retry_step.output)
-                        yield {"step": "relevant_facts", "status": "completed", "data": facts_result.model_dump()}
-                    elif issue.step == "pil_provisions":
-                        provisions_result = cast(PILProvisionsOutput, retry_step.output)
-                        yield {"step": "pil_provisions", "status": "completed", "data": provisions_result.model_dump()}
-                    elif issue.step == "col_issue":
-                        issue_result = cast(ColIssueOutput, retry_step.output)
-                        yield {"step": "col_issue", "status": "completed", "data": issue_result.model_dump()}
-                    elif issue.step == "courts_position":
-                        position_result = cast(CourtsPositionOutput, retry_step.output)
-                        last_response_id = retry_step.response_id
-                        yield {"step": "courts_position", "status": "completed", "data": position_result.model_dump()}
-                    elif issue.step == "obiter_dicta":
-                        obiter_result = cast(ObiterDictaOutput, retry_step.output)
-                        yield {"step": "obiter_dicta", "status": "completed", "data": obiter_result.model_dump()}
-                    elif issue.step == "dissenting_opinions":
-                        dissent_result = cast(DissentingOpinionsOutput, retry_step.output)
-                        yield {"step": "dissenting_opinions", "status": "completed", "data": dissent_result.model_dump()}
-                except Exception as e:
-                    logger.error("Consistency retry for %s failed: %s", issue.step, e)
-        else:
-            yield {"step": "consistency_check", "status": "completed", "data": {"is_consistent": True}}
-
         if "abstract" in cached and cached["abstract"].get("abstract"):
             yield {"step": "abstract", "status": "completed", "data": cached["abstract"]}
         else:
             yield {"step": "abstract", "status": "in_progress"}
             try:
                 abstract_step = await extract_abstract(
-                    text=text,
+                    doc_ctx,
                     legal_system=legal_system,
                     jurisdiction=jurisdiction,
                     themes_output=theme_result,
