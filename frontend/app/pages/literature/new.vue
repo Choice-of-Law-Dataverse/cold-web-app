@@ -77,14 +77,14 @@
             <span class="label">Publication date</span>
           </template>
           <UPopover :popper="{ placement: 'bottom-start' }">
-            <UButton
+            <ColdDateTrigger
               icon="i-heroicons-calendar-days-20-solid"
               :label="
                 publicationDate
                   ? format(publicationDate, 'dd MMMM yyyy')
                   : 'Add date'
               "
-              class="cold-date-trigger mt-2"
+              class="mt-2"
             />
             <template #content="{ close }">
               <DatePicker v-model="publicationDate" @close="close" />

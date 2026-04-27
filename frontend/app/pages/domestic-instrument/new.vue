@@ -58,10 +58,10 @@
             </span>
           </template>
           <UPopover :popper="{ placement: 'bottom-start' }">
-            <UButton
+            <ColdDateTrigger
               icon="i-heroicons-calendar-days-20-solid"
               :label="format(entryIntoForce, 'dd MMMM yyyy')"
-              class="cold-date-trigger mt-2"
+              class="mt-2"
             />
             <template #content="{ close }">
               <DatePicker v-model="entryIntoForce" is-required @close="close" />
@@ -98,14 +98,14 @@
             </span>
           </template>
           <UPopover :popper="{ placement: 'bottom-start' }">
-            <UButton
+            <ColdDateTrigger
               icon="i-heroicons-calendar-days-20-solid"
               :label="
                 publicationDate
                   ? format(publicationDate, 'dd MMMM yyyy')
                   : 'Add date'
               "
-              class="cold-date-trigger mt-2"
+              class="mt-2"
             />
             <template #content="{ close }">
               <DatePicker v-model="publicationDate" @close="close" />
@@ -130,26 +130,23 @@
               <InfoPopover :text="tooltipCompatibleWithHCCH" />
             </span>
           </template>
-          <div
-            class="cold-toggle-group mt-2"
-            role="group"
-            aria-label="Compatible with the HCCH Principles"
+          <ColdToggleGroup
+            class="mt-2"
+            label="Compatible with the HCCH Principles"
           >
-            <UButton
-              class="cold-toggle-btn"
-              :aria-pressed="compatibleHcchPrinciples === 'No'"
+            <ColdToggleButton
+              :pressed="compatibleHcchPrinciples === 'No'"
               @click="compatibleHcchPrinciples = 'No'"
             >
               No
-            </UButton>
-            <UButton
-              class="cold-toggle-btn"
-              :aria-pressed="compatibleHcchPrinciples === 'Yes'"
+            </ColdToggleButton>
+            <ColdToggleButton
+              :pressed="compatibleHcchPrinciples === 'Yes'"
               @click="compatibleHcchPrinciples = 'Yes'"
             >
               Yes
-            </UButton>
-          </div>
+            </ColdToggleButton>
+          </ColdToggleGroup>
         </UFormField>
 
         <UFormField size="lg">
@@ -159,26 +156,23 @@
               <InfoPopover :text="tooltipCompatibleWithUNCITRAL" />
             </span>
           </template>
-          <div
-            class="cold-toggle-group mt-2"
-            role="group"
-            aria-label="Compatible with the UNCITRAL Model Law"
+          <ColdToggleGroup
+            class="mt-2"
+            label="Compatible with the UNCITRAL Model Law"
           >
-            <UButton
-              class="cold-toggle-btn"
-              :aria-pressed="compatibleUncitralModelLaw === 'No'"
+            <ColdToggleButton
+              :pressed="compatibleUncitralModelLaw === 'No'"
               @click="compatibleUncitralModelLaw = 'No'"
             >
               No
-            </UButton>
-            <UButton
-              class="cold-toggle-btn"
-              :aria-pressed="compatibleUncitralModelLaw === 'Yes'"
+            </ColdToggleButton>
+            <ColdToggleButton
+              :pressed="compatibleUncitralModelLaw === 'Yes'"
               @click="compatibleUncitralModelLaw = 'Yes'"
             >
               Yes
-            </UButton>
-          </div>
+            </ColdToggleButton>
+          </ColdToggleGroup>
         </UFormField>
 
         <div class="flex justify-end md:col-span-2">
