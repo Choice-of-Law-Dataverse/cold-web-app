@@ -29,7 +29,7 @@
     v-else
     :class="[
       'entity-link',
-      'label-jurisdiction',
+      'entity-link--jurisdiction',
       { 'entity-link--cmd': isModKeyHeld },
     ]"
     :href="href"
@@ -101,7 +101,7 @@ function handleClick(event: MouseEvent) {
 </script>
 
 <style scoped>
-.entity-link::after {
+.entity-link:not(.entity-link--jurisdiction)::after {
   display: none;
 }
 
@@ -174,7 +174,102 @@ function handleClick(event: MouseEvent) {
   }
 }
 
-.entity-link.label-jurisdiction:hover .entity-link__icon {
+.entity-link--jurisdiction {
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  color: var(--color-cold-night);
+  letter-spacing: 0.05em;
+  display: flex;
+  cursor: pointer;
+  align-items: center;
+  border-radius: 0.5rem;
+  text-align: left;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  transition:
+    box-shadow 150ms ease,
+    background 150ms ease,
+    color 150ms ease;
+  background: var(--gradient-subtle);
+  gap: 0.5rem;
+  padding: 0.25rem 0.5rem;
+}
+
+.entity-link--jurisdiction:hover {
+  box-shadow:
+    0 1px 3px 0 rgb(0 0 0 / 0.1),
+    0 1px 2px -1px rgb(0 0 0 / 0.1);
+  background: var(--gradient-subtle-emphasis);
+}
+
+.entity-link--jurisdiction:focus-visible {
+  outline: 2px solid var(--color-cold-purple);
+  outline-offset: 2px;
+}
+
+.entity-link--jurisdiction :deep(.flag-wrapper) {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 1rem;
+  overflow: hidden;
+  transition:
+    width 0.2s ease,
+    opacity 0.15s ease;
+}
+
+.entity-link--jurisdiction:hover :deep(.flag-wrapper) {
+  width: 0;
+  opacity: 0;
+  overflow: hidden;
+}
+
+.entity-link--jurisdiction::after {
+  content: "";
+  display: inline-block;
+  width: 0;
+  height: 1rem;
+  background-color: currentColor;
+  mask-image: var(--icon-arrow-right);
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  -webkit-mask-image: var(--icon-arrow-right);
+  -webkit-mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  opacity: 0;
+  transition:
+    width 0.2s ease,
+    opacity 0.15s ease;
+}
+
+.entity-link--jurisdiction:hover::after {
+  width: 1rem;
+  opacity: 1;
+}
+
+.entity-link--jurisdiction :deep(.item-flag) {
+  height: auto;
+}
+
+.entity-link--jurisdiction :deep(span) {
+  color: var(--color-cold-night);
+}
+
+.entity-link--jurisdiction :deep(.item-icon) {
+  flex-shrink: 0;
+  font-size: 1.25rem;
+  transition: color 150ms;
+  color: var(--color-cold-green);
+}
+
+.entity-link--jurisdiction:hover :deep(.item-icon) {
+  color: color-mix(in srgb, var(--color-cold-green) 85%, #000);
+}
+
+.entity-link--jurisdiction:hover .entity-link__icon {
   color: var(--color-cold-purple);
 }
 </style>
