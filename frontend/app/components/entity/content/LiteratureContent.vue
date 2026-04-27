@@ -24,7 +24,9 @@
     <template #author="{ value, label }">
       <section v-if="value && value !== data.editor">
         <DetailRow :label="label">
-          <p class="result-value-small whitespace-pre-line">{{ value }}</p>
+          <ResultValue size="sm" as="p" class="whitespace-pre-line">{{
+            value
+          }}</ResultValue>
         </DetailRow>
       </section>
     </template>
@@ -32,7 +34,9 @@
     <template #itemType="{ value, label }">
       <section v-if="value">
         <DetailRow :label="label">
-          <p class="result-value-small">{{ formatItemType(String(value)) }}</p>
+          <ResultValue size="sm" as="p">{{
+            formatItemType(String(value))
+          }}</ResultValue>
         </DetailRow>
       </section>
     </template>

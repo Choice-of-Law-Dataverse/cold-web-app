@@ -6,7 +6,7 @@
     :data="resultData"
   >
     <template #full-width>
-      <div class="gradient-top-border" />
+      <GradientTopBorder />
       <div class="w-full px-6 py-6">
         <EntityListFilters
           v-model:jurisdiction="selectedJurisdiction"

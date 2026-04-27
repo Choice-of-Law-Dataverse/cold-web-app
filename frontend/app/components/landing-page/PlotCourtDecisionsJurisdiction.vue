@@ -1,6 +1,6 @@
 <template>
   <UCard class="flex h-full w-full flex-col" :ui="{ body: '!p-0' }">
-    <div class="gradient-top-border" />
+    <GradientTopBorder />
     <div class="flex flex-col gap-4 p-4 sm:p-6">
       <h2 class="card-title">Court Decisions by Jurisdiction</h2>
       <p class="card-subtitle">

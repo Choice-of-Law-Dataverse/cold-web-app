@@ -36,7 +36,7 @@
 
     <template #default>
       <!-- Gradient divider between header and content -->
-      <div class="gradient-top-border" />
+      <GradientTopBorder />
 
       <div class="overflow-hidden px-6 py-5">
         <div v-if="!isSingleJurisdiction || allJurisdictionsData" class="mb-6">

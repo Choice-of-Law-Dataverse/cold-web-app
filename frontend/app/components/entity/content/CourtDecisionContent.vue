@@ -57,16 +57,14 @@
               English
             </span>
           </div>
-          <p class="result-value-small whitespace-pre-line">
-            {{
-              showEnglishQuote &&
-              data.hasEnglishQuoteTranslation &&
-              data.quote &&
-              String(data.quote).trim() !== ""
-                ? data.translatedExcerpt
-                : data.quote || data.translatedExcerpt
-            }}
-          </p>
+          <ResultValue size="sm" as="p" class="whitespace-pre-line">{{
+            showEnglishQuote &&
+            data.hasEnglishQuoteTranslation &&
+            data.quote &&
+            String(data.quote).trim() !== ""
+              ? data.translatedExcerpt
+              : data.quote || data.translatedExcerpt
+          }}</ResultValue>
         </div>
       </DetailRow>
     </template>
@@ -74,13 +72,11 @@
     <template #originalText="{ value, label }">
       <DetailRow v-if="value && String(value).trim() !== ''" :label="label">
         <div>
-          <p class="result-value-small">
-            {{
-              showFullText || String(value).length <= 400
-                ? value
-                : String(value).slice(0, 400) + "…"
-            }}
-          </p>
+          <ResultValue size="sm" as="p">{{
+            showFullText || String(value).length <= 400
+              ? value
+              : String(value).slice(0, 400) + "…"
+          }}</ResultValue>
           <ShowMoreLess
             v-if="String(value).length > 400"
             v-model:is-expanded="showFullText"

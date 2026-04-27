@@ -1,6 +1,6 @@
 <template>
   <UCard :ui="{ body: '!p-0' }">
-    <div class="gradient-top-border" />
+    <GradientTopBorder />
     <div class="p-4 sm:p-6">
       <!-- Map Container -->
       <div class="map-container">

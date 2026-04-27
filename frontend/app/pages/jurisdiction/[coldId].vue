@@ -56,7 +56,7 @@
                     </span>
                   </div>
                 </template>
-                <div class="gradient-top-border" />
+                <GradientTopBorder />
                 <div class="px-4 py-5 sm:px-6">
                   <div class="flex flex-col space-y-3 py-8">
                     <LoadingBar />

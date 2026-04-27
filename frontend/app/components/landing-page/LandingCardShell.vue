@@ -1,6 +1,6 @@
 <template>
   <UCard class="h-full w-full" :ui="{ body: '!p-0' }">
-    <div class="gradient-top-border" />
+    <GradientTopBorder />
     <div class="flex w-full flex-col gap-4 p-4 sm:p-6">
       <component
         :is="headerLink ? NuxtLink : 'div'"

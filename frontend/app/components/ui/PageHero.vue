@@ -11,7 +11,7 @@
         <!-- Optional badge -->
         <div v-if="badge" class="page-hero__badge">
           <slot name="badge-icon">
-            <svg class="sparkle-icon" viewBox="0 0 24 24" fill="currentColor">
+            <svg class="h-3 w-3" viewBox="0 0 24 24" fill="currentColor">
               <path
                 d="M12 2L13.09 8.26L19 9L13.09 9.74L12 16L10.91 9.74L5 9L10.91 8.26L12 2Z"
               />
