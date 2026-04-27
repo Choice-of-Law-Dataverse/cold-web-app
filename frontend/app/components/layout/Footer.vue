@@ -292,7 +292,7 @@ const currentYear = new Date().getFullYear();
 </style>
 
 <style>
-@reference "tailwindcss";
+@reference "@/assets/styles.css";
 
 .footer-container {
   @apply relative text-white;

@@ -10,7 +10,7 @@
 </template>
 
 <style>
-@reference "tailwindcss";
+@reference "@/assets/styles.css";
 
 .card-header-modern {
   @apply flex items-center gap-3;

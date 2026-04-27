@@ -103,7 +103,7 @@ const isRelativeLink = computed(() => {
 </script>
 
 <style scoped>
-@reference "tailwindcss";
+@reference "@/assets/styles.css";
 
 .connect-card {
   @apply transition-shadow duration-200;

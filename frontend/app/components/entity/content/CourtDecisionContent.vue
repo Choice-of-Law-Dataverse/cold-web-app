@@ -106,7 +106,7 @@ const showFullText = ref(false);
 </script>
 
 <style>
-@reference "tailwindcss";
+@reference "@/assets/styles.css";
 
 .label-key-provision-article,
 .label-key-provision-toggle {

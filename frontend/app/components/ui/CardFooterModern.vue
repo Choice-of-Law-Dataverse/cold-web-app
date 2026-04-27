@@ -10,7 +10,7 @@
 </template>
 
 <style>
-@reference "tailwindcss";
+@reference "@/assets/styles.css";
 
 .card-footer-modern {
   @apply flex items-center justify-between;

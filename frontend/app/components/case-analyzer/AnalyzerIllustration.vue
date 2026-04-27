@@ -196,7 +196,7 @@
 </template>
 
 <style>
-@reference "tailwindcss";
+@reference "@/assets/styles.css";
 
 .glow-pulse {
   @apply animate-pulse rounded-full blur-[32px];

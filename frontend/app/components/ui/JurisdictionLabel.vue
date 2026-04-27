@@ -33,7 +33,7 @@ function handleClick(event: MouseEvent) {
 </script>
 
 <style>
-@reference "tailwindcss";
+@reference "@/assets/styles.css";
 
 .jurisdiction-label {
   @apply inline-flex cursor-pointer items-center gap-2 text-left;

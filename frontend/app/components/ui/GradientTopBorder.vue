@@ -3,7 +3,7 @@
 </template>
 
 <style>
-@reference "tailwindcss";
+@reference "@/assets/styles.css";
 
 .gradient-top-border {
   @apply h-[6px];

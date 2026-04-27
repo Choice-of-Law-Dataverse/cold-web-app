@@ -99,7 +99,7 @@ withDefaults(defineProps<Props>(), {
 </style>
 
 <style>
-@reference "tailwindcss";
+@reference "@/assets/styles.css";
 
 .content-page-prose h1,
 .content-page-prose h2,

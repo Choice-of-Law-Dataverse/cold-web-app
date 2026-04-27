@@ -12,7 +12,7 @@
 </template>
 
 <style>
-@reference "tailwindcss";
+@reference "@/assets/styles.css";
 
 .app-btn-gradient {
   background-image: linear-gradient(

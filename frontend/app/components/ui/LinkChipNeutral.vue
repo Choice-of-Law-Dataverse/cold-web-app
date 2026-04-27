@@ -9,7 +9,7 @@ defineOptions({ inheritAttrs: false });
 </script>
 
 <style>
-@reference "tailwindcss";
+@reference "@/assets/styles.css";
 
 .link-chip--neutral {
   @apply -ml-3 inline-flex items-center rounded-lg px-3 py-1.5 text-sm font-medium text-pretty;

@@ -77,7 +77,7 @@ ul::-webkit-scrollbar {
 </style>
 
 <style>
-@reference "tailwindcss";
+@reference "@/assets/styles.css";
 
 .nav-tab,
 .section-nav-item {

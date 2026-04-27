@@ -374,7 +374,7 @@ useHead({
 </script>
 
 <style scoped>
-@reference "tailwindcss";
+@reference "@/assets/styles.css";
 
 @keyframes fade-up {
   from {

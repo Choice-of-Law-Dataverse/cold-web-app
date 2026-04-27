@@ -30,7 +30,7 @@ const sizeClass = computed(() => {
 </script>
 
 <style>
-@reference "tailwindcss";
+@reference "@/assets/styles.css";
 
 .result-value {
   @apply font-medium;

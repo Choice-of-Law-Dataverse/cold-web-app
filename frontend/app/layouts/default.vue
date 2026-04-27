@@ -101,7 +101,7 @@ onMounted(() => {
 </style>
 
 <style>
-@reference "tailwindcss";
+@reference "@/assets/styles.css";
 
 .skip-link {
   @apply absolute top-auto -left-[9999px] z-[9999] h-px w-px overflow-hidden rounded-br-lg px-6 py-3 font-semibold text-white no-underline;

@@ -14,7 +14,7 @@ withDefaults(
 </script>
 
 <style>
-@reference "tailwindcss";
+@reference "@/assets/styles.css";
 
 .label-link {
   @apply relative inline-flex items-center gap-0 font-medium no-underline;

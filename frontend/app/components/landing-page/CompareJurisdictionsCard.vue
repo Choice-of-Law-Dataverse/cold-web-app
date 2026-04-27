@@ -59,7 +59,7 @@ withDefaults(
 </script>
 
 <style scoped>
-@reference "tailwindcss";
+@reference "@/assets/styles.css";
 
 .comparison-row {
   @apply flex items-center justify-center gap-6 rounded-lg px-4 py-3 shadow-sm transition-all duration-150;

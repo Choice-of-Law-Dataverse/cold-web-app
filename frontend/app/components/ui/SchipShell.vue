@@ -55,7 +55,7 @@ defineExpose({ rootEl });
 </script>
 
 <style>
-@reference "tailwindcss";
+@reference "@/assets/styles.css";
 
 .schip {
   --schip-pad-x: 9px;

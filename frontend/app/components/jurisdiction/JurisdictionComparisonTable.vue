@@ -940,7 +940,7 @@ const matchStats = computed(() => {
 </script>
 
 <style scoped>
-@reference "tailwindcss";
+@reference "@/assets/styles.css";
 
 .comparison-label {
   font-size: 0.8125rem;

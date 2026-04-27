@@ -29,7 +29,7 @@ const variantClass = computed(() => VARIANT_COLOR_MAP[props.variant] ?? "");
 </script>
 
 <style>
-@reference "tailwindcss";
+@reference "@/assets/styles.css";
 
 .entity-type-label {
   --label-color: var(--color-cold-purple);

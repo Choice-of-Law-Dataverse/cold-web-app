@@ -51,7 +51,7 @@ defineProps<{
 </script>
 
 <style>
-@reference "tailwindcss";
+@reference "@/assets/styles.css";
 
 .page-hero {
   @apply relative mb-10 overflow-hidden rounded-2xl p-6 sm:p-8;
