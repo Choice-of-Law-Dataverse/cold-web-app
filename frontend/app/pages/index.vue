@@ -4,43 +4,50 @@
   >
     <div class="animate-fade-scale-in col-span-12">
       <div
-        class="hero-gradient hero-stack rounded-2xl px-3 py-8 md:px-10 md:py-14"
+        class="hero-gradient hero-stack w-full rounded-2xl px-3 py-8 md:px-10 md:py-14"
       >
-        <h1
-          class="hero-title text-[40px] leading-[1.02] font-bold text-pretty sm:text-[64px] md:text-[80px]"
+        <div
+          class="space-between align-items-center flex w-full flex-grow flex-col md:flex-row"
         >
-          Choice of Law Dataverse
-        </h1>
-
-        <div class="hero-bottom">
-          <h2 class="hero-subtitle text-lg font-medium text-pretty">
-            Navigate private international law issues with precision.
-            <NuxtLink class="hero-link" to="/about" variant="link">
-              What&nbsp;is&nbsp;CoLD?
-            </NuxtLink>
-          </h2>
-
-          <UTooltip
-            text="Winner of Swiss National ORD Prize 2025 for Legal Sciences"
-          >
-            <a
-              href="https://ord.swiss-academies.ch/news/swiss-national-ord-prize-2025-for-legal-and-environmental-sciences"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="hero-badge"
+          <div class="flex flex-col gap-2">
+            <h1
+              class="hero-title text-[40px] leading-[1.02] font-bold text-pretty sm:text-[64px] md:text-[80px]"
             >
-              <img
-                src="https://assets.cold.global/assets/Prix-ORD-DEF_2025.png"
-                alt="Swiss National ORD Prize 2025"
-                class="hero-badge-img"
-                width="64"
-                height="67"
-                loading="lazy"
-                decoding="async"
-              />
-              <span class="hero-badge-text">Swiss National ORD Prize 2025</span>
-            </a>
-          </UTooltip>
+              Choice of Law Dataverse
+            </h1>
+
+            <div class="hero-bottom">
+              <h2 class="hero-subtitle text-lg font-medium text-pretty">
+                Navigate private international law issues with precision.
+                <NuxtLink class="hero-link" to="/about" variant="link">
+                  What&nbsp;is&nbsp;CoLD?
+                </NuxtLink>
+              </h2>
+            </div>
+          </div>
+
+          <div class="ml-auto flex items-center">
+            <UTooltip
+              text="Winner of Swiss National ORD Prize 2025 for Legal Sciences"
+            >
+              <a
+                href="https://ord.swiss-academies.ch/news/swiss-national-ord-prize-2025-for-legal-and-environmental-sciences"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="hero-badge"
+              >
+                <img
+                  src="https://assets.cold.global/assets/Prix-ORD-DEF_2025.png"
+                  alt="Swiss National ORD Prize 2025"
+                  class="hero-badge-img"
+                  width="64"
+                  height="67"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </a>
+            </UTooltip>
+          </div>
         </div>
       </div>
     </div>
