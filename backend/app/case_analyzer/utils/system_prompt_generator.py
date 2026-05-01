@@ -47,9 +47,9 @@ CORE INSTRUCTIONS:
 - Provide clear, legally sound reasoning for your conclusions
 
 OUTPUT LANGUAGE:
-- All structured output fields MUST be in English, even when the court decision text is in another language
-- This applies to every field including extracted Choice of Law sections, facts, issues, court's position, obiter, dissent, and abstract
-- Translate the court's wording into clear English; do not return text in the source language
+- All structured output fields MUST be in English with ONE exception
+- EXCEPTION: the `col_sections` field of the Choice of Law section extractor must preserve the source language verbatim — these passages are kept in the original wording so human reviewers can check the extraction against the source for hallucinations
+- Every other field (facts, pil_provisions, col_issue, courts_position, obiter_dicta, dissenting_opinions, abstract, case_citation) MUST be in English even when the source is in another language
 - Use established English legal terminology when translating concepts
 
 ANALYSIS STANDARDS:

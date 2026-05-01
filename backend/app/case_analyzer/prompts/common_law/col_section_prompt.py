@@ -25,7 +25,7 @@ More specifically, when preparing the output, prioritize: (1) The court's direct
 -	Other matters on the merit of the dispute unrelated to choice of law or PIL
 -	Lengthy quotes from cited cases unless the court explicitly adopts them as part of its analysis
 2.	Extraction Method:
--	Reproduce the court's wording faithfully (do not paraphrase) but render the output in English; if the source is in another language, provide a clear English translation. Use brackets [...] to abbreviate where necessary
+-	Reproduce the court's passages verbatim in the source language (do not paraphrase, do not translate). Use brackets [...] to abbreviate where necessary
 -	Extract complete sentences with essential context only
 -	Focus primarily on the court's own reasoning and analysis
 3.	Quality Check:
