@@ -2,7 +2,7 @@ Nuxt 4 frontend (Vue.js, TypeScript, TailwindCSS, Nuxt UI 4).
 
 ## Key Configuration
 
-- **Auto-imports**: Only `vue` preset (configured in `nuxt.config.ts`). Custom composables, utils, and third-party libraries require explicit imports.
+- **Auto-imports**: Vue composables are auto-imported by Nuxt. Custom composables, utils, and third-party libraries require explicit imports.
 - **Color mode**: Light only (no dark mode)
 - **Type checking**: Run `pnpm run check` (disabled in nuxt.config)
 

@@ -182,6 +182,5 @@ export default defineNuxtConfig({
   },
   imports: {
     dirs: [],
-    presets: ["vue"],
   },
 });
