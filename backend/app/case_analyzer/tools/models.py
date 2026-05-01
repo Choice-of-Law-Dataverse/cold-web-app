@@ -8,12 +8,6 @@ from pydantic import BaseModel, Field, model_validator
 
 _REPETITION_RE = re.compile(r"(.{5,80}?)\1{3,}\s*$")
 
-_SUPPORTING_QUOTES_DESC = (
-    "Verbatim excerpts from the decision that back this extraction. "
-    "The output guardrail rejects the result if any quote is not found "
-    "(normalized) in the source text."
-)
-
 
 def _strip_repetitive_suffix(text: str) -> str:
     return _REPETITION_RE.sub("", text).rstrip()
@@ -46,7 +40,6 @@ class ConfidenceReasoningModel(BaseModel):
 
 class ColSectionOutput(ConfidenceReasoningModel):
     col_sections: list[str] = Field(description="List of extracted Choice of Law section texts")
-    supporting_quotes: list[str] = Field(default_factory=list, description=_SUPPORTING_QUOTES_DESC)
 
     def __str__(self) -> str:
         return "\n\n".join(self.col_sections)
@@ -54,37 +47,30 @@ class ColSectionOutput(ConfidenceReasoningModel):
 
 class CaseCitationOutput(ConfidenceReasoningModel):
     case_citation: str = Field(description="The case citation extracted from the text. Academic format preferred.")
-    supporting_quotes: list[str] = Field(default_factory=list, description=_SUPPORTING_QUOTES_DESC)
 
 
 class RelevantFactsOutput(ConfidenceReasoningModel):
     relevant_facts: str = Field(description="The relevant facts from the case")
-    supporting_quotes: list[str] = Field(default_factory=list, description=_SUPPORTING_QUOTES_DESC)
 
 
 class PILProvisionsOutput(ConfidenceReasoningModel):
     pil_provisions: list[str] = Field(description="List of Private International Law provisions")
-    supporting_quotes: list[str] = Field(default_factory=list, description=_SUPPORTING_QUOTES_DESC)
 
 
 class ColIssueOutput(ConfidenceReasoningModel):
     col_issue: str = Field(description="The Choice of Law issue(s) in the case")
-    supporting_quotes: list[str] = Field(default_factory=list, description=_SUPPORTING_QUOTES_DESC)
 
 
 class CourtsPositionOutput(ConfidenceReasoningModel):
     courts_position: str = Field(description="The court's position on the CoL issue")
-    supporting_quotes: list[str] = Field(default_factory=list, description=_SUPPORTING_QUOTES_DESC)
 
 
 class ObiterDictaOutput(ConfidenceReasoningModel):
     obiter_dicta: str = Field(description="Obiter dicta from the court's opinion")
-    supporting_quotes: list[str] = Field(default_factory=list, description=_SUPPORTING_QUOTES_DESC)
 
 
 class DissentingOpinionsOutput(ConfidenceReasoningModel):
     dissenting_opinions: str = Field(description="Dissenting opinions in the case")
-    supporting_quotes: list[str] = Field(default_factory=list, description=_SUPPORTING_QUOTES_DESC)
 
 
 class AbstractOutput(ConfidenceReasoningModel):

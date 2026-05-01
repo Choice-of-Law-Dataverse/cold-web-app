@@ -5,7 +5,6 @@ from agents import Agent, TResponseInputItem
 from agents.models.openai_responses import OpenAIResponsesModel
 
 from ..config import get_model, get_openai_client
-from ..quote_guardrail import verify_supporting_quotes
 from ..runner import run_agent
 from .document_nav import DocumentContext, read_head, search
 from .models import CaseCitationOutput, StepResult
@@ -35,7 +34,6 @@ async def extract_case_citation(
             instructions=instructions,
             output_type=CaseCitationOutput,
             tools=[read_head, search],
-            output_guardrails=[verify_supporting_quotes],
             model=OpenAIResponsesModel(
                 model=get_model("case_citation"),
                 openai_client=get_openai_client(),

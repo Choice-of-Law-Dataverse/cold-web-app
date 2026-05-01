@@ -6,7 +6,6 @@ from agents.models.openai_responses import OpenAIResponsesModel
 
 from ..config import get_model, get_openai_client
 from ..prompts import get_prompt_module
-from ..quote_guardrail import verify_supporting_quotes
 from ..runner import run_agent
 from ..utils import generate_system_prompt
 from .document_nav import DocumentContext, get_paragraph_containing, read_window, search
@@ -33,7 +32,6 @@ async def extract_relevant_facts(
             instructions=system_prompt,
             output_type=RelevantFactsOutput,
             tools=[search, read_window, get_paragraph_containing],
-            output_guardrails=[verify_supporting_quotes],
             model=OpenAIResponsesModel(
                 model=get_model("relevant_facts"),
                 openai_client=get_openai_client(),

@@ -6,7 +6,6 @@ from agents.models.openai_responses import OpenAIResponsesModel
 
 from ..config import get_model, get_openai_client
 from ..prompts import get_prompt_module
-from ..quote_guardrail import verify_supporting_quotes
 from ..runner import run_agent
 from ..utils import generate_system_prompt
 from .document_nav import (
@@ -53,7 +52,6 @@ async def extract_courts_position(
             instructions=system_prompt,
             output_type=CourtsPositionOutput,
             tools=[search, get_paragraph_containing, list_headings, read_section, read_window, read_head, read_tail],
-            output_guardrails=[verify_supporting_quotes],
             model=OpenAIResponsesModel(
                 model=get_model("courts_position"),
                 openai_client=get_openai_client(),
