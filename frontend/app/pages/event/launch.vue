@@ -141,16 +141,9 @@
 </template>
 
 <script setup lang="ts">
-import { Icon } from "#components";
 import { ASSET_BASE_URL } from "@/config/assets";
 import EventSession from "@/components/event/EventSession.vue";
 import EventDot from "@/components/event/EventDot.vue";
-
-const zoomUrl =
-  "https://unilu.zoom.us/j/65808983107?pwd=bqJa2WJOlavMwaDgTY8qZFZbgcSB5T.1";
-
-const calendarUrl =
-  "https://calendar.google.com/calendar/render?action=TEMPLATE&text=CoLD%20Launch%20Event%20%E2%80%94%20Choice%20of%20Law%20Dataverse%20in%20Action&dates=20260428T113000%2F20260428T153000&ctz=Europe%2FZurich&details=Join%20via%20Zoom%3A%20https%3A%2F%2Funilu.zoom.us%2Fj%2F65808983107%3Fpwd%3DbqJa2WJOlavMwaDgTY8qZFZbgcSB5T.1%0A%0Acold.global&location=Online%20(Zoom)";
 
 useHead({
   title: "CoLD Launch — 28 April 2026",

@@ -6,9 +6,8 @@
     :modal="false"
     :dismissible="false"
     :ui="{
-      base: '!ring-0 !border-0',
       content:
-        'sm:max-w-sm max-w-full shadow-2xl !ring-0 !border-0 !top-[calc(var(--nav-height)+3rem)] !h-auto !bottom-0 ',
+        'sm:max-w-sm max-w-full shadow-2xl ring-0 !top-[calc(var(--nav-height)+3rem)] !h-auto !bottom-0 rounded-tl-xl',
     }"
   >
     <template #content>
