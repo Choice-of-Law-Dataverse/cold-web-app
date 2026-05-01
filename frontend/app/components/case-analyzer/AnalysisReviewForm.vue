@@ -18,8 +18,25 @@
     </template>
 
     <div class="space-y-5">
+      <DocumentDisplay :document-name="documentName" />
+
       <div class="grid gap-5 md:grid-cols-2">
-        <DocumentDisplay :document-name="documentName" />
+        <UFormField label="Jurisdiction">
+          <div v-if="jurisdictionsLoading" class="text-sm text-gray-500">
+            Loading jurisdictions...
+          </div>
+          <div v-else-if="jurisdictionsError" class="text-sm text-gray-500">
+            Failed to load jurisdictions
+          </div>
+          <JurisdictionSelectMenu
+            v-else
+            :model-value="selectedJurisdiction"
+            :jurisdictions="jurisdictions || []"
+            placeholder="Select jurisdiction"
+            :disabled="isAnalyzing || isSubmitted"
+            @update:model-value="handleJurisdictionChange"
+          />
+        </UFormField>
         <UFormField label="Legal System Type">
           <USelect
             :model-value="legalSystemType"
@@ -34,23 +51,6 @@
           />
         </UFormField>
       </div>
-
-      <UFormField label="Jurisdiction">
-        <div v-if="jurisdictionsLoading" class="text-sm text-gray-500">
-          Loading jurisdictions...
-        </div>
-        <div v-else-if="jurisdictionsError" class="text-sm text-gray-500">
-          Failed to load jurisdictions
-        </div>
-        <JurisdictionSelectMenu
-          v-else
-          :model-value="selectedJurisdiction"
-          :jurisdictions="jurisdictions || []"
-          placeholder="Select jurisdiction"
-          :disabled="isAnalyzing || isSubmitted"
-          @update:model-value="handleJurisdictionChange"
-        />
-      </UFormField>
 
       <AnalysisFormField
         label="Choice of Law Sections"

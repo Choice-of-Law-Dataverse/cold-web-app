@@ -36,22 +36,32 @@ export function useCaseAnalyzer(
 
   async function startAnalysis(
     draftId: number,
-    jurisdictionInfo: JurisdictionInfo,
+    jurisdictionInfo: JurisdictionInfo | null,
     resume = false,
+    onJurisdictionDetected?: (jurisdiction: JurisdictionInfo) => void,
   ): Promise<{ success: boolean; error?: string }> {
     isAnalyzing.value = true;
 
     try {
+      const body: Record<string, unknown> = { draft_id: draftId, resume };
+      if (jurisdictionInfo) {
+        body.jurisdiction = jurisdictionInfo;
+      }
+
       await streamSSE<AnalysisStepPayload>({
         url: "/api/proxy/case-analyzer/analyze",
         method: "POST",
-        body: {
-          draft_id: draftId,
-          jurisdiction: jurisdictionInfo,
-          resume,
-        },
+        body,
         stepLabels: ANALYZER_STEP_LABELS,
         onEvent: (event: SSEEvent<AnalysisStepPayload>) => {
+          if (
+            event.step === "jurisdiction_detection" &&
+            event.status === "completed" &&
+            event.data
+          ) {
+            onJurisdictionDetected?.(event.data as unknown as JurisdictionInfo);
+          }
+
           const step = stepsMap.value.get(event.step);
           if (step) {
             step.status = event.status;

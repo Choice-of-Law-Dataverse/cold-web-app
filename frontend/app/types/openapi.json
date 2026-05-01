@@ -5203,8 +5203,15 @@
             "description": "Draft ID from upload response"
           },
           "jurisdiction": {
-            "$ref": "#/components/schemas/JurisdictionInfo",
-            "description": "Confirmed or corrected jurisdiction information"
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/JurisdictionInfo"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Optional user-corrected jurisdiction. When omitted, jurisdiction is detected concurrently with the first extraction step."
           },
           "resume": {
             "type": "boolean",
@@ -5213,7 +5220,7 @@
           }
         },
         "type": "object",
-        "required": ["draftId", "jurisdiction"],
+        "required": ["draftId"],
         "title": "ConfirmAnalysisRequest"
       },
       "CourtDecisionDetail": {

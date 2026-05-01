@@ -1,4 +1,4 @@
-from ..shared import NAV_TOOLS_PREAMBLE
+from .shared import NAV_TOOLS_PREAMBLE
 
 COL_SECTION_PROMPT = (
     """
@@ -15,7 +15,7 @@ More specifically, when preparing the output, prioritize: (1) The court's direct
 1.1 Make sure to include the following parts:
 -	The court's reasoning about law selection and analysis of party agreements on governing law
 -	Discussion of PIL principles and application of foreign law provisions
--	Both ratio decidendi and obiter dicta related to choice of law
+-	Both ratio decidendi and obiter dicta related to choice of law (when present in common-law-style decisions)
 -	Jurisdiction discussions ONLY when they directly involve choice of law analysis (e.g., determining which law governs the interpretation of jurisdiction clauses, or how choice of law affects jurisdictional determinations)
 -	Supporting citations and precedents only when the court explicitly relies on them for its choice of law determination
 1.2 Exclude all of the following:

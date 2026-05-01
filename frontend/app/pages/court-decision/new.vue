@@ -244,19 +244,22 @@ async function uploadDocument() {
 }
 
 async function confirmAndAnalyze(resume = false) {
-  if (!draftId.value || !jurisdictionInfo.value) return;
+  if (!draftId.value) return;
 
   currentStep.value = "analyzing";
   error.value = null;
 
   if (!resume) {
-    resetAnalysisSteps(new Set(["document_upload", "jurisdiction_detection"]));
+    resetAnalysisSteps(new Set(["document_upload"]));
   }
 
   const result = await analysis.startAnalysis(
     draftId.value,
     jurisdictionInfo.value,
     resume,
+    (jurisdiction) => {
+      jurisdictionInfo.value = jurisdiction;
+    },
   );
 
   if (!result.success) {

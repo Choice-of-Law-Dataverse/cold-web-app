@@ -74,7 +74,7 @@ _COMMON_PATCHES: dict[str, AsyncMock] = {
 
 async def _collect(jurisdiction: JurisdictionOutput, cached: dict | None = None, draft_id: int = 0) -> list[dict]:
     events = []
-    async for event in analyze_case_streaming("decision text", jurisdiction, cached, draft_id=draft_id):
+    async for event in analyze_case_streaming("decision text", cached, draft_id=draft_id, jurisdiction_override=jurisdiction):
         events.append(event)
     return events
 

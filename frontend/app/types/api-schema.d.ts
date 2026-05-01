@@ -1076,8 +1076,8 @@ export interface components {
     ConfirmAnalysisRequest: {
       /** @description Draft ID from upload response */
       draftId: number;
-      /** @description Confirmed or corrected jurisdiction information */
-      jurisdiction: components["schemas"]["JurisdictionInfo"];
+      /** @description Optional user-corrected jurisdiction. When omitted, jurisdiction is detected concurrently with the first extraction step. */
+      jurisdiction?: components["schemas"]["JurisdictionInfo"] | null;
       /**
        * @description Whether to resume from last successful step (for error recovery)
        * @default false

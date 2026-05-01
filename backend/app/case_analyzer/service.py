@@ -88,32 +88,60 @@ def _reconstruct_col_issue(cached: dict[str, Any]) -> ColIssueOutput:
 
 async def analyze_case_streaming(
     text: str,
-    jurisdiction_data: JurisdictionOutput,
     cached_results: dict[str, Any] | None = None,
     draft_id: int = 0,
+    jurisdiction_override: JurisdictionOutput | None = None,
 ) -> AsyncGenerator[dict[str, Any], None]:
     """
     Execute complete case analysis workflow with streaming updates.
 
+    Runs jurisdiction detection in parallel with col_section extraction as the
+    first stage; the rest of the pipeline depends on the detected jurisdiction.
+    Pass `jurisdiction_override` to skip detection and use a user-corrected value.
     Yields intermediate results as they complete. If cached_results is provided,
     steps with cached data are skipped and their cached results are yielded immediately.
     """
-    legal_system = jurisdiction_data.legal_system_type
-    jurisdiction = jurisdiction_data.precise_jurisdiction
-    run_common_law_branches = _requires_common_law_steps(legal_system, jurisdiction)
     cached = cached_results or {}
     last_response_id: str | None = None
     doc_ctx = DocumentContext(draft_id=draft_id, text=text)
 
     with logfire.span("case_analysis_workflow", resume=bool(cached_results), draft_id=draft_id):
-        if "col_extraction" in cached and cached["col_extraction"].get("col_sections"):
-            col_result = _reconstruct_col_section(cached["col_extraction"])
-            yield {"step": "col_extraction", "status": "completed", "data": cached["col_extraction"]}
-            col_section_text = str(col_result)
-        else:
+        # Stage 1: jurisdiction detection (or override) and col_section run concurrently.
+        col_cached = bool("col_extraction" in cached and cached["col_extraction"].get("col_sections"))
+
+        if jurisdiction_override is None:
+            yield {"step": "jurisdiction_detection", "status": "in_progress"}
+        if not col_cached:
             yield {"step": "col_extraction", "status": "in_progress"}
+
+        jurisdiction_task = asyncio.create_task(detect_jurisdiction(text)) if jurisdiction_override is None else None
+        col_task = asyncio.create_task(extract_col_section(doc_ctx)) if not col_cached else None
+
+        if jurisdiction_task is not None:
             try:
-                col_step = await extract_col_section(doc_ctx, legal_system, jurisdiction)
+                jurisdiction_data = await jurisdiction_task
+                yield {
+                    "step": "jurisdiction_detection",
+                    "status": "completed",
+                    "data": jurisdiction_data.model_dump(),
+                }
+            except Exception as e:
+                logger.error("Jurisdiction detection failed: %s", str(e))
+                yield {"step": "jurisdiction_detection", "status": "error", "error": str(e)}
+                if col_task is not None:
+                    col_task.cancel()
+                return
+        else:
+            assert jurisdiction_override is not None
+            jurisdiction_data = jurisdiction_override
+
+        legal_system = jurisdiction_data.legal_system_type
+        jurisdiction = jurisdiction_data.precise_jurisdiction
+        run_common_law_branches = _requires_common_law_steps(legal_system, jurisdiction)
+
+        if col_task is not None:
+            try:
+                col_step = await col_task
                 col_result = col_step.output
                 last_response_id = col_step.response_id
                 yield {
@@ -126,6 +154,10 @@ async def analyze_case_streaming(
                 logger.error("COL extraction failed: %s", str(e))
                 yield {"step": "col_extraction", "status": "error", "error": str(e)}
                 return
+        else:
+            col_result = _reconstruct_col_section(cached["col_extraction"])
+            yield {"step": "col_extraction", "status": "completed", "data": cached["col_extraction"]}
+            col_section_text = str(col_result)
 
         need_theme = "theme_classification" not in cached or not cached["theme_classification"].get("themes")
         need_citation = "case_citation" not in cached or not cached["case_citation"].get("case_citation")
