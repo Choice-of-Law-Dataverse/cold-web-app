@@ -2,7 +2,6 @@
   <div class="bg-cold-bg flex min-h-dvh flex-col">
     <a href="#main-content" class="skip-link">Skip to main content</a>
     <Nav />
-    <EventBanner />
 
     <main
       id="main-content"

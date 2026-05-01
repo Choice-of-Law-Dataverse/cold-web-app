@@ -1,7 +1,9 @@
 <template>
   <div class="detail-row @container" :class="variant ? `type-${variant}` : ''">
     <div class="flex flex-col gap-2 @md:flex-row @md:items-start @md:gap-10">
-      <div class="label-key flex flex-col items-start @md:w-48 @md:shrink-0">
+      <div
+        class="label-key flex flex-row flex-wrap items-baseline gap-x-2 @md:w-48 @md:shrink-0 @md:flex-col @md:items-start @md:gap-x-0"
+      >
         <span class="flex items-center gap-1.5">
           <span class="mono-font">
             {{ label }}
@@ -109,12 +111,17 @@ defineProps({
 
 .label-subtitle {
   display: block;
-  margin-top: 0.125rem;
   font-size: 0.7rem;
   font-weight: 400;
   color: var(--color-cold-night-alpha);
   text-transform: none;
   letter-spacing: normal;
   opacity: 0.6;
+}
+
+@container (min-width: 28rem) {
+  .label-subtitle {
+    margin-top: 0.125rem;
+  }
 }
 </style>

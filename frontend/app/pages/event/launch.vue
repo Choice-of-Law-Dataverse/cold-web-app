@@ -36,30 +36,6 @@
             >
               28 April 2026 &middot; 11.30 am – 7.00 pm CEST
             </span>
-            <a
-              :href="zoomUrl"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Join Zoom (opens in new tab)"
-              class="text-cold-purple inline-flex items-center gap-1.5 rounded-sm border border-[#ebe9f8] bg-[#ebe9f8] px-4 py-2 text-xs font-medium tracking-wide transition-colors hover:border-[#d8d4f5] hover:bg-[#d8d4f5]"
-            >
-              <Icon name="lucide:video" class="size-3.5" aria-hidden="true" />
-              Join Zoom
-            </a>
-            <a
-              :href="calendarUrl"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Add to Calendar (opens in new tab)"
-              class="text-cold-purple inline-flex items-center gap-1.5 rounded-sm border border-[#ebe9f8] bg-[#ebe9f8] px-4 py-2 text-xs font-medium tracking-wide transition-colors hover:border-[#d8d4f5] hover:bg-[#d8d4f5]"
-            >
-              <Icon
-                name="lucide:calendar"
-                class="size-3.5"
-                aria-hidden="true"
-              />
-              Add to Calendar
-            </a>
           </div>
         </div>
 
@@ -111,13 +87,7 @@
           >
             <p>
               15-minute private sessions to explore the Dataverse for your
-              research, ask questions, or sign up as a specialist. Request by
-              <b>20 April</b> at
-              <a
-                href="mailto:mail@cold.global"
-                class="text-cold-purple font-medium no-underline"
-                >mail@cold.global</a
-              >
+              research, ask questions, or sign up as a specialist.
             </p>
           </EventSession>
 
@@ -152,14 +122,6 @@
         <div
           class="border-cold-gray mt-8 flex flex-wrap items-center justify-between gap-4 border-t pt-6 pb-6"
         >
-          <div class="text-cold-charcoal text-sm leading-relaxed">
-            Join the full event or individual panels<br />
-            <a
-              href="mailto:mail@cold.global"
-              class="text-cold-purple font-medium no-underline"
-              >mail@cold.global</a
-            >
-          </div>
           <div class="flex items-center gap-5">
             <img
               :src="`${ASSET_BASE_URL}/snf-logo.svg`"
