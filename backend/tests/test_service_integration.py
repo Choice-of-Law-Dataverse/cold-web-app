@@ -1,5 +1,6 @@
 """Integration tests for analyze_case_streaming event sequence and SSE contract."""
 
+from typing import Any, cast
 from unittest.mock import AsyncMock, patch
 
 import pytest
@@ -197,3 +198,26 @@ class TestErrorHandling:
         assert len(error_events) == 1
         assert error_events[0]["step"] == "col_extraction"
         assert "analysis_complete" not in [e["step"] for e in events]
+
+    @pytest.mark.asyncio
+    async def test_guardrail_tripwire_surfaces_missing_quotes(self) -> None:
+        from agents.exceptions import OutputGuardrailTripwireTriggered
+        from agents.guardrail import GuardrailFunctionOutput, OutputGuardrailResult
+
+        from app.case_analyzer.quote_guardrail import verify_supporting_quotes as _g
+
+        guardrail_output = GuardrailFunctionOutput(
+            output_info={"missing_quotes": ["fabricated quote that isn't in source"]},
+            tripwire_triggered=True,
+        )
+        result = OutputGuardrailResult(guardrail=_g, agent_output=COL, agent=cast(Any, None), output=guardrail_output)
+        tripwire = OutputGuardrailTripwireTriggered(result)
+
+        failing_patches = dict(_CIVIL_PATCHES)
+        failing_patches["extract_col_section"] = AsyncMock(side_effect=tripwire)
+        with patch.multiple(_SERVICE, **failing_patches):
+            events = await _collect(_CIVIL_JURISDICTION, draft_id=1)
+
+        error = next(e for e in events if e["status"] == "error")
+        assert error["step"] == "col_extraction"
+        assert error["missing_quotes"] == ["fabricated quote that isn't in source"]

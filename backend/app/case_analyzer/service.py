@@ -8,6 +8,7 @@ from collections.abc import AsyncGenerator
 from typing import Any, cast
 
 import logfire
+from agents.exceptions import OutputGuardrailTripwireTriggered
 
 from .tools import (
     CaseCitationOutput,
@@ -36,6 +37,15 @@ from .tools import (
 from .tools.document_nav import DocumentContext
 
 logger = logging.getLogger(__name__)
+
+
+def _error_event(step: str, exc: Exception) -> dict[str, Any]:
+    payload: dict[str, Any] = {"step": step, "status": "error", "error": str(exc)}
+    if isinstance(exc, OutputGuardrailTripwireTriggered):
+        result: Any = exc.guardrail_result
+        info = result.output.output_info or {}
+        payload["missing_quotes"] = info.get("missing_quotes", [])
+    return payload
 
 
 def _requires_common_law_steps(legal_system: str | None, jurisdiction: str | None) -> bool:
@@ -124,7 +134,7 @@ async def analyze_case_streaming(
                 col_section_text = str(col_result)
             except Exception as e:
                 logger.error("COL extraction failed: %s", str(e))
-                yield {"step": "col_extraction", "status": "error", "error": str(e)}
+                yield _error_event("col_extraction", e)
                 return
 
         need_theme = "theme_classification" not in cached or not cached["theme_classification"].get("themes")
@@ -210,7 +220,7 @@ async def analyze_case_streaming(
                 for task_name, result in zip(task_names, results, strict=True):
                     if isinstance(result, Exception):
                         logger.error("%s failed: %s", task_name, str(result))
-                        yield {"step": task_name, "status": "error", "error": str(result)}
+                        yield _error_event(task_name, result)
                         if task_name in ("theme_classification", "relevant_facts", "pil_provisions"):
                             return
                         continue
@@ -233,7 +243,7 @@ async def analyze_case_streaming(
 
             except Exception as e:
                 logger.error("Parallel task execution failed: %s", str(e))
-                yield {"step": "parallel_tasks", "status": "error", "error": str(e)}
+                yield _error_event("parallel_tasks", e)
                 return
 
         if theme_result is None or facts_result is None or provisions_result is None:
@@ -264,7 +274,7 @@ async def analyze_case_streaming(
                 }
             except Exception as e:
                 logger.error("COL issue extraction failed: %s", str(e))
-                yield {"step": "col_issue", "status": "error", "error": str(e)}
+                yield _error_event("col_issue", e)
                 return
 
         obiter_result: ObiterDictaOutput | None = None
@@ -371,13 +381,13 @@ async def analyze_case_streaming(
                 results = await asyncio.gather(*(task for _, task in tasks), return_exceptions=True)
             except Exception as e:
                 logger.error("Parallel analysis steps failed: %s", str(e))
-                yield {"step": "courts_position", "status": "error", "error": str(e)}
+                yield _error_event("courts_position", e)
                 return
 
             for (step_name, _), result in zip(tasks, results, strict=True):
                 if isinstance(result, Exception):
                     logger.error("%s extraction failed: %s", step_name, str(result))
-                    yield {"step": step_name, "status": "error", "error": str(result)}
+                    yield _error_event(step_name, result)
                     return
 
                 step = cast(StepResult[Any], result)
@@ -420,6 +430,6 @@ async def analyze_case_streaming(
                 yield {"step": "abstract", "status": "completed", "data": abstract_step.output.model_dump()}
             except Exception as e:
                 logger.error("Abstract generation failed: %s", str(e))
-                yield {"step": "abstract", "status": "error", "error": str(e)}
+                yield _error_event("abstract", e)
 
         yield {"step": "analysis_complete", "status": "completed"}
