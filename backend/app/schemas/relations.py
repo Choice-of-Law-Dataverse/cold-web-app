@@ -1,4 +1,7 @@
-from pydantic import BaseModel, ConfigDict
+from datetime import date, datetime
+from typing import Any
+
+from pydantic import BaseModel, ConfigDict, model_validator
 from pydantic.alias_generators import to_camel
 
 
@@ -7,6 +10,16 @@ class _RelationBase(BaseModel):
 
     id: int
     cold_id: str | None = None
+
+    @model_validator(mode="before")
+    @classmethod
+    def _coerce_dates_to_iso(cls, data: Any) -> Any:
+        if not isinstance(data, dict):
+            return data
+        for key, value in data.items():
+            if isinstance(value, (date, datetime)):
+                data[key] = value.isoformat()
+        return data
 
 
 class AnswerRelation(_RelationBase):
@@ -39,12 +52,15 @@ class CourtDecisionRelation(_RelationBase):
     case_citation: str | None = None
     case_title: str | None = None
     date: str | None = None
+    publication_date_iso: str | None = None
+    jurisdictions_alpha_3_code: str | None = None
 
 
 class DomesticInstrumentRelation(_RelationBase):
     title_in_english: str | None = None
     official_title: str | None = None
     abbreviation: str | None = None
+    date: str | None = None
 
 
 class DomesticLegalProvisionRelation(_RelationBase):
@@ -55,6 +71,7 @@ class DomesticLegalProvisionRelation(_RelationBase):
 class RegionalInstrumentRelation(_RelationBase):
     title: str | None = None
     abbreviation: str | None = None
+    date: str | None = None
 
 
 class RegionalLegalProvisionRelation(_RelationBase):
@@ -64,6 +81,8 @@ class RegionalLegalProvisionRelation(_RelationBase):
 
 class InternationalInstrumentRelation(_RelationBase):
     name: str | None = None
+    abbreviation: str | None = None
+    date: str | None = None
 
 
 class InternationalLegalProvisionRelation(_RelationBase):
@@ -83,6 +102,8 @@ class LiteratureRelation(_RelationBase):
 class ArbitralAwardRelation(_RelationBase):
     case_number: str | None = None
     year: str | int | None = None
+    seat_town: str | None = None
+    source: str | None = None
 
 
 class ArbitralInstitutionRelation(_RelationBase):

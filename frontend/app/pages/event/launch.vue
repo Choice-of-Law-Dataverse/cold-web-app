@@ -15,7 +15,7 @@
             Online via Zoom &middot; Free &amp; Open
           </p>
           <h1
-            class="text-cold-night mt-4 font-serif text-4xl leading-tight font-bold sm:text-5xl"
+            class="text-cold-night mt-4 text-4xl leading-tight font-bold sm:text-5xl"
           >
             Choice of Law Dataverse in Action
           </h1>
@@ -24,6 +24,8 @@
             <a
               href="https://www.cold.global/"
               target="_blank"
+              rel="noopener noreferrer"
+              aria-label="cold.global (opens in new tab)"
               class="text-cold-charcoal font-light underline underline-offset-2"
               >cold.global</a
             >
@@ -34,22 +36,6 @@
             >
               28 April 2026 &middot; 11.30 am – 7.00 pm CEST
             </span>
-            <a
-              :href="zoomUrl"
-              target="_blank"
-              class="text-cold-purple inline-flex items-center gap-1.5 rounded-sm border border-[#ebe9f8] bg-[#ebe9f8] px-4 py-2 text-xs font-medium tracking-wide transition-colors hover:border-[#d8d4f5] hover:bg-[#d8d4f5]"
-            >
-              <Icon name="lucide:video" class="size-3.5" />
-              Join Zoom
-            </a>
-            <a
-              :href="calendarUrl"
-              target="_blank"
-              class="text-cold-purple inline-flex items-center gap-1.5 rounded-sm border border-[#ebe9f8] bg-[#ebe9f8] px-4 py-2 text-xs font-medium tracking-wide transition-colors hover:border-[#d8d4f5] hover:bg-[#d8d4f5]"
-            >
-              <Icon name="lucide:calendar" class="size-3.5" />
-              Add to Calendar
-            </a>
           </div>
         </div>
 
@@ -101,13 +87,7 @@
           >
             <p>
               15-minute private sessions to explore the Dataverse for your
-              research, ask questions, or sign up as a specialist. Request by
-              <b>20 April</b> at
-              <a
-                href="mailto:mail@cold.global"
-                class="text-cold-purple font-medium no-underline"
-                >mail@cold.global</a
-              >
+              research, ask questions, or sign up as a specialist.
             </p>
           </EventSession>
 
@@ -142,14 +122,6 @@
         <div
           class="border-cold-gray mt-8 flex flex-wrap items-center justify-between gap-4 border-t pt-6 pb-6"
         >
-          <div class="text-cold-charcoal text-sm leading-relaxed">
-            Join the full event or individual panels<br />
-            <a
-              href="mailto:mail@cold.global"
-              class="text-cold-purple font-medium no-underline"
-              >mail@cold.global</a
-            >
-          </div>
           <div class="flex items-center gap-5">
             <img
               :src="`${ASSET_BASE_URL}/snf-logo.svg`"
@@ -169,16 +141,9 @@
 </template>
 
 <script setup lang="ts">
-import { Icon } from "#components";
 import { ASSET_BASE_URL } from "@/config/assets";
 import EventSession from "@/components/event/EventSession.vue";
 import EventDot from "@/components/event/EventDot.vue";
-
-const zoomUrl =
-  "https://unilu.zoom.us/j/65808983107?pwd=bqJa2WJOlavMwaDgTY8qZFZbgcSB5T.1";
-
-const calendarUrl =
-  "https://calendar.google.com/calendar/render?action=TEMPLATE&text=CoLD%20Launch%20Event%20%E2%80%94%20Choice%20of%20Law%20Dataverse%20in%20Action&dates=20260428T113000%2F20260428T153000&ctz=Europe%2FZurich&details=Join%20via%20Zoom%3A%20https%3A%2F%2Funilu.zoom.us%2Fj%2F65808983107%3Fpwd%3DbqJa2WJOlavMwaDgTY8qZFZbgcSB5T.1%0A%0Acold.global&location=Online%20(Zoom)";
 
 useHead({
   title: "CoLD Launch — 28 April 2026",

@@ -8,6 +8,10 @@
 import ContentPageLayout from "@/components/layout/ContentPageLayout.vue";
 import { learnNavLinks } from "@/config/navigation";
 
+useHead({
+  title: "Glossary — CoLD",
+});
+
 const { data: page } = await useAsyncData("glossary", () =>
   queryCollection("content").path("/glossary").first(),
 );

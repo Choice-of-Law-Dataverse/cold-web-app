@@ -7,57 +7,62 @@
     :dismissible="false"
     :ui="{
       content:
-        'sm:max-w-sm max-w-full shadow-2xl !top-[calc(var(--nav-height)+3rem)] !h-auto !bottom-0 rounded-tl-xl',
+        'sm:max-w-sm max-w-full shadow-2xl ring-0 !top-[calc(var(--nav-height)+3rem)] !h-auto !bottom-0 rounded-tl-xl',
     }"
   >
     <template #content>
       <div class="flex h-full flex-col overflow-hidden">
-        <div
-          class="flex items-center justify-between rounded-tl-xl px-4 pt-2 pb-1"
-          style="background: var(--gradient-subtle)"
-        >
-          <UButton
-            v-if="canGoBack"
-            icon="i-lucide-arrow-left"
-            variant="ghost"
-            color="neutral"
-            size="md"
-            @click="goBack"
-          />
-          <div v-else />
-          <div class="flex items-center gap-1">
+        <header class="drawer-header">
+          <div class="drawer-header__top">
             <UButton
-              v-if="hasDetailPage"
-              :to="fullPagePath"
-              leading-icon="i-lucide-maximize"
-              trailing-icon="i-material-symbols:arrow-forward"
-              color="primary"
-              variant="ghost"
-              size="xs"
-              @click="closeDrawer"
-            >
-              Full page
-            </UButton>
-            <UButton
-              icon="i-lucide-x"
+              v-if="canGoBack"
+              icon="i-lucide-arrow-left"
               variant="ghost"
               color="neutral"
               size="md"
-              @click="closeDrawer"
+              class="drawer-header__icon-btn"
+              @click="goBack"
             />
+            <span v-else class="drawer-header__spacer" aria-hidden="true" />
+            <div class="drawer-header__actions">
+              <UButton
+                v-if="hasDetailPage"
+                :to="fullPagePath"
+                leading-icon="i-lucide-maximize"
+                trailing-icon="i-lucide-arrow-up-right"
+                color="primary"
+                variant="ghost"
+                size="xs"
+                class="drawer-header__fullpage"
+                @click="closeDrawer"
+              >
+                Full page
+              </UButton>
+              <UButton
+                icon="i-lucide-x"
+                variant="ghost"
+                color="neutral"
+                size="md"
+                aria-label="Close"
+                class="drawer-header__icon-btn"
+                @click="closeDrawer"
+              />
+            </div>
           </div>
-        </div>
-        <div class="px-6 pt-3 pb-3">
-          <CardTags
-            :formatted-jurisdiction="headerJurisdictions"
-            :legal-family="headerLegalFamily"
-            :source-table-label="headerSourceTable"
-            :label-color-class="headerLabelColor"
-            :formatted-theme="[]"
-          />
-        </div>
 
-        <div class="gradient-top-border" />
+          <MetaBand
+            v-if="entityData"
+            :result-data="entityData"
+            :card-type="headerSourceTable"
+            :formatted-jurisdiction="headerJurisdictions"
+            :show-cite="false"
+            :show-json="false"
+            :show-print="false"
+            :show-new="false"
+            compact
+          />
+        </header>
+        <GradientTopBorder />
 
         <div class="flex-1 overflow-x-hidden overflow-y-auto">
           <div v-if="isLoading" class="p-6">
@@ -106,12 +111,14 @@ import SpecialistContent from "@/components/entity/content/SpecialistContent.vue
 import RegionalInstrumentContent from "@/components/entity/content/RegionalInstrumentContent.vue";
 import InternationalInstrumentContent from "@/components/entity/content/InternationalInstrumentContent.vue";
 import QuestionContent from "@/components/entity/content/QuestionContent.vue";
+import JurisdictionContent from "@/components/entity/content/JurisdictionContent.vue";
 import LoadingBar from "@/components/layout/LoadingBar.vue";
 import InlineError from "@/components/ui/InlineError.vue";
 import JurisdictionDrawerQA from "@/components/jurisdiction/JurisdictionDrawerQA.vue";
 import DrawerAnswerMap from "@/components/jurisdiction/DrawerAnswerMap.vue";
-import CardTags from "@/components/ui/CardTags.vue";
-import { getLabelColorClassByVariant } from "@/config/entityRegistry";
+import MetaBand from "@/components/ui/MetaBand.vue";
+import GradientTopBorder from "@/components/ui/GradientTopBorder.vue";
+import { primaryJurisdictionAlpha3 } from "@/utils/jurisdictionParser";
 
 const contentComponents: Record<string, Component> = {
   CourtDecisionContent,
@@ -121,6 +128,7 @@ const contentComponents: Record<string, Component> = {
   RegionalInstrumentContent,
   InternationalInstrumentContent,
   QuestionContent,
+  JurisdictionContent,
 };
 
 const route = useRoute();
@@ -168,30 +176,22 @@ const headerJurisdictions = computed<string[]>(() => {
   if (!("relations" in data)) return [];
   const jurisdictions = data.relations.jurisdictions;
   if (!jurisdictions?.length) return [];
-  const filtered = jurisdictions
-    .filter((j) => j.coldId !== pageJurisdictionCode.value)
-    .map((j) => j.name || "")
-    .filter((name) => name);
-  if (filtered.length !== 1) return [];
-  return filtered;
+  const filtered = jurisdictions.filter(
+    (j) => j.coldId !== pageJurisdictionCode.value,
+  );
+  if (filtered.length === 1) {
+    const name = filtered[0]?.name;
+    return name ? [name] : [];
+  }
+  const primary = primaryJurisdictionAlpha3(
+    data as Record<string, unknown>,
+  ).toUpperCase();
+  if (!primary) return [];
+  const match = filtered.find((j) => j.coldId?.toUpperCase() === primary);
+  return match?.name ? [match.name] : [];
 });
 
 const headerSourceTable = computed(() => config.value?.singularLabel ?? "");
-
-const headerLabelColor = computed(() =>
-  getLabelColorClassByVariant(config.value?.variant ?? ""),
-);
-
-const headerLegalFamily = computed<string[]>(() => {
-  const data = entityData.value;
-  if (!data || !("legalFamily" in data)) return [];
-  const value = String(data.legalFamily || "");
-  if (!value || value === "N/A") return [];
-  return value
-    .split(",")
-    .map((f: string) => f.trim())
-    .filter((f: string) => f);
-});
 
 const isJurisdiction = computed(
   () => entity.value?.basePath === "/jurisdiction",
@@ -214,8 +214,68 @@ const questionSuffix = computed(() => {
 </script>
 
 <style scoped>
-:deep(.tags-container) {
-  white-space: normal;
-  gap: 0.375rem 0;
+.drawer-header {
+  position: relative;
+  background: linear-gradient(
+    225deg,
+    color-mix(in srgb, var(--color-cold-purple) 4%, white),
+    color-mix(in srgb, var(--color-cold-green) 2%, white)
+  );
+}
+
+.drawer-header__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.375rem 0.625rem 0.375rem 0.625rem;
+  min-height: 2.25rem;
+}
+
+.drawer-header__spacer {
+  display: block;
+  width: 1px;
+  height: 1px;
+}
+
+.drawer-header__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.125rem;
+}
+
+:deep(.drawer-header__icon-btn) {
+  color: color-mix(in srgb, var(--color-cold-night) 55%, transparent);
+  transition:
+    color 0.15s ease,
+    background 0.15s ease;
+}
+
+:deep(.drawer-header__icon-btn:hover) {
+  color: var(--color-cold-night);
+  background: color-mix(in srgb, var(--color-cold-night) 6%, transparent);
+}
+
+:deep(.drawer-header__fullpage) {
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  padding-inline: 0.5rem;
+  background: transparent;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+:deep(.drawer-header__fullpage:hover) {
+  background: color-mix(in srgb, var(--color-cold-purple) 8%, transparent);
+}
+
+:deep(.drawer-header__fullpage [class*="trailing"]) {
+  font-size: 0.85em;
+  margin-left: 0.0625rem;
+  transition: transform 0.18s ease;
+}
+
+:deep(.drawer-header__fullpage:hover [class*="trailing"]) {
+  transform: translate(1px, -1px);
 }
 </style>

@@ -5,13 +5,10 @@
       :loading="false"
       :data="null"
       header-mode="new"
-      :show-notification-banner="true"
-      :notification-banner-message="notificationBannerMessage"
-      :icon="'i-material-symbols:warning-outline'"
       @open-save-modal="openSaveModal"
       @open-cancel-modal="showCancelModal = true"
     >
-      <div class="section-gap m-0 grid grid-cols-1 gap-8 p-0 md:grid-cols-2">
+      <div class="m-0 grid grid-cols-1 gap-8 p-0 md:grid-cols-2">
         <!-- Title (required) -->
         <UFormField size="lg" hint="Required" :error="errors.title">
           <template #label>
@@ -80,14 +77,14 @@
             <span class="label">Publication date</span>
           </template>
           <UPopover :popper="{ placement: 'bottom-start' }">
-            <UButton
+            <ColdDateTrigger
               icon="i-heroicons-calendar-days-20-solid"
               :label="
                 publicationDate
                   ? format(publicationDate, 'dd MMMM yyyy')
                   : 'Add date'
               "
-              class="cold-date-trigger mt-2"
+              class="mt-2"
             />
             <template #content="{ close }">
               <DatePicker v-model="publicationDate" @close="close" />
@@ -159,6 +156,7 @@ import SaveModal from "@/components/ui/SaveModal.vue";
 import CancelModal from "@/components/ui/CancelModal.vue";
 import { format } from "date-fns";
 import { flagUrl } from "@/config/assets";
+import ColdDateTrigger from "@/components/ui/ColdDateTrigger.vue";
 
 interface JurisdictionEntry {
   name: string;
@@ -197,13 +195,9 @@ const comments = ref("");
 
 const loadJurisdictions = async () => {
   try {
-    const response = await fetch(`/api/proxy/search/full_table`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ table: "Jurisdictions", filters: [] }),
-    });
+    const response = await fetch(
+      `/api/proxy/search/full_table?table=Jurisdictions`,
+    );
 
     if (!response.ok) throw new Error("Failed to load jurisdictions");
 
@@ -246,8 +240,6 @@ const saveModalErrors = ref<Record<string, string>>({});
 const router = useRouter();
 const showSaveModal = ref(false);
 const showCancelModal = ref(false);
-const notificationBannerMessage =
-  "Please back up your data when working here. Leaving, closing or reloading this window will delete everything. Data is only saved after you submit.";
 
 useHead({ title: "New Literature — CoLD" });
 

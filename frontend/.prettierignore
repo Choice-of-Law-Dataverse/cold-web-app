@@ -1,3 +1,6 @@
 # Large JSON files that should not be formatted
 public/geo.json
 public/count_jurisdictions.json
+
+# pnpm regenerates this with varying quote style on each install
+pnpm-lock.yaml

@@ -1,5 +1,5 @@
 <template>
-  <div class="results-content mt-4">
+  <div class="results-content mt-4" aria-live="polite" :aria-busy="loading">
     <div v-if="loading && !results.length" class="results-grid">
       <LoadingCard v-for="n in 6" :key="`loading-${n}`" />
     </div>
@@ -45,6 +45,8 @@
           to="https://choice-of-law-dataverse.github.io/search-algorithm"
           variant="link"
           target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Learn How the Search Works (opens in new tab)"
         >
           Learn How the Search Works
         </UButton>
@@ -52,6 +54,7 @@
           name="i-material-symbols:open-in-new"
           class="ml-[-6px] inline-block"
           style="color: var(--color-cold-purple); position: relative; top: 2px"
+          aria-hidden="true"
         />
       </div>
     </template>

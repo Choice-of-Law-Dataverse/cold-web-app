@@ -222,7 +222,7 @@ const hasActiveFilter = computed(() =>
 
 const filterUi = computed(() => ({
   base: hasActiveFilter.value
-    ? "border-[var(--color-cold-purple)] text-[var(--color-cold-purple)] bg-[var(--gradient-subtle)]"
+    ? "border-[var(--color-cold-purple)] text-[var(--color-cold-purple)]"
     : "",
 }));
 

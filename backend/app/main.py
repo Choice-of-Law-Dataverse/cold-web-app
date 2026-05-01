@@ -10,6 +10,7 @@ from app.config import config
 from app.routes import (
     ai,
     case_analyzer,
+    entities,
     feedback,
     landing_page,
     search,
@@ -128,6 +129,10 @@ app = FastAPI(
             "description": "Data aggregation and statistics endpoints.",
         },
         {
+            "name": "Entities",
+            "description": "Slim list endpoints per entity type and entity counts.",
+        },
+        {
             "name": "Submarine",
             "description": "Fun demo route.",
         },
@@ -166,6 +171,7 @@ api_router.include_router(submarine.router)
 api_router.include_router(sitemap.router)
 api_router.include_router(landing_page.router)
 api_router.include_router(statistics.router)
+api_router.include_router(entities.router)
 
 api_router.include_router(suggestions_router.router)
 api_router.include_router(feedback.router)

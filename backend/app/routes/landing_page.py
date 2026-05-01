@@ -1,6 +1,5 @@
 from fastapi import APIRouter, Depends
 
-from app.auth import verify_frontend_request
 from app.schemas.responses import LandingPageJurisdiction
 from app.services.landing_page import LandingPageService
 
@@ -10,8 +9,7 @@ def get_landing_page_service() -> LandingPageService:
     return LandingPageService()
 
 
-# Define router
-router = APIRouter(prefix="/landing-page", tags=["LandingPage"], dependencies=[Depends(verify_frontend_request)])
+router = APIRouter(prefix="/landing-page", tags=["LandingPage"])
 
 
 @router.get(

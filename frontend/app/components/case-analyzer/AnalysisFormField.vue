@@ -14,7 +14,9 @@
       class="w-full print:hidden"
       @update:model-value="$emit('update:modelValue', $event)"
     />
-    <div class="print-field-value">
+    <div
+      class="hidden min-h-[2em] bg-[#fafafa] text-xs leading-snug break-words whitespace-pre-wrap print:block"
+    >
       {{ modelValue }}
     </div>
   </UFormField>

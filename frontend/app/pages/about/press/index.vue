@@ -7,6 +7,10 @@
 <script setup lang="ts">
 import ContentPageLayout from "@/components/layout/ContentPageLayout.vue";
 
+useHead({
+  title: "Press — CoLD",
+});
+
 const { data: page } = await useAsyncData("press", () =>
   queryCollection("content").path("/press").first(),
 );

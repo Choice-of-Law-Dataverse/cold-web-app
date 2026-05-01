@@ -4,10 +4,10 @@
       <LoadingBar />
     </div>
     <InlineError v-else-if="error" :error="error" />
-    <div v-else-if="displayedItems.length" class="result-value-small">
+    <div v-else-if="items.length" class="result-value-small">
       <div class="mb-2 flex flex-row flex-wrap gap-x-6 gap-y-2">
         <EntityLink
-          v-for="item in displayedItems"
+          v-for="item in visibleItems"
           :key="item.id"
           :id="item.id"
           :title="item.title"
@@ -16,9 +16,8 @@
         />
       </div>
       <ShowMoreLess
-        v-if="items.length > 10"
-        v-model:is-expanded="showAll"
-        button-class="link-chip--action"
+        v-if="items.length > SHOW_MORE_THRESHOLD"
+        v-model:is-expanded="isExpanded"
       />
     </div>
     <p
@@ -31,12 +30,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { computed, ref } from "vue";
 import LoadingBar from "@/components/layout/LoadingBar.vue";
 import InlineError from "@/components/ui/InlineError.vue";
-import ShowMoreLess from "@/components/ui/ShowMoreLess.vue";
 import EntityLink from "@/components/ui/EntityLink.vue";
+import ShowMoreLess from "@/components/ui/ShowMoreLess.vue";
 import type { RelatedItem, EmptyValueBehavior } from "@/types/ui";
+
+const SHOW_MORE_THRESHOLD = 20;
 
 const props = withDefaults(
   defineProps<{
@@ -56,9 +57,15 @@ const props = withDefaults(
   },
 );
 
-const showAll = ref(false);
+const isExpanded = ref(false);
 
 const hasItems = computed(() => props.items.length > 0);
+
+const visibleItems = computed(() =>
+  isExpanded.value || props.items.length <= SHOW_MORE_THRESHOLD
+    ? props.items
+    : props.items.slice(0, SHOW_MORE_THRESHOLD),
+);
 
 const shouldShowSection = computed(
   () =>
@@ -66,10 +73,4 @@ const shouldShowSection = computed(
     hasItems.value ||
     (!hasItems.value && props.emptyValueBehavior.action === "display"),
 );
-
-const displayedItems = computed(() => {
-  return !showAll.value && props.items.length > 10
-    ? props.items.slice(0, 10)
-    : props.items;
-});
 </script>

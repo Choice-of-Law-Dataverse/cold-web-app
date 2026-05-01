@@ -1,5 +1,4 @@
-export const BLOB_STORAGE_BASE_URL =
-  "https://choiceoflaw.blob.core.windows.net";
+export const BLOB_STORAGE_BASE_URL = "https://assets.cold.global";
 
 export const ASSET_BASE_URL = `${BLOB_STORAGE_BASE_URL}/assets`;
 

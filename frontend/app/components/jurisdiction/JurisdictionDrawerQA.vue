@@ -115,7 +115,7 @@ function handleClick(event: MouseEvent, questionId: string) {
 </script>
 
 <style scoped>
-@reference "tailwindcss";
+@reference "@/assets/styles.css";
 
 .qa-row {
   transition: background 0.15s ease;

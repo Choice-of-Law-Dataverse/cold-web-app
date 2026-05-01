@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, watchEffect } from "vue";
 import { useFeedback } from "@/composables/useFeedback";
 import type { components } from "@/types/api-schema";
 
@@ -19,7 +19,6 @@ const feedbackType = ref<FeedbackType | "">("");
 const message = ref("");
 const email = ref("");
 const popoverOpen = ref(false);
-const modalOpen = ref(false);
 
 const feedbackTypeOptions = [
   { label: "Suggest improvement", value: "improve" },
@@ -29,15 +28,28 @@ const feedbackTypeOptions = [
   { label: "Other", value: "other" },
 ];
 
+const messagePlaceholder = computed(() => {
+  switch (feedbackType.value) {
+    case "improve":
+      return "What would make this better?";
+    case "missing_data":
+      return "What's missing, and where can we find it?";
+    case "wrong_info":
+      return "What's wrong, and what's the correct information?";
+    case "outdated":
+      return "What's changed? Link a current source if you can.";
+    case "other":
+      return "Tell us what's on your mind…";
+    default:
+      return "Tell us what's missing, wrong, or could be better…";
+  }
+});
+
 const userEmail = computed(() => {
   const u = user.value;
   if (!u) return "";
   return ((u as Record<string, unknown>).email as string) || "";
 });
-
-if (userEmail.value) {
-  email.value = userEmail.value;
-}
 
 watchEffect(() => {
   if (userEmail.value && !email.value) {
@@ -52,180 +64,89 @@ const canSubmit = computed(
 function resetForm() {
   feedbackType.value = "";
   message.value = "";
-  email.value = userEmail.value;
+  email.value = "";
 }
 
 async function handleSubmit() {
-  if (!feedbackType.value) return;
   const success = await submitFeedback({
     entityType: props.entityType,
     entityId: props.entityId,
     entityTitle: props.entityTitle,
-    feedbackType: feedbackType.value,
+    feedbackType: feedbackType.value as FeedbackType,
     message: message.value,
     submitterEmail: email.value,
   });
   if (success) {
     resetForm();
     popoverOpen.value = false;
-    modalOpen.value = false;
   }
 }
 </script>
 
 <template>
-  <div class="fixed right-6 bottom-6 z-40">
-    <div class="hidden lg:block">
-      <UPopover
-        v-model:open="popoverOpen"
-        :content="{ side: 'top', align: 'end', sideOffset: 8 }"
-      >
-        <UButton
-          icon="i-material-symbols:rate-review-outline"
-          size="xl"
-          square
-          color="neutral"
-          variant="ghost"
-          class="feedback-btn shadow-lg"
-          :ui="{ base: 'rounded-full' }"
-          aria-label="Give feedback"
+  <UPopover
+    v-model:open="popoverOpen"
+    :content="{ side: 'bottom', align: 'end', sideOffset: 8 }"
+  >
+    <UButton
+      variant="ghost"
+      color="neutral"
+      size="xs"
+      leading-icon="i-material-symbols:rate-review-outline"
+      trailing-icon="i-material-symbols:rate-review-outline"
+      class="meta-btn"
+      aria-label="Give feedback"
+    >
+      Feedback
+    </UButton>
+
+    <template #content>
+      <form class="feedback-popover" @submit.prevent="handleSubmit">
+        <USelect
+          v-model="feedbackType"
+          :items="feedbackTypeOptions"
+          placeholder="What kind of feedback?"
+          aria-label="Feedback type"
+          class="w-full"
         />
 
-        <template #content>
-          <div class="w-80 p-4">
-            <h3 class="mb-3 text-base font-semibold">Give Feedback</h3>
+        <UTextarea
+          v-model="message"
+          :placeholder="messagePlaceholder"
+          aria-label="Feedback message"
+          :rows="4"
+          autoresize
+          class="w-full"
+        />
 
-            <div class="flex flex-col gap-3">
-              <UFormField label="Feedback type">
-                <USelect
-                  v-model="feedbackType"
-                  :items="feedbackTypeOptions"
-                  placeholder="Select type..."
-                  class="w-full"
-                />
-              </UFormField>
+        <UInput
+          v-model="email"
+          type="email"
+          placeholder="your@email.com"
+          aria-label="Reply email"
+          class="w-full"
+        />
 
-              <UFormField label="Message">
-                <UTextarea
-                  v-model="message"
-                  placeholder="Describe what you'd like to report..."
-                  :rows="3"
-                  class="w-full"
-                />
-              </UFormField>
-
-              <UFormField label="Email">
-                <UInput
-                  v-model="email"
-                  type="email"
-                  placeholder="your@email.com"
-                  class="w-full"
-                />
-              </UFormField>
-
-              <UButton
-                block
-                :loading="isSubmitting"
-                :disabled="!canSubmit"
-                @click="handleSubmit"
-              >
-                Submit Feedback
-              </UButton>
-            </div>
-          </div>
-        </template>
-      </UPopover>
-    </div>
-
-    <UButton
-      icon="i-material-symbols:rate-review-outline"
-      size="xl"
-      square
-      color="neutral"
-      variant="ghost"
-      class="feedback-btn shadow-lg lg:hidden"
-      :ui="{ base: 'rounded-full' }"
-      aria-label="Give feedback"
-      @click="modalOpen = true"
-    />
-
-    <UModal v-model:open="modalOpen" title="Give Feedback">
-      <template #content>
-        <div class="p-6">
-          <h3 class="mb-4 text-lg font-semibold">Give Feedback</h3>
-
-          <div class="flex flex-col gap-4">
-            <UFormField label="Feedback type">
-              <USelect
-                v-model="feedbackType"
-                :items="feedbackTypeOptions"
-                placeholder="Select type..."
-                class="w-full"
-              />
-            </UFormField>
-
-            <UFormField label="Message">
-              <UTextarea
-                v-model="message"
-                placeholder="Describe what you'd like to report..."
-                :rows="4"
-                class="w-full"
-              />
-            </UFormField>
-
-            <UFormField label="Email">
-              <UInput
-                v-model="email"
-                type="email"
-                placeholder="your@email.com"
-                class="w-full"
-              />
-            </UFormField>
-
-            <div class="flex justify-end gap-2">
-              <UButton
-                variant="ghost"
-                color="neutral"
-                @click="modalOpen = false"
-              >
-                Cancel
-              </UButton>
-              <UButton
-                :loading="isSubmitting"
-                :disabled="!canSubmit"
-                @click="handleSubmit"
-              >
-                Submit Feedback
-              </UButton>
-            </div>
-          </div>
-        </div>
-      </template>
-    </UModal>
-  </div>
+        <UButton
+          type="submit"
+          block
+          :loading="isSubmitting"
+          :disabled="!canSubmit"
+        >
+          Send
+        </UButton>
+      </form>
+    </template>
+  </UPopover>
 </template>
 
 <style scoped>
-.feedback-btn {
-  background: linear-gradient(
-    135deg,
-    var(--color-cold-purple),
-    color-mix(in srgb, var(--color-cold-purple) 60%, var(--color-cold-green))
-  );
-  color: white;
-  width: 3.5rem;
-  height: 3.5rem;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.feedback-btn:hover {
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--color-cold-purple) 85%, #000),
-    color-mix(in srgb, var(--color-cold-purple) 50%, var(--color-cold-green))
-  );
-  transform: scale(1.05);
+.feedback-popover {
+  width: 21rem;
+  max-width: calc(100vw - 1rem);
+  padding: 0.875rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 </style>

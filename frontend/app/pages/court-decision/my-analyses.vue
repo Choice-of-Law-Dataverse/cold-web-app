@@ -1,11 +1,10 @@
 <template>
   <div class="py-12">
-    <div class="page-hero mb-8">
-      <h1 class="page-hero__title">My Case Analyses</h1>
-      <p class="page-hero__subtitle">
-        View the status of your submitted case analyses
-      </p>
-    </div>
+    <PageHero
+      title="My Case Analyses"
+      subtitle="View the status of your submitted case analyses"
+      class="mb-8"
+    />
 
     <!-- Loading state -->
     <div v-if="pending" class="flex justify-center py-12">
@@ -32,13 +31,13 @@
         class="mx-auto mb-4 h-12 w-12 text-gray-400"
       />
       <p class="text-gray-600">You haven't started any case analyses yet.</p>
-      <UButton
-        class="btn-primary-gradient mt-4"
+      <AppButtonGradient
+        class="mt-4"
         to="/court-decision/new"
         icon="i-heroicons-plus"
       >
         Start New Analysis
-      </UButton>
+      </AppButtonGradient>
     </div>
 
     <!-- Analyses list -->
@@ -60,24 +59,31 @@
 
       <UCard :ui="{ body: 'p-0' }">
         <table class="w-full">
+          <caption class="sr-only">
+            Submitted case analyses with date, citation, status, and action
+          </caption>
           <thead>
             <tr class="border-b border-gray-200 dark:border-gray-700">
               <th
+                scope="col"
                 class="px-4 py-3 text-left text-sm font-medium text-gray-600 dark:text-gray-400"
               >
                 Date
               </th>
               <th
+                scope="col"
                 class="px-4 py-3 text-left text-sm font-medium text-gray-600 dark:text-gray-400"
               >
                 Case Citation
               </th>
               <th
+                scope="col"
                 class="px-4 py-3 text-left text-sm font-medium text-gray-600 dark:text-gray-400"
               >
                 Status
               </th>
               <th
+                scope="col"
                 class="px-4 py-3 text-right text-sm font-medium text-gray-600 dark:text-gray-400"
               >
                 Action
@@ -134,7 +140,7 @@
                 <span
                   v-else
                   class="text-xs text-gray-400"
-                  :title="
+                  :aria-label="
                     analysis.moderationStatus === 'approved'
                       ? 'Analysis has been approved'
                       : analysis.moderationStatus === 'rejected'
@@ -162,6 +168,8 @@ import {
 } from "@/utils/moderationStatus";
 import { formatDateShort } from "@/utils/format";
 import { useApiClient } from "@/composables/useApiClient";
+import PageHero from "@/components/ui/PageHero.vue";
+import AppButtonGradient from "@/components/ui/AppButtonGradient.vue";
 
 definePageMeta({
   middleware: ["auth"],

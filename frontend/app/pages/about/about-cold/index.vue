@@ -9,6 +9,10 @@ import { onMounted, nextTick } from "vue";
 import { useRoute } from "vue-router";
 import ContentPageLayout from "@/components/layout/ContentPageLayout.vue";
 
+useHead({
+  title: "About CoLD — CoLD",
+});
+
 const { data: page } = await useAsyncData("about_cold", () =>
   queryCollection("content").path("/about_cold").first(),
 );

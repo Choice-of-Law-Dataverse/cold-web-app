@@ -8,7 +8,7 @@
     header-class="cursor-pointer text-left md:whitespace-nowrap"
   >
     <FlagTitleYearItem
-      v-for="instrument in domesticInstruments?.slice(0, 3)"
+      v-for="instrument in domesticInstruments"
       :key="String(instrument.id || '')"
       :to="`/domestic-instrument/${instrument.id}`"
       :iso3="instrument.jurisdictionsAlpha3Code || ''"
@@ -36,5 +36,6 @@ const {
   error,
 } = useDomesticInstruments({
   filterCompatible: ref(false),
+  limit: 3,
 });
 </script>

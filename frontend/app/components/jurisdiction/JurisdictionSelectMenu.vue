@@ -7,9 +7,12 @@
     :items="selectItems"
     :disabled="disabled"
     size="xl"
+    :ui="{
+      content:
+        'max-h-(--reka-combobox-content-available-height) w-max min-w-(--reka-combobox-trigger-width)',
+    }"
     @update:model-value="onInternalSelect"
   >
-    <!-- Custom item rendering with avatars -->
     <template #item="{ item }">
       <div class="flex items-center">
         <JurisdictionFlag
@@ -28,14 +31,21 @@
       </div>
     </template>
 
-    <!-- Custom label rendering for selected value -->
-    <template #leading>
-      <JurisdictionFlag
+    <template #default>
+      <span
         v-if="internalSelected?.original?.coldId"
-        :iso3="internalSelected.original.coldId"
-        :faded="!hasCoverage(internalSelected?.original?.answerCoverage)"
-        class="mr-1.5"
-      />
+        class="flex w-full items-center overflow-hidden whitespace-nowrap"
+      >
+        <JurisdictionFlag
+          :iso3="internalSelected.original.coldId"
+          :faded="!hasCoverage(internalSelected.original.answerCoverage)"
+          class="mr-1.5"
+        />
+        <span class="truncate">{{ internalSelected.label }}</span>
+      </span>
+      <span v-else class="truncate text-(--ui-text-muted)">
+        {{ placeholder }}
+      </span>
     </template>
   </USelectMenu>
 </template>

@@ -3,9 +3,9 @@
     <UButton
       :to="finalPdfUrl"
       target="_blank"
-      variant="subtle"
-      color="secondary"
-      size="sm"
+      variant="ghost"
+      color="primary"
+      size="xs"
       icon="i-material-symbols:picture-as-pdf-outline"
       trailing-icon="i-material-symbols:picture-as-pdf-outline"
       aria-label="Download PDF for record"

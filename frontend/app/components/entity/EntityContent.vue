@@ -13,9 +13,9 @@
       </template>
       <section v-else-if="shouldDisplayValue(getValue(field.key))">
         <DetailRow :label="field.label" :tooltip="field.tooltip">
-          <p class="result-value-small whitespace-pre-line">
-            {{ formatValue(getValue(field.key)) }}
-          </p>
+          <ResultValue size="sm" as="p" class="whitespace-pre-line">{{
+            formatValue(getValue(field.key))
+          }}</ResultValue>
         </DetailRow>
       </section>
     </template>
@@ -25,6 +25,9 @@
     <template v-for="section in resolvedRelations" :key="section.key">
       <section v-if="section.items.length > 0">
         <DetailRow :label="section.label" :variant="section.variant">
+          <template v-if="section.items.length > 1" #label-subtitle>
+            {{ section.items.length }} items
+          </template>
           <RelatedItemsList
             :items="section.items"
             :base-path="section.basePath"
@@ -48,6 +51,7 @@ import {
   mapRelationToItem,
   type ProcessedEntity,
 } from "@/config/entityRegistry";
+import ResultValue from "@/components/ui/ResultValue.vue";
 import type { RelatedItem } from "@/types/ui";
 import DetailRow from "@/components/ui/DetailRow.vue";
 import RelatedItemsList from "@/components/ui/RelatedItemsList.vue";
@@ -94,7 +98,6 @@ const resolvedRelations = computed<ResolvedRelation[]>(() => {
   if (!relData) return [];
   const exclude = new Set(entityConfig.value?.excludeRelations ?? []);
   return Object.entries(RELATION_RENDERERS)
-    .filter(([key]) => !exclude.has(key))
     .map(([key, config]) => {
       const rawItems = relData[key] ?? [];
       const sorted = [...rawItems].sort(
@@ -108,7 +111,11 @@ const resolvedRelations = computed<ResolvedRelation[]>(() => {
         items: sorted.map(mapRelationToItem).filter((item) => item.id),
       };
     })
-    .filter((s) => s.items.length > 0);
+    .filter((s) => {
+      if (s.items.length === 0) return false;
+      if (!exclude.has(s.key)) return true;
+      return s.key === "jurisdictions" && s.items.length > 1;
+    });
 });
 
 function shouldDisplayValue(value: unknown): boolean {
@@ -129,7 +136,7 @@ function formatValue(value: unknown): string {
     return String(value.length) + " items";
   }
   if (typeof value === "string" && ISO_DATE_RE.test(value)) {
-    return formatDate(value) ?? "\u2014";
+    return formatDate(value, { monthStyle: "short" }) ?? "\u2014";
   }
   return String(value);
 }

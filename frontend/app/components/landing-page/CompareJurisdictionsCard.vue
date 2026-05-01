@@ -1,6 +1,6 @@
 <template>
   <UCard class="h-full w-full" :ui="{ body: '!p-0' }">
-    <div class="gradient-top-border" />
+    <GradientTopBorder />
     <div class="flex flex-col gap-4 p-4 sm:p-6">
       <div>
         <h2 class="card-title">{{ title }}</h2>
@@ -43,6 +43,7 @@
 
 <script setup lang="ts">
 import JurisdictionFlag from "@/components/ui/JurisdictionFlag.vue";
+import GradientTopBorder from "@/components/ui/GradientTopBorder.vue";
 
 interface Comparison {
   left: string;
@@ -59,7 +60,7 @@ withDefaults(
 </script>
 
 <style scoped>
-@reference "tailwindcss";
+@reference "@/assets/styles.css";
 
 .comparison-row {
   @apply flex items-center justify-center gap-6 rounded-lg px-4 py-3 shadow-sm transition-all duration-150;

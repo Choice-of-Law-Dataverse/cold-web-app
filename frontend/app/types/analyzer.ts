@@ -64,11 +64,6 @@ export interface CaseAnalyzerSuggestionPayload {
   raw_data?: string | Record<string, unknown>;
 }
 
-export interface CaseAnalyzerSuggestionRecord {
-  id: number;
-  payload?: Record<string, unknown> | null;
-}
-
 export interface StoredAnalyzerSnapshot {
   correlationId?: string;
   jurisdiction?: JurisdictionInfo;
@@ -83,11 +78,6 @@ export interface AnalysisStep {
   confidence: string | null;
   reasoning: string | null;
   error: string | null;
-}
-
-export interface FieldStatus {
-  confidence: string | null;
-  reasoning: string | null;
 }
 
 export type AnalysisStepPayload = Record<string, unknown>;

@@ -1,9 +1,9 @@
 <template>
-  <div class="mt-[-2px] list-none">
+  <div class="-mt-0.5 list-none">
     <button
       v-if="!isExpanded"
       aria-expanded="false"
-      :class="['link-button-night', 'cursor-pointer']"
+      :class="linkButtonClass"
       @click.prevent="emit('update:isExpanded', true)"
     >
       <Icon name="material-symbols:add" :class="iconClass" />
@@ -12,7 +12,7 @@
     <button
       v-else
       aria-expanded="true"
-      :class="['link-button-night', 'cursor-pointer']"
+      :class="linkButtonClass"
       @click="emit('update:isExpanded', false)"
     >
       <Icon name="material-symbols:remove" :class="iconClass" />
@@ -26,12 +26,10 @@ withDefaults(
   defineProps<{
     isExpanded: boolean;
     label?: string;
-    buttonClass?: string;
     iconClass?: string;
   }>(),
   {
     label: "",
-    buttonClass: "link-button-night",
     iconClass: "text-base translate-y-[3px]",
   },
 );
@@ -39,4 +37,7 @@ withDefaults(
 const emit = defineEmits<{
   "update:isExpanded": [value: boolean];
 }>();
+
+const linkButtonClass =
+  "text-cold-night hover:text-[color-mix(in_srgb,var(--color-cold-purple)_85%,#000)] cursor-pointer p-0 text-sm font-normal leading-[1.6] no-underline transition-colors duration-200";
 </script>

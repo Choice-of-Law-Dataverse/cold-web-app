@@ -5,13 +5,10 @@
       :loading="false"
       :data="null"
       header-mode="new"
-      :show-notification-banner="true"
-      :notification-banner-message="notificationBannerMessage"
-      :icon="'i-material-symbols:warning-outline'"
       @open-save-modal="openSaveModal"
       @open-cancel-modal="showCancelModal = true"
     >
-      <div class="section-gap m-0 grid grid-cols-1 gap-8 p-0 md:grid-cols-2">
+      <div class="m-0 grid grid-cols-1 gap-8 p-0 md:grid-cols-2">
         <UFormField size="lg" hint="Required" :error="errors.abbreviation">
           <template #label>
             <span class="label">Abbreviation</span>
@@ -41,10 +38,10 @@
             </span>
           </template>
           <UPopover :popper="{ placement: 'bottom-start' }">
-            <UButton
+            <ColdDateTrigger
               icon="i-heroicons-calendar-days-20-solid"
               :label="date ? format(date, 'dd MMMM yyyy') : 'Add date'"
-              class="cold-date-trigger mt-2"
+              class="mt-2"
             />
 
             <template #content="{ close }">
@@ -98,6 +95,7 @@ import SaveModal from "@/components/ui/SaveModal.vue";
 import CancelModal from "@/components/ui/CancelModal.vue";
 import { format } from "date-fns";
 import { tooltips } from "@/config/tooltips";
+import ColdDateTrigger from "@/components/ui/ColdDateTrigger.vue";
 
 const tooltipRegionalInstrumentDate = tooltips.date ?? "";
 
@@ -129,8 +127,6 @@ const router = useRouter();
 defineEmits(["close-cancel-modal", "close-save-modal"]);
 const showSaveModal = ref(false);
 const showCancelModal = ref(false);
-const notificationBannerMessage =
-  "Please back up your data when working here. Leaving, closing or reloading this window will delete everything. Data is only saved after you submit.";
 
 useHead({ title: "New Regional Instrument — CoLD" });
 

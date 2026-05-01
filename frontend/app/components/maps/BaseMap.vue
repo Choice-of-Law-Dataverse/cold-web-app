@@ -375,7 +375,7 @@ const geoJsonOptions = computed(() => ({
 /* Hover Tooltip */
 .map-tooltip {
   position: absolute;
-  top: 12px;
+  bottom: 12px;
   left: 12px;
   z-index: 1000;
   background: white;
@@ -383,7 +383,7 @@ const geoJsonOptions = computed(() => ({
   border-radius: 6px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
   opacity: 0;
-  transform: translateY(-4px);
+  transform: translateY(4px);
   transition:
     opacity 0.15s ease,
     transform 0.15s ease;

@@ -57,16 +57,14 @@
               English
             </span>
           </div>
-          <p class="result-value-small whitespace-pre-line">
-            {{
-              showEnglishQuote &&
-              data.hasEnglishQuoteTranslation &&
-              data.quote &&
-              String(data.quote).trim() !== ""
-                ? data.translatedExcerpt
-                : data.quote || data.translatedExcerpt
-            }}
-          </p>
+          <ResultValue size="sm" as="p" class="whitespace-pre-line">{{
+            showEnglishQuote &&
+            data.hasEnglishQuoteTranslation &&
+            data.quote &&
+            String(data.quote).trim() !== ""
+              ? data.translatedExcerpt
+              : data.quote || data.translatedExcerpt
+          }}</ResultValue>
         </div>
       </DetailRow>
     </template>
@@ -74,13 +72,11 @@
     <template #originalText="{ value, label }">
       <DetailRow v-if="value && String(value).trim() !== ''" :label="label">
         <div>
-          <p class="result-value-small">
-            {{
-              showFullText || String(value).length <= 400
-                ? value
-                : String(value).slice(0, 400) + "…"
-            }}
-          </p>
+          <ResultValue size="sm" as="p">{{
+            showFullText || String(value).length <= 400
+              ? value
+              : String(value).slice(0, 400) + "…"
+          }}</ResultValue>
           <ShowMoreLess
             v-if="String(value).length > 400"
             v-model:is-expanded="showFullText"
@@ -100,6 +96,7 @@ import PdfLink from "@/components/ui/PdfLink.vue";
 import SourceExternalLink from "@/components/sources/SourceExternalLink.vue";
 import ShowMoreLess from "@/components/ui/ShowMoreLess.vue";
 import type { CourtDecision } from "@/types/entities/court-decision";
+import ResultValue from "@/components/ui/ResultValue.vue";
 
 defineProps<{
   data: CourtDecision;
@@ -108,3 +105,20 @@ defineProps<{
 const showEnglishQuote = ref(true);
 const showFullText = ref(false);
 </script>
+
+<style>
+@reference "@/assets/styles.css";
+
+.label-key-provision-article,
+.label-key-provision-toggle {
+  @apply text-cold-night-alpha inline-flex gap-1 p-0 tracking-wider normal-case;
+}
+
+.label-key-provision-article {
+  @apply text-sm font-medium;
+}
+
+.label-key-provision-toggle {
+  @apply text-[0.625rem] font-semibold capitalize;
+}
+</style>

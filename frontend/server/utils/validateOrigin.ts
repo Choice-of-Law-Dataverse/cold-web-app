@@ -40,9 +40,15 @@ export function buildAllowedOrigins(config: {
     }
   }
 
-  const vercelUrl = process.env.VERCEL_URL;
-  if (vercelUrl) {
-    origins.push(`https://${vercelUrl}`);
+  const vercelHosts = [
+    process.env.VERCEL_URL,
+    process.env.VERCEL_BRANCH_URL,
+    process.env.VERCEL_PROJECT_PRODUCTION_URL,
+  ];
+  for (const host of vercelHosts) {
+    if (host) {
+      origins.push(`https://${host}`);
+    }
   }
 
   return origins;

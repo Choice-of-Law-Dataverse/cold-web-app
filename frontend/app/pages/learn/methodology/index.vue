@@ -13,6 +13,10 @@
 import ContentPageLayout from "@/components/layout/ContentPageLayout.vue";
 import { learnNavLinks } from "@/config/navigation";
 
+useHead({
+  title: "Methodology — CoLD",
+});
+
 const { data: intro } = await useAsyncData("methodology_intro", () =>
   queryCollection("content").path("/methodology_intro").first(),
 );

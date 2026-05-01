@@ -7,8 +7,12 @@
   "tags": ["-lintignore"],
   "ignoreDependencies": [
     "vue-router",
-    "@vueuse/head",
-    "@nuxtjs/tailwindcss",
-    "ufo"
-  ]
+    "ufo",
+    "@iconify-json/heroicons",
+    "@iconify-json/material-symbols",
+    "@iconify-json/lucide",
+    "@iconify-json/simple-icons"
+  ],
+  "ignoreBinaries": ["uv"],
+  "ignore": ["app/components/ProseImg.vue", "content.config.ts"]
 }

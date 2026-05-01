@@ -8,6 +8,7 @@ export default defineNuxtConfig({
   devtools: { enabled: process.env.NODE_ENV === "development" },
   ssr: true,
   nitro: {
+    compressPublicAssets: { brotli: true, gzip: true },
     prerender: {
       crawlLinks: false,
       routes: [],
@@ -17,18 +18,34 @@ export default defineNuxtConfig({
     },
   },
   routeRules: {
-    // Static pages - prerender disabled temporarily to debug build hang
-    // "/about/**": { prerender: true },
-    // "/learn/**": { prerender: true },
-    // "/disclaimer": { prerender: true },
-    // "/contact": { prerender: true },
-    // "/submit": { prerender: true },
+    "/_nuxt/**": {
+      headers: { "cache-control": "public, max-age=31536000, immutable" },
+    },
+    "/fonts/**": {
+      headers: { "cache-control": "public, max-age=31536000, immutable" },
+    },
+    "/favicon.ico": {
+      headers: { "cache-control": "public, max-age=604800" },
+    },
+    "/favicon.svg": {
+      headers: { "cache-control": "public, max-age=604800" },
+    },
+    "/favicon-96x96.png": {
+      headers: { "cache-control": "public, max-age=604800" },
+    },
+    "/apple-touch-icon.png": {
+      headers: { "cache-control": "public, max-age=604800" },
+    },
+    "/site.webmanifest": {
+      headers: { "cache-control": "public, max-age=604800" },
+    },
   },
   $production: {
     scripts: {
       registry: {
         plausibleAnalytics: {
           domain: "cold.global",
+          trigger: "onNuxtReady",
         },
       },
     },
@@ -49,6 +66,9 @@ export default defineNuxtConfig({
         "mitt",
         "openapi-fetch",
         "date-fns",
+        "@vue-leaflet/vue-leaflet",
+        "zod",
+        "v-calendar",
       ],
       exclude: ["@opentelemetry/api"],
     },
@@ -118,17 +138,36 @@ export default defineNuxtConfig({
   colorMode: {
     preference: "light",
   },
+  ui: {
+    fonts: false,
+  },
   fonts: {
     families: [
       {
-        name: "DM Serif Display",
-        provider: "google",
-        weights: [400],
+        name: "DM Sans",
+        weight: "400",
+        preload: true,
+        src: "/fonts/dm-sans-latin-400-normal.woff2",
       },
       {
         name: "DM Sans",
-        provider: "google",
-        weights: [300, 400, 500, 600, 700],
+        weight: "500",
+        src: "/fonts/dm-sans-latin-500-normal.woff2",
+      },
+      {
+        name: "DM Sans",
+        weight: "600",
+        src: "/fonts/dm-sans-latin-600-normal.woff2",
+      },
+      {
+        name: "DM Sans",
+        weight: "700",
+        src: "/fonts/dm-sans-latin-700-normal.woff2",
+      },
+      {
+        name: "IBM Plex Mono",
+        weight: "400",
+        src: "/fonts/ibm-plex-mono-latin-400-normal.woff2",
       },
     ],
   },
@@ -143,6 +182,5 @@ export default defineNuxtConfig({
   },
   imports: {
     dirs: [],
-    presets: ["vue"],
   },
 });

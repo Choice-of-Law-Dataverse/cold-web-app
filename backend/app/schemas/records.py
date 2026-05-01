@@ -482,6 +482,26 @@ class QuestionRecord(RecordBase):
     themes: str | None = None
 
 
+class SpecialistRecord(RecordBase):
+    specialist: str | None = None
+    affiliation: str | None = None
+    contact: str | None = None
+    bio: str | None = None
+    website: str | None = None
+    record_id: str | None = None
+    nc_order: str | None = None
+    nc_record_id: str | None = None
+    nc_record_hash: str | None = None
+    created: str | None = None
+    created_at: str | None = None
+    updated_at: str | None = None
+    created_by: str | None = None
+    updated_by: str | None = None
+    jurisdictions: str | None = None
+    jurisdictions_alpha_3_code: str | None = None
+    jurisdictions_link: str | None = None
+
+
 TABLE_RECORD_MODELS: dict[str, type[RecordBase]] = {
     "Answers": AnswerRecord,
     "Court Decisions": CourtDecisionRecord,
@@ -498,6 +518,7 @@ TABLE_RECORD_MODELS: dict[str, type[RecordBase]] = {
     "Regional Legal Provisions": RegionalLegalProvisionRecord,
     "Jurisdictions": JurisdictionRecord,
     "Questions": QuestionRecord,
+    "Specialists": SpecialistRecord,
 }
 
 AnyRecord = (
@@ -516,6 +537,7 @@ AnyRecord = (
     | RegionalLegalProvisionRecord
     | JurisdictionRecord
     | QuestionRecord
+    | SpecialistRecord
     | RecordBase
 )
 

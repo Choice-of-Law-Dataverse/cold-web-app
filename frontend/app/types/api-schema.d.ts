@@ -11,13 +11,13 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    get?: never;
-    put?: never;
     /**
      * Full-text search across CoLD data
-     * @description Searches across multiple domains (Answers, HCCH Answers, Court Decisions, Domestic Instruments, Regional Instruments, International Instruments, Literature, Arbitral Awards, and Arbitral Rules). Filters support user-facing fields like 'tables', 'Jurisdictions', or 'Themes'. You can sort by date and paginate results.
+     * @description Searches across multiple domains (Answers, HCCH Answers, Court Decisions, Domestic Instruments, Regional Instruments, International Instruments, Literature, Arbitral Awards, and Arbitral Rules). Filter columns are exposed as dedicated repeatable query parameters: `tables`, `jurisdictions`, `themes`. Pass each value separately, e.g. `?tables=Answers&tables=Court%20Decisions&jurisdictions=Switzerland`. You can sort by date and paginate results.
      */
-    post: operations["handle_full_text_search_api_v1_search__post"];
+    get: operations["handle_full_text_search_api_v1_search__get"];
+    put?: never;
+    post?: never;
     delete?: never;
     options?: never;
     head?: never;
@@ -31,13 +31,13 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    get?: never;
-    put?: never;
     /**
      * Fetch a curated record by CoLD ID including relations
      * @description Given a table and a CoLD ID, returns the record with all first-hop relations in a standardized shape.
      */
-    post: operations["handle_entity_detail_api_v1_search_details_post"];
+    get: operations["handle_entity_detail_api_v1_search_details_get"];
+    put?: never;
+    post?: never;
     delete?: never;
     options?: never;
     head?: never;
@@ -51,13 +51,13 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    get?: never;
-    put?: never;
     /**
      * Return full or filtered table
-     * @description Returns all records from the specified table or a filtered subset. Filters accept user-facing field names and values (mapping-aware).
+     * @description Returns all records from the specified table or a filtered subset. Filters use the repeatable `filter` query parameter with format `column:value` or `column:val1,val2` for multiple values. Values matching `true`/`false` are parsed as booleans; pure-digit strings as integers; everything else stays a string. Example: `?table=Court%20Decisions&filter=caseRank:10&filter=jurisdiction:Switzerland`.
      */
-    post: operations["return_full_table_api_v1_search_full_table_post"];
+    get: operations["return_full_table_api_v1_search_full_table_get"];
+    put?: never;
+    post?: never;
     delete?: never;
     options?: never;
     head?: never;
@@ -91,13 +91,13 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    get?: never;
-    put?: never;
     /**
      * Classify a free-text user query into a predefined category
      * @description Uses an external model to classify the user's query into one of the predefined CoLD categories.
      */
-    post: operations["classify_query_api_v1_ai_classify_query_post"];
+    get: operations["classify_query_get_api_v1_ai_classify_query_get"];
+    put?: never;
+    post?: never;
     delete?: never;
     options?: never;
     head?: never;
@@ -290,6 +290,46 @@ export interface paths {
      * @description Returns count of rows grouped by jurisdiction for the specified table. Supported tables: Court Decisions, Domestic Instruments, Literature.
      */
     get: operations["count_by_jurisdiction_api_v1_statistics_count_by_jurisdiction_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/statistics/counts": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Counts for every entity in the dataverse
+     * @description Returns counts per entity type, optionally scoped to a jurisdiction. Plain GET so it can be cached at the edge by Cloudflare.
+     */
+    get: operations["get_entity_counts_api_v1_statistics_counts_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/entities/{slug}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * List entities of a given type with optional jurisdiction filter
+     * @description Returns a paginated, slim list of entities using the relation contract (`*Relation` shapes used inside detail responses). Supports jurisdiction filtering for entities that expose `jurisdictions_alpha_3_code`. Court Decisions additionally accepts a `case_rank` filter.
+     */
+    get: operations["list_entity_api_v1_entities__slug__get"];
     put?: never;
     post?: never;
     delete?: never;
@@ -673,6 +713,18 @@ export interface components {
       created?: string | null;
       questionsThemeCode?: string | null;
     };
+    AnyEntityListItem:
+      | components["schemas"]["ArbitralAwardRelation"]
+      | components["schemas"]["ArbitralInstitutionRelation"]
+      | components["schemas"]["ArbitralRuleRelation"]
+      | components["schemas"]["CourtDecisionRelation"]
+      | components["schemas"]["DomesticInstrumentRelation"]
+      | components["schemas"]["InternationalInstrumentRelation"]
+      | components["schemas"]["JurisdictionRelation"]
+      | components["schemas"]["LiteratureRelation"]
+      | components["schemas"]["QuestionRelation"]
+      | components["schemas"]["RegionalInstrumentRelation"]
+      | components["schemas"]["SpecialistRelation"];
     /** ArbitralAwardDetail */
     ArbitralAwardDetail: {
       coldId?: string | null;
@@ -763,6 +815,8 @@ export interface components {
       coldId?: string | null;
       caseNumber?: string | null;
       year?: string | number | null;
+      seatTown?: string | null;
+      source?: string | null;
     };
     /** ArbitralAwardSearchResult */
     ArbitralAwardSearchResult: {
@@ -1018,15 +1072,6 @@ export interface components {
       themes?: string | null;
       arbitralInstitutions?: string | null;
     };
-    /**
-     * ClassifyQueryRequest
-     * @example {
-     *       "query": "How do courts treat party autonomy?"
-     *     }
-     */
-    ClassifyQueryRequest: {
-      query: string;
-    };
     /** ConfirmAnalysisRequest */
     ConfirmAnalysisRequest: {
       /** @description Draft ID from upload response */
@@ -1146,6 +1191,8 @@ export interface components {
       caseCitation?: string | null;
       caseTitle?: string | null;
       date?: string | null;
+      publicationDateIso?: string | null;
+      jurisdictionsAlpha3Code?: string | null;
     };
     /** CourtDecisionSearchResult */
     CourtDecisionSearchResult: {
@@ -1229,17 +1276,6 @@ export interface components {
       submitter_email?: string | null;
       /** @description Submitter comments */
       submitter_comments?: string | null;
-    };
-    /**
-     * CuratedDetailsRequest
-     * @example {
-     *       "id": "CHE_15-TC",
-     *       "table": "Answers"
-     *     }
-     */
-    CuratedDetailsRequest: {
-      table: string;
-      id: string;
     };
     /** DetailBase */
     DetailBase: {
@@ -1364,6 +1400,7 @@ export interface components {
       titleInEnglish?: string | null;
       officialTitle?: string | null;
       abbreviation?: string | null;
+      date?: string | null;
     };
     /** DomesticInstrumentSearchResult */
     DomesticInstrumentSearchResult: {
@@ -1529,6 +1566,20 @@ export interface components {
       caseCitation?: string | null;
       createdAt?: string | null;
     };
+    /** EntityCountsResponse */
+    EntityCountsResponse: {
+      counts: {
+        [key: string]: number;
+      };
+      jurisdiction?: string | null;
+    };
+    /** EntityListResponse */
+    EntityListResponse: {
+      items: components["schemas"]["AnyEntityListItem"][];
+      total: number;
+      page: number;
+      pageSize: number;
+    };
     /** EntityRelations */
     EntityRelations: {
       /** @default [] */
@@ -1580,11 +1631,6 @@ export interface components {
       | "arbitral_rule"
       | "question"
       | "jurisdiction";
-    /** FTFilterOption */
-    FTFilterOption: {
-      column: string;
-      value: string | number | boolean | (string | number | boolean)[];
-    };
     /** FTSFilterOption */
     FTSFilterOption: {
       column: string;
@@ -1649,85 +1695,6 @@ export interface components {
     /** FeedbackUpdate */
     FeedbackUpdate: {
       moderationStatus: components["schemas"]["FeedbackModerationStatus"];
-    };
-    /**
-     * FullTableRequest
-     * @example {
-     *       "filters": [
-     *         {
-     *           "column": "Jurisdictions",
-     *           "value": "Switzerland"
-     *         }
-     *       ],
-     *       "response_type": "parsed",
-     *       "table": "Answers"
-     *     }
-     */
-    FullTableRequest: {
-      table: string;
-      filters?: components["schemas"]["FTFilterOption"][] | null;
-      /**
-       * @description Response data format. Only 'parsed' is supported.
-       * @default parsed
-       */
-      response_type: "parsed" | null;
-    };
-    /**
-     * FullTextSearchRequest
-     * @example {
-     *       "filters": [
-     *         {
-     *           "column": "tables",
-     *           "values": [
-     *             "Answers",
-     *             "Court Decisions"
-     *           ]
-     *         },
-     *         {
-     *           "column": "jurisdictions",
-     *           "values": [
-     *             "Switzerland",
-     *             "France"
-     *           ]
-     *         },
-     *         {
-     *           "column": "Themes",
-     *           "values": [
-     *             "Party autonomy",
-     *             "Freedom of choice"
-     *           ]
-     *         }
-     *       ],
-     *       "page": 1,
-     *       "page_size": 100,
-     *       "response_type": "parsed",
-     *       "search_string": "",
-     *       "sort_by_date": true
-     *     }
-     */
-    FullTextSearchRequest: {
-      search_string?: string | null;
-      filters?: components["schemas"]["FTSFilterOption"][] | null;
-      /**
-       * @description Page number, must be >= 1
-       * @default 1
-       */
-      page: number;
-      /**
-       * @description Number of results per page
-       * @default 50
-       */
-      page_size: number;
-      /**
-       * @description Sort results by date descending if True.
-       * @default false
-       */
-      sort_by_date: boolean | null;
-      /**
-       * @description Response data format. Only 'parsed' is supported.
-       * @default parsed
-       */
-      response_type: "parsed" | null;
     };
     /** FullTextSearchResponse */
     FullTextSearchResponse: {
@@ -1893,6 +1860,8 @@ export interface components {
       id: number;
       coldId?: string | null;
       name?: string | null;
+      abbreviation?: string | null;
+      date?: string | null;
     };
     /** InternationalInstrumentSearchResult */
     InternationalInstrumentSearchResult: {
@@ -2526,6 +2495,7 @@ export interface components {
       coldId?: string | null;
       title?: string | null;
       abbreviation?: string | null;
+      date?: string | null;
     };
     /** RegionalInstrumentSearchResult */
     RegionalInstrumentSearchResult: {
@@ -2695,6 +2665,30 @@ export interface components {
       bio?: string | null;
       website?: string | null;
     };
+    /** SpecialistRecord */
+    SpecialistRecord: {
+      sourceTable?: string | null;
+      id?: string | number | null;
+      coldId?: string | null;
+      rank?: number | null;
+      specialist?: string | null;
+      affiliation?: string | null;
+      contact?: string | null;
+      bio?: string | null;
+      website?: string | null;
+      recordId?: string | null;
+      ncOrder?: string | null;
+      ncRecordId?: string | null;
+      ncRecordHash?: string | null;
+      created?: string | null;
+      createdAt?: string | null;
+      updatedAt?: string | null;
+      createdBy?: string | null;
+      updatedBy?: string | null;
+      jurisdictions?: string | null;
+      jurisdictionsAlpha3Code?: string | null;
+      jurisdictionsLink?: string | null;
+    };
     /** SpecialistRelation */
     SpecialistRelation: {
       id: number;
@@ -2857,20 +2851,29 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
-  handle_full_text_search_api_v1_search__post: {
+  handle_full_text_search_api_v1_search__get: {
     parameters: {
-      query?: never;
-      header?: {
-        "X-API-Key"?: string;
+      query?: {
+        /** @description Free-text query string */
+        search_string?: string | null;
+        /** @description Restrict to source tables (repeatable) */
+        tables?: string[] | null;
+        /** @description Filter by jurisdictions (repeatable) */
+        jurisdictions?: string[] | null;
+        /** @description Filter by themes (repeatable) */
+        themes?: string[] | null;
+        /** @description Page number, must be >= 1 */
+        page?: number;
+        /** @description Number of results per page */
+        page_size?: number;
+        /** @description Sort results by date descending if True. */
+        sort_by_date?: boolean;
       };
+      header?: never;
       path?: never;
       cookie?: never;
     };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["FullTextSearchRequest"];
-      };
-    };
+    requestBody?: never;
     responses: {
       /** @description Search results including pagination and total matches. */
       200: {
@@ -2920,20 +2923,19 @@ export interface operations {
       };
     };
   };
-  handle_entity_detail_api_v1_search_details_post: {
+  handle_entity_detail_api_v1_search_details_get: {
     parameters: {
-      query?: never;
-      header?: {
-        "X-API-Key"?: string;
+      query: {
+        /** @description Source table name (e.g. 'Answers') */
+        table: string;
+        /** @description CoLD ID for the record */
+        id: string;
       };
+      header?: never;
       path?: never;
       cookie?: never;
     };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["CuratedDetailsRequest"];
-      };
-    };
+    requestBody?: never;
     responses: {
       /** @description Successful Response */
       200: {
@@ -2980,20 +2982,25 @@ export interface operations {
       };
     };
   };
-  return_full_table_api_v1_search_full_table_post: {
+  return_full_table_api_v1_search_full_table_get: {
     parameters: {
-      query?: never;
-      header?: {
-        "X-API-Key"?: string;
+      query: {
+        /** @description Source table name */
+        table: string;
+        /** @description Filter as 'column:value' or 'column:val1,val2'. Repeatable. */
+        filter?: string[] | null;
+        /** @description Maximum number of rows to return. Omit for no limit. */
+        limit?: number | null;
+        /** @description Column name to sort by (camelCase or snake_case). Unknown columns are ignored. */
+        order_by?: string | null;
+        /** @description Sort direction when order_by is provided. */
+        order_dir?: ("asc" | "desc") | null;
       };
+      header?: never;
       path?: never;
       cookie?: never;
     };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["FullTableRequest"];
-      };
-    };
+    requestBody?: never;
     responses: {
       /** @description Array of transformed records from the requested table. */
       200: {
@@ -3029,6 +3036,7 @@ export interface operations {
             | components["schemas"]["RegionalLegalProvisionRecord"]
             | components["schemas"]["JurisdictionRecord"]
             | components["schemas"]["QuestionRecord"]
+            | components["schemas"]["SpecialistRecord"]
             | components["schemas"]["RecordBase"]
           )[];
         };
@@ -3061,9 +3069,7 @@ export interface operations {
   get_specialists_by_jurisdiction_api_v1_search_specialists__jurisdiction_alpha_code__get: {
     parameters: {
       query?: never;
-      header?: {
-        "X-API-Key"?: string;
-      };
+      header?: never;
       path: {
         jurisdiction_alpha_code: string;
       };
@@ -3121,20 +3127,19 @@ export interface operations {
       };
     };
   };
-  classify_query_api_v1_ai_classify_query_post: {
+  classify_query_get_api_v1_ai_classify_query_get: {
     parameters: {
-      query?: never;
+      query: {
+        /** @description Free-text query to classify, e.g. 'How do courts treat party autonomy?' */
+        query: string;
+      };
       header?: {
         "X-API-Key"?: string;
       };
       path?: never;
       cookie?: never;
     };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["ClassifyQueryRequest"];
-      };
-    };
+    requestBody?: never;
     responses: {
       /** @description Classification result */
       200: {
@@ -3361,9 +3366,7 @@ export interface operations {
   get_all_frontend_urls_api_v1_sitemap_urls_get: {
     parameters: {
       query?: never;
-      header?: {
-        "X-API-Key"?: string;
-      };
+      header?: never;
       path?: never;
       cookie?: never;
     };
@@ -3378,23 +3381,12 @@ export interface operations {
           "application/json": components["schemas"]["SitemapEntry"][];
         };
       };
-      /** @description Validation Error */
-      422: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
     };
   };
   get_jurisdictions_api_v1_landing_page_jurisdictions_get: {
     parameters: {
       query?: never;
-      header?: {
-        "X-API-Key"?: string;
-      };
+      header?: never;
       path?: never;
       cookie?: never;
     };
@@ -3417,23 +3409,12 @@ export interface operations {
           "application/json": components["schemas"]["LandingPageJurisdiction"][];
         };
       };
-      /** @description Validation Error */
-      422: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
     };
   };
   get_jurisdictions_with_answer_coverage_api_v1_statistics_jurisdictions_with_answer_percentage_get: {
     parameters: {
       query?: never;
-      header?: {
-        "X-API-Key"?: string;
-      };
+      header?: never;
       path?: never;
       cookie?: never;
     };
@@ -3466,15 +3447,6 @@ export interface operations {
           "application/json": components["schemas"]["JurisdictionCoverage"][];
         };
       };
-      /** @description Validation Error */
-      422: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
     };
   };
   count_by_jurisdiction_api_v1_statistics_count_by_jurisdiction_get: {
@@ -3485,9 +3457,7 @@ export interface operations {
         /** @description Optional limit on number of results to return */
         limit?: number | null;
       };
-      header?: {
-        "X-API-Key"?: string;
-      };
+      header?: never;
       path?: never;
       cookie?: never;
     };
@@ -3516,6 +3486,92 @@ export interface operations {
       };
       /** @description Invalid table name provided. */
       400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  get_entity_counts_api_v1_statistics_counts_get: {
+    parameters: {
+      query?: {
+        /** @description Optional Alpha-3 code; only counts entities tagged to it. */
+        jurisdiction?: string | null;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["EntityCountsResponse"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  list_entity_api_v1_entities__slug__get: {
+    parameters: {
+      query?: {
+        /** @description Filter by jurisdiction Alpha-3 code (case-insensitive). */
+        jurisdiction?: string | null;
+        /** @description Filter by theme name (substring, case-insensitive). */
+        theme?: string | null;
+        /** @description Court Decisions only: filter by case rank. */
+        case_rank?: string | null;
+        /** @description 1-indexed page number. */
+        page?: number;
+        /** @description Items per page (max 250). */
+        page_size?: number;
+        /** @description Override default order column (snake or camelCase). */
+        order_by?: string | null;
+        /** @description Override default order direction. */
+        order_dir?: ("asc" | "desc") | null;
+      };
+      header?: never;
+      path: {
+        /** @description Entity slug, e.g. 'court-decisions' */
+        slug: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Items, total, page, pageSize. */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["EntityListResponse"];
+        };
+      };
+      /** @description Unknown entity slug. */
+      404: {
         headers: {
           [name: string]: unknown;
         };

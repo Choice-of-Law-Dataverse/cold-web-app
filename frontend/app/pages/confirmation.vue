@@ -3,7 +3,7 @@
     <div
       class="flex min-h-[50vh] w-full flex-col items-center justify-center text-center"
     >
-      <h2>{{ confirmationMessage }}</h2>
+      <h1>{{ confirmationMessage }}</h1>
 
       <div class="mt-6 flex flex-col gap-2">
         <NuxtLink v-for="link in links" :key="link.to" :to="link.to">

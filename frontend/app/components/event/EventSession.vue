@@ -19,9 +19,7 @@
       >
         {{ tag }}
       </span>
-      <h3
-        class="text-cold-night mb-1.5 font-serif text-lg leading-snug font-bold"
-      >
+      <h3 class="text-cold-night mb-1.5 text-lg leading-snug font-bold">
         {{ title }}
       </h3>
       <div class="text-cold-charcoal text-sm leading-relaxed font-light">

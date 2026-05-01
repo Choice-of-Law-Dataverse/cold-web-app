@@ -11,7 +11,7 @@
       <div class="mt-2">
         <button
           type="button"
-          class="link-button !mb-2 no-underline"
+          class="text-cold-purple mb-2 cursor-pointer p-0 text-sm leading-[1.6] font-normal no-underline transition-colors duration-200 hover:text-[color-mix(in_srgb,var(--color-cold-purple)_85%,#000)]"
           :disabled="copying"
           @click="copyToClipboard()"
         >

@@ -1,6 +1,5 @@
 from fastapi import APIRouter, Depends
 
-from app.auth import verify_frontend_request
 from app.schemas.responses import SitemapEntry
 from app.services.sitemap import SitemapService
 
@@ -10,7 +9,7 @@ def get_sitemap_service() -> SitemapService:
     return SitemapService()
 
 
-router = APIRouter(prefix="/sitemap", tags=["Sitemap"], dependencies=[Depends(verify_frontend_request)])
+router = APIRouter(prefix="/sitemap", tags=["Sitemap"])
 
 
 @router.get("/urls")

@@ -32,94 +32,49 @@ describe("RelatedItemsList", () => {
     expect(wrapper.findComponent({ name: "LoadingBar" }).exists()).toBe(true);
   });
 
-  it("displays only first 10 items initially when more than 10 items", () => {
-    const manyItems = Array.from({ length: 15 }, (_, i) => ({
+  it("renders all items without ShowMoreLess when at or below threshold", () => {
+    const items = Array.from({ length: 20 }, (_, i) => ({
       id: `${i + 1}`,
       title: `Item ${i + 1}`,
     }));
 
     const wrapper = mount(RelatedItemsList, {
       props: {
-        items: manyItems,
+        items,
         basePath: "/test",
       },
     });
 
     expect(wrapper.text()).toContain("Item 1");
-    expect(wrapper.text()).toContain("Item 10");
-    expect(wrapper.text()).not.toContain("Item 11");
-  });
-
-  it("shows 'Show more' button when more than 10 items", () => {
-    const manyItems = Array.from({ length: 15 }, (_, i) => ({
-      id: `${i + 1}`,
-      title: `Item ${i + 1}`,
-    }));
-
-    const wrapper = mount(RelatedItemsList, {
-      props: {
-        items: manyItems,
-        basePath: "/test",
-      },
-    });
-
-    expect(wrapper.findComponent({ name: "ShowMoreLess" }).exists()).toBe(true);
-  });
-
-  it("does not show button when 10 or fewer items", () => {
-    const wrapper = mount(RelatedItemsList, {
-      props: {
-        items: mockItems,
-        basePath: "/test",
-      },
-    });
-
+    expect(wrapper.text()).toContain("Item 20");
     expect(wrapper.findComponent({ name: "ShowMoreLess" }).exists()).toBe(
       false,
     );
   });
 
-  it("toggles to show all items when clicking show more", async () => {
-    const manyItems = Array.from({ length: 15 }, (_, i) => ({
+  it("collapses items above the threshold and expands via ShowMoreLess", async () => {
+    const items = Array.from({ length: 25 }, (_, i) => ({
       id: `${i + 1}`,
       title: `Item ${i + 1}`,
     }));
 
     const wrapper = mount(RelatedItemsList, {
       props: {
-        items: manyItems,
+        items,
         basePath: "/test",
       },
     });
 
-    expect(wrapper.text()).not.toContain("Item 11");
+    expect(wrapper.text()).toContain("Item 20");
+    expect(wrapper.text()).not.toContain("Item 21");
+    expect(wrapper.text()).not.toContain("Item 25");
 
-    const showMoreLess = wrapper.findComponent({ name: "ShowMoreLess" });
-    const button = showMoreLess.find("button");
-    await button.trigger("click");
+    const toggle = wrapper.findComponent({ name: "ShowMoreLess" });
+    expect(toggle.exists()).toBe(true);
 
-    expect(wrapper.text()).toContain("Item 11");
-    expect(wrapper.text()).toContain("Item 15");
-  });
-
-  it("hides extra items when clicking show less", async () => {
-    const manyItems = Array.from({ length: 15 }, (_, i) => ({
-      id: `${i + 1}`,
-      title: `Item ${i + 1}`,
-    }));
-
-    const wrapper = mount(RelatedItemsList, {
-      props: {
-        items: manyItems,
-        basePath: "/test",
-      },
-    });
-
-    const showMoreLess = wrapper.findComponent({ name: "ShowMoreLess" });
-    await showMoreLess.find("button").trigger("click"); // Show all
-    await showMoreLess.find("button").trigger("click"); // Show less
-
-    expect(wrapper.text()).not.toContain("Item 11");
+    await toggle.vm.$emit("update:isExpanded", true);
+    expect(wrapper.text()).toContain("Item 21");
+    expect(wrapper.text()).toContain("Item 25");
   });
 
   it("constructs correct link paths with basePath", () => {
@@ -193,23 +148,6 @@ describe("RelatedItemsList", () => {
     });
 
     expect(wrapper.html()).toContain("link-chip--neutral");
-  });
-
-  it("applies link-chip--action class to show more button", () => {
-    const manyItems = Array.from({ length: 15 }, (_, i) => ({
-      id: `${i + 1}`,
-      title: `Item ${i + 1}`,
-    }));
-
-    const wrapper = mount(RelatedItemsList, {
-      props: {
-        items: manyItems,
-        basePath: "/test",
-      },
-    });
-
-    const showMoreLess = wrapper.findComponent({ name: "ShowMoreLess" });
-    expect(showMoreLess.props("buttonClass")).toBe("link-chip--action");
   });
 
   it("applies link-chip--neutral regardless of entity type", () => {

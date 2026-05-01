@@ -5,6 +5,7 @@
     :alt="computedAlt"
     :class="[sizeClasses, props.class]"
     :style="{ filter: faded ? 'grayscale(0.9)' : undefined }"
+    loading="lazy"
     @error="onImageError"
   />
 </template>

@@ -50,16 +50,10 @@ export const MODERATION_CATEGORIES: CategoryConfig[] = [
   },
 ];
 
-export const CATEGORY_LABELS: Record<string, string> = Object.fromEntries(
+const CATEGORY_LABELS: Record<string, string> = Object.fromEntries(
   MODERATION_CATEGORIES.map((cat) => [cat.id, cat.label]),
 );
 
 export function getCategoryLabel(categoryId: string): string {
   return CATEGORY_LABELS[categoryId] || categoryId;
-}
-
-export function getCategoryConfig(
-  categoryId: string,
-): CategoryConfig | undefined {
-  return MODERATION_CATEGORIES.find((cat) => cat.id === categoryId);
 }

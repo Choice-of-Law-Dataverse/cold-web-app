@@ -111,9 +111,9 @@ describe("getLabelColorClass", () => {
     expect(getLabelColorClass("Literature")).toBe("label-literature");
   });
 
-  it("returns hidden for jurisdiction", () => {
-    expect(getLabelColorClass("Jurisdictions")).toBe("hidden");
-    expect(getLabelColorClass("Jurisdiction")).toBe("hidden");
+  it("returns label-jurisdiction for jurisdiction", () => {
+    expect(getLabelColorClass("Jurisdictions")).toBe("label-jurisdiction");
+    expect(getLabelColorClass("Report")).toBe("label-jurisdiction");
   });
 
   it("returns empty string for unknown cardType", () => {
@@ -129,8 +129,10 @@ describe("getLabelColorClassByVariant", () => {
     expect(getLabelColorClassByVariant("instrument")).toBe("label-instrument");
   });
 
-  it("returns hidden for jurisdiction variant", () => {
-    expect(getLabelColorClassByVariant("jurisdiction")).toBe("hidden");
+  it("returns label-jurisdiction for jurisdiction variant", () => {
+    expect(getLabelColorClassByVariant("jurisdiction")).toBe(
+      "label-jurisdiction",
+    );
   });
 
   it("returns empty string for unknown variant", () => {

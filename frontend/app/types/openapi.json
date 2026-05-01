@@ -15,32 +15,133 @@
   },
   "paths": {
     "/search/": {
-      "post": {
+      "get": {
         "tags": ["Search"],
         "summary": "Full-text search across CoLD data",
-        "description": "Searches across multiple domains (Answers, HCCH Answers, Court Decisions, Domestic Instruments, Regional Instruments, International Instruments, Literature, Arbitral Awards, and Arbitral Rules). Filters support user-facing fields like 'tables', 'Jurisdictions', or 'Themes'. You can sort by date and paginate results.",
-        "operationId": "handle_full_text_search_api_v1_search__post",
+        "description": "Searches across multiple domains (Answers, HCCH Answers, Court Decisions, Domestic Instruments, Regional Instruments, International Instruments, Literature, Arbitral Awards, and Arbitral Rules). Filter columns are exposed as dedicated repeatable query parameters: `tables`, `jurisdictions`, `themes`. Pass each value separately, e.g. `?tables=Answers&tables=Court%20Decisions&jurisdictions=Switzerland`. You can sort by date and paginate results.",
+        "operationId": "handle_full_text_search_api_v1_search__get",
         "parameters": [
           {
-            "name": "X-API-Key",
-            "in": "header",
+            "name": "search_string",
+            "in": "query",
             "required": false,
             "schema": {
-              "type": "string",
-              "title": "X-Api-Key"
-            }
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Free-text query string",
+              "title": "Search String"
+            },
+            "description": "Free-text query string"
+          },
+          {
+            "name": "tables",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Restrict to source tables (repeatable)",
+              "title": "Tables"
+            },
+            "description": "Restrict to source tables (repeatable)"
+          },
+          {
+            "name": "jurisdictions",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by jurisdictions (repeatable)",
+              "title": "Jurisdictions"
+            },
+            "description": "Filter by jurisdictions (repeatable)"
+          },
+          {
+            "name": "themes",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by themes (repeatable)",
+              "title": "Themes"
+            },
+            "description": "Filter by themes (repeatable)"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "Page number, must be >= 1",
+              "default": 1,
+              "title": "Page"
+            },
+            "description": "Page number, must be >= 1"
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "description": "Number of results per page",
+              "default": 50,
+              "title": "Page Size"
+            },
+            "description": "Number of results per page"
+          },
+          {
+            "name": "sort_by_date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "description": "Sort results by date descending if True.",
+              "default": false,
+              "title": "Sort By Date"
+            },
+            "description": "Sort results by date descending if True."
           }
         ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/FullTextSearchRequest"
-              }
-            }
-          }
-        },
         "responses": {
           "200": {
             "description": "Search results including pagination and total matches.",
@@ -90,32 +191,35 @@
       }
     },
     "/search/details": {
-      "post": {
+      "get": {
         "tags": ["Search"],
         "summary": "Fetch a curated record by CoLD ID including relations",
         "description": "Given a table and a CoLD ID, returns the record with all first-hop relations in a standardized shape.",
-        "operationId": "handle_entity_detail_api_v1_search_details_post",
+        "operationId": "handle_entity_detail_api_v1_search_details_get",
         "parameters": [
           {
-            "name": "X-API-Key",
-            "in": "header",
-            "required": false,
+            "name": "table",
+            "in": "query",
+            "required": true,
             "schema": {
               "type": "string",
-              "title": "X-Api-Key"
-            }
+              "description": "Source table name (e.g. 'Answers')",
+              "title": "Table"
+            },
+            "description": "Source table name (e.g. 'Answers')"
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "CoLD ID for the record",
+              "title": "Id"
+            },
+            "description": "CoLD ID for the record"
           }
         ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CuratedDetailsRequest"
-              }
-            }
-          }
-        },
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -178,7 +282,7 @@
                       "$ref": "#/components/schemas/DetailBase"
                     }
                   ],
-                  "title": "Response Handle Entity Detail Api V1 Search Details Post"
+                  "title": "Response Handle Entity Detail Api V1 Search Details Get"
                 }
               }
             }
@@ -200,32 +304,103 @@
       }
     },
     "/search/full_table": {
-      "post": {
+      "get": {
         "tags": ["Search"],
         "summary": "Return full or filtered table",
-        "description": "Returns all records from the specified table or a filtered subset. Filters accept user-facing field names and values (mapping-aware).",
-        "operationId": "return_full_table_api_v1_search_full_table_post",
+        "description": "Returns all records from the specified table or a filtered subset. Filters use the repeatable `filter` query parameter with format `column:value` or `column:val1,val2` for multiple values. Values matching `true`/`false` are parsed as booleans; pure-digit strings as integers; everything else stays a string. Example: `?table=Court%20Decisions&filter=caseRank:10&filter=jurisdiction:Switzerland`.",
+        "operationId": "return_full_table_api_v1_search_full_table_get",
         "parameters": [
           {
-            "name": "X-API-Key",
-            "in": "header",
-            "required": false,
+            "name": "table",
+            "in": "query",
+            "required": true,
             "schema": {
               "type": "string",
-              "title": "X-Api-Key"
-            }
+              "description": "Source table name",
+              "title": "Table"
+            },
+            "description": "Source table name"
+          },
+          {
+            "name": "filter",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter as 'column:value' or 'column:val1,val2'. Repeatable.",
+              "title": "Filter"
+            },
+            "description": "Filter as 'column:value' or 'column:val1,val2'. Repeatable."
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "maximum": 10000,
+                  "minimum": 1
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Maximum number of rows to return. Omit for no limit.",
+              "title": "Limit"
+            },
+            "description": "Maximum number of rows to return. Omit for no limit."
+          },
+          {
+            "name": "order_by",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Column name to sort by (camelCase or snake_case). Unknown columns are ignored.",
+              "title": "Order By"
+            },
+            "description": "Column name to sort by (camelCase or snake_case). Unknown columns are ignored."
+          },
+          {
+            "name": "order_dir",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": ["asc", "desc"],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Sort direction when order_by is provided.",
+              "default": "desc",
+              "title": "Order Dir"
+            },
+            "description": "Sort direction when order_by is provided."
           }
         ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/FullTableRequest"
-              }
-            }
-          }
-        },
         "responses": {
           "200": {
             "description": "Array of transformed records from the requested table.",
@@ -281,11 +456,14 @@
                         "$ref": "#/components/schemas/QuestionRecord"
                       },
                       {
+                        "$ref": "#/components/schemas/SpecialistRecord"
+                      },
+                      {
                         "$ref": "#/components/schemas/RecordBase"
                       }
                     ]
                   },
-                  "title": "Response Return Full Table Api V1 Search Full Table Post"
+                  "title": "Response Return Full Table Api V1 Search Full Table Get"
                 },
                 "example": [
                   {
@@ -331,15 +509,6 @@
             "schema": {
               "type": "string",
               "title": "Jurisdiction Alpha Code"
-            }
-          },
-          {
-            "name": "X-API-Key",
-            "in": "header",
-            "required": false,
-            "schema": {
-              "type": "string",
-              "title": "X-Api-Key"
             }
           }
         ],
@@ -392,12 +561,23 @@
       }
     },
     "/ai/classify_query": {
-      "post": {
+      "get": {
         "tags": ["AI"],
         "summary": "Classify a free-text user query into a predefined category",
         "description": "Uses an external model to classify the user's query into one of the predefined CoLD categories.",
-        "operationId": "classify_query_api_v1_ai_classify_query_post",
+        "operationId": "classify_query_get_api_v1_ai_classify_query_get",
         "parameters": [
+          {
+            "name": "query",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Free-text query to classify, e.g. 'How do courts treat party autonomy?'",
+              "title": "Query"
+            },
+            "description": "Free-text query to classify, e.g. 'How do courts treat party autonomy?'"
+          },
           {
             "name": "X-API-Key",
             "in": "header",
@@ -408,16 +588,6 @@
             }
           }
         ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ClassifyQueryRequest"
-              }
-            }
-          }
-        },
         "responses": {
           "200": {
             "description": "Classification result",
@@ -425,7 +595,7 @@
               "application/json": {
                 "schema": {
                   "type": "string",
-                  "title": "Response Classify Query Api V1 Ai Classify Query Post"
+                  "title": "Response Classify Query Get Api V1 Ai Classify Query Get"
                 },
                 "example": "Party autonomy (concept)"
               }
@@ -760,38 +930,17 @@
         "tags": ["Sitemap"],
         "summary": "Get All Frontend Urls",
         "operationId": "get_all_frontend_urls_api_v1_sitemap_urls_get",
-        "parameters": [
-          {
-            "name": "X-API-Key",
-            "in": "header",
-            "required": false,
-            "schema": {
-              "type": "string",
-              "title": "X-Api-Key"
-            }
-          }
-        ],
         "responses": {
           "200": {
             "description": "Successful Response",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
                   "items": {
                     "$ref": "#/components/schemas/SitemapEntry"
                   },
+                  "type": "array",
                   "title": "Response Get All Frontend Urls Api V1 Sitemap Urls Get"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
                 }
               }
             }
@@ -805,27 +954,16 @@
         "summary": "Jurisdictions with data availability",
         "description": "Returns ISO Alpha-3 codes and a has_data flag (1/0) depending on whether non-'No data' answers exist.",
         "operationId": "get_jurisdictions_api_v1_landing_page_jurisdictions_get",
-        "parameters": [
-          {
-            "name": "X-API-Key",
-            "in": "header",
-            "required": false,
-            "schema": {
-              "type": "string",
-              "title": "X-Api-Key"
-            }
-          }
-        ],
         "responses": {
           "200": {
             "description": "Array of jurisdictions and availability flag.",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
                   "items": {
                     "$ref": "#/components/schemas/LandingPageJurisdiction"
                   },
+                  "type": "array",
                   "title": "Response Get Jurisdictions Api V1 Landing Page Jurisdictions Get"
                 },
                 "example": [
@@ -834,16 +972,6 @@
                     "has_data": 1
                   }
                 ]
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
               }
             }
           }
@@ -856,27 +984,16 @@
         "summary": "Get all jurisdictions with answer data percentage",
         "description": "Returns all jurisdictions with their complete data plus the percentage of answers that contain data (not 'no data'). Percentage is calculated per jurisdiction.",
         "operationId": "get_jurisdictions_with_answer_coverage_api_v1_statistics_jurisdictions_with_answer_percentage_get",
-        "parameters": [
-          {
-            "name": "X-API-Key",
-            "in": "header",
-            "required": false,
-            "schema": {
-              "type": "string",
-              "title": "X-Api-Key"
-            }
-          }
-        ],
         "responses": {
           "200": {
             "description": "Array of jurisdictions with all fields plus answer_coverage.",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
                   "items": {
                     "$ref": "#/components/schemas/JurisdictionCoverage"
                   },
+                  "type": "array",
                   "title": "Response Get Jurisdictions With Answer Coverage Api V1 Statistics Jurisdictions With Answer Percentage Get"
                 },
                 "example": [
@@ -895,16 +1012,6 @@
                     "Answer_Coverage": 85.5
                   }
                 ]
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
               }
             }
           }
@@ -947,15 +1054,6 @@
               "title": "Limit"
             },
             "description": "Optional limit on number of results to return"
-          },
-          {
-            "name": "X-API-Key",
-            "in": "header",
-            "required": false,
-            "schema": {
-              "type": "string",
-              "title": "X-Api-Key"
-            }
           }
         ],
         "responses": {
@@ -985,6 +1083,220 @@
           },
           "400": {
             "description": "Invalid table name provided."
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/statistics/counts": {
+      "get": {
+        "tags": ["Statistics"],
+        "summary": "Counts for every entity in the dataverse",
+        "description": "Returns counts per entity type, optionally scoped to a jurisdiction. Plain GET so it can be cached at the edge by Cloudflare.",
+        "operationId": "get_entity_counts_api_v1_statistics_counts_get",
+        "parameters": [
+          {
+            "name": "jurisdiction",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Optional Alpha-3 code; only counts entities tagged to it.",
+              "title": "Jurisdiction"
+            },
+            "description": "Optional Alpha-3 code; only counts entities tagged to it."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EntityCountsResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/entities/{slug}": {
+      "get": {
+        "tags": ["Entities"],
+        "summary": "List entities of a given type with optional jurisdiction filter",
+        "description": "Returns a paginated, slim list of entities using the relation contract (`*Relation` shapes used inside detail responses). Supports jurisdiction filtering for entities that expose `jurisdictions_alpha_3_code`. Court Decisions additionally accepts a `case_rank` filter.",
+        "operationId": "list_entity_api_v1_entities__slug__get",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Entity slug, e.g. 'court-decisions'",
+              "title": "Slug"
+            },
+            "description": "Entity slug, e.g. 'court-decisions'"
+          },
+          {
+            "name": "jurisdiction",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by jurisdiction Alpha-3 code (case-insensitive).",
+              "title": "Jurisdiction"
+            },
+            "description": "Filter by jurisdiction Alpha-3 code (case-insensitive)."
+          },
+          {
+            "name": "theme",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by theme name (substring, case-insensitive).",
+              "title": "Theme"
+            },
+            "description": "Filter by theme name (substring, case-insensitive)."
+          },
+          {
+            "name": "case_rank",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Court Decisions only: filter by case rank.",
+              "title": "Case Rank"
+            },
+            "description": "Court Decisions only: filter by case rank."
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "1-indexed page number.",
+              "default": 1,
+              "title": "Page"
+            },
+            "description": "1-indexed page number."
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 250,
+              "minimum": 1,
+              "description": "Items per page (max 250).",
+              "default": 250,
+              "title": "Page Size"
+            },
+            "description": "Items per page (max 250)."
+          },
+          {
+            "name": "order_by",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Override default order column (snake or camelCase).",
+              "title": "Order By"
+            },
+            "description": "Override default order column (snake or camelCase)."
+          },
+          {
+            "name": "order_dir",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": ["asc", "desc"],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Override default order direction.",
+              "title": "Order Dir"
+            },
+            "description": "Override default order direction."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Items, total, page, pageSize.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EntityListResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Unknown entity slug."
           },
           "422": {
             "description": "Validation Error",
@@ -2710,6 +3022,43 @@
         "type": "object",
         "title": "AnswerSearchResult"
       },
+      "AnyEntityListItem": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/ArbitralAwardRelation"
+          },
+          {
+            "$ref": "#/components/schemas/ArbitralInstitutionRelation"
+          },
+          {
+            "$ref": "#/components/schemas/ArbitralRuleRelation"
+          },
+          {
+            "$ref": "#/components/schemas/CourtDecisionRelation"
+          },
+          {
+            "$ref": "#/components/schemas/DomesticInstrumentRelation"
+          },
+          {
+            "$ref": "#/components/schemas/InternationalInstrumentRelation"
+          },
+          {
+            "$ref": "#/components/schemas/JurisdictionRelation"
+          },
+          {
+            "$ref": "#/components/schemas/LiteratureRelation"
+          },
+          {
+            "$ref": "#/components/schemas/QuestionRelation"
+          },
+          {
+            "$ref": "#/components/schemas/RegionalInstrumentRelation"
+          },
+          {
+            "$ref": "#/components/schemas/SpecialistRelation"
+          }
+        ]
+      },
       "ArbitralAwardDetail": {
         "properties": {
           "coldId": {
@@ -3245,6 +3594,26 @@
               },
               {
                 "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "seatTown": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "source": {
+            "anyOf": [
+              {
+                "type": "string"
               },
               {
                 "type": "null"
@@ -4827,21 +5196,6 @@
         "type": "object",
         "title": "ArbitralRuleSearchResult"
       },
-      "ClassifyQueryRequest": {
-        "properties": {
-          "query": {
-            "type": "string"
-          }
-        },
-        "type": "object",
-        "required": ["query"],
-        "title": "ClassifyQueryRequest",
-        "examples": [
-          {
-            "query": "How do courts treat party autonomy?"
-          }
-        ]
-      },
       "ConfirmAnalysisRequest": {
         "properties": {
           "draftId": {
@@ -5650,6 +6004,26 @@
                 "type": "null"
               }
             ]
+          },
+          "publicationDateIso": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "jurisdictionsAlpha3Code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "type": "object",
@@ -6074,25 +6448,6 @@
           "submitter_comments": "Spotted a typo in the abstract.",
           "submitter_email": "user@example.com"
         }
-      },
-      "CuratedDetailsRequest": {
-        "properties": {
-          "table": {
-            "type": "string"
-          },
-          "id": {
-            "type": "string"
-          }
-        },
-        "type": "object",
-        "required": ["table", "id"],
-        "title": "CuratedDetailsRequest",
-        "examples": [
-          {
-            "id": "CHE_15-TC",
-            "table": "Answers"
-          }
-        ]
       },
       "DetailBase": {
         "properties": {
@@ -6799,6 +7154,16 @@
             ]
           },
           "abbreviation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "date": {
             "anyOf": [
               {
                 "type": "string"
@@ -7720,6 +8085,51 @@
         "required": ["draftId", "status"],
         "title": "DraftRecoveryResponse"
       },
+      "EntityCountsResponse": {
+        "properties": {
+          "counts": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object"
+          },
+          "jurisdiction": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": ["counts"],
+        "title": "EntityCountsResponse"
+      },
+      "EntityListResponse": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/AnyEntityListItem"
+            },
+            "type": "array"
+          },
+          "total": {
+            "type": "integer"
+          },
+          "page": {
+            "type": "integer"
+          },
+          "pageSize": {
+            "type": "integer"
+          }
+        },
+        "type": "object",
+        "required": ["items", "total", "page", "pageSize"],
+        "title": "EntityListResponse"
+      },
       "EntityRelations": {
         "properties": {
           "hcchAnswers": {
@@ -7859,45 +8269,6 @@
           "jurisdiction"
         ],
         "title": "EntityType"
-      },
-      "FTFilterOption": {
-        "properties": {
-          "column": {
-            "type": "string"
-          },
-          "value": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "integer"
-              },
-              {
-                "type": "boolean"
-              },
-              {
-                "items": {
-                  "anyOf": [
-                    {
-                      "type": "string"
-                    },
-                    {
-                      "type": "integer"
-                    },
-                    {
-                      "type": "boolean"
-                    }
-                  ]
-                },
-                "type": "array"
-              }
-            ]
-          }
-        },
-        "type": "object",
-        "required": ["column", "value"],
-        "title": "FTFilterOption"
       },
       "FTSFilterOption": {
         "properties": {
@@ -8108,144 +8479,6 @@
         "type": "object",
         "required": ["moderationStatus"],
         "title": "FeedbackUpdate"
-      },
-      "FullTableRequest": {
-        "properties": {
-          "table": {
-            "type": "string"
-          },
-          "filters": {
-            "anyOf": [
-              {
-                "items": {
-                  "$ref": "#/components/schemas/FTFilterOption"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "response_type": {
-            "anyOf": [
-              {
-                "type": "string",
-                "const": "parsed"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Response data format. Only 'parsed' is supported.",
-            "default": "parsed"
-          }
-        },
-        "type": "object",
-        "required": ["table"],
-        "title": "FullTableRequest",
-        "examples": [
-          {
-            "filters": [
-              {
-                "column": "Jurisdictions",
-                "value": "Switzerland"
-              }
-            ],
-            "response_type": "parsed",
-            "table": "Answers"
-          }
-        ]
-      },
-      "FullTextSearchRequest": {
-        "properties": {
-          "search_string": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "filters": {
-            "anyOf": [
-              {
-                "items": {
-                  "$ref": "#/components/schemas/FTSFilterOption"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "page": {
-            "type": "integer",
-            "minimum": 1.0,
-            "description": "Page number, must be >= 1",
-            "default": 1
-          },
-          "page_size": {
-            "type": "integer",
-            "maximum": 100.0,
-            "minimum": 1.0,
-            "description": "Number of results per page",
-            "default": 50
-          },
-          "sort_by_date": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Sort results by date descending if True.",
-            "default": false
-          },
-          "response_type": {
-            "anyOf": [
-              {
-                "type": "string",
-                "const": "parsed"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Response data format. Only 'parsed' is supported.",
-            "default": "parsed"
-          }
-        },
-        "type": "object",
-        "title": "FullTextSearchRequest",
-        "examples": [
-          {
-            "filters": [
-              {
-                "column": "tables",
-                "values": ["Answers", "Court Decisions"]
-              },
-              {
-                "column": "jurisdictions",
-                "values": ["Switzerland", "France"]
-              },
-              {
-                "column": "Themes",
-                "values": ["Party autonomy", "Freedom of choice"]
-              }
-            ],
-            "page": 1,
-            "page_size": 100,
-            "response_type": "parsed",
-            "search_string": "",
-            "sort_by_date": true
-          }
-        ]
       },
       "FullTextSearchResponse": {
         "properties": {
@@ -9110,6 +9343,26 @@
             ]
           },
           "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "abbreviation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "date": {
             "anyOf": [
               {
                 "type": "string"
@@ -13004,6 +13257,16 @@
                 "type": "null"
               }
             ]
+          },
+          "date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "type": "object",
@@ -13886,6 +14149,225 @@
         "required": ["id", "sourceTable"],
         "title": "SpecialistDetail"
       },
+      "SpecialistRecord": {
+        "properties": {
+          "sourceTable": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "coldId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "rank": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "specialist": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "affiliation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "contact": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "bio": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "website": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "recordId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "ncOrder": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "ncRecordId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "ncRecordHash": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "created": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "createdAt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "updatedAt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "createdBy": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "updatedBy": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "jurisdictions": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "jurisdictionsAlpha3Code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "jurisdictionsLink": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "title": "SpecialistRecord"
+      },
       "SpecialistRelation": {
         "properties": {
           "id": {
@@ -14389,6 +14871,10 @@
     {
       "name": "Statistics",
       "description": "Data aggregation and statistics endpoints."
+    },
+    {
+      "name": "Entities",
+      "description": "Slim list endpoints per entity type and entity counts."
     },
     {
       "name": "Submarine",
