@@ -46,7 +46,14 @@ class ColSectionOutput(ConfidenceReasoningModel):
 
 
 class CaseCitationOutput(ConfidenceReasoningModel):
-    case_citation: str = Field(description="The case citation extracted from the text. Academic format preferred.")
+    case_citation: str = Field(
+        description=(
+            "Canonical case citation as it appears in the decision (e.g., 'BGE 138 III 232', "
+            "'OGH 6 Ob 24/19f', '[2023] EWHC 123 (Comm)'). Use the document's own format and "
+            "language; do not translate or expand court names, abbreviations, or docket numbers. "
+            "Return 'NA' if no citation is present in the text."
+        )
+    )
 
 
 class RelevantFactsOutput(ConfidenceReasoningModel):

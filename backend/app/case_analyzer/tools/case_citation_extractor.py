@@ -20,7 +20,14 @@ async def extract_case_citation(
 ) -> StepResult[CaseCitationOutput]:
     """Extract case citation from court decision text."""
     with logfire.span("case_citation"):
-        instructions = "Extract the case citation from the provided court decision text. Provide the citation in an academic format, including all necessary details such as case name, reporter, court, and year. If the citation is not explicitly mentioned in the text, infer it based on context. Ensure accuracy and clarity in the citation format. Tailor the citation style to the legal system and jurisdiction specified."
+        instructions = (
+            "Extract the canonical case citation as it appears in the court decision. "
+            "Use the document's own citation format and language verbatim — do not translate, "
+            "expand, or reformat court names, abbreviations (BGE, OGH, BGH, EWHC, etc.), or "
+            "docket numbers. Prefer the short canonical identifier (e.g., 'BGE 138 III 232') "
+            "over the full case header with parties, judges, and dates. "
+            "If no citation is explicitly present in the text, return 'NA' — do not infer or fabricate."
+        )
 
         prompt: list[TResponseInputItem] = [
             {
