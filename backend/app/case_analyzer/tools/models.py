@@ -118,3 +118,14 @@ class JurisdictionOutput(ConfidenceReasoningModel):
 
 class ThemeClassificationOutput(ConfidenceReasoningModel):
     themes: list[ThemeWithNA] = Field(description="List of classified PIL themes")
+
+    @model_validator(mode="after")
+    def _dedupe_themes(self) -> Self:
+        seen: set[str] = set()
+        deduped: list[ThemeWithNA] = []
+        for theme in self.themes:
+            if theme not in seen:
+                seen.add(theme)
+                deduped.append(theme)
+        self.themes = deduped
+        return self
