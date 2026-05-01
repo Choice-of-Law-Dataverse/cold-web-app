@@ -94,20 +94,7 @@
           @error="(msg) => (error = msg)"
         />
 
-        <!-- Step 2: Jurisdiction Confirmation -->
-        <JurisdictionConfirmCard
-          v-if="currentStep === 'confirm'"
-          v-model:selected-jurisdiction="selectedJurisdiction"
-          :document-name="selectedFile?.name || 'Unknown'"
-          :jurisdiction-info="jurisdictionInfo"
-          :is-loading="analysis.isAnalyzing.value"
-          @continue="confirmAndAnalyze(false)"
-          @reset="resetAnalysis"
-          @jurisdiction-updated="onJurisdictionSelected"
-          @legal-system-updated="onLegalSystemSelected"
-        />
-
-        <!-- Step 3: Review & Submit -->
+        <!-- Step 2: Review & Submit -->
         <AnalysisReviewForm
           v-if="currentStep === 'analyzing'"
           v-model:editable-form="editableForm"
@@ -138,7 +125,6 @@ import { useDocumentUpload } from "~/composables/useDocumentUpload";
 import { useCaseAnalyzer } from "~/composables/useCaseAnalyzer";
 import { useJurisdictionLookup } from "@/composables/useJurisdictions";
 import FileUploadCard from "@/components/case-analyzer/FileUploadCard.vue";
-import JurisdictionConfirmCard from "@/components/case-analyzer/JurisdictionConfirmCard.vue";
 import AnalysisReviewForm from "@/components/case-analyzer/AnalysisReviewForm.vue";
 import AnalysisStepTracker from "@/components/case-analyzer/AnalysisStepTracker.vue";
 import SubmissionDisclaimer, {
@@ -170,7 +156,7 @@ const user = useUser();
 const route = useRoute();
 
 // State
-const currentStep = ref<"upload" | "confirm" | "analyzing">("upload");
+const currentStep = ref<"upload" | "analyzing">("upload");
 const error = ref<string | null>(null);
 const analysisResults = ref<Record<string, AnalysisStepPayload>>({});
 const selectedJurisdiction = ref<JurisdictionOption | undefined>(undefined);
@@ -245,29 +231,16 @@ async function uploadDocument() {
 
   const result = await performUpload();
 
-  if (result.success) {
-    currentStep.value = "confirm";
-    if (draftId.value) {
-      await navigateTo({ query: { draft: draftId.value.toString() } });
-    }
-  } else {
+  if (!result.success) {
     error.value = result.error || "Upload failed";
     updateStepStatus("document_upload", "error");
+    return;
   }
-}
 
-function onJurisdictionSelected(jurisdiction: JurisdictionOption) {
-  if (jurisdictionInfo.value) {
-    jurisdictionInfo.value.precise_jurisdiction = jurisdiction.name || "";
-    jurisdictionInfo.value.jurisdiction_code =
-      jurisdiction.coldId || jurisdictionInfo.value.jurisdiction_code;
+  if (draftId.value) {
+    await navigateTo({ query: { draft: draftId.value.toString() } });
   }
-}
-
-function onLegalSystemSelected(legalSystemType: string) {
-  if (jurisdictionInfo.value) {
-    jurisdictionInfo.value.legal_system_type = legalSystemType;
-  }
+  await confirmAndAnalyze(false);
 }
 
 async function confirmAndAnalyze(resume = false) {
@@ -377,7 +350,7 @@ onMounted(async () => {
         currentStep.value = "analyzing";
         populateEditableForm();
       } else if (result.data.jurisdictionInfo) {
-        currentStep.value = "confirm";
+        await confirmAndAnalyze(false);
       } else {
         currentStep.value = "upload";
       }
