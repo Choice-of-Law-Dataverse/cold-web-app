@@ -38,7 +38,7 @@ PIL_PROVISIONS_PROMPT = (
     """
 Your task is to extract rules related to choice of law cited in a court decision. Your response is a list of provisions sorted by the impact of the rules for the choice of law issue(s) present within the court decision. Your response consists of this list only, no explanations or other additional information. A relevant provision usually stems from the most prominent legislation dealing with private international law in the respective jurisdiction. In some countries, the relevant provisions are included in the civil code. Other countries have acts that include private international law provisions. In many cases, the relevant provisions can also be found in international treaties. If no legislative provision is found, double-check whether there is any other court decision cited as a choice of law precedent.
 LIMITATIONS:
-- If you do not find PIL provisions in the court decision or if you are not sure, use "NA". If any language other than English is used to cite a provision, use their English abbreviation.
+- Return an empty list if no PIL provisions are cited in the decision. Do not include "NA" or other placeholder strings as list items — only actual provisions. If a provision is cited in another language, use the English abbreviation.
 - No literature or other doctrinal remarks
 - Do not use the paragraph symbol (§). If necessary use the abbreviation "Para."
 

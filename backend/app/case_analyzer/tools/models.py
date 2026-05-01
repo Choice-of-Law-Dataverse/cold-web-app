@@ -61,7 +61,13 @@ class RelevantFactsOutput(ConfidenceReasoningModel):
 
 
 class PILProvisionsOutput(ConfidenceReasoningModel):
-    pil_provisions: list[str] = Field(description="List of Private International Law provisions")
+    pil_provisions: list[str] = Field(
+        description=(
+            "List of Private International Law provisions cited in the decision. "
+            "Each list item must be an actual provision; never include 'NA' or other "
+            "placeholder strings. Return an empty list if none are cited."
+        )
+    )
 
 
 class ColIssueOutput(ConfidenceReasoningModel):
