@@ -198,7 +198,7 @@ const {
 
 // Watch upload step to update step tracker
 watch(uploadStep, (step) => {
-  handleUploadStepChange(step, jurisdictionInfo.value);
+  handleUploadStepChange(step);
 });
 
 // Initialize selectedJurisdiction when jurisdictionInfo changes
