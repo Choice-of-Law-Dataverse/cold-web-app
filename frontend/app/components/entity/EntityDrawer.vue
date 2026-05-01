@@ -7,12 +7,12 @@
     :dismissible="false"
     :ui="{
       content:
-        'sm:max-w-sm max-w-full shadow-2xl !top-[calc(var(--nav-height)+3rem)] !h-auto !bottom-0 rounded-tl-xl',
+        'sm:max-w-sm max-w-full shadow-2xl ring-0 !top-[calc(var(--nav-height)+3rem)] !h-auto !bottom-0 rounded-tl-xl',
     }"
   >
     <template #content>
       <div class="flex h-full flex-col overflow-hidden">
-        <header class="drawer-header rounded-tl-xl">
+        <header class="drawer-header">
           <div class="drawer-header__top">
             <UButton
               v-if="canGoBack"
@@ -62,8 +62,7 @@
             compact
           />
         </header>
-
-        <div class="drawer-header__rule" />
+        <GradientTopBorder />
 
         <div class="flex-1 overflow-x-hidden overflow-y-auto">
           <div v-if="isLoading" class="p-6">
@@ -118,6 +117,7 @@ import InlineError from "@/components/ui/InlineError.vue";
 import JurisdictionDrawerQA from "@/components/jurisdiction/JurisdictionDrawerQA.vue";
 import DrawerAnswerMap from "@/components/jurisdiction/DrawerAnswerMap.vue";
 import MetaBand from "@/components/ui/MetaBand.vue";
+import GradientTopBorder from "@/components/ui/GradientTopBorder.vue";
 import { primaryJurisdictionAlpha3 } from "@/utils/jurisdictionParser";
 
 const contentComponents: Record<string, Component> = {
@@ -217,10 +217,9 @@ const questionSuffix = computed(() => {
 .drawer-header {
   position: relative;
   background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--color-cold-purple) 5%, white) 0%,
-    color-mix(in srgb, var(--color-cold-purple) 2%, white) 60%,
-    color-mix(in srgb, var(--color-cold-green) 1.5%, white) 100%
+    225deg,
+    color-mix(in srgb, var(--color-cold-purple) 4%, white),
+    color-mix(in srgb, var(--color-cold-green) 2%, white)
   );
 }
 
@@ -278,17 +277,5 @@ const questionSuffix = computed(() => {
 
 :deep(.drawer-header__fullpage:hover [class*="trailing"]) {
   transform: translate(1px, -1px);
-}
-
-.drawer-header__rule {
-  height: 1px;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    color-mix(in srgb, var(--color-cold-purple) 35%, transparent) 18%,
-    color-mix(in srgb, var(--color-cold-green) 30%, transparent) 82%,
-    transparent 100%
-  );
-  flex-shrink: 0;
 }
 </style>

@@ -2,7 +2,6 @@
   <div class="bg-cold-bg flex min-h-dvh flex-col">
     <a href="#main-content" class="skip-link">Skip to main content</a>
     <Nav />
-    <EventBanner />
 
     <main
       id="main-content"
@@ -34,7 +33,6 @@ import { defineAsyncComponent, onMounted, ref, watch } from "vue";
 import Nav from "@/components/layout/Nav.vue";
 import Footer from "@/components/layout/Footer.vue";
 import ErrorBoundary from "@/components/ui/ErrorBoundary.vue";
-import EventBanner from "@/components/layout/EventBanner.vue";
 import { useScreenAnnouncer } from "@/composables/useScreenAnnouncer";
 import { useEntityDrawer } from "@/composables/useEntityDrawer";
 
