@@ -97,6 +97,45 @@ class TestVerifySupportingQuotes:
         assert not result.output.tripwire_triggered
 
     @pytest.mark.asyncio
+    async def test_smart_quotes_in_source_match_ascii_quote(self) -> None:
+        text = "The court said “French law applies” to the contract."
+        ctx_doc = DocumentContext(draft_id=1, text=text)
+        output = CourtsPositionOutput(
+            courts_position="French law.",
+            confidence="high",
+            reasoning="ok",
+            supporting_quotes=['The court said "French law applies" to the contract.'],
+        )
+        result = await _guardrail.run(_ctx(ctx_doc), None, output)
+        assert not result.output.tripwire_triggered
+
+    @pytest.mark.asyncio
+    async def test_em_dash_in_source_matches_hyphen_in_quote(self) -> None:
+        text = "The applicable law — under Art. 3 — is French."
+        ctx_doc = DocumentContext(draft_id=1, text=text)
+        output = CourtsPositionOutput(
+            courts_position="French.",
+            confidence="high",
+            reasoning="ok",
+            supporting_quotes=["The applicable law - under Art. 3 - is French."],
+        )
+        result = await _guardrail.run(_ctx(ctx_doc), None, output)
+        assert not result.output.tripwire_triggered
+
+    @pytest.mark.asyncio
+    async def test_pdf_line_break_hyphenation_normalized(self) -> None:
+        text = "The applicable law in Switzer-\nland is determined by Art. 3 IPRG."
+        ctx_doc = DocumentContext(draft_id=1, text=text)
+        output = CourtsPositionOutput(
+            courts_position="Swiss law.",
+            confidence="high",
+            reasoning="ok",
+            supporting_quotes=["The applicable law in Switzerland is determined by Art. 3 IPRG."],
+        )
+        result = await _guardrail.run(_ctx(ctx_doc), None, output)
+        assert not result.output.tripwire_triggered
+
+    @pytest.mark.asyncio
     async def test_mixed_valid_and_fabricated_triggers_tripwire(self, doc: DocumentContext) -> None:
         output = CourtsPositionOutput(
             courts_position="French law.",
