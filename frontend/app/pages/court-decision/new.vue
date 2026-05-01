@@ -113,6 +113,7 @@
           v-model:editable-form="editableForm"
           :document-name="selectedFile?.name || 'Unknown'"
           :selected-jurisdiction="selectedJurisdiction"
+          :legal-system-type="jurisdictionInfo?.legal_system_type || ''"
           :is-common-law-jurisdiction="isCommonLawJurisdiction"
           :is-analyzing="analysis.isAnalyzing.value"
           :is-submitting="analysis.isSubmitting.value"
@@ -121,6 +122,7 @@
           :is-field-loading="isFieldLoading"
           @submit="submitAnalyzerSuggestion"
           @reset="resetAnalysis"
+          @re-analyze="handleReAnalyze"
         />
       </div>
     </div>
@@ -291,6 +293,23 @@ async function confirmAndAnalyze(resume = false) {
 
 function handleRetry(_stepName: string) {
   confirmAndAnalyze(true);
+}
+
+function handleReAnalyze(
+  legalSystemType: string,
+  jurisdiction: JurisdictionOption | undefined,
+) {
+  if (!jurisdictionInfo.value) return;
+  jurisdictionInfo.value.legal_system_type = legalSystemType;
+  if (jurisdiction) {
+    jurisdictionInfo.value.precise_jurisdiction = jurisdiction.name || "";
+    jurisdictionInfo.value.jurisdiction_code =
+      jurisdiction.coldId || jurisdictionInfo.value.jurisdiction_code;
+    selectedJurisdiction.value = jurisdiction;
+  }
+  analysisResults.value = {};
+  resetEditableForm();
+  confirmAndAnalyze(false);
 }
 
 async function submitAnalyzerSuggestion() {
