@@ -25,7 +25,7 @@ More specifically, when preparing the output, prioritize: (1) The court's direct
 -	Lengthy quotes from cited cases unless the court explicitly adopts them as part of its analysis
 
 2.	Extraction Method:
--	Reproduce the court's exact language using quotation marks, abbreviating text using brackets [...] when necessary
+-	Reproduce the court's wording faithfully (do not paraphrase) but render the output in English; if the source is in another language, provide a clear English translation. Use brackets [...] to abbreviate where necessary
 -	Extract complete sentences with essential context only
 -	Focus primarily on the court's own reasoning and analysis
 3.	Quality Check:
