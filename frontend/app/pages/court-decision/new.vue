@@ -162,7 +162,8 @@ const analysisResults = ref<Record<string, AnalysisStepPayload>>({});
 const selectedJurisdiction = ref<JurisdictionOption | undefined>(undefined);
 
 // Composables
-const { findJurisdictionByName } = useJurisdictionLookup();
+const { findJurisdictionByName, data: jurisdictionOptions } =
+  useJurisdictionLookup();
 
 const {
   selectedFile,
@@ -203,8 +204,8 @@ watch(uploadStep, (step) => {
 
 // Initialize selectedJurisdiction when jurisdictionInfo changes
 watch(
-  () => jurisdictionInfo.value?.precise_jurisdiction,
-  (preciseJurisdiction) => {
+  [() => jurisdictionInfo.value?.precise_jurisdiction, jurisdictionOptions],
+  ([preciseJurisdiction]) => {
     if (preciseJurisdiction) {
       const match = findJurisdictionByName(preciseJurisdiction);
       if (match) {
@@ -251,6 +252,7 @@ async function confirmAndAnalyze(resume = false) {
 
   if (!resume) {
     resetAnalysisSteps(new Set(["document_upload"]));
+    analysisResults.value = {};
   }
 
   if (jurisdictionInfo.value) {
