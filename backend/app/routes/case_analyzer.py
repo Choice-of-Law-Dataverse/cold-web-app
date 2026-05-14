@@ -48,16 +48,16 @@ def get_suggestion_service() -> SuggestionService:
     description=(
         "Upload a PDF court decision (base64-encoded or as an Azure blob URL). The system will:\n\n"
         "1. **Upload to storage** — decode and persist the PDF in Azure Blob Storage\n"
-        "2. **Extract text** — convert the PDF to machine-readable text\n"
-        "3. **Detect jurisdiction** — use an LLM to identify the jurisdiction and legal system type\n"
-        "4. **Save draft** — persist the draft in the database for subsequent analysis\n\n"
+        "2. **Validate text extraction** — confirm the PDF parses to machine-readable text\n"
+        "3. **Save draft** — persist the draft in the database for subsequent analysis\n\n"
         "Returns a **Server-Sent Events (SSE)** stream with progress updates and periodic heartbeats. "
-        "The final event contains the `draft_id` and detected `jurisdiction` data. "
+        "The final event contains the `draft_id`. Jurisdiction detection runs during `/analyze` in "
+        "parallel with the choice-of-law section extraction. "
         "Maximum PDF size: 50 MB. Requires authentication."
     ),
     responses={
         200: {
-            "description": "SSE stream of processing steps. Final event includes `draft_id` and `jurisdiction`.",
+            "description": "SSE stream of processing steps. Final event includes `draft_id`.",
             "content": {"text/event-stream": {}},
         },
     },
@@ -202,17 +202,20 @@ async def upload_document(
     "/analyze",
     summary="Run full AI-powered case analysis",
     description=(
-        "Confirm or correct the detected jurisdiction and trigger the full analysis workflow. "
-        "The system runs multiple LLM-powered extraction steps on the uploaded decision text:\n\n"
+        "Trigger the full analysis workflow on an uploaded draft. The system runs multiple "
+        "LLM-powered extraction steps; jurisdiction detection and choice-of-law section "
+        "extraction run concurrently as stage 1, then the dependent steps fan out:\n\n"
+        "- **Jurisdiction detection** (parallel with col_section, unless `jurisdiction` is "
+        "provided in the body as a user override from the Review & Submit screen)\n"
         "- **Choice-of-law section** extraction\n"
         "- **Theme** classification\n"
         "- **Case citation** extraction\n"
-        "- **Abstract** generation\n"
         "- **Relevant facts** extraction\n"
         "- **PIL provisions** extraction\n"
         "- **Choice-of-law issue** extraction\n"
         "- **Court's position** extraction\n"
-        "- **Obiter dicta** and **dissenting opinions**\n\n"
+        "- **Obiter dicta** and **dissenting opinions** (common-law and Indian decisions only)\n"
+        "- **Abstract** generation\n\n"
         "Returns a **Server-Sent Events (SSE)** stream with each step's result as it completes. "
         "The draft is updated in the database after each step for crash recovery. "
         "Set `resume=true` to skip already-completed steps (e.g. after a network interruption). "
