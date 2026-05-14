@@ -84,9 +84,9 @@ The Case Analyzer feeds new court decisions into this knowledge network. A user 
 
 #### How it works
 
-**Stage 1 — Upload.** The system stores the PDF in blob storage, validates that text can be extracted, and returns a draft id. No LLM call yet — upload returns as soon as the file is persisted.
+**Stage 1 — Upload.** The user uploads the PDF. The system stores it, confirms the text can be read, and creates a draft entry. Nothing is interpreted yet — the file just lands safely.
 
-**Stage 2 — AI analysis.** The system streams structured extraction results over Server-Sent Events. Each extractor is an agent with content-anchored navigation tools (`search`, `read_section`, `read_window`, `list_headings`, `get_paragraph_containing`, `read_head`, `read_tail`) that pull only the passages it needs from the full decision — no inlined text per prompt. Jurisdiction detection runs in parallel with the choice-of-law section as the first stage; the rest fan out in a dependency-aware order:
+**Stage 2 — AI analysis.** The system reads the decision and streams results live as each field is extracted. Rather than feeding the entire judgment into every prompt, each extractor navigates the decision and pulls only the passages it needs. The jurisdiction of the court is identified in parallel with the choice-of-law passages; the remaining fields then fan out in an order that respects what each one depends on:
 
 ```mermaid
 flowchart TD
@@ -140,11 +140,11 @@ flowchart TD
     Review --> Submit["Submitted for moderation"]
 ```
 
-Solid arrows are data dependencies — the upstream extractor's structured output is consumed by the downstream agent (the choice-of-law section text, the themes list, the issue statement, etc.). Dotted arrows are context dependencies on the detected (or user-corrected) jurisdiction: it selects which prompt variant the agent loads and gates obiter/dissent (which only run for common-law and Indian decisions). The choice-of-law section uses a single jurisdiction-agnostic prompt so it can start before detection completes. Abstract synthesises every structured output that precedes it; case citation is a standalone fact that flows straight to the review screen. Throughout the pipeline, all structured fields are emitted in English, with two source-language exceptions kept verbatim for reviewer fidelity: the extracted choice-of-law passages and the case citation.
+Solid arrows show one extraction feeding into the next — the choice-of-law passages anchor the rest of the analysis, the themes shape how the issue is framed, and so on. Dotted arrows show the jurisdiction's influence: it tunes the prompts so a German civil-law decision is read with civil-law conventions and an English judgment with common-law ones, and it decides whether obiter dicta and dissenting opinions are extracted at all (those only apply to common-law jurisdictions and India). The Abstract is written last because it synthesises everything that came before. Throughout the pipeline, every field is rendered in English so the dataset is comparable across jurisdictions — with two deliberate exceptions kept verbatim in the original language: the extracted choice-of-law passages (so reviewers can check the AI against the source) and the case citation (so it matches the conventions of the court that issued it).
 
-**Stage 3 — Review and submission.** The user sees all extracted fields with confidence indicators and can edit any of them. The detected jurisdiction is also editable; changing it triggers a confirmation modal and a full re-run with the corrected value. Once satisfied, the user submits for moderation. A human moderator reviews every submission before it enters the Dataverse — the AI pre-populates, but humans decide what gets published.
+**Stage 3 — Review and submission.** The user sees every extracted field with a confidence indicator and can edit any of them. The jurisdiction can also be corrected here; doing so prompts a confirmation and re-runs the analysis with the corrected value. Once satisfied, the user submits the draft for moderation. A human moderator reviews every submission before it enters the Dataverse — the AI pre-populates, but humans decide what gets published.
 
-Progress is saved continuously, so if the connection drops mid-analysis users can resume from where they left off. Past analyses are tracked in a personal dashboard with their status (draft, analyzing, completed, pending review, approved, or rejected).
+Progress is saved continuously, so if the connection drops mid-analysis the user can resume from where they left off. Past analyses appear in a personal dashboard with their status (draft, analyzing, completed, pending review, approved, or rejected).
 
 Try it at [cold.global/court-decision/new](https://cold.global/court-decision/new).
 
