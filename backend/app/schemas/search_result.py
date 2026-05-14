@@ -2,7 +2,7 @@ import datetime
 import logging
 from typing import Annotated, Any
 
-from pydantic import BeforeValidator, ConfigDict
+from pydantic import BeforeValidator, ConfigDict, Field
 from pydantic.alias_generators import to_camel
 
 from app.schemas.entities import (
@@ -44,12 +44,14 @@ class SearchResultBase(EntityBase):
         extra="ignore",
     )
 
-    id: str | int | None = None
-    source_table: str | None = None
-    rank: float | None = None
-    result_date: DateAsStr = None
-    jurisdictions: str | None = None
-    themes: str | None = None
+    id: str | int | None = Field(default=None, description="CoLD identifier for the record (e.g. 'CD-CHE-42').")
+    source_table: str | None = Field(default=None, description="Dataset this record belongs to (e.g. 'Court Decisions').")
+    rank: float | None = Field(default=None, description="Full-text search relevance score (higher is more relevant).")
+    result_date: DateAsStr = Field(default=None, description="Primary date for the record in ISO 8601 format.")
+    jurisdictions: str | None = Field(
+        default=None, description="Comma-separated jurisdiction names associated with this record."
+    )
+    themes: str | None = Field(default=None, description="Comma-separated thematic categories.")
 
 
 class AnswerSearchResult(SearchResultBase, AnswerBase):

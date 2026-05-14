@@ -80,69 +80,130 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="CoLD API",
+    title="CoLD API — Choice of Law Dataverse",
     version="1.0.0",
-    description="""
-    # CoLD API Documentation
-    The Choice of Law Dataverse (CoLD) API provides programmatic access to a curated knowledge base on choice of law in international contracts.
-
-    Core capabilities:
-    - Full-text search across all data domains with filtering and sorting by date.
-    - Fetch curated details for a specific record by CoLD ID, including first-hop related entries.
-    - Retrieve full tables or filtered subsets using user-facing fields (mapping-aware).
-    - Site map and landing page helper endpoints for the frontend.
-
-    Authentication:
-    - All endpoints (except the root) require a Bearer JWT in the `Authorization` header: `Authorization: Bearer <token>`.
-    """,  # noqa: E501
+    description=(
+        "# Choice of Law Dataverse (CoLD) API\n\n"
+        "Open-access REST API for the **[Choice of Law Dataverse](https://cold.global)**, "
+        "a curated knowledge base on choice of law in international contracts. "
+        "CoLD is an SNF-funded project at the University of Lucerne, licensed under "
+        "[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). "
+        "Winner of the Swiss National ORD Prize 2025.\n\n"
+        "## Available datasets\n\n"
+        "| Table name | Description |\n"
+        "|---|---|\n"
+        "| **Answers** | Country-level responses to the CoLD standardised questionnaire on choice-of-law rules |\n"
+        "| **HCCH Answers** | Answers mapped to the HCCH Principles on Choice of Law |\n"
+        "| **Questions** | The standardised questionnaire items that Answers respond to |\n"
+        "| **Court Decisions** | Case law with metadata, themes, PIL provisions, and jurisdiction links |\n"
+        "| **Domestic Instruments** | National statutes, codes, and PIL regulations |\n"
+        "| **Domestic Legal Provisions** | Individual articles/provisions within domestic instruments |\n"
+        "| **Regional Instruments** | Supranational instruments (e.g. EU Rome I Regulation) |\n"
+        "| **Regional Legal Provisions** | Individual articles/provisions within regional instruments |\n"
+        "| **International Instruments** | Treaties, conventions, and model laws (e.g. HCCH Principles) |\n"
+        "| **International Legal Provisions** | Individual articles/provisions within international instruments |\n"
+        "| **Literature** | Academic and practitioner publications on choice of law |\n"
+        "| **Arbitral Awards** | Published arbitral awards with choice-of-law analysis |\n"
+        "| **Arbitral Rules** | Institutional arbitration rules (e.g. ICC, LCIA) |\n"
+        "| **Arbitral Provisions** | Individual articles within arbitral rules |\n"
+        "| **Arbitral Institutions** | Arbitration institutions (e.g. ICC, SIAC) |\n"
+        "| **Jurisdictions** | Countries and territories with metadata (region, legal family) |\n"
+        "| **Specialists** | Choice-of-law experts by jurisdiction |\n\n"
+        "Bulk CSV/XLSX exports are also available at "
+        "[cold.global/data-sets](https://cold.global/data-sets).\n\n"
+        "## Quick start for data scientists\n\n"
+        "1. **Search** — `GET /api/v1/search/?search_string=party+autonomy` "
+        "returns paginated results across all datasets.\n"
+        "2. **Bulk export** — `GET /api/v1/search/full_table?table=Court+Decisions` "
+        "returns every record in a table (see table names above).\n"
+        "3. **Record detail** — `GET /api/v1/search/details?table=Court+Decisions&id=CD-CHE-42` "
+        "returns a single record with its related entities.\n"
+        "4. **Entity lists** — `GET /api/v1/entities/court-decisions?jurisdiction=CHE` "
+        "returns paginated, filterable entity catalogues.\n"
+        "5. **Statistics** — `GET /api/v1/statistics/counts` "
+        "returns record counts per entity type, optionally scoped to a jurisdiction.\n\n"
+        "## Glossary\n\n"
+        "Key private international law terms used throughout the API "
+        "(party autonomy, dépeçage, PIL codification, mandatory rules, etc.) "
+        "are defined in the [CoLD Glossary](https://cold.global/learn/glossary).\n\n"
+        "## Authentication\n\n"
+        "**Read-only data endpoints are publicly accessible — no API key or token required.**\n\n"
+        "Write endpoints (submitting suggestions, feedback, case analysis) require an Auth0 JWT "
+        "in the `Authorization: Bearer <token>` header. "
+        "Moderation endpoints additionally require editor or admin roles.\n"
+    ),
     contact={
-        "name": "CoLD Team",
-        "url": "https://choice-of-law-dataverse.org/",
+        "name": "CoLD Team — University of Lucerne",
+        "url": "https://cold.global",
     },
     license_info={
-        "name": "MIT License",
-        "url": "https://opensource.org/licenses/MIT",
+        "name": "CC BY 4.0",
+        "url": "https://creativecommons.org/licenses/by/4.0/",
     },
     openapi_tags=[
         {
             "name": "Search",
-            "description": "Full text search, curated details, and full/filtered table retrieval.",
-        },
-        {
-            "name": "AI",
-            "description": "AI helpers such as query classification.",
-        },
-        {
-            "name": "Case Analysis",
-            "description": "Court decision analysis with AI-powered extraction and classification.",
-        },
-        {
-            "name": "Sitemap",
-            "description": "Frontend URLs for site map generation.",
-        },
-        {
-            "name": "LandingPage",
-            "description": "Landing page support endpoints (e.g., jurisdictions with data).",
-        },
-        {
-            "name": "Statistics",
-            "description": "Data aggregation and statistics endpoints.",
+            "description": (
+                "Core data-access endpoints. Full-text search across all datasets with faceted filtering "
+                "(by table, jurisdiction, theme), entity detail retrieval by CoLD ID, bulk table export, "
+                "and specialist lookup by jurisdiction."
+            ),
         },
         {
             "name": "Entities",
-            "description": "Slim list endpoints per entity type and entity counts.",
+            "description": (
+                "Paginated entity lists per type (court decisions, instruments, literature, etc.) with "
+                "optional jurisdiction and theme filters. Useful for building filtered views or exporting "
+                "entity catalogues."
+            ),
         },
         {
-            "name": "Submarine",
-            "description": "Fun demo route.",
+            "name": "Statistics",
+            "description": (
+                "Aggregate metrics: record counts per entity type, jurisdiction-level answer coverage "
+                "percentages, and per-table jurisdiction breakdowns."
+            ),
+        },
+        {
+            "name": "AI",
+            "description": (
+                "AI-powered helpers. Currently exposes a query classifier that maps free-text questions "
+                "to predefined CoLD thematic categories."
+            ),
+        },
+        {
+            "name": "Case Analyzer",
+            "description": (
+                "Multi-step court decision analysis workflow. Upload a PDF, extract text, detect jurisdiction, "
+                "and run AI-powered extraction (themes, citations, PIL provisions, etc.). "
+                "Results stream as Server-Sent Events. Requires authentication."
+            ),
+        },
+        {
+            "name": "LandingPage",
+            "description": "Helper endpoints for the CoLD landing page, including jurisdiction data-availability flags.",
+        },
+        {
+            "name": "Sitemap",
+            "description": "Returns all indexable frontend URLs for search-engine sitemap generation.",
         },
         {
             "name": "Suggestions",
-            "description": "User-submitted data suggestions storage.",
+            "description": (
+                "Community data contributions. Authenticated users can submit new court decisions, instruments, "
+                "or literature entries for moderator review. Editors/admins manage the moderation queue."
+            ),
         },
         {
             "name": "Feedback",
-            "description": "Entity feedback from users.",
+            "description": (
+                "Entity-level feedback. Users can report errors or suggest corrections on existing records. "
+                "Editors/admins triage and resolve feedback items."
+            ),
+        },
+        {
+            "name": "Submarine",
+            "description": "Easter egg.",
         },
     ],
     openapi_url="/api/v1/openapi.json",
@@ -180,9 +241,8 @@ api_router.include_router(feedback.router)
 app.include_router(api_router)
 
 
-@app.get("/api/v1")
+@app.get("/api/v1", summary="Health check", description="Returns a simple message confirming the API is running.")
 def root():
-    """Simple health check endpoint for the CoLD API root."""
     return {"message": "Hello World from CoLD"}
 
 

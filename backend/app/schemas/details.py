@@ -1,3 +1,5 @@
+from pydantic import Field
+
 from app.schemas.entities import (
     AnswerBase,
     ArbitralAwardBase,
@@ -20,11 +22,14 @@ from app.schemas.relations import EntityRelations
 
 
 class DetailBase(EntityBase):
-    id: int
-    source_table: str
-    relations: EntityRelations = EntityRelations()
-    created_at: str | None = None
-    updated_at: str | None = None
+    id: int = Field(..., description="Internal numeric identifier.")
+    source_table: str = Field(..., description="Dataset this record belongs to (e.g. 'Court Decisions').")
+    relations: EntityRelations = Field(
+        default=EntityRelations(),
+        description="First-hop related entities (jurisdictions, themes, instruments, etc.).",
+    )
+    created_at: str | None = Field(default=None, description="Record creation timestamp (ISO 8601).")
+    updated_at: str | None = Field(default=None, description="Record last-update timestamp (ISO 8601).")
 
 
 class AnswerDetail(DetailBase, AnswerBase):

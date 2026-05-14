@@ -62,12 +62,16 @@ router = APIRouter(prefix="/entities", tags=["Entities"])
 
 @router.get(
     "/{slug}",
-    summary="List entities of a given type with optional jurisdiction filter",
+    summary="Paginated entity list by type",
     description=(
-        "Returns a paginated, slim list of entities using the relation contract "
-        "(`*Relation` shapes used inside detail responses). Supports jurisdiction "
-        "filtering for entities that expose `jurisdictions_alpha_3_code`. "
-        "Court Decisions additionally accepts a `case_rank` filter."
+        "Returns a paginated list of entities for the given slug. Each item uses the slim "
+        "relation shape (the same fields embedded in detail responses).\n\n"
+        "**Available slugs:** `court-decisions`, `domestic-instruments`, `regional-instruments`, "
+        "`international-instruments`, `literature`, `arbitral-awards`, `arbitral-rules`, "
+        "`arbitral-institutions`, `jurisdictions`, `specialists`, `questions`.\n\n"
+        "Filter by `jurisdiction` (Alpha-3 code) or `theme` (substring match). "
+        "Court Decisions additionally accept a `case_rank` filter. "
+        "Results are sorted by title by default; override with `order_by` and `order_dir`."
     ),
     response_model=EntityListResponse,
     responses={

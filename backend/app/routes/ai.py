@@ -13,13 +13,18 @@ def get_query_classifier() -> QueryClassifier:
 router = APIRouter(prefix="/ai", tags=["AI"], dependencies=[Depends(verify_frontend_request)])
 
 
-_CLASSIFY_QUERY_DESCRIPTION = "Uses an external model to classify the user's query into one of the predefined CoLD categories."
+_CLASSIFY_QUERY_DESCRIPTION = (
+    "Maps a free-text question to the most relevant predefined CoLD thematic category "
+    "(e.g. 'Party autonomy (concept)', 'Mandatory rules', 'Renvoi'). "
+    "Uses an LLM under the hood. The returned string can be fed back into the search "
+    "endpoint's `themes` filter to retrieve matching records."
+)
 _CLASSIFY_QUERY_RESPONSES: dict[int | str, dict[str, Any]] = {
     200: {
-        "description": "Classification result",
+        "description": "The matched CoLD category as a plain string.",
         "content": {"application/json": {"example": "Party autonomy (concept)"}},
     },
-    502: {"description": "Upstream AI service error."},
+    502: {"description": "The upstream AI service returned an error or timed out."},
 }
 
 
