@@ -104,25 +104,41 @@ flowchart TD
     Jur -.-> Facts
     Jur -.-> PIL
 
-    Themes --> Issue["Choice-of-law\nissue identification"]
+    CoL --> Issue["Choice-of-law\nissue identification"]
+    Themes --> Issue
     Jur -.-> Issue
 
-    Issue --> Position["Court's\nposition"]
-    Issue --> Obiter["Obiter dicta\n(common law / India only)"]
-    Issue --> Dissent["Dissenting opinions\n(common law / India only)"]
+    CoL --> Position["Court's\nposition"]
+    Themes --> Position
+    Issue --> Position
+
+    CoL --> Obiter["Obiter dicta\n(common law / India only)"]
+    Themes --> Obiter
+    Issue --> Obiter
+
+    CoL --> Dissent["Dissenting opinions\n(common law / India only)"]
+    Themes --> Dissent
+    Issue --> Dissent
+
     Jur -.-> Position
     Jur -.-> Obiter
     Jur -.-> Dissent
 
-    Position --> Abstract["Abstract\ngeneration"]
+    Themes --> Abstract["Abstract\ngeneration"]
+    Facts --> Abstract
+    PIL --> Abstract
+    Issue --> Abstract
+    Position --> Abstract
     Obiter --> Abstract
     Dissent --> Abstract
+    Jur -.-> Abstract
 
     Abstract --> Review["User reviews & edits all fields"]
+    Citation --> Review
     Review --> Submit["Submitted for moderation"]
 ```
 
-Solid arrows are data dependencies (e.g. choice-of-law section text flowing into the next extractor). Dotted arrows are context dependencies on the detected (or user-corrected) jurisdiction — it selects which prompt variant the agent loads and gates obiter/dissent (which only run for common-law and Indian decisions). The choice-of-law section uses a single jurisdiction-agnostic prompt so it can start before detection completes. Throughout the pipeline, all structured fields are emitted in English, with two source-language exceptions kept verbatim for reviewer fidelity: the extracted choice-of-law passages and the case citation.
+Solid arrows are data dependencies — the upstream extractor's structured output is consumed by the downstream agent (the choice-of-law section text, the themes list, the issue statement, etc.). Dotted arrows are context dependencies on the detected (or user-corrected) jurisdiction: it selects which prompt variant the agent loads and gates obiter/dissent (which only run for common-law and Indian decisions). The choice-of-law section uses a single jurisdiction-agnostic prompt so it can start before detection completes. Abstract synthesises every structured output that precedes it; case citation is a standalone fact that flows straight to the review screen. Throughout the pipeline, all structured fields are emitted in English, with two source-language exceptions kept verbatim for reviewer fidelity: the extracted choice-of-law passages and the case citation.
 
 **Stage 3 — Review and submission.** The user sees all extracted fields with confidence indicators and can edit any of them. The detected jurisdiction is also editable; changing it triggers a confirmation modal and a full re-run with the corrected value. Once satisfied, the user submits for moderation. A human moderator reviews every submission before it enters the Dataverse — the AI pre-populates, but humans decide what gets published.
 
