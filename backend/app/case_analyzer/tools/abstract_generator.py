@@ -5,10 +5,10 @@ from agents import Agent
 from agents.models.openai_responses import OpenAIResponsesModel
 
 from ..config import get_model, get_openai_client
-from ..guardrails import validate_abstract
 from ..prompts import get_prompt_module
-from ..runner import TEXT_REFERENCE, run_with_retry
+from ..runner import run_agent
 from ..utils import generate_system_prompt
+from .document_nav import DocumentContext, list_headings, read_head, read_tail, search
 from .models import (
     AbstractOutput,
     ColIssueOutput,
@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 
 
 async def extract_abstract(
-    text: str,
+    doc_ctx: DocumentContext,
     legal_system: str,
     jurisdiction: str | None,
     themes_output: ThemeClassificationOutput,
@@ -46,9 +46,7 @@ async def extract_abstract(
         col_issue = col_issue_output.col_issue
         court_position = court_position_output.courts_position
 
-        effective_text = text if previous_response_id is None else TEXT_REFERENCE
         prompt_vars = {
-            "text": effective_text,
             "classification": themes,
             "facts": facts,
             "pil_provisions": pil_provisions,
@@ -64,19 +62,14 @@ async def extract_abstract(
         prompt = ABSTRACT_PROMPT.format(**prompt_vars)
         system_prompt = generate_system_prompt(legal_system, jurisdiction)
 
-        agent = Agent(
+        agent = Agent[DocumentContext](
             name="AbstractGenerator",
             instructions=system_prompt,
             output_type=AbstractOutput,
+            tools=[search, read_head, read_tail, list_headings],
             model=OpenAIResponsesModel(
                 model=get_model("abstract"),
                 openai_client=get_openai_client(),
             ),
         )
-        return await run_with_retry(
-            agent,
-            prompt,
-            AbstractOutput,
-            previous_response_id=previous_response_id,
-            validate=validate_abstract,
-        )
+        return await run_agent(agent, input=prompt, context=doc_ctx, previous_response_id=previous_response_id)

@@ -25,15 +25,19 @@ class UploadDocumentResponse(BaseModel):
     model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
 
     draft_id: int = Field(..., description="Database ID of the draft suggestion")
-    extracted_text: str = Field(..., description="Extracted text from the document")
-    jurisdiction: JurisdictionInfo = Field(..., description="Detected jurisdiction information")
 
 
 class ConfirmAnalysisRequest(BaseModel):
     model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
 
     draft_id: int = Field(..., description="Draft ID from upload response")
-    jurisdiction: JurisdictionInfo = Field(..., description="Confirmed or corrected jurisdiction information")
+    jurisdiction: JurisdictionInfo | None = Field(
+        None,
+        description=(
+            "Optional user-corrected jurisdiction. When omitted, jurisdiction is "
+            "detected concurrently with the first extraction step."
+        ),
+    )
     resume: bool = Field(False, description="Whether to resume from last successful step (for error recovery)")
 
 

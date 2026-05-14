@@ -10,7 +10,6 @@ _REPETITION_RE = re.compile(r"(.{5,80}?)\1{3,}\s*$")
 
 
 def _strip_repetitive_suffix(text: str) -> str:
-    """Remove trailing repetitive garbage from LLM output (e.g. 'PMID: N/A.' looped)."""
     return _REPETITION_RE.sub("", text).rstrip()
 
 
@@ -43,12 +42,18 @@ class ColSectionOutput(ConfidenceReasoningModel):
     col_sections: list[str] = Field(description="List of extracted Choice of Law section texts")
 
     def __str__(self) -> str:
-        """Return all sections joined with double newlines."""
         return "\n\n".join(self.col_sections)
 
 
 class CaseCitationOutput(ConfidenceReasoningModel):
-    case_citation: str = Field(description="The case citation extracted from the text. Academic format preferred.")
+    case_citation: str = Field(
+        description=(
+            "Canonical case citation as it appears in the decision (e.g., 'BGE 138 III 232', "
+            "'OGH 6 Ob 24/19f', '[2023] EWHC 123 (Comm)'). Use the document's own format and "
+            "language; do not translate or expand court names, abbreviations, or docket numbers. "
+            "Return 'NA' if no citation is present in the text."
+        )
+    )
 
 
 class RelevantFactsOutput(ConfidenceReasoningModel):
@@ -56,7 +61,13 @@ class RelevantFactsOutput(ConfidenceReasoningModel):
 
 
 class PILProvisionsOutput(ConfidenceReasoningModel):
-    pil_provisions: list[str] = Field(description="List of Private International Law provisions")
+    pil_provisions: list[str] = Field(
+        description=(
+            "List of Private International Law provisions cited in the decision. "
+            "Each list item must be an actual provision; never include 'NA' or other "
+            "placeholder strings. Return an empty list if none are cited."
+        )
+    )
 
 
 class ColIssueOutput(ConfidenceReasoningModel):
@@ -77,28 +88,6 @@ class DissentingOpinionsOutput(ConfidenceReasoningModel):
 
 class AbstractOutput(ConfidenceReasoningModel):
     abstract: str = Field(description="Concise abstract of the case")
-
-
-AnalysisStep = Literal[
-    "theme_classification",
-    "relevant_facts",
-    "pil_provisions",
-    "col_issue",
-    "courts_position",
-    "obiter_dicta",
-    "dissenting_opinions",
-]
-
-
-class ConsistencyIssue(BaseModel):
-    step: AnalysisStep = Field(description="The analysis step that has an inconsistency")
-    description: str = Field(description="What is inconsistent and why")
-    severity: Literal["low", "medium", "high"] = Field(description="How severe the inconsistency is")
-
-
-class ConsistencyCheckOutput(BaseModel):
-    is_consistent: bool = Field(description="Whether the analysis outputs are internally consistent")
-    issues: list[ConsistencyIssue] = Field(default_factory=list, description="List of inconsistencies found")
 
 
 Theme = Literal[
@@ -129,3 +118,14 @@ class JurisdictionOutput(ConfidenceReasoningModel):
 
 class ThemeClassificationOutput(ConfidenceReasoningModel):
     themes: list[ThemeWithNA] = Field(description="List of classified PIL themes")
+
+    @model_validator(mode="after")
+    def _dedupe_themes(self) -> Self:
+        seen: set[str] = set()
+        deduped: list[ThemeWithNA] = []
+        for theme in self.themes:
+            if theme not in seen:
+                seen.add(theme)
+                deduped.append(theme)
+        self.themes = deduped
+        return self

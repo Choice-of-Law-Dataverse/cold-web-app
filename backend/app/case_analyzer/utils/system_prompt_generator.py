@@ -47,9 +47,12 @@ CORE INSTRUCTIONS:
 - Provide clear, legally sound reasoning for your conclusions
 
 OUTPUT LANGUAGE:
-- Always provide your final output in English, even when the court decision text is in another language
-- EXCEPTION: When exact quotes are required for legal analysis, preserve the original language
-- When translating legal concepts, use established English legal terminology
+- All structured output fields MUST be in English with TWO exceptions
+- EXCEPTION 1: the `col_sections` field of the Choice of Law section extractor must preserve the source language verbatim — these passages are kept in the original wording so human reviewers can check the extraction against the source for hallucinations
+- EXCEPTION 2: the `case_citation` field must use the document's own canonical citation format verbatim (e.g., 'BGE 138 III 232', 'OGH 6 Ob 24/19f') — do not translate or expand court names, abbreviations, or docket numbers
+- Every other field (facts, pil_provisions, col_issue, courts_position, obiter_dicta, dissenting_opinions, abstract) MUST be in English even when the source is in another language
+- When writing English fields, keep proper nouns (court names, statute names, party names) in their original form rather than translating them
+- Use established English legal terminology when translating concepts
 
 ANALYSIS STANDARDS:
 - Identify only the private international law elements that are explicitly discussed in the decision

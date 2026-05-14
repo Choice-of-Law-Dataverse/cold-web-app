@@ -13,7 +13,6 @@ from app.auth import extract_user_identity, require_user, verify_frontend_reques
 from app.case_analyzer import (
     JurisdictionOutput,
     analyze_case_streaming,
-    detect_jurisdiction,
     extract_text_from_pdf,
 )
 from app.schemas.case_analyzer import (
@@ -49,16 +48,16 @@ def get_suggestion_service() -> SuggestionService:
     description=(
         "Upload a PDF court decision (base64-encoded or as an Azure blob URL). The system will:\n\n"
         "1. **Upload to storage** — decode and persist the PDF in Azure Blob Storage\n"
-        "2. **Extract text** — convert the PDF to machine-readable text\n"
-        "3. **Detect jurisdiction** — use an LLM to identify the jurisdiction and legal system type\n"
-        "4. **Save draft** — persist the draft in the database for subsequent analysis\n\n"
+        "2. **Validate text extraction** — confirm the PDF parses to machine-readable text\n"
+        "3. **Save draft** — persist the draft in the database for subsequent analysis\n\n"
         "Returns a **Server-Sent Events (SSE)** stream with progress updates and periodic heartbeats. "
-        "The final event contains the `draft_id` and detected `jurisdiction` data. "
+        "The final event contains the `draft_id`. Jurisdiction detection runs during `/analyze` in "
+        "parallel with the choice-of-law section extraction. "
         "Maximum PDF size: 50 MB. Requires authentication."
     ),
     responses={
         200: {
-            "description": "SSE stream of processing steps. Final event includes `draft_id` and `jurisdiction`.",
+            "description": "SSE stream of processing steps. Final event includes `draft_id`.",
             "content": {"text/event-stream": {}},
         },
     },
@@ -73,8 +72,6 @@ async def upload_document(
     blob_url = body.blob_url
 
     async def event_generator():
-        HEARTBEAT_INTERVAL_SECONDS = 15
-
         with logfire.span("upload_document", file_name=file_name, blob_url=blob_url[:100]):
             # Yield immediately so the client knows the stream is connected
             init_event = json.dumps({"step": "initializing", "status": "in_progress"})
@@ -125,12 +122,11 @@ async def upload_document(
 
             yield f"data: {json.dumps({'step': 'uploading_to_storage', 'status': 'completed'})}\n\n"
 
-            # Step 2: Extract text
+            # Step 2: Validate PDF text extraction (the bytes were already in blob; we re-extract on /analyze)
             yield f"data: {json.dumps({'step': 'extracting_text', 'status': 'in_progress'})}\n\n"
 
             try:
-                # Run blocking I/O in thread pool
-                extracted_text = await asyncio.to_thread(extract_text_from_pdf, pdf_bytes)
+                await asyncio.to_thread(extract_text_from_pdf, pdf_bytes)
             except Exception:
                 logger.exception("Failed to extract text from PDF file=%s", file_name)
                 error_event = json.dumps(
@@ -145,38 +141,7 @@ async def upload_document(
 
             yield f"data: {json.dumps({'step': 'extracting_text', 'status': 'completed'})}\n\n"
 
-            # Step 3: Detect jurisdiction (LLM call - use heartbeats)
-            yield f"data: {json.dumps({'step': 'detecting_jurisdiction', 'status': 'in_progress'})}\n\n"
-
-            try:
-                # Run jurisdiction detection with heartbeats
-                jurisdiction_task = asyncio.create_task(detect_jurisdiction(extracted_text))
-
-                while True:
-                    done, _ = await asyncio.wait({jurisdiction_task}, timeout=HEARTBEAT_INTERVAL_SECONDS)
-                    if done:
-                        jurisdiction_result: JurisdictionOutput = jurisdiction_task.result()
-                        break
-                    else:
-                        yield 'data: {"step": "heartbeat", "status": "in_progress"}\n\n'
-
-            except Exception:
-                logger.exception("Failed to detect jurisdiction for file=%s", file_name)
-                error_event = json.dumps(
-                    {
-                        "step": "error",
-                        "status": "error",
-                        "error": "Failed to detect jurisdiction",
-                    }
-                )
-                yield f"data: {error_event}\n\n"
-                return
-
-            jurisdiction_data = jurisdiction_result.model_dump()
-
-            yield f"data: {json.dumps({'step': 'detecting_jurisdiction', 'status': 'completed', 'data': jurisdiction_data})}\n\n"
-
-            # Step 4: Save draft
+            # Step 3: Save draft (jurisdiction detection now runs in parallel with col_extraction during /analyze)
             yield f"data: {json.dumps({'step': 'saving_draft', 'status': 'in_progress'})}\n\n"
 
             draft_payload = {
@@ -198,8 +163,6 @@ async def upload_document(
                     source="case_analyzer_workflow",
                     user=user,
                 )
-
-                await asyncio.to_thread(service.update_analyzer_step, draft_id, "jurisdiction", jurisdiction_data)
             except Exception as e:
                 logger.error("Failed to save draft to database: %s", str(e))
                 error_event = json.dumps(
@@ -219,10 +182,7 @@ async def upload_document(
                 {
                     "step": "upload_complete",
                     "status": "completed",
-                    "data": {
-                        "draft_id": draft_id,
-                        "jurisdiction": jurisdiction_data,
-                    },
+                    "data": {"draft_id": draft_id},
                 }
             )
             yield f"data: {complete_event}\n\n"
@@ -242,17 +202,20 @@ async def upload_document(
     "/analyze",
     summary="Run full AI-powered case analysis",
     description=(
-        "Confirm or correct the detected jurisdiction and trigger the full analysis workflow. "
-        "The system runs multiple LLM-powered extraction steps on the uploaded decision text:\n\n"
+        "Trigger the full analysis workflow on an uploaded draft. The system runs multiple "
+        "LLM-powered extraction steps; jurisdiction detection and choice-of-law section "
+        "extraction run concurrently as stage 1, then the dependent steps fan out:\n\n"
+        "- **Jurisdiction detection** (parallel with col_section, unless `jurisdiction` is "
+        "provided in the body as a user override from the Review & Submit screen)\n"
         "- **Choice-of-law section** extraction\n"
         "- **Theme** classification\n"
         "- **Case citation** extraction\n"
-        "- **Abstract** generation\n"
         "- **Relevant facts** extraction\n"
         "- **PIL provisions** extraction\n"
         "- **Choice-of-law issue** extraction\n"
         "- **Court's position** extraction\n"
-        "- **Obiter dicta** and **dissenting opinions**\n\n"
+        "- **Obiter dicta** and **dissenting opinions** (common-law and Indian decisions only)\n"
+        "- **Abstract** generation\n\n"
         "Returns a **Server-Sent Events (SSE)** stream with each step's result as it completes. "
         "The draft is updated in the database after each step for crash recovery. "
         "Set `resume=true` to skip already-completed steps (e.g. after a network interruption). "
@@ -271,8 +234,9 @@ async def analyze_document(
     service: SuggestionService = Depends(get_suggestion_service),
 ) -> StreamingResponse:
     draft_id = body.draft_id
-    jurisdiction_data = body.jurisdiction.model_dump()
-    jurisdiction_output = JurisdictionOutput.model_validate(jurisdiction_data)
+    jurisdiction_override: JurisdictionOutput | None = None
+    if body.jurisdiction is not None:
+        jurisdiction_override = JurisdictionOutput.model_validate(body.jurisdiction.model_dump())
 
     async def event_generator():
         HEARTBEAT_INTERVAL_SECONDS = 15
@@ -324,16 +288,12 @@ async def analyze_document(
             try:
                 service.update_moderation_status(draft_id, "analyzing")
 
-                # Store jurisdiction_data directly with user_confirmed flag
-                # The data already contains confidence/reasoning fields
-                service.update_analyzer_step(
-                    draft_id,
-                    "jurisdiction",
-                    {
-                        **jurisdiction_data,
-                        "user_confirmed": True,
-                    },
-                )
+                if jurisdiction_override is not None:
+                    service.update_analyzer_step(
+                        draft_id,
+                        "jurisdiction",
+                        {**jurisdiction_override.model_dump(), "user_confirmed": True},
+                    )
             except Exception as e:
                 logger.error("Failed to update jurisdiction in database: %s", str(e))
 
@@ -370,8 +330,14 @@ async def analyze_document(
                 draft_id=draft_id,
             ):
                 try:
-                    async_gen = analyze_case_streaming(text, jurisdiction_output, cached_results)
+                    async_gen = analyze_case_streaming(
+                        text,
+                        cached_results,
+                        draft_id=draft_id,
+                        jurisdiction_override=jurisdiction_override,
+                    )
                     generator_exhausted = False
+                    analysis_completed = False
 
                     while not generator_exhausted:
                         # Create task for getting next item from generator
@@ -397,15 +363,24 @@ async def analyze_document(
                                 next_task = None
                                 step_name = result.get("step")
 
+                                if step_name == "analysis_complete":
+                                    analysis_completed = True
+
                                 if result.get("status") == "completed" and result.get("data"):
                                     if step_name:
+                                        # The recovery path reads the auto-detected jurisdiction
+                                        # from analyzer_data["jurisdiction"], so map the SSE
+                                        # step name jurisdiction_detection to the persisted key.
+                                        persist_key = "jurisdiction" if step_name == "jurisdiction_detection" else step_name
                                         try:
                                             step_payload = result.get("data")
                                             if step_payload and isinstance(step_payload, dict):
                                                 with logfire.span(
-                                                    "persist_case_analyzer_step", step=step_name, draft_id=draft_id
+                                                    "persist_case_analyzer_step",
+                                                    step=persist_key,
+                                                    draft_id=draft_id,
                                                 ):
-                                                    service.update_analyzer_step(draft_id, step_name, step_payload)
+                                                    service.update_analyzer_step(draft_id, persist_key, step_payload)
                                         except Exception as e:
                                             logger.error("Failed to update step %s in database: %s", step_name, str(e))
 
@@ -416,18 +391,25 @@ async def analyze_document(
                                 # Timeout - send heartbeat to keep connection alive
                                 yield 'data: {"step": "heartbeat", "status": "in_progress"}\n\n'
 
-                    try:
-                        with logfire.span("finalize_case_analyzer_draft", draft_id=draft_id):
-                            service.update_moderation_status(draft_id, "completed")
-                    except Exception as e:
-                        logger.error("Failed to mark draft as completed: %s", str(e))
+                    if analysis_completed:
+                        try:
+                            with logfire.span("finalize_case_analyzer_draft", draft_id=draft_id):
+                                service.update_moderation_status(draft_id, "completed")
+                        except Exception as e:
+                            logger.error("Failed to mark draft as completed: %s", str(e))
 
-                    done_payload = {
-                        "step": "analysis_complete",
-                        "status": "completed",
-                        "data": {"done": True},
-                    }
-                    yield f"data: {json.dumps(done_payload)}\n\n"
+                        done_payload = {
+                            "step": "analysis_complete",
+                            "status": "completed",
+                            "data": {"done": True},
+                        }
+                        yield f"data: {json.dumps(done_payload)}\n\n"
+                    else:
+                        try:
+                            with logfire.span("fail_case_analyzer_draft", draft_id=draft_id):
+                                service.update_moderation_status(draft_id, "failed")
+                        except Exception as e:
+                            logger.error("Failed to mark draft as failed: %s", str(e))
 
                 except asyncio.CancelledError:
                     # Client disconnected - clean up gracefully

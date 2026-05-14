@@ -39,7 +39,7 @@
         <JurisdictionFlag
           :iso3="internalSelected.original.coldId"
           :faded="!hasCoverage(internalSelected.original.answerCoverage)"
-          class="mr-1.5"
+          class="mr-1.5 !h-4 !w-auto"
         />
         <span class="truncate">{{ internalSelected.label }}</span>
       </span>

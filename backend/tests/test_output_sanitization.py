@@ -2,6 +2,7 @@ from app.case_analyzer.tools.models import (
     ColIssueOutput,
     ColSectionOutput,
     RelevantFactsOutput,
+    ThemeClassificationOutput,
     _strip_repetitive_suffix,
 )
 
@@ -66,3 +67,29 @@ class TestModelSanitization:
         )
         assert output.col_issue == "Can parties choose a law unconnected to their contract?"
         assert output.reasoning == "Solid reasoning based on Art. 3 IPRG."
+
+
+class TestThemeDedup:
+    def test_duplicate_themes_collapsed(self):
+        output = ThemeClassificationOutput(
+            confidence="medium",
+            reasoning="Multiple themes detected.",
+            themes=["Rules of Law", "Absence of choice", "Rules of Law", "Rules of Law"],
+        )
+        assert output.themes == ["Rules of Law", "Absence of choice"]
+
+    def test_unique_themes_unchanged(self):
+        output = ThemeClassificationOutput(
+            confidence="high",
+            reasoning="Two distinct themes.",
+            themes=["Party autonomy", "Public policy"],
+        )
+        assert output.themes == ["Party autonomy", "Public policy"]
+
+    def test_first_occurrence_position_preserved(self):
+        output = ThemeClassificationOutput(
+            confidence="medium",
+            reasoning="Order check.",
+            themes=["Tacit choice", "Party autonomy", "Tacit choice"],
+        )
+        assert output.themes == ["Tacit choice", "Party autonomy"]

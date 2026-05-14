@@ -18,36 +18,38 @@
     </template>
 
     <div class="space-y-5">
+      <DocumentDisplay :document-name="documentName" />
+
       <div class="grid gap-5 md:grid-cols-2">
-        <DocumentDisplay :document-name="documentName" />
-        <div>
-          <p class="mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
-            Jurisdiction
-          </p>
-          <div
-            class="flex items-center gap-3 rounded-lg border border-gray-200 bg-white px-3 py-3 dark:border-gray-700 dark:bg-gray-900"
-          >
-            <UAvatar
-              v-if="selectedJurisdiction?.avatar"
-              :src="selectedJurisdiction.avatar"
-              :style="{
-                borderRadius: '0',
-                border: '1px solid var(--color-cold-gray)',
-                boxSizing: 'border-box',
-                width: 'auto',
-                height: '16px',
-              }"
-              class="flex-shrink-0"
-            />
-            <span class="text-sm text-gray-700 dark:text-gray-300">
-              {{
-                selectedJurisdiction?.label ||
-                selectedJurisdiction?.name ||
-                "Not selected"
-              }}
-            </span>
+        <UFormField label="Jurisdiction">
+          <div v-if="jurisdictionsLoading" class="text-sm text-gray-500">
+            Loading jurisdictions...
           </div>
-        </div>
+          <div v-else-if="jurisdictionsError" class="text-sm text-gray-500">
+            Failed to load jurisdictions
+          </div>
+          <JurisdictionSelectMenu
+            v-else
+            :model-value="selectedJurisdiction"
+            :jurisdictions="jurisdictions || []"
+            placeholder="Select jurisdiction"
+            :disabled="isAnalyzing || isSubmitted"
+            @update:model-value="handleJurisdictionChange"
+          />
+        </UFormField>
+        <UFormField label="Legal System Type">
+          <USelect
+            :model-value="legalSystemType"
+            :items="legalSystemOptions"
+            placeholder="Select legal system"
+            size="xl"
+            class="w-full"
+            :disabled="isAnalyzing || isSubmitted"
+            @update:model-value="
+              (value) => handleLegalSystemChange(value as string)
+            "
+          />
+        </UFormField>
       </div>
 
       <AnalysisFormField
@@ -199,11 +201,36 @@
         </AppButtonGradient>
       </CardFooterModern>
     </template>
+
+    <UModal
+      v-model:open="showConfirmModal"
+      :dismissible="false"
+      title="Re-run analysis?"
+    >
+      <template #content>
+        <div class="p-6 text-center">
+          <h2 class="mb-4 text-lg font-bold">Re-run analysis?</h2>
+          <p class="mb-6">
+            Changing the jurisdiction will discard the current extraction
+            results and re-run the entire analysis from the beginning. Any edits
+            you've made will be lost.
+          </p>
+          <div class="flex justify-center gap-4">
+            <UButton color="neutral" variant="outline" @click="cancelChange">
+              Cancel
+            </UButton>
+            <UButton color="primary" @click="confirmChange">
+              Re-run Analysis
+            </UButton>
+          </div>
+        </div>
+      </template>
+    </UModal>
   </UCard>
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import type {
   EditedAnalysisValues,
   JurisdictionOption,
@@ -213,6 +240,8 @@ import AppButtonGradient from "@/components/ui/AppButtonGradient.vue";
 import type { SSEEventStatus } from "~/utils/sseStream";
 import AnalysisFormField from "@/components/case-analyzer/AnalysisFormField.vue";
 import DocumentDisplay from "@/components/case-analyzer/DocumentDisplay.vue";
+import JurisdictionSelectMenu from "@/components/jurisdiction/JurisdictionSelectMenu.vue";
+import { useJurisdictions } from "@/composables/useJurisdictions";
 
 interface FieldStatus {
   confidence: string | null;
@@ -224,6 +253,7 @@ const props = defineProps<{
   editableForm: EditedAnalysisValues;
   documentName: string;
   selectedJurisdiction: JurisdictionOption | undefined;
+  legalSystemType: string;
   isCommonLawJurisdiction: boolean;
   isAnalyzing: boolean;
   isSubmitting: boolean;
@@ -238,7 +268,35 @@ const emit = defineEmits<{
   "update:editableForm": [form: EditedAnalysisValues];
   submit: [];
   reset: [];
+  "re-analyze": [
+    legalSystemType: string,
+    jurisdiction: JurisdictionOption | undefined,
+  ];
 }>();
+
+const {
+  data: jurisdictions,
+  isLoading: jurisdictionsLoading,
+  error: jurisdictionsError,
+} = useJurisdictions();
+
+const legalSystemOptionsBase = [
+  "Civil-law jurisdiction",
+  "Common-law jurisdiction",
+  "No court decision",
+];
+
+const legalSystemOptions = computed(() => {
+  const options = [...legalSystemOptionsBase];
+  if (props.legalSystemType && !options.includes(props.legalSystemType)) {
+    options.push(props.legalSystemType);
+  }
+  return options;
+});
+
+const showConfirmModal = ref(false);
+const pendingLegalSystem = ref<string | null>(null);
+const pendingJurisdiction = ref<JurisdictionOption | undefined>(undefined);
 
 const localForm = computed({
   get: () => props.editableForm,
@@ -249,6 +307,44 @@ function isFieldDisabled(fieldName: keyof EditedAnalysisValues): boolean {
   if (props.isSubmitted) return true;
   const status = props.getFieldStatus(fieldName);
   return status?.status !== "completed";
+}
+
+function handleLegalSystemChange(value: string | undefined) {
+  if (!value || value === props.legalSystemType) return;
+  pendingLegalSystem.value = value;
+  pendingJurisdiction.value = props.selectedJurisdiction;
+  showConfirmModal.value = true;
+}
+
+function handleJurisdictionChange(
+  jurisdiction: JurisdictionOption | undefined,
+) {
+  if (
+    !jurisdiction ||
+    jurisdiction.coldId === props.selectedJurisdiction?.coldId
+  ) {
+    return;
+  }
+  pendingLegalSystem.value = props.legalSystemType;
+  pendingJurisdiction.value = jurisdiction;
+  showConfirmModal.value = true;
+}
+
+function confirmChange() {
+  emit(
+    "re-analyze",
+    pendingLegalSystem.value ?? props.legalSystemType,
+    pendingJurisdiction.value,
+  );
+  showConfirmModal.value = false;
+  pendingLegalSystem.value = null;
+  pendingJurisdiction.value = undefined;
+}
+
+function cancelChange() {
+  showConfirmModal.value = false;
+  pendingLegalSystem.value = null;
+  pendingJurisdiction.value = undefined;
 }
 
 function handlePrint() {

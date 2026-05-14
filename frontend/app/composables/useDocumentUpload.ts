@@ -5,12 +5,10 @@ import { streamSSE, type SSEEvent } from "~/utils/sseStream";
 
 interface UploadStepData {
   draft_id?: number;
-  jurisdiction?: JurisdictionInfo;
 }
 
 const stepLabels: Record<string, string> = {
   extracting_text: "Extracted Text",
-  detecting_jurisdiction: "Detected Jurisdiction",
   saving_draft: "Saved Draft",
 };
 
@@ -47,12 +45,6 @@ export function useDocumentUpload() {
 
           if (event.step === "upload_complete" && event.data) {
             draftId.value = event.data.draft_id ?? null;
-            jurisdictionInfo.value = event.data.jurisdiction ?? null;
-          }
-
-          if (event.step === "detecting_jurisdiction" && event.data) {
-            jurisdictionInfo.value =
-              (event.data as unknown as JurisdictionInfo) ?? null;
           }
         },
         onError: (error: string) => {
