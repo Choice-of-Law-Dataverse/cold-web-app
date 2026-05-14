@@ -111,18 +111,20 @@ flowchart TD
     CoL --> Position["Court's\nposition"]
     Themes --> Position
     Issue --> Position
+    Jur -.-> Position
 
-    CoL --> Obiter["Obiter dicta\n(common law / India only)"]
+    subgraph CommonLaw [Common law / India only]
+        Obiter["Obiter dicta"]
+        Dissent["Dissenting opinions"]
+    end
+
+    CoL --> Obiter
     Themes --> Obiter
     Issue --> Obiter
-
-    CoL --> Dissent["Dissenting opinions\n(common law / India only)"]
+    CoL --> Dissent
     Themes --> Dissent
     Issue --> Dissent
-
-    Jur -.-> Position
-    Jur -.-> Obiter
-    Jur -.-> Dissent
+    Jur -.-> CommonLaw
 
     Themes --> Abstract["Abstract\ngeneration"]
     Facts --> Abstract
