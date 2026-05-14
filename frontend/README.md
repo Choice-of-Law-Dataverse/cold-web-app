@@ -1,12 +1,12 @@
-# Frontend - Nuxt 4 Application
+# Frontend — Nuxt 4 Application
 
-Nuxt 4 frontend for the Choice of Law Dataverse (CoLD), built with Vue.js, TypeScript, TailwindCSS, and Nuxt UI 4.
+Nuxt 4 frontend for the [Choice of Law Dataverse](https://cold.global), built with Vue.js, TypeScript, TailwindCSS, and Nuxt UI 4.
 
 > **For AI coding agents**: See [AGENTS.md](AGENTS.md) for agent-specific instructions.
 
 ## Prerequisites
 
-- **Node.js v20+** (tested with v20.19.5)
+- **Node.js v20+** (production uses v22)
 - **pnpm 10+**
 
 ## Setup
@@ -62,7 +62,7 @@ This exports the backend's OpenAPI schema and generates `app/types/api-schema.d.
 
 ### Data Flow
 
-1. Detail pages use `[coldId]` route params (e.g., `/court-decision/CH_2023_001`)
+1. Detail pages use `[coldId]` route params (e.g., `/court-decision/CD-CHE-42`)
 2. Data is fetched via typed composables (`useRecordDetails`, `useFullTable`) backed by TanStack Query
 3. Types flow end-to-end: backend Pydantic models → OpenAPI schema → generated TypeScript types → Vue components
 
@@ -74,9 +74,10 @@ This exports the backend's OpenAPI schema and generates `app/types/api-schema.d.
 | `app/components/`     | Vue components organized by feature                  |
 | `app/composables/`    | Shared logic (`useX.ts` pattern)                     |
 | `app/types/`          | TypeScript types including generated API schema      |
-| `app/types/entities/` | Per-entity types with processor functions            |
+| `app/types/entities/` | Per-entity types with processor functions             |
 | `app/config/`         | Labels, tooltips, navigation, card configs           |
 | `app/utils/`          | Pure utility functions                               |
+| `content/`            | Markdown content rendered via Nuxt Content            |
 
 ## Code Standards
 
