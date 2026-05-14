@@ -51,7 +51,7 @@ uv run pytest tests/test_search_for_entry.py --run-integration
 
 ### CI/CD
 
-Tests run in CI with `.blueprint.env` containing dummy connection strings:
+Tests run in CI with `.env.blueprint` containing dummy connection strings:
 
 - `SQL_CONN_STRING=postgresql://user:pass@localhost:5432/testdb`
 
