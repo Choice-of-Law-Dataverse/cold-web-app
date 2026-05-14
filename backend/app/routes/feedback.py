@@ -24,6 +24,11 @@ def get_feedback_service() -> SuggestionService:
 @router.post(
     "",
     summary="Submit entity feedback",
+    description=(
+        "Report an error, suggest a correction, or leave a comment on an existing CoLD record. "
+        "Authentication is optional — anonymous submissions are accepted but authenticated users "
+        "can track their submissions."
+    ),
     response_model=FeedbackResponse,
     status_code=status.HTTP_201_CREATED,
 )
@@ -66,6 +71,7 @@ async def submit_feedback(
 @router.get(
     "/pending",
     summary="List pending feedback",
+    description="Returns all feedback items awaiting moderation. Requires editor or admin role.",
 )
 async def list_pending(
     _: dict = Depends(require_editor_or_admin),
@@ -78,7 +84,9 @@ async def list_pending(
 @router.get(
     "/{feedback_id}",
     summary="Get feedback detail",
+    description="Retrieve full details for a single feedback item. Requires editor or admin role.",
     response_model=FeedbackDetail,
+    responses={404: {"description": "Feedback item not found."}},
 )
 async def get_feedback(
     feedback_id: int,
@@ -94,6 +102,8 @@ async def get_feedback(
 @router.patch(
     "/{feedback_id}",
     summary="Update feedback status",
+    description="Change the moderation status of a feedback item (e.g. pending → resolved). Requires editor or admin role.",
+    responses={404: {"description": "Feedback item not found."}},
 )
 async def update_feedback(
     feedback_id: int,

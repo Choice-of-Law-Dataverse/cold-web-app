@@ -12,8 +12,12 @@ export interface paths {
       cookie?: never;
     };
     /**
-     * Full-text search across CoLD data
-     * @description Searches across multiple domains (Answers, HCCH Answers, Court Decisions, Domestic Instruments, Regional Instruments, International Instruments, Literature, Arbitral Awards, and Arbitral Rules). Filter columns are exposed as dedicated repeatable query parameters: `tables`, `jurisdictions`, `themes`. Pass each value separately, e.g. `?tables=Answers&tables=Court%20Decisions&jurisdictions=Switzerland`. You can sort by date and paginate results.
+     * Full-text search across all CoLD datasets
+     * @description Searches across all CoLD datasets: Answers, HCCH Answers, Court Decisions, Domestic/Regional/International Instruments and their Legal Provisions, Literature, Arbitral Awards, Arbitral Rules, Arbitral Provisions, Arbitral Institutions, Jurisdictions, and Questions.
+     *
+     *     Results are ranked by relevance and returned in a paginated envelope. Use the repeatable query parameters `tables`, `jurisdictions`, and `themes` to narrow results. Pass each filter value as a separate parameter, e.g. `?tables=Answers&tables=Court+Decisions&jurisdictions=Switzerland`.
+     *
+     *     Set `sort_by_date=true` to order results chronologically (newest first) instead of by relevance.
      */
     get: operations["handle_full_text_search_api_v1_search__get"];
     put?: never;
@@ -32,8 +36,8 @@ export interface paths {
       cookie?: never;
     };
     /**
-     * Fetch a curated record by CoLD ID including relations
-     * @description Given a table and a CoLD ID, returns the record with all first-hop relations in a standardized shape.
+     * Fetch a single record by CoLD ID with related entities
+     * @description Returns the full detail for one record, identified by its source table and CoLD ID (e.g. `table=Court+Decisions&id=CD-CHE-42`). The response includes the record's own fields plus all first-hop relations (linked jurisdictions, themes, instruments, literature, etc.) in a standardised shape. Ideal for building detail pages or enriching search results.
      */
     get: operations["handle_entity_detail_api_v1_search_details_get"];
     put?: never;
@@ -52,8 +56,14 @@ export interface paths {
       cookie?: never;
     };
     /**
-     * Return full or filtered table
-     * @description Returns all records from the specified table or a filtered subset. Filters use the repeatable `filter` query parameter with format `column:value` or `column:val1,val2` for multiple values. Values matching `true`/`false` are parsed as booleans; pure-digit strings as integers; everything else stays a string. Example: `?table=Court%20Decisions&filter=caseRank:10&filter=jurisdiction:Switzerland`.
+     * Bulk export: return a full table or filtered subset
+     * @description Returns every record from the specified table, or a filtered subset. This is the primary endpoint for **bulk data export**.
+     *
+     *     **Available tables:** Answers, HCCH Answers, Questions, Court Decisions, Domestic Instruments, Domestic Legal Provisions, Regional Instruments, Regional Legal Provisions, International Instruments, International Legal Provisions, Literature, Arbitral Awards, Arbitral Rules, Arbitral Provisions, Arbitral Institutions, Jurisdictions, Specialists.
+     *
+     *     Filters use the repeatable `filter` query parameter in `column:value` format (or `column:val1,val2` for OR). Values matching `true`/`false` are coerced to booleans; pure-digit strings to integers; everything else stays a string.
+     *
+     *     Example: `?table=Court+Decisions&filter=caseRank:10&filter=jurisdiction:Switzerland`.
      */
     get: operations["return_full_table_api_v1_search_full_table_get"];
     put?: never;
@@ -72,8 +82,8 @@ export interface paths {
       cookie?: never;
     };
     /**
-     * Get specialists by jurisdiction
-     * @description Returns all specialists associated with a specific jurisdiction using Alpha_3_Code.
+     * Get specialists for a jurisdiction
+     * @description Returns all choice-of-law specialists associated with a jurisdiction, identified by its ISO 3166-1 Alpha-3 code (e.g. `CHE` for Switzerland, `GBR` for the United Kingdom).
      */
     get: operations["get_specialists_by_jurisdiction_api_v1_search_specialists__jurisdiction_alpha_code__get"];
     put?: never;
@@ -93,7 +103,7 @@ export interface paths {
     };
     /**
      * Classify a free-text user query into a predefined category
-     * @description Uses an external model to classify the user's query into one of the predefined CoLD categories.
+     * @description Maps a free-text question to the most relevant predefined CoLD thematic category (e.g. 'Party autonomy (concept)', 'Mandatory rules', 'Renvoi'). Uses an LLM under the hood. The returned string can be fed back into the search endpoint's `themes` filter to retrieve matching records.
      */
     get: operations["classify_query_get_api_v1_ai_classify_query_get"];
     put?: never;
@@ -114,8 +124,15 @@ export interface paths {
     get?: never;
     put?: never;
     /**
-     * Upload court decision document for initial analysis
-     * @description Upload a PDF court decision document. The system will extract text, detect jurisdiction and legal system type, save as draft in database. Returns a stream of SSE events with progress updates and heartbeats.
+     * Upload a court decision PDF for initial processing
+     * @description Upload a PDF court decision (base64-encoded or as an Azure blob URL). The system will:
+     *
+     *     1. **Upload to storage** — decode and persist the PDF in Azure Blob Storage
+     *     2. **Extract text** — convert the PDF to machine-readable text
+     *     3. **Detect jurisdiction** — use an LLM to identify the jurisdiction and legal system type
+     *     4. **Save draft** — persist the draft in the database for subsequent analysis
+     *
+     *     Returns a **Server-Sent Events (SSE)** stream with progress updates and periodic heartbeats. The final event contains the `draft_id` and detected `jurisdiction` data. Maximum PDF size: 50 MB. Requires authentication.
      */
     post: operations["upload_document_api_v1_case_analyzer_upload_post"];
     delete?: never;
@@ -134,8 +151,20 @@ export interface paths {
     get?: never;
     put?: never;
     /**
-     * Confirm jurisdiction and run full case analysis
-     * @description Confirm or correct the detected jurisdiction and run the full case analysis workflow. Returns a stream of intermediate results as each analysis step completes. Updates the database draft at each step for recoverability.
+     * Run full AI-powered case analysis
+     * @description Confirm or correct the detected jurisdiction and trigger the full analysis workflow. The system runs multiple LLM-powered extraction steps on the uploaded decision text:
+     *
+     *     - **Choice-of-law section** extraction
+     *     - **Theme** classification
+     *     - **Case citation** extraction
+     *     - **Abstract** generation
+     *     - **Relevant facts** extraction
+     *     - **PIL provisions** extraction
+     *     - **Choice-of-law issue** extraction
+     *     - **Court's position** extraction
+     *     - **Obiter dicta** and **dissenting opinions**
+     *
+     *     Returns a **Server-Sent Events (SSE)** stream with each step's result as it completes. The draft is updated in the database after each step for crash recovery. Set `resume=true` to skip already-completed steps (e.g. after a network interruption). Requires authentication.
      */
     post: operations["analyze_document_api_v1_case_analyzer_analyze_post"];
     delete?: never;
@@ -154,8 +183,8 @@ export interface paths {
     get?: never;
     put?: never;
     /**
-     * Submit case analysis for moderation approval
-     * @description Submit user-edited case analysis data for moderation approval. The data is stored in the submitted_data column and the status is changed to 'pending'. Moderators will review and can approve/reject.
+     * Submit case analysis for moderation review
+     * @description Submit user-reviewed and edited case analysis data for moderator approval. The endpoint validates ownership, stores the edited data alongside the original AI-generated output (preserved for audit), and sets the status to `pending`. Moderators can then approve or reject the submission. Requires authentication.
      */
     post: operations["submit_for_approval_api_v1_case_analyzer_submit_post"];
     delete?: never;
@@ -172,8 +201,8 @@ export interface paths {
       cookie?: never;
     };
     /**
-     * List user's case analyses
-     * @description Returns all case analyses belonging to the authenticated user.
+     * List the authenticated user's case analyses
+     * @description Returns a summary of every case analysis draft created by the authenticated user, regardless of status (draft, analyzing, completed, pending, approved, rejected). Requires authentication.
      */
     get: operations["list_my_analyses_api_v1_case_analyzer_my_analyses_get"];
     put?: never;
@@ -192,8 +221,8 @@ export interface paths {
       cookie?: never;
     };
     /**
-     * Get draft data for recovery
-     * @description Fetch draft data to recover the analyzer form state. Returns draft data if status is recoverable (not pending/approved).
+     * Recover a draft's analysis state
+     * @description Fetch the full draft data (jurisdiction info, analyzer step results, PDF URL) to restore the client-side form after a page reload or network interruption. Only available for drafts that have not yet been submitted for moderation (i.e. not in `pending`, `approved`, or `rejected` status). Requires authentication.
      */
     get: operations["get_draft_for_recovery_api_v1_case_analyzer_draft__draft_id__get"];
     put?: never;
@@ -228,7 +257,10 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /** Get All Frontend Urls */
+    /**
+     * List all indexable frontend URLs
+     * @description Returns every public-facing URL for the CoLD frontend. Intended for generating XML sitemaps for search engine indexing.
+     */
     get: operations["get_all_frontend_urls_api_v1_sitemap_urls_get"];
     put?: never;
     post?: never;
@@ -266,8 +298,8 @@ export interface paths {
       cookie?: never;
     };
     /**
-     * Get all jurisdictions with answer data percentage
-     * @description Returns all jurisdictions with their complete data plus the percentage of answers that contain data (not 'no data'). Percentage is calculated per jurisdiction.
+     * Jurisdiction answer coverage percentages
+     * @description Returns every jurisdiction with its metadata (name, Alpha-3 code, legal family) and an `answer_coverage` percentage indicating how many of the standardised questionnaire questions have substantive answers (i.e. not 'No data'). Useful for assessing data completeness across jurisdictions.
      */
     get: operations["get_jurisdictions_with_answer_coverage_api_v1_statistics_jurisdictions_with_answer_percentage_get"];
     put?: never;
@@ -286,8 +318,8 @@ export interface paths {
       cookie?: never;
     };
     /**
-     * Count records by jurisdiction for a specific table
-     * @description Returns count of rows grouped by jurisdiction for the specified table. Supported tables: Court Decisions, Domestic Instruments, Literature.
+     * Record counts grouped by jurisdiction for a table
+     * @description Returns the number of records per jurisdiction for the given table. Supported tables: **Court Decisions**, **Domestic Instruments**, **Literature**. Useful for visualising geographic distribution of data (e.g. choropleth maps).
      */
     get: operations["count_by_jurisdiction_api_v1_statistics_count_by_jurisdiction_get"];
     put?: never;
@@ -306,8 +338,8 @@ export interface paths {
       cookie?: never;
     };
     /**
-     * Counts for every entity in the dataverse
-     * @description Returns counts per entity type, optionally scoped to a jurisdiction. Plain GET so it can be cached at the edge by Cloudflare.
+     * Record counts per entity type
+     * @description Returns the total number of records for each entity type in the dataverse (Court Decisions, Domestic Instruments, Literature, etc.). Pass an optional `jurisdiction` Alpha-3 code to scope counts to a single country. Useful for dashboard summaries and data completeness overviews.
      */
     get: operations["get_entity_counts_api_v1_statistics_counts_get"];
     put?: never;
@@ -326,8 +358,12 @@ export interface paths {
       cookie?: never;
     };
     /**
-     * List entities of a given type with optional jurisdiction filter
-     * @description Returns a paginated, slim list of entities using the relation contract (`*Relation` shapes used inside detail responses). Supports jurisdiction filtering for entities that expose `jurisdictions_alpha_3_code`. Court Decisions additionally accepts a `case_rank` filter.
+     * Paginated entity list by type
+     * @description Returns a paginated list of entities for the given slug. Each item uses the slim relation shape (the same fields embedded in detail responses).
+     *
+     *     **Available slugs:** `court-decisions`, `domestic-instruments`, `regional-instruments`, `international-instruments`, `literature`, `arbitral-awards`, `arbitral-rules`, `arbitral-institutions`, `jurisdictions`, `specialists`, `questions`.
+     *
+     *     Filter by `jurisdiction` (Alpha-3 code) or `theme` (substring match). Court Decisions additionally accept a `case_rank` filter. Results are sorted by title by default; override with `order_by` and `order_dir`.
      */
     get: operations["list_entity_api_v1_entities__slug__get"];
     put?: never;
@@ -348,8 +384,8 @@ export interface paths {
     get?: never;
     put?: never;
     /**
-     * Submit a new data suggestion
-     * @description Accepts arbitrary dictionaries from the frontend and stores them in a separate Postgres table.
+     * Submit a new data suggestion (generic)
+     * @description Submit a free-form data contribution for moderator review. The payload is stored as-is in a separate suggestions table. Use the typed endpoints below (court-decisions, domestic-instruments, etc.) for structured submissions. Requires authentication.
      */
     post: operations["submit_suggestion_api_v1_suggestions__post"];
     delete?: never;
@@ -451,8 +487,8 @@ export interface paths {
       cookie?: never;
     };
     /**
-     * Get pending counts for all moderation categories
-     * @description Requires editor or admin role. Returns pending suggestion counts per category.
+     * Moderation queue summary
+     * @description Returns the number of pending suggestions in each moderation category (court decisions, instruments, literature, case analyzer, feedback). Requires editor or admin role.
      */
     get: operations["moderation_summary_api_v1_suggestions_moderation_summary_get"];
     put?: never;
@@ -471,8 +507,10 @@ export interface paths {
       cookie?: never;
     };
     /**
-     * List pending suggestions for a category
-     * @description Requires editor or admin role. Returns list of pending suggestions for moderation.
+     * List pending suggestions in a category
+     * @description Returns all pending suggestions for the specified category slug. For `case-analyzer`, set `show_all=true` to include non-pending items. Requires editor or admin role.
+     *
+     *     **Category slugs:** `case-analyzer`, `court-decisions`, `domestic-instruments`, `regional-instruments`, `international-instruments`, `literature`, `feedback`.
      */
     get: operations["list_pending_suggestions_api_v1_suggestions_pending__category__get"];
     put?: never;
@@ -499,7 +537,7 @@ export interface paths {
     post?: never;
     /**
      * Delete a suggestion
-     * @description Requires editor or admin role. Permanently deletes a suggestion.
+     * @description Permanently remove a suggestion. Only supported for the `case-analyzer` category. Requires editor or admin role.
      */
     delete: operations["delete_suggestion_api_v1_suggestions__category___suggestion_id__delete"];
     options?: never;
@@ -518,7 +556,7 @@ export interface paths {
     put?: never;
     /**
      * Approve a suggestion
-     * @description Requires editor or admin role. Marks a suggestion as approved and processes it for insertion
+     * @description Mark a suggestion as approved and insert its data into the main CoLD database. For case-analyzer suggestions, this runs the full approval pipeline. For other categories, the payload is written directly to the target table. Requires editor or admin role.
      */
     post: operations["approve_suggestion_api_v1_suggestions__category___suggestion_id__approve_post"];
     delete?: never;
@@ -538,7 +576,7 @@ export interface paths {
     put?: never;
     /**
      * Reject a suggestion
-     * @description Requires editor or admin role. Marks a suggestion as rejected.
+     * @description Mark a suggestion as rejected. The record is preserved for audit but not inserted into CoLD. Requires editor or admin role.
      */
     post: operations["reject_suggestion_api_v1_suggestions__category___suggestion_id__reject_post"];
     delete?: never;
@@ -556,7 +594,10 @@ export interface paths {
     };
     get?: never;
     put?: never;
-    /** Submit entity feedback */
+    /**
+     * Submit entity feedback
+     * @description Report an error, suggest a correction, or leave a comment on an existing CoLD record. Authentication is optional — anonymous submissions are accepted but authenticated users can track their submissions.
+     */
     post: operations["submit_feedback_api_v1_feedback_post"];
     delete?: never;
     options?: never;
@@ -571,7 +612,10 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /** List pending feedback */
+    /**
+     * List pending feedback
+     * @description Returns all feedback items awaiting moderation. Requires editor or admin role.
+     */
     get: operations["list_pending_api_v1_feedback_pending_get"];
     put?: never;
     post?: never;
@@ -588,14 +632,20 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /** Get feedback detail */
+    /**
+     * Get feedback detail
+     * @description Retrieve full details for a single feedback item. Requires editor or admin role.
+     */
     get: operations["get_feedback_api_v1_feedback__feedback_id__get"];
     put?: never;
     post?: never;
     delete?: never;
     options?: never;
     head?: never;
-    /** Update feedback status */
+    /**
+     * Update feedback status
+     * @description Change the moderation status of a feedback item (e.g. pending → resolved). Requires editor or admin role.
+     */
     patch: operations["update_feedback_api_v1_feedback__feedback_id__patch"];
     trace?: never;
   };
@@ -607,8 +657,8 @@ export interface paths {
       cookie?: never;
     };
     /**
-     * Root
-     * @description Simple health check endpoint for the CoLD API root.
+     * Health check
+     * @description Returns a simple message confirming the API is running.
      */
     get: operations["root_api_v1_get"];
     put?: never;
@@ -625,14 +675,22 @@ export interface components {
   schemas: {
     /** AnswerDetail */
     AnswerDetail: {
+      /** @description CoLD unique identifier (e.g. 'CD-CHE-42', 'DI-FRA-3'). */
       coldId?: string | null;
+      /** @description The substantive answer text, or 'No data'. */
       answer?: string | null;
+      /** @description Additional context or commentary on the answer. */
       moreInformation?: string | null;
+      /** @description Relevant quote from the OUP companion publication. */
       oupBookQuote?: string | null;
+      /** @description ISO 3166-1 Alpha-3 code of the answering jurisdiction. */
       jurisdictionsAlpha3Code?: string | null;
+      /** @description Internal numeric identifier. */
       id: number;
+      /** @description Dataset this record belongs to (e.g. 'Court Decisions'). */
       sourceTable: string;
       /**
+       * @description First-hop related entities (jurisdictions, themes, instruments, etc.).
        * @default {
        *       "hcchAnswers": [],
        *       "questions": [],
@@ -654,7 +712,9 @@ export interface components {
        *     }
        */
       relations: components["schemas"]["EntityRelations"];
+      /** @description Record creation timestamp (ISO 8601). */
       createdAt?: string | null;
+      /** @description Record last-update timestamp (ISO 8601). */
       updatedAt?: string | null;
       toReview?: string | null;
       questionColdId?: string | null;
@@ -696,16 +756,27 @@ export interface components {
     };
     /** AnswerSearchResult */
     AnswerSearchResult: {
+      /** @description CoLD unique identifier (e.g. 'CD-CHE-42', 'DI-FRA-3'). */
       coldId?: string | null;
+      /** @description The substantive answer text, or 'No data'. */
       answer?: string | null;
+      /** @description Additional context or commentary on the answer. */
       moreInformation?: string | null;
+      /** @description Relevant quote from the OUP companion publication. */
       oupBookQuote?: string | null;
+      /** @description ISO 3166-1 Alpha-3 code of the answering jurisdiction. */
       jurisdictionsAlpha3Code?: string | null;
+      /** @description CoLD identifier for the record (e.g. 'CD-CHE-42'). */
       id?: string | number | null;
+      /** @description Dataset this record belongs to (e.g. 'Court Decisions'). */
       sourceTable?: string | null;
+      /** @description Full-text search relevance score (higher is more relevant). */
       rank?: number | null;
+      /** @description Primary date for the record in ISO 8601 format. */
       resultDate?: string | null;
+      /** @description Comma-separated jurisdiction names associated with this record. */
       jurisdictions?: string | null;
+      /** @description Comma-separated thematic categories. */
       themes?: string | null;
       question?: string | null;
       courtDecisionsLink?: string | null;
@@ -727,13 +798,20 @@ export interface components {
       | components["schemas"]["SpecialistRelation"];
     /** ArbitralAwardDetail */
     ArbitralAwardDetail: {
+      /** @description CoLD unique identifier (e.g. 'CD-CHE-42', 'DI-FRA-3'). */
       coldId?: string | null;
+      /** @description Arbitral case number. */
       caseNumber?: string | null;
+      /** @description Summary of the award's choice-of-law analysis. */
       awardSummary?: string | null;
+      /** @description Year the award was rendered. */
       year?: string | null;
+      /** @description Internal numeric identifier. */
       id: number;
+      /** @description Dataset this record belongs to (e.g. 'Court Decisions'). */
       sourceTable: string;
       /**
+       * @description First-hop related entities (jurisdictions, themes, instruments, etc.).
        * @default {
        *       "hcchAnswers": [],
        *       "questions": [],
@@ -755,7 +833,9 @@ export interface components {
        *     }
        */
       relations: components["schemas"]["EntityRelations"];
+      /** @description Record creation timestamp (ISO 8601). */
       createdAt?: string | null;
+      /** @description Record last-update timestamp (ISO 8601). */
       updatedAt?: string | null;
       idNumber?: string | null;
       context?: string | null;
@@ -820,15 +900,25 @@ export interface components {
     };
     /** ArbitralAwardSearchResult */
     ArbitralAwardSearchResult: {
+      /** @description CoLD unique identifier (e.g. 'CD-CHE-42', 'DI-FRA-3'). */
       coldId?: string | null;
+      /** @description Arbitral case number. */
       caseNumber?: string | null;
+      /** @description Summary of the award's choice-of-law analysis. */
       awardSummary?: string | null;
+      /** @description Year the award was rendered. */
       year?: string | null;
+      /** @description CoLD identifier for the record (e.g. 'CD-CHE-42'). */
       id?: string | number | null;
+      /** @description Dataset this record belongs to (e.g. 'Court Decisions'). */
       sourceTable?: string | null;
+      /** @description Full-text search relevance score (higher is more relevant). */
       rank?: number | null;
+      /** @description Primary date for the record in ISO 8601 format. */
       resultDate?: string | null;
+      /** @description Comma-separated jurisdiction names associated with this record. */
       jurisdictions?: string | null;
+      /** @description Comma-separated thematic categories. */
       themes?: string | null;
       arbitralInstitutions?: string | null;
       arbitralInstitutionsAbbrev?: string | null;
@@ -836,12 +926,18 @@ export interface components {
     };
     /** ArbitralInstitutionDetail */
     ArbitralInstitutionDetail: {
+      /** @description CoLD unique identifier (e.g. 'CD-CHE-42', 'DI-FRA-3'). */
       coldId?: string | null;
+      /** @description Full name of the arbitration institution. */
       institution?: string | null;
+      /** @description Common abbreviation (e.g. 'ICC', 'LCIA'). */
       abbreviation?: string | null;
+      /** @description Internal numeric identifier. */
       id: number;
+      /** @description Dataset this record belongs to (e.g. 'Court Decisions'). */
       sourceTable: string;
       /**
+       * @description First-hop related entities (jurisdictions, themes, instruments, etc.).
        * @default {
        *       "hcchAnswers": [],
        *       "questions": [],
@@ -863,7 +959,9 @@ export interface components {
        *     }
        */
       relations: components["schemas"]["EntityRelations"];
+      /** @description Record creation timestamp (ISO 8601). */
       createdAt?: string | null;
+      /** @description Record last-update timestamp (ISO 8601). */
       updatedAt?: string | null;
     };
     /** ArbitralInstitutionRecord */
@@ -899,23 +997,37 @@ export interface components {
     };
     /** ArbitralInstitutionSearchResult */
     ArbitralInstitutionSearchResult: {
+      /** @description CoLD unique identifier (e.g. 'CD-CHE-42', 'DI-FRA-3'). */
       coldId?: string | null;
+      /** @description Full name of the arbitration institution. */
       institution?: string | null;
+      /** @description Common abbreviation (e.g. 'ICC', 'LCIA'). */
       abbreviation?: string | null;
+      /** @description CoLD identifier for the record (e.g. 'CD-CHE-42'). */
       id?: string | number | null;
+      /** @description Dataset this record belongs to (e.g. 'Court Decisions'). */
       sourceTable?: string | null;
+      /** @description Full-text search relevance score (higher is more relevant). */
       rank?: number | null;
+      /** @description Primary date for the record in ISO 8601 format. */
       resultDate?: string | null;
+      /** @description Comma-separated jurisdiction names associated with this record. */
       jurisdictions?: string | null;
+      /** @description Comma-separated thematic categories. */
       themes?: string | null;
     };
     /** ArbitralProvisionDetail */
     ArbitralProvisionDetail: {
+      /** @description CoLD unique identifier (e.g. 'CD-CHE-42', 'DI-FRA-3'). */
       coldId?: string | null;
+      /** @description Article number or section reference within the rules. */
       article?: string | null;
+      /** @description Internal numeric identifier. */
       id: number;
+      /** @description Dataset this record belongs to (e.g. 'Court Decisions'). */
       sourceTable: string;
       /**
+       * @description First-hop related entities (jurisdictions, themes, instruments, etc.).
        * @default {
        *       "hcchAnswers": [],
        *       "questions": [],
@@ -937,7 +1049,9 @@ export interface components {
        *     }
        */
       relations: components["schemas"]["EntityRelations"];
+      /** @description Record creation timestamp (ISO 8601). */
       createdAt?: string | null;
+      /** @description Record last-update timestamp (ISO 8601). */
       updatedAt?: string | null;
       fullTextOriginalLanguage?: string | null;
       fullTextEnglishTranslation?: string | null;
@@ -979,25 +1093,39 @@ export interface components {
     };
     /** ArbitralProvisionSearchResult */
     ArbitralProvisionSearchResult: {
+      /** @description CoLD unique identifier (e.g. 'CD-CHE-42', 'DI-FRA-3'). */
       coldId?: string | null;
+      /** @description Article number or section reference within the rules. */
       article?: string | null;
+      /** @description CoLD identifier for the record (e.g. 'CD-CHE-42'). */
       id?: string | number | null;
+      /** @description Dataset this record belongs to (e.g. 'Court Decisions'). */
       sourceTable?: string | null;
+      /** @description Full-text search relevance score (higher is more relevant). */
       rank?: number | null;
+      /** @description Primary date for the record in ISO 8601 format. */
       resultDate?: string | null;
+      /** @description Comma-separated jurisdiction names associated with this record. */
       jurisdictions?: string | null;
+      /** @description Comma-separated thematic categories. */
       themes?: string | null;
       arbitralInstitutions?: string | null;
       arbitralRules?: string | null;
     };
     /** ArbitralRuleDetail */
     ArbitralRuleDetail: {
+      /** @description CoLD unique identifier (e.g. 'CD-CHE-42', 'DI-FRA-3'). */
       coldId?: string | null;
+      /** @description Name of the arbitration rules set. */
       setOfRules?: string | null;
+      /** @description Date from which these rules are in force. */
       inForceFrom?: string | null;
+      /** @description Internal numeric identifier. */
       id: number;
+      /** @description Dataset this record belongs to (e.g. 'Court Decisions'). */
       sourceTable: string;
       /**
+       * @description First-hop related entities (jurisdictions, themes, instruments, etc.).
        * @default {
        *       "hcchAnswers": [],
        *       "questions": [],
@@ -1019,7 +1147,9 @@ export interface components {
        *     }
        */
       relations: components["schemas"]["EntityRelations"];
+      /** @description Record creation timestamp (ISO 8601). */
       createdAt?: string | null;
+      /** @description Record last-update timestamp (ISO 8601). */
       updatedAt?: string | null;
       idNumber?: string | null;
       officialSourceUrl?: string | null;
@@ -1061,14 +1191,23 @@ export interface components {
     };
     /** ArbitralRuleSearchResult */
     ArbitralRuleSearchResult: {
+      /** @description CoLD unique identifier (e.g. 'CD-CHE-42', 'DI-FRA-3'). */
       coldId?: string | null;
+      /** @description Name of the arbitration rules set. */
       setOfRules?: string | null;
+      /** @description Date from which these rules are in force. */
       inForceFrom?: string | null;
+      /** @description CoLD identifier for the record (e.g. 'CD-CHE-42'). */
       id?: string | number | null;
+      /** @description Dataset this record belongs to (e.g. 'Court Decisions'). */
       sourceTable?: string | null;
+      /** @description Full-text search relevance score (higher is more relevant). */
       rank?: number | null;
+      /** @description Primary date for the record in ISO 8601 format. */
       resultDate?: string | null;
+      /** @description Comma-separated jurisdiction names associated with this record. */
       jurisdictions?: string | null;
+      /** @description Comma-separated thematic categories. */
       themes?: string | null;
       arbitralInstitutions?: string | null;
     };
@@ -1086,17 +1225,28 @@ export interface components {
     };
     /** CourtDecisionDetail */
     CourtDecisionDetail: {
+      /** @description CoLD unique identifier (e.g. 'CD-CHE-42', 'DI-FRA-3'). */
       coldId?: string | null;
+      /** @description Title or short name of the court decision. */
       caseTitle?: string | null;
+      /** @description Formal case citation reference. */
       caseCitation?: string | null;
+      /** @description Publication date in ISO 8601 format. */
       publicationDateIso?: string | null;
+      /** @description Court instance (e.g. 'Supreme Court', 'Court of Appeal'). */
       instance?: string | null;
+      /** @description The choice-of-law issue addressed by the court. */
       choiceOfLawIssue?: string | null;
+      /** @description URL to the official source PDF. */
       officialSourcePdf?: string | null;
+      /** @description Alpha-3 code of the jurisdiction. */
       jurisdictionsAlpha3Code?: string | null;
+      /** @description Internal numeric identifier. */
       id: number;
+      /** @description Dataset this record belongs to (e.g. 'Court Decisions'). */
       sourceTable: string;
       /**
+       * @description First-hop related entities (jurisdictions, themes, instruments, etc.).
        * @default {
        *       "hcchAnswers": [],
        *       "questions": [],
@@ -1118,7 +1268,9 @@ export interface components {
        *     }
        */
       relations: components["schemas"]["EntityRelations"];
+      /** @description Record creation timestamp (ISO 8601). */
       createdAt?: string | null;
+      /** @description Record last-update timestamp (ISO 8601). */
       updatedAt?: string | null;
       idNumber?: string | null;
       date?: string | null;
@@ -1196,19 +1348,33 @@ export interface components {
     };
     /** CourtDecisionSearchResult */
     CourtDecisionSearchResult: {
+      /** @description CoLD unique identifier (e.g. 'CD-CHE-42', 'DI-FRA-3'). */
       coldId?: string | null;
+      /** @description Title or short name of the court decision. */
       caseTitle?: string | null;
+      /** @description Formal case citation reference. */
       caseCitation?: string | null;
+      /** @description Publication date in ISO 8601 format. */
       publicationDateIso?: string | null;
+      /** @description Court instance (e.g. 'Supreme Court', 'Court of Appeal'). */
       instance?: string | null;
+      /** @description The choice-of-law issue addressed by the court. */
       choiceOfLawIssue?: string | null;
+      /** @description URL to the official source PDF. */
       officialSourcePdf?: string | null;
+      /** @description Alpha-3 code of the jurisdiction. */
       jurisdictionsAlpha3Code?: string | null;
+      /** @description CoLD identifier for the record (e.g. 'CD-CHE-42'). */
       id?: string | number | null;
+      /** @description Dataset this record belongs to (e.g. 'Court Decisions'). */
       sourceTable?: string | null;
+      /** @description Full-text search relevance score (higher is more relevant). */
       rank?: number | null;
+      /** @description Primary date for the record in ISO 8601 format. */
       resultDate?: string | null;
+      /** @description Comma-separated jurisdiction names associated with this record. */
       jurisdictions?: string | null;
+      /** @description Comma-separated thematic categories. */
       themes?: string | null;
       sourcePdf?: string | null;
     };
@@ -1279,10 +1445,14 @@ export interface components {
     };
     /** DetailBase */
     DetailBase: {
+      /** @description CoLD unique identifier (e.g. 'CD-CHE-42', 'DI-FRA-3'). */
       coldId?: string | null;
+      /** @description Internal numeric identifier. */
       id: number;
+      /** @description Dataset this record belongs to (e.g. 'Court Decisions'). */
       sourceTable: string;
       /**
+       * @description First-hop related entities (jurisdictions, themes, instruments, etc.).
        * @default {
        *       "hcchAnswers": [],
        *       "questions": [],
@@ -1304,20 +1474,31 @@ export interface components {
        *     }
        */
       relations: components["schemas"]["EntityRelations"];
+      /** @description Record creation timestamp (ISO 8601). */
       createdAt?: string | null;
+      /** @description Record last-update timestamp (ISO 8601). */
       updatedAt?: string | null;
     };
     /** DomesticInstrumentDetail */
     DomesticInstrumentDetail: {
+      /** @description CoLD unique identifier (e.g. 'CD-CHE-42', 'DI-FRA-3'). */
       coldId?: string | null;
+      /** @description English title of the domestic legislation. */
       titleInEnglish?: string | null;
+      /** @description Date of enactment or last amendment. */
       date?: string | null;
+      /** @description Common abbreviation (e.g. 'IPRG', 'Rome I'). */
       abbreviation?: string | null;
+      /** @description URL to the source PDF. */
       sourcePdf?: string | null;
+      /** @description Alpha-3 code of the jurisdiction. */
       jurisdictionsAlpha3Code?: string | null;
+      /** @description Internal numeric identifier. */
       id: number;
+      /** @description Dataset this record belongs to (e.g. 'Court Decisions'). */
       sourceTable: string;
       /**
+       * @description First-hop related entities (jurisdictions, themes, instruments, etc.).
        * @default {
        *       "hcchAnswers": [],
        *       "questions": [],
@@ -1339,7 +1520,9 @@ export interface components {
        *     }
        */
       relations: components["schemas"]["EntityRelations"];
+      /** @description Record creation timestamp (ISO 8601). */
       createdAt?: string | null;
+      /** @description Record last-update timestamp (ISO 8601). */
       updatedAt?: string | null;
       idNumber?: string | null;
       officialTitle?: string | null;
@@ -1404,17 +1587,29 @@ export interface components {
     };
     /** DomesticInstrumentSearchResult */
     DomesticInstrumentSearchResult: {
+      /** @description CoLD unique identifier (e.g. 'CD-CHE-42', 'DI-FRA-3'). */
       coldId?: string | null;
+      /** @description English title of the domestic legislation. */
       titleInEnglish?: string | null;
+      /** @description Date of enactment or last amendment. */
       date?: string | null;
+      /** @description Common abbreviation (e.g. 'IPRG', 'Rome I'). */
       abbreviation?: string | null;
+      /** @description URL to the source PDF. */
       sourcePdf?: string | null;
+      /** @description Alpha-3 code of the jurisdiction. */
       jurisdictionsAlpha3Code?: string | null;
+      /** @description CoLD identifier for the record (e.g. 'CD-CHE-42'). */
       id?: string | number | null;
+      /** @description Dataset this record belongs to (e.g. 'Court Decisions'). */
       sourceTable?: string | null;
+      /** @description Full-text search relevance score (higher is more relevant). */
       rank?: number | null;
+      /** @description Primary date for the record in ISO 8601 format. */
       resultDate?: string | null;
+      /** @description Comma-separated jurisdiction names associated with this record. */
       jurisdictions?: string | null;
+      /** @description Comma-separated thematic categories. */
       themes?: string | null;
       officialSourcePdf?: string | null;
       domesticLegalProvisionsThemes?: string | null;
@@ -1472,11 +1667,16 @@ export interface components {
     };
     /** DomesticLegalProvisionDetail */
     DomesticLegalProvisionDetail: {
+      /** @description CoLD unique identifier (e.g. 'CD-CHE-42', 'DI-FRA-3'). */
       coldId?: string | null;
+      /** @description Article number or section reference. */
       article?: string | null;
+      /** @description Internal numeric identifier. */
       id: number;
+      /** @description Dataset this record belongs to (e.g. 'Court Decisions'). */
       sourceTable: string;
       /**
+       * @description First-hop related entities (jurisdictions, themes, instruments, etc.).
        * @default {
        *       "hcchAnswers": [],
        *       "questions": [],
@@ -1498,7 +1698,9 @@ export interface components {
        *     }
        */
       relations: components["schemas"]["EntityRelations"];
+      /** @description Record creation timestamp (ISO 8601). */
       createdAt?: string | null;
+      /** @description Record last-update timestamp (ISO 8601). */
       updatedAt?: string | null;
       fullTextOfTheProvisionOriginalLanguage?: string | null;
       fullTextOfTheProvisionEnglishTranslation?: string | null;
@@ -1542,13 +1744,21 @@ export interface components {
     };
     /** DomesticLegalProvisionSearchResult */
     DomesticLegalProvisionSearchResult: {
+      /** @description CoLD unique identifier (e.g. 'CD-CHE-42', 'DI-FRA-3'). */
       coldId?: string | null;
+      /** @description Article number or section reference. */
       article?: string | null;
+      /** @description CoLD identifier for the record (e.g. 'CD-CHE-42'). */
       id?: string | number | null;
+      /** @description Dataset this record belongs to (e.g. 'Court Decisions'). */
       sourceTable?: string | null;
+      /** @description Full-text search relevance score (higher is more relevant). */
       rank?: number | null;
+      /** @description Primary date for the record in ISO 8601 format. */
       resultDate?: string | null;
+      /** @description Comma-separated jurisdiction names associated with this record. */
       jurisdictions?: string | null;
+      /** @description Comma-separated thematic categories. */
       themes?: string | null;
       legislationTitle?: string | null;
       name?: string | null;
@@ -1698,11 +1908,17 @@ export interface components {
     };
     /** FullTextSearchResponse */
     FullTextSearchResponse: {
+      /** @description The search query string that was submitted. */
       query?: string | null;
+      /** @description Active filters applied to the search. */
       filters?: components["schemas"]["FTSFilterOption"][] | null;
+      /** @description Total number of matching records across all pages. */
       totalMatches: number;
+      /** @description Current page number (1-indexed). */
       page: number;
+      /** @description Number of results per page. */
       pageSize: number;
+      /** @description Array of search result records for the current page. */
       results: (
         | components["schemas"]["AnswerSearchResult"]
         | components["schemas"]["HcchAnswerSearchResult"]
@@ -1729,10 +1945,14 @@ export interface components {
     };
     /** HcchAnswerDetail */
     HcchAnswerDetail: {
+      /** @description CoLD unique identifier (e.g. 'CD-CHE-42', 'DI-FRA-3'). */
       coldId?: string | null;
+      /** @description Internal numeric identifier. */
       id: number;
+      /** @description Dataset this record belongs to (e.g. 'Court Decisions'). */
       sourceTable: string;
       /**
+       * @description First-hop related entities (jurisdictions, themes, instruments, etc.).
        * @default {
        *       "hcchAnswers": [],
        *       "questions": [],
@@ -1754,7 +1974,9 @@ export interface components {
        *     }
        */
       relations: components["schemas"]["EntityRelations"];
+      /** @description Record creation timestamp (ISO 8601). */
       createdAt?: string | null;
+      /** @description Record last-update timestamp (ISO 8601). */
       updatedAt?: string | null;
       adaptedQuestion?: string | null;
       position?: string | null;
@@ -1769,12 +1991,19 @@ export interface components {
     };
     /** HcchAnswerSearchResult */
     HcchAnswerSearchResult: {
+      /** @description CoLD unique identifier (e.g. 'CD-CHE-42', 'DI-FRA-3'). */
       coldId?: string | null;
+      /** @description CoLD identifier for the record (e.g. 'CD-CHE-42'). */
       id?: string | number | null;
+      /** @description Dataset this record belongs to (e.g. 'Court Decisions'). */
       sourceTable?: string | null;
+      /** @description Full-text search relevance score (higher is more relevant). */
       rank?: number | null;
+      /** @description Primary date for the record in ISO 8601 format. */
       resultDate?: string | null;
+      /** @description Comma-separated jurisdiction names associated with this record. */
       jurisdictions?: string | null;
+      /** @description Comma-separated thematic categories. */
       themes?: string | null;
       adaptedQuestion?: string | null;
       position?: string | null;
@@ -1782,13 +2011,20 @@ export interface components {
     };
     /** InternationalInstrumentDetail */
     InternationalInstrumentDetail: {
+      /** @description CoLD unique identifier (e.g. 'CD-CHE-42', 'DI-FRA-3'). */
       coldId?: string | null;
+      /** @description Name of the international instrument. */
       name?: string | null;
+      /** @description Date of adoption or entry into force. */
       date?: string | null;
+      /** @description URL to an attached document. */
       attachment?: string | null;
+      /** @description Internal numeric identifier. */
       id: number;
+      /** @description Dataset this record belongs to (e.g. 'Court Decisions'). */
       sourceTable: string;
       /**
+       * @description First-hop related entities (jurisdictions, themes, instruments, etc.).
        * @default {
        *       "hcchAnswers": [],
        *       "questions": [],
@@ -1810,7 +2046,9 @@ export interface components {
        *     }
        */
       relations: components["schemas"]["EntityRelations"];
+      /** @description Record creation timestamp (ISO 8601). */
       createdAt?: string | null;
+      /** @description Record last-update timestamp (ISO 8601). */
       updatedAt?: string | null;
       idNumber?: string | null;
       url?: string | null;
@@ -1865,15 +2103,25 @@ export interface components {
     };
     /** InternationalInstrumentSearchResult */
     InternationalInstrumentSearchResult: {
+      /** @description CoLD unique identifier (e.g. 'CD-CHE-42', 'DI-FRA-3'). */
       coldId?: string | null;
+      /** @description Name of the international instrument. */
       name?: string | null;
+      /** @description Date of adoption or entry into force. */
       date?: string | null;
+      /** @description URL to an attached document. */
       attachment?: string | null;
+      /** @description CoLD identifier for the record (e.g. 'CD-CHE-42'). */
       id?: string | number | null;
+      /** @description Dataset this record belongs to (e.g. 'Court Decisions'). */
       sourceTable?: string | null;
+      /** @description Full-text search relevance score (higher is more relevant). */
       rank?: number | null;
+      /** @description Primary date for the record in ISO 8601 format. */
       resultDate?: string | null;
+      /** @description Comma-separated jurisdiction names associated with this record. */
       jurisdictions?: string | null;
+      /** @description Comma-separated thematic categories. */
       themes?: string | null;
       officialSourcePdf?: string | null;
       sourcePdf?: string | null;
@@ -1907,12 +2155,18 @@ export interface components {
     };
     /** InternationalLegalProvisionDetail */
     InternationalLegalProvisionDetail: {
+      /** @description CoLD unique identifier (e.g. 'CD-CHE-42', 'DI-FRA-3'). */
       coldId?: string | null;
+      /** @description Title or heading of the provision. */
       titleOfTheProvision?: string | null;
+      /** @description Article or section reference. */
       provision?: string | null;
+      /** @description Internal numeric identifier. */
       id: number;
+      /** @description Dataset this record belongs to (e.g. 'Court Decisions'). */
       sourceTable: string;
       /**
+       * @description First-hop related entities (jurisdictions, themes, instruments, etc.).
        * @default {
        *       "hcchAnswers": [],
        *       "questions": [],
@@ -1934,7 +2188,9 @@ export interface components {
        *     }
        */
       relations: components["schemas"]["EntityRelations"];
+      /** @description Record creation timestamp (ISO 8601). */
       createdAt?: string | null;
+      /** @description Record last-update timestamp (ISO 8601). */
       updatedAt?: string | null;
       fullText?: string | null;
       rankingDisplayOrder?: string | null;
@@ -1978,14 +2234,23 @@ export interface components {
     };
     /** InternationalLegalProvisionSearchResult */
     InternationalLegalProvisionSearchResult: {
+      /** @description CoLD unique identifier (e.g. 'CD-CHE-42', 'DI-FRA-3'). */
       coldId?: string | null;
+      /** @description Title or heading of the provision. */
       titleOfTheProvision?: string | null;
+      /** @description Article or section reference. */
       provision?: string | null;
+      /** @description CoLD identifier for the record (e.g. 'CD-CHE-42'). */
       id?: string | number | null;
+      /** @description Dataset this record belongs to (e.g. 'Court Decisions'). */
       sourceTable?: string | null;
+      /** @description Full-text search relevance score (higher is more relevant). */
       rank?: number | null;
+      /** @description Primary date for the record in ISO 8601 format. */
       resultDate?: string | null;
+      /** @description Comma-separated jurisdiction names associated with this record. */
       jurisdictions?: string | null;
+      /** @description Comma-separated thematic categories. */
       themes?: string | null;
       instrument?: string | null;
     };
@@ -2004,24 +2269,40 @@ export interface components {
     };
     /** JurisdictionCoverage */
     JurisdictionCoverage: {
+      /** @description Internal jurisdiction identifier. */
       id: number;
+      /** @description Full name of the jurisdiction (e.g. 'Switzerland'). */
       name: string;
+      /** @description CoLD identifier for the jurisdiction. */
       coldId?: string | null;
+      /** @description Legal tradition (e.g. 'Civil Law', 'Common Law'). */
       legalFamily?: string | null;
+      /** @description Whether this jurisdiction is excluded from analysis. */
       irrelevant?: boolean | null;
-      /** @default 0 */
+      /**
+       * @description Percentage of questionnaire items with substantive answers (0–100).
+       * @default 0
+       */
       answerCoverage: number;
     };
     /** JurisdictionDetail */
     JurisdictionDetail: {
+      /** @description CoLD unique identifier (e.g. 'CD-CHE-42', 'DI-FRA-3'). */
       coldId?: string | null;
+      /** @description Full jurisdiction name (e.g. 'Switzerland'). */
       name?: string | null;
+      /** @description Geographic region (e.g. 'Europe', 'Asia'). */
       region?: string | null;
+      /** @description Legal tradition (e.g. 'Civil Law', 'Common Law', 'Mixed'). */
       legalFamily?: string | null;
+      /** @description Brief overview of the jurisdiction's PIL framework. */
       jurisdictionSummary?: string | null;
+      /** @description Internal numeric identifier. */
       id: number;
+      /** @description Dataset this record belongs to (e.g. 'Court Decisions'). */
       sourceTable: string;
       /**
+       * @description First-hop related entities (jurisdictions, themes, instruments, etc.).
        * @default {
        *       "hcchAnswers": [],
        *       "questions": [],
@@ -2043,7 +2324,9 @@ export interface components {
        *     }
        */
       relations: components["schemas"]["EntityRelations"];
+      /** @description Record creation timestamp (ISO 8601). */
       createdAt?: string | null;
+      /** @description Record last-update timestamp (ISO 8601). */
       updatedAt?: string | null;
       type?: string | null;
       northSouthDivide?: string | null;
@@ -2100,37 +2383,61 @@ export interface components {
     };
     /** JurisdictionSearchResult */
     JurisdictionSearchResult: {
+      /** @description CoLD unique identifier (e.g. 'CD-CHE-42', 'DI-FRA-3'). */
       coldId?: string | null;
+      /** @description Full jurisdiction name (e.g. 'Switzerland'). */
       name?: string | null;
+      /** @description Geographic region (e.g. 'Europe', 'Asia'). */
       region?: string | null;
+      /** @description Legal tradition (e.g. 'Civil Law', 'Common Law', 'Mixed'). */
       legalFamily?: string | null;
+      /** @description Brief overview of the jurisdiction's PIL framework. */
       jurisdictionSummary?: string | null;
+      /** @description CoLD identifier for the record (e.g. 'CD-CHE-42'). */
       id?: string | number | null;
+      /** @description Dataset this record belongs to (e.g. 'Court Decisions'). */
       sourceTable?: string | null;
+      /** @description Full-text search relevance score (higher is more relevant). */
       rank?: number | null;
+      /** @description Primary date for the record in ISO 8601 format. */
       resultDate?: string | null;
+      /** @description Comma-separated jurisdiction names associated with this record. */
       jurisdictions?: string | null;
+      /** @description Comma-separated thematic categories. */
       themes?: string | null;
       alpha3Code?: string | null;
     };
     /** LandingPageJurisdiction */
     LandingPageJurisdiction: {
+      /** @description ISO 3166-1 Alpha-3 code (e.g. 'CHE'). */
       code: string;
+      /** @description 1 if the jurisdiction has substantive answer data, 0 otherwise. */
       hasData: number;
     };
     /** LiteratureDetail */
     LiteratureDetail: {
+      /** @description CoLD unique identifier (e.g. 'CD-CHE-42', 'DI-FRA-3'). */
       coldId?: string | null;
+      /** @description Title of the publication. */
       title?: string | null;
+      /** @description Author name(s). */
       author?: string | null;
+      /** @description Year of publication. */
       publicationYear?: string | null;
+      /** @description Journal or book title. */
       publicationTitle?: string | null;
+      /** @description Publisher name. */
       publisher?: string | null;
+      /** @description Whether the work is open access. */
       openAccess?: string | null;
+      /** @description OUP Juris Diversitas chapter reference. */
       oupJdChapter?: string | null;
+      /** @description Internal numeric identifier. */
       id: number;
+      /** @description Dataset this record belongs to (e.g. 'Court Decisions'). */
       sourceTable: string;
       /**
+       * @description First-hop related entities (jurisdictions, themes, instruments, etc.).
        * @default {
        *       "hcchAnswers": [],
        *       "questions": [],
@@ -2152,7 +2459,9 @@ export interface components {
        *     }
        */
       relations: components["schemas"]["EntityRelations"];
+      /** @description Record creation timestamp (ISO 8601). */
       createdAt?: string | null;
+      /** @description Record last-update timestamp (ISO 8601). */
       updatedAt?: string | null;
       idNumber?: string | null;
       itemType?: string | null;
@@ -2267,19 +2576,33 @@ export interface components {
     };
     /** LiteratureSearchResult */
     LiteratureSearchResult: {
+      /** @description CoLD unique identifier (e.g. 'CD-CHE-42', 'DI-FRA-3'). */
       coldId?: string | null;
+      /** @description Title of the publication. */
       title?: string | null;
+      /** @description Author name(s). */
       author?: string | null;
+      /** @description Year of publication. */
       publicationYear?: string | null;
+      /** @description Journal or book title. */
       publicationTitle?: string | null;
+      /** @description Publisher name. */
       publisher?: string | null;
+      /** @description Whether the work is open access. */
       openAccess?: string | null;
+      /** @description OUP Juris Diversitas chapter reference. */
       oupJdChapter?: string | null;
+      /** @description CoLD identifier for the record (e.g. 'CD-CHE-42'). */
       id?: string | number | null;
+      /** @description Dataset this record belongs to (e.g. 'Court Decisions'). */
       sourceTable?: string | null;
+      /** @description Full-text search relevance score (higher is more relevant). */
       rank?: number | null;
+      /** @description Primary date for the record in ISO 8601 format. */
       resultDate?: string | null;
+      /** @description Comma-separated jurisdiction names associated with this record. */
       jurisdictions?: string | null;
+      /** @description Comma-separated thematic categories. */
       themes?: string | null;
     };
     /**
@@ -2326,8 +2649,11 @@ export interface components {
     };
     /** ModerationSummaryItem */
     ModerationSummaryItem: {
+      /** @description URL-safe category slug (e.g. 'court-decisions'). */
       category: string;
+      /** @description Human-readable category name (e.g. 'Court Decisions'). */
       label: string;
+      /** @description Number of suggestions awaiting moderation in this category. */
       pendingCount: number;
     };
     /** PendingSuggestionItem */
@@ -2348,12 +2674,18 @@ export interface components {
     };
     /** QuestionDetail */
     QuestionDetail: {
+      /** @description CoLD unique identifier (e.g. 'CD-CHE-42', 'DI-FRA-3'). */
       coldId?: string | null;
+      /** @description The standardised questionnaire item text. */
       question?: string | null;
+      /** @description Question number within the questionnaire (e.g. '15-TC'). */
       questionNumber?: string | null;
+      /** @description Internal numeric identifier. */
       id: number;
+      /** @description Dataset this record belongs to (e.g. 'Court Decisions'). */
       sourceTable: string;
       /**
+       * @description First-hop related entities (jurisdictions, themes, instruments, etc.).
        * @default {
        *       "hcchAnswers": [],
        *       "questions": [],
@@ -2375,7 +2707,9 @@ export interface components {
        *     }
        */
       relations: components["schemas"]["EntityRelations"];
+      /** @description Record creation timestamp (ISO 8601). */
       createdAt?: string | null;
+      /** @description Record last-update timestamp (ISO 8601). */
       updatedAt?: string | null;
       primaryTheme?: string | null;
       answeringOptions?: string | null;
@@ -2408,14 +2742,23 @@ export interface components {
     };
     /** QuestionSearchResult */
     QuestionSearchResult: {
+      /** @description CoLD unique identifier (e.g. 'CD-CHE-42', 'DI-FRA-3'). */
       coldId?: string | null;
+      /** @description The standardised questionnaire item text. */
       question?: string | null;
+      /** @description Question number within the questionnaire (e.g. '15-TC'). */
       questionNumber?: string | null;
+      /** @description CoLD identifier for the record (e.g. 'CD-CHE-42'). */
       id?: string | number | null;
+      /** @description Dataset this record belongs to (e.g. 'Court Decisions'). */
       sourceTable?: string | null;
+      /** @description Full-text search relevance score (higher is more relevant). */
       rank?: number | null;
+      /** @description Primary date for the record in ISO 8601 format. */
       resultDate?: string | null;
+      /** @description Comma-separated jurisdiction names associated with this record. */
       jurisdictions?: string | null;
+      /** @description Comma-separated thematic categories. */
       themes?: string | null;
       themeCode?: string | null;
     };
@@ -2428,14 +2771,22 @@ export interface components {
     };
     /** RegionalInstrumentDetail */
     RegionalInstrumentDetail: {
+      /** @description CoLD unique identifier (e.g. 'CD-CHE-42', 'DI-FRA-3'). */
       coldId?: string | null;
+      /** @description Title of the regional instrument. */
       title?: string | null;
+      /** @description Common abbreviation (e.g. 'Rome I'). */
       abbreviation?: string | null;
+      /** @description Date of adoption or entry into force. */
       date?: string | null;
+      /** @description URL to an attached document. */
       attachment?: string | null;
+      /** @description Internal numeric identifier. */
       id: number;
+      /** @description Dataset this record belongs to (e.g. 'Court Decisions'). */
       sourceTable: string;
       /**
+       * @description First-hop related entities (jurisdictions, themes, instruments, etc.).
        * @default {
        *       "hcchAnswers": [],
        *       "questions": [],
@@ -2457,7 +2808,9 @@ export interface components {
        *     }
        */
       relations: components["schemas"]["EntityRelations"];
+      /** @description Record creation timestamp (ISO 8601). */
       createdAt?: string | null;
+      /** @description Record last-update timestamp (ISO 8601). */
       updatedAt?: string | null;
       idNumber?: string | null;
       url?: string | null;
@@ -2499,16 +2852,27 @@ export interface components {
     };
     /** RegionalInstrumentSearchResult */
     RegionalInstrumentSearchResult: {
+      /** @description CoLD unique identifier (e.g. 'CD-CHE-42', 'DI-FRA-3'). */
       coldId?: string | null;
+      /** @description Title of the regional instrument. */
       title?: string | null;
+      /** @description Common abbreviation (e.g. 'Rome I'). */
       abbreviation?: string | null;
+      /** @description Date of adoption or entry into force. */
       date?: string | null;
+      /** @description URL to an attached document. */
       attachment?: string | null;
+      /** @description CoLD identifier for the record (e.g. 'CD-CHE-42'). */
       id?: string | number | null;
+      /** @description Dataset this record belongs to (e.g. 'Court Decisions'). */
       sourceTable?: string | null;
+      /** @description Full-text search relevance score (higher is more relevant). */
       rank?: number | null;
+      /** @description Primary date for the record in ISO 8601 format. */
       resultDate?: string | null;
+      /** @description Comma-separated jurisdiction names associated with this record. */
       jurisdictions?: string | null;
+      /** @description Comma-separated thematic categories. */
       themes?: string | null;
     };
     /**
@@ -2540,12 +2904,18 @@ export interface components {
     };
     /** RegionalLegalProvisionDetail */
     RegionalLegalProvisionDetail: {
+      /** @description CoLD unique identifier (e.g. 'CD-CHE-42', 'DI-FRA-3'). */
       coldId?: string | null;
+      /** @description Title or heading of the provision. */
       titleOfTheProvision?: string | null;
+      /** @description Article or section reference. */
       provision?: string | null;
+      /** @description Internal numeric identifier. */
       id: number;
+      /** @description Dataset this record belongs to (e.g. 'Court Decisions'). */
       sourceTable: string;
       /**
+       * @description First-hop related entities (jurisdictions, themes, instruments, etc.).
        * @default {
        *       "hcchAnswers": [],
        *       "questions": [],
@@ -2567,7 +2937,9 @@ export interface components {
        *     }
        */
       relations: components["schemas"]["EntityRelations"];
+      /** @description Record creation timestamp (ISO 8601). */
       createdAt?: string | null;
+      /** @description Record last-update timestamp (ISO 8601). */
       updatedAt?: string | null;
       fullText?: string | null;
       instrumentColdId?: string | null;
@@ -2604,38 +2976,60 @@ export interface components {
     };
     /** RegionalLegalProvisionSearchResult */
     RegionalLegalProvisionSearchResult: {
+      /** @description CoLD unique identifier (e.g. 'CD-CHE-42', 'DI-FRA-3'). */
       coldId?: string | null;
+      /** @description Title or heading of the provision. */
       titleOfTheProvision?: string | null;
+      /** @description Article or section reference. */
       provision?: string | null;
+      /** @description CoLD identifier for the record (e.g. 'CD-CHE-42'). */
       id?: string | number | null;
+      /** @description Dataset this record belongs to (e.g. 'Court Decisions'). */
       sourceTable?: string | null;
+      /** @description Full-text search relevance score (higher is more relevant). */
       rank?: number | null;
+      /** @description Primary date for the record in ISO 8601 format. */
       resultDate?: string | null;
+      /** @description Comma-separated jurisdiction names associated with this record. */
       jurisdictions?: string | null;
+      /** @description Comma-separated thematic categories. */
       themes?: string | null;
       instrument?: string | null;
     };
     /** SearchResultBase */
     SearchResultBase: {
+      /** @description CoLD unique identifier (e.g. 'CD-CHE-42', 'DI-FRA-3'). */
       coldId?: string | null;
+      /** @description CoLD identifier for the record (e.g. 'CD-CHE-42'). */
       id?: string | number | null;
+      /** @description Dataset this record belongs to (e.g. 'Court Decisions'). */
       sourceTable?: string | null;
+      /** @description Full-text search relevance score (higher is more relevant). */
       rank?: number | null;
+      /** @description Primary date for the record in ISO 8601 format. */
       resultDate?: string | null;
+      /** @description Comma-separated jurisdiction names associated with this record. */
       jurisdictions?: string | null;
+      /** @description Comma-separated thematic categories. */
       themes?: string | null;
     };
     /** SitemapEntry */
     SitemapEntry: {
+      /** @description Full URL of the page. */
       loc: string;
+      /** @description Last modification date in ISO 8601 format. */
       lastmod: string;
     };
     /** SpecialistDetail */
     SpecialistDetail: {
+      /** @description CoLD unique identifier (e.g. 'CD-CHE-42', 'DI-FRA-3'). */
       coldId?: string | null;
+      /** @description Internal numeric identifier. */
       id: number;
+      /** @description Dataset this record belongs to (e.g. 'Court Decisions'). */
       sourceTable: string;
       /**
+       * @description First-hop related entities (jurisdictions, themes, instruments, etc.).
        * @default {
        *       "hcchAnswers": [],
        *       "questions": [],
@@ -2657,7 +3051,9 @@ export interface components {
        *     }
        */
       relations: components["schemas"]["EntityRelations"];
+      /** @description Record creation timestamp (ISO 8601). */
       createdAt?: string | null;
+      /** @description Record last-update timestamp (ISO 8601). */
       updatedAt?: string | null;
       specialist?: string | null;
       affiliation?: string | null;
@@ -2735,7 +3131,9 @@ export interface components {
     };
     /** StatusMessage */
     StatusMessage: {
+      /** @description Result status (e.g. 'success', 'ok'). */
       status: string;
+      /** @description Human-readable description of the outcome. */
       message: string;
     };
     /** SubmitForApprovalRequest */
@@ -3141,7 +3539,7 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
-      /** @description Classification result */
+      /** @description The matched CoLD category as a plain string. */
       200: {
         headers: {
           [name: string]: unknown;
@@ -3160,7 +3558,7 @@ export interface operations {
           "application/json": components["schemas"]["HTTPValidationError"];
         };
       };
-      /** @description Upstream AI service error. */
+      /** @description The upstream AI service returned an error or timed out. */
       502: {
         headers: {
           [name: string]: unknown;
@@ -3185,13 +3583,14 @@ export interface operations {
       };
     };
     responses: {
-      /** @description Successful Response */
+      /** @description SSE stream of processing steps. Final event includes `draft_id` and `jurisdiction`. */
       200: {
         headers: {
           [name: string]: unknown;
         };
         content: {
           "application/json": unknown;
+          "text/event-stream": unknown;
         };
       };
       /** @description Validation Error */
@@ -3221,13 +3620,14 @@ export interface operations {
       };
     };
     responses: {
-      /** @description Successful Response */
+      /** @description SSE stream of analysis steps. Final event has `analysis_complete` status. */
       200: {
         headers: {
           [name: string]: unknown;
         };
         content: {
           "application/json": unknown;
+          "text/event-stream": unknown;
         };
       };
       /** @description Validation Error */
@@ -3265,6 +3665,34 @@ export interface operations {
         content: {
           "application/json": components["schemas"]["SubmitForApprovalResponse"];
         };
+      };
+      /** @description Draft already submitted or in a non-submittable state. */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Unable to identify the authenticated user. */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description The draft belongs to a different user. */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Draft not found. */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
       };
       /** @description Validation Error */
       422: {
@@ -3332,6 +3760,27 @@ export interface operations {
           "application/json": components["schemas"]["DraftRecoveryResponse"];
         };
       };
+      /** @description Draft already submitted and cannot be recovered for editing. */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description The draft belongs to a different user. */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Draft not found. */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
       /** @description Validation Error */
       422: {
         headers: {
@@ -3372,7 +3821,7 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
-      /** @description Successful Response */
+      /** @description Array of URL entries with loc and optional lastmod/priority. */
       200: {
         headers: {
           [name: string]: unknown;
@@ -4108,6 +4557,13 @@ export interface operations {
           "application/json": components["schemas"]["FeedbackDetail"];
         };
       };
+      /** @description Feedback item not found. */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
       /** @description Validation Error */
       422: {
         headers: {
@@ -4145,6 +4601,13 @@ export interface operations {
         content: {
           "application/json": components["schemas"]["StatusMessage"];
         };
+      };
+      /** @description Feedback item not found. */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
       };
       /** @description Validation Error */
       422: {
