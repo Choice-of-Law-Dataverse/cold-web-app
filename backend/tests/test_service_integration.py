@@ -185,6 +185,54 @@ class TestResumeFromCache:
         assert col_events[0]["status"] == "completed"
 
 
+async def _collect_auto_detect(cached: dict | None = None, draft_id: int = 0) -> list[dict]:
+    events = []
+    async for event in analyze_case_streaming("decision text", cached, draft_id=draft_id):
+        events.append(event)
+    return events
+
+
+class TestAutoDetectPath:
+    @pytest.mark.asyncio
+    async def test_auto_detect_emits_jurisdiction_events(self) -> None:
+        patches = {**_CIVIL_PATCHES, "detect_jurisdiction": AsyncMock(return_value=_CIVIL_JURISDICTION)}
+        with patch.multiple(_SERVICE, **patches):
+            events = await _collect_auto_detect(draft_id=1)
+        by_step = _by_step(events)
+        assert "jurisdiction_detection" in by_step
+        assert by_step["jurisdiction_detection"] == ["in_progress", "completed"]
+
+    @pytest.mark.asyncio
+    async def test_auto_detect_includes_jurisdiction_data(self) -> None:
+        patches = {**_CIVIL_PATCHES, "detect_jurisdiction": AsyncMock(return_value=_CIVIL_JURISDICTION)}
+        with patch.multiple(_SERVICE, **patches):
+            events = await _collect_auto_detect(draft_id=1)
+        jurisdiction_completed = [e for e in events if e["step"] == "jurisdiction_detection" and e["status"] == "completed"]
+        assert len(jurisdiction_completed) == 1
+        assert jurisdiction_completed[0]["data"]["precise_jurisdiction"] == "Switzerland"
+
+    @pytest.mark.asyncio
+    async def test_auto_detect_failure_stops_stream(self) -> None:
+        patches = {**_CIVIL_PATCHES, "detect_jurisdiction": AsyncMock(side_effect=RuntimeError("detection failed"))}
+        with patch.multiple(_SERVICE, **patches):
+            events = await _collect_auto_detect(draft_id=1)
+        by_step = _by_step(events)
+        assert "error" in by_step["jurisdiction_detection"]
+        assert "analysis_complete" not in by_step
+
+    @pytest.mark.asyncio
+    async def test_auto_detect_failure_skips_downstream_steps(self) -> None:
+        patches = {
+            **_CIVIL_PATCHES,
+            "detect_jurisdiction": AsyncMock(side_effect=RuntimeError("detection failed")),
+        }
+        with patch.multiple(_SERVICE, **patches):
+            events = await _collect_auto_detect(draft_id=1)
+        by_step = _by_step(events)
+        for step in ("theme_classification", "case_citation", "relevant_facts", "pil_provisions"):
+            assert step not in by_step, f"downstream step {step} should not appear after jurisdiction failure"
+
+
 class TestErrorHandling:
     @pytest.mark.asyncio
     async def test_col_extraction_failure_stops_stream(self) -> None:

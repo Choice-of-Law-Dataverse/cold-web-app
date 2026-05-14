@@ -337,6 +337,7 @@ async def analyze_document(
                         jurisdiction_override=jurisdiction_override,
                     )
                     generator_exhausted = False
+                    analysis_completed = False
 
                     while not generator_exhausted:
                         # Create task for getting next item from generator
@@ -361,6 +362,9 @@ async def analyze_document(
 
                                 next_task = None
                                 step_name = result.get("step")
+
+                                if step_name == "analysis_complete":
+                                    analysis_completed = True
 
                                 if result.get("status") == "completed" and result.get("data"):
                                     if step_name:
@@ -387,18 +391,25 @@ async def analyze_document(
                                 # Timeout - send heartbeat to keep connection alive
                                 yield 'data: {"step": "heartbeat", "status": "in_progress"}\n\n'
 
-                    try:
-                        with logfire.span("finalize_case_analyzer_draft", draft_id=draft_id):
-                            service.update_moderation_status(draft_id, "completed")
-                    except Exception as e:
-                        logger.error("Failed to mark draft as completed: %s", str(e))
+                    if analysis_completed:
+                        try:
+                            with logfire.span("finalize_case_analyzer_draft", draft_id=draft_id):
+                                service.update_moderation_status(draft_id, "completed")
+                        except Exception as e:
+                            logger.error("Failed to mark draft as completed: %s", str(e))
 
-                    done_payload = {
-                        "step": "analysis_complete",
-                        "status": "completed",
-                        "data": {"done": True},
-                    }
-                    yield f"data: {json.dumps(done_payload)}\n\n"
+                        done_payload = {
+                            "step": "analysis_complete",
+                            "status": "completed",
+                            "data": {"done": True},
+                        }
+                        yield f"data: {json.dumps(done_payload)}\n\n"
+                    else:
+                        try:
+                            with logfire.span("fail_case_analyzer_draft", draft_id=draft_id):
+                                service.update_moderation_status(draft_id, "failed")
+                        except Exception as e:
+                            logger.error("Failed to mark draft as failed: %s", str(e))
 
                 except asyncio.CancelledError:
                     # Client disconnected - clean up gracefully

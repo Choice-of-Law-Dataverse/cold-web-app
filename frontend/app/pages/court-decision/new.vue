@@ -253,6 +253,13 @@ async function confirmAndAnalyze(resume = false) {
     resetAnalysisSteps(new Set(["document_upload"]));
   }
 
+  if (jurisdictionInfo.value) {
+    updateStepStatus("jurisdiction_detection", "completed", {
+      confidence: jurisdictionInfo.value.confidence,
+      reasoning: jurisdictionInfo.value.reasoning,
+    });
+  }
+
   const result = await analysis.startAnalysis(
     draftId.value,
     jurisdictionInfo.value,
