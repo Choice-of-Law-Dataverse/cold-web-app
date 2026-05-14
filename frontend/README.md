@@ -74,10 +74,10 @@ This exports the backend's OpenAPI schema and generates `app/types/api-schema.d.
 | `app/components/`     | Vue components organized by feature                  |
 | `app/composables/`    | Shared logic (`useX.ts` pattern)                     |
 | `app/types/`          | TypeScript types including generated API schema      |
-| `app/types/entities/` | Per-entity types with processor functions             |
+| `app/types/entities/` | Per-entity types with processor functions            |
 | `app/config/`         | Labels, tooltips, navigation, card configs           |
 | `app/utils/`          | Pure utility functions                               |
-| `content/`            | Markdown content rendered via Nuxt Content            |
+| `content/`            | Markdown content rendered via Nuxt Content           |
 
 ## Code Standards
 
