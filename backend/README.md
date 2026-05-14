@@ -1,6 +1,6 @@
-# Backend - FastAPI Application
+# Backend — FastAPI Application
 
-FastAPI backend for the Choice of Law Dataverse (CoLD), built with Python, SQLAlchemy, and Pydantic.
+FastAPI backend for the [Choice of Law Dataverse](https://cold.global), built with Python 3.12, SQLAlchemy, and Pydantic v2. Serves 17 datasets across 63+ jurisdictions via a public read-only REST API.
 
 > **For AI coding agents**: See [AGENTS.md](AGENTS.md) for agent-specific instructions.
 
@@ -20,9 +20,6 @@ uv is a fast Python package installer and resolver, written in Rust. It manages:
 ```bash
 # macOS/Linux
 brew install uv
-
-# Windows
-powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
 
 # Or see: https://docs.astral.sh/uv/
 ```
@@ -44,10 +41,6 @@ make setup
 Start the development server:
 
 ```bash
-# Using uv (runs in managed virtual environment)
-uv run uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
-
-# Or use Makefile
 make dev
 ```
 
@@ -61,21 +54,18 @@ uv run ruff check          # Run linting
 
 API will be available at:
 
-- **Server**: http://0.0.0.0:8000
+- **Server**: http://localhost:8000
 - **API Docs**: http://localhost:8000/api/v1/docs
 
-**Note**: Full functionality requires database connection (see Environment Variables below).
+Full functionality requires a database connection (see Environment Variables below).
 
 ## Database Migrations
 
 ### Suggestions Schema
 
-Alembic manages the suggestions schema. Apply migrations before running the app:
+Alembic manages the suggestions schema:
 
 ```bash
-uv run alembic upgrade head
-
-# Or via Makefile
 make migrate_suggestions
 ```
 
@@ -86,28 +76,20 @@ ALEMBIC_SQL_CONN_STRING="postgresql://..." uv run alembic upgrade head
 uv run alembic upgrade head -x sql-url="postgresql://..."
 ```
 
-Create new revisions after updating `app/services/suggestions_schema.py`:
-
-```bash
-uv run alembic revision -m "short description"
-```
-
 ### SQL Views (alembic_views)
 
 A separate Alembic environment in `alembic_views/` manages SQL views and functions used for search, full-table listings, and detail endpoints. These views flatten and join NocoDB tables into query-friendly structures.
 
 ```bash
-uv run alembic -c alembic_views/alembic.ini upgrade head
-
-# Or via Makefile
 make migrate-views
 ```
 
-Migrations use raw SQL (`op.execute()`) to create/replace views and functions. Create new revisions with:
+View types:
 
-```bash
-uv run alembic -c alembic_views/alembic.ini revision -m "short description"
-```
+- **Base views** (`vw_*`): flatten NocoDB tables into query-friendly columns
+- **Relation views** (`vw_*_relations`): pre-compute entity relationships as JSONB arrays
+- **Search function** (`search_all_v2`): full-text search across all base views
+- **Detail function** (`get_entity_detail`): single-entity lookup returning base + relation data
 
 ## Before Committing
 
@@ -117,7 +99,7 @@ uv run alembic -c alembic_views/alembic.ini revision -m "short description"
 make check
 ```
 
-This runs formatting, linting, type checking, and tests.
+This runs formatting (ruff), type checking (pyright), and tests (pytest).
 
 ## Code Style
 
@@ -125,7 +107,7 @@ This runs formatting, linting, type checking, and tests.
 - **Pydantic models**: Use for all request/response validation in `app/schemas/`
 - **Import organization**: Group stdlib → third-party → local (with blank lines)
 - **No barrel files**: Avoid `__init__.py` re-exports
-- **Conventional commits**: Follow semantic commit format
+- **Conventional commits**: `type(scope): description`
 
 See [AGENTS.md](AGENTS.md) for detailed coding conventions.
 
@@ -138,11 +120,12 @@ make setup        # First-time setup
 make dev          # Start development server
 make check        # Run all quality checks
 make test         # Run tests
+make coverage     # Run tests with coverage (95% threshold)
 ```
 
 ## Environment Variables
 
-Create a `.env` file with required variables:
+Create a `.env` file with required variables (see `.env.blueprint` for the full list):
 
 ```bash
 # Required for full functionality
@@ -158,18 +141,15 @@ API_KEY="your-frontend-api-key"
 
 # Suggestions database (required for migrations)
 SUGGESTIONS_SQL_CONN_STRING="postgresql://user:pass@host:5432/suggestions"
-
-# Optional - NocoDB integration
-NOCODB_BASE_URL="your-nocodb-url"
-NOCODB_API_TOKEN="your-nocodb-token"
 ```
 
 ## API Documentation
 
-Live API documentation: [CoLD Backend Docs](https://api.cold.global/api/v1/docs)
+- **Production**: [api.cold.global/api/v1/docs](https://api.cold.global/api/v1/docs)
+- **Local**: [localhost:8000/api/v1/docs](http://localhost:8000/api/v1/docs)
 
 ## Docker (Production Only)
 
-**Docker is only used for production deployment. Local and agentic development should use uv directly.**
+**Docker is only used for production deployment. Local development should use uv directly.**
 
 For production deployment, see [Dockerfile](Dockerfile) and [Makefile](Makefile) for Docker commands.

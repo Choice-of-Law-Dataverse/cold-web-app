@@ -39,18 +39,28 @@ MAX_PDF_SIZE_BYTES = 50 * 1024 * 1024
 
 
 def get_suggestion_service() -> SuggestionService:
-    """Dependency function to get SuggestionService instance."""
     return SuggestionService()
 
 
 @router.post(
     "/upload",
-    summary="Upload court decision document for initial analysis",
+    summary="Upload a court decision PDF for initial processing",
     description=(
-        "Upload a PDF court decision document. The system will extract text, "
-        "detect jurisdiction and legal system type, save as draft in database. "
-        "Returns a stream of SSE events with progress updates and heartbeats."
+        "Upload a PDF court decision (base64-encoded or as an Azure blob URL). The system will:\n\n"
+        "1. **Upload to storage** — decode and persist the PDF in Azure Blob Storage\n"
+        "2. **Extract text** — convert the PDF to machine-readable text\n"
+        "3. **Detect jurisdiction** — use an LLM to identify the jurisdiction and legal system type\n"
+        "4. **Save draft** — persist the draft in the database for subsequent analysis\n\n"
+        "Returns a **Server-Sent Events (SSE)** stream with progress updates and periodic heartbeats. "
+        "The final event contains the `draft_id` and detected `jurisdiction` data. "
+        "Maximum PDF size: 50 MB. Requires authentication."
     ),
+    responses={
+        200: {
+            "description": "SSE stream of processing steps. Final event includes `draft_id` and `jurisdiction`.",
+            "content": {"text/event-stream": {}},
+        },
+    },
 )
 async def upload_document(
     body: UploadDocumentRequest,
@@ -58,19 +68,6 @@ async def upload_document(
     user: dict = Depends(require_user),
     service: SuggestionService = Depends(get_suggestion_service),
 ) -> StreamingResponse:
-    """
-    Upload and process a court decision document with streaming progress.
-
-    Streams SSE events for each step:
-    1. uploading_to_storage - Decode and upload PDF to Azure
-    2. extracting_text - Extract text using pymupdf4llm
-    3. detecting_jurisdiction - Detect jurisdiction (LLM call, can be slow)
-    4. saving_draft - Save draft to database
-    5. upload_complete - Final result with draft_id and jurisdiction
-
-    Returns:
-        StreamingResponse with SSE events for each processing step
-    """
     file_name = body.file_name
     blob_url = body.blob_url
 
@@ -203,46 +200,42 @@ async def upload_document(
 
 @router.post(
     "/analyze",
-    summary="Confirm jurisdiction and run full case analysis",
+    summary="Run full AI-powered case analysis",
     description=(
-        "Confirm or correct the detected jurisdiction and run the full case analysis workflow. "
-        "Returns a stream of intermediate results as each analysis step completes. "
-        "Updates the database draft at each step for recoverability."
+        "Confirm or correct the detected jurisdiction and trigger the full analysis workflow. "
+        "The system runs multiple LLM-powered extraction steps on the uploaded decision text:\n\n"
+        "- **Choice-of-law section** extraction\n"
+        "- **Theme** classification\n"
+        "- **Case citation** extraction\n"
+        "- **Abstract** generation\n"
+        "- **Relevant facts** extraction\n"
+        "- **PIL provisions** extraction\n"
+        "- **Choice-of-law issue** extraction\n"
+        "- **Court's position** extraction\n"
+        "- **Obiter dicta** and **dissenting opinions**\n\n"
+        "Returns a **Server-Sent Events (SSE)** stream with each step's result as it completes. "
+        "The draft is updated in the database after each step for crash recovery. "
+        "Set `resume=true` to skip already-completed steps (e.g. after a network interruption). "
+        "Requires authentication."
     ),
+    responses={
+        200: {
+            "description": "SSE stream of analysis steps. Final event has `analysis_complete` status.",
+            "content": {"text/event-stream": {}},
+        },
+    },
 )
 async def analyze_document(
     body: ConfirmAnalysisRequest,
     _: dict = Depends(require_user),
     service: SuggestionService = Depends(get_suggestion_service),
 ) -> StreamingResponse:
-    """
-    Execute full case analysis workflow with streaming results.
-
-    Steps:
-    1. Retrieve text from database (or Azure blob if not in DB)
-    2. Use confirmed jurisdiction info
-    3. Execute analysis workflow:
-       - COL section extraction
-       - Theme classification
-       - Case citation extraction
-       - Abstract generation
-       - Relevant facts extraction
-       - PIL provisions extraction
-       - COL issue extraction
-       - Court's position extraction
-    4. Stream results as Server-Sent Events
-    5. Update database at each step for workflow recovery
-
-    Returns:
-        StreamingResponse with analysis steps as SSE
-    """
     draft_id = body.draft_id
     jurisdiction_override: JurisdictionOutput | None = None
     if body.jurisdiction is not None:
         jurisdiction_override = JurisdictionOutput.model_validate(body.jurisdiction.model_dump())
 
     async def event_generator():
-        """Generate SSE events for each analysis step with heartbeats to prevent timeouts."""
         HEARTBEAT_INTERVAL_SECONDS = 15
         step_name: str | None = None
         next_task: asyncio.Task[dict[str, Any]] | None = None
@@ -445,30 +438,26 @@ async def analyze_document(
 
 @router.post(
     "/submit",
-    summary="Submit case analysis for moderation approval",
+    summary="Submit case analysis for moderation review",
     description=(
-        "Submit user-edited case analysis data for moderation approval. "
-        "The data is stored in the submitted_data column and the status "
-        "is changed to 'pending'. Moderators will review and can approve/reject."
+        "Submit user-reviewed and edited case analysis data for moderator approval. "
+        "The endpoint validates ownership, stores the edited data alongside the original "
+        "AI-generated output (preserved for audit), and sets the status to `pending`. "
+        "Moderators can then approve or reject the submission. Requires authentication."
     ),
     response_model=SubmitForApprovalResponse,
+    responses={
+        400: {"description": "Draft already submitted or in a non-submittable state."},
+        401: {"description": "Unable to identify the authenticated user."},
+        403: {"description": "The draft belongs to a different user."},
+        404: {"description": "Draft not found."},
+    },
 )
 async def submit_for_approval(
     body: SubmitForApprovalRequest,
     user: dict = Depends(require_user),
     service: SuggestionService = Depends(get_suggestion_service),
 ) -> SubmitForApprovalResponse:
-    """
-    Submit user-edited case analysis data for moderation approval.
-
-    This endpoint:
-    1. Validates the draft exists and belongs to the user
-    2. Stores the user-edited data in the submitted_data column
-    3. Updates moderation_status to 'pending'
-    4. Returns confirmation
-
-    The original analyzer data is preserved for audit purposes.
-    """
     with logfire.span("submit_for_approval", draft_id=body.draft_id):
         # Get the full record to verify it exists
         record = service.get_case_analyzer_full(body.draft_id)
@@ -519,8 +508,12 @@ async def submit_for_approval(
 
 @router.get(
     "/my-analyses",
-    summary="List user's case analyses",
-    description="Returns all case analyses belonging to the authenticated user.",
+    summary="List the authenticated user's case analyses",
+    description=(
+        "Returns a summary of every case analysis draft created by the authenticated user, "
+        "regardless of status (draft, analyzing, completed, pending, approved, rejected). "
+        "Requires authentication."
+    ),
 )
 async def list_my_analyses(
     user: dict = Depends(require_user),
@@ -536,11 +529,18 @@ async def list_my_analyses(
 
 @router.get(
     "/draft/{draft_id}",
-    summary="Get draft data for recovery",
+    summary="Recover a draft's analysis state",
     description=(
-        "Fetch draft data to recover the analyzer form state. "
-        "Returns draft data if status is recoverable (not pending/approved)."
+        "Fetch the full draft data (jurisdiction info, analyzer step results, PDF URL) "
+        "to restore the client-side form after a page reload or network interruption. "
+        "Only available for drafts that have not yet been submitted for moderation "
+        "(i.e. not in `pending`, `approved`, or `rejected` status). Requires authentication."
     ),
+    responses={
+        400: {"description": "Draft already submitted and cannot be recovered for editing."},
+        403: {"description": "The draft belongs to a different user."},
+        404: {"description": "Draft not found."},
+    },
 )
 async def get_draft_for_recovery(
     draft_id: int,

@@ -56,7 +56,6 @@ def _parse_full_table_filter(raw: str) -> FTFilterOption:
 
 
 def get_search_service() -> SearchService:
-    """Dependency function to lazily instantiate the SearchService."""
     return SearchService()
 
 
@@ -68,14 +67,17 @@ router = APIRouter(
 
 @router.get(
     "/",
-    summary="Full-text search across CoLD data",
+    summary="Full-text search across all CoLD datasets",
     description=(
-        "Searches across multiple domains (Answers, HCCH Answers, Court Decisions, Domestic Instruments, "
-        "Regional Instruments, International Instruments, Literature, Arbitral Awards, and Arbitral Rules). "
-        "Filter columns are exposed as dedicated repeatable query parameters: "
-        "`tables`, `jurisdictions`, `themes`. Pass each value separately, e.g. "
-        "`?tables=Answers&tables=Court%20Decisions&jurisdictions=Switzerland`. "
-        "You can sort by date and paginate results."
+        "Searches across all CoLD datasets: Answers, HCCH Answers, Court Decisions, "
+        "Domestic/Regional/International Instruments and their Legal Provisions, "
+        "Literature, Arbitral Awards, Arbitral Rules, Arbitral Provisions, "
+        "Arbitral Institutions, Jurisdictions, and Questions.\n\n"
+        "Results are ranked by relevance and returned in a paginated envelope. "
+        "Use the repeatable query parameters `tables`, `jurisdictions`, and `themes` to narrow results. "
+        "Pass each filter value as a separate parameter, e.g. "
+        "`?tables=Answers&tables=Court+Decisions&jurisdictions=Switzerland`.\n\n"
+        "Set `sort_by_date=true` to order results chronologically (newest first) instead of by relevance."
     ),
     responses={
         200: {
@@ -138,8 +140,13 @@ def handle_full_text_search(
 
 @router.get(
     "/details",
-    summary="Fetch a curated record by CoLD ID including relations",
-    description="Given a table and a CoLD ID, returns the record with all first-hop relations in a standardized shape.",
+    summary="Fetch a single record by CoLD ID with related entities",
+    description=(
+        "Returns the full detail for one record, identified by its source table and CoLD ID "
+        "(e.g. `table=Court+Decisions&id=CD-CHE-42`). The response includes the record's own fields "
+        "plus all first-hop relations (linked jurisdictions, themes, instruments, literature, etc.) "
+        "in a standardised shape. Ideal for building detail pages or enriching search results."
+    ),
     response_model=AnyDetail,
     responses={404: {"description": "Record not found."}},
 )
@@ -161,13 +168,19 @@ def handle_entity_detail(
 
 @router.get(
     "/full_table",
-    summary="Return full or filtered table",
+    summary="Bulk export: return a full table or filtered subset",
     description=(
-        "Returns all records from the specified table or a filtered subset. "
-        "Filters use the repeatable `filter` query parameter with format `column:value` "
-        "or `column:val1,val2` for multiple values. Values matching `true`/`false` are "
-        "parsed as booleans; pure-digit strings as integers; everything else stays a string. "
-        "Example: `?table=Court%20Decisions&filter=caseRank:10&filter=jurisdiction:Switzerland`."
+        "Returns every record from the specified table, or a filtered subset. "
+        "This is the primary endpoint for **bulk data export**.\n\n"
+        "**Available tables:** Answers, HCCH Answers, Questions, Court Decisions, "
+        "Domestic Instruments, Domestic Legal Provisions, Regional Instruments, Regional Legal Provisions, "
+        "International Instruments, International Legal Provisions, Literature, "
+        "Arbitral Awards, Arbitral Rules, Arbitral Provisions, Arbitral Institutions, "
+        "Jurisdictions, Specialists.\n\n"
+        "Filters use the repeatable `filter` query parameter in `column:value` format "
+        "(or `column:val1,val2` for OR). Values matching `true`/`false` are coerced to booleans; "
+        "pure-digit strings to integers; everything else stays a string.\n\n"
+        "Example: `?table=Court+Decisions&filter=caseRank:10&filter=jurisdiction:Switzerland`."
     ),
     responses={
         200: {
@@ -243,8 +256,11 @@ def return_full_table(
 @router.get(
     "/specialists/{jurisdiction_alpha_code}",
     response_model=list[SpecialistResponse],
-    summary="Get specialists by jurisdiction",
-    description="Returns all specialists associated with a specific jurisdiction using Alpha_3_Code.",
+    summary="Get specialists for a jurisdiction",
+    description=(
+        "Returns all choice-of-law specialists associated with a jurisdiction, "
+        "identified by its ISO 3166-1 Alpha-3 code (e.g. `CHE` for Switzerland, `GBR` for the United Kingdom)."
+    ),
     responses={
         200: {
             "description": "Array of specialists for the given jurisdiction.",

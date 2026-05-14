@@ -10,7 +10,6 @@ from app.services.statistics import StatisticsService
 
 
 def get_statistics_service() -> StatisticsService:
-    """Dependency function to lazily instantiate the StatisticsService."""
     return StatisticsService()
 
 
@@ -30,10 +29,12 @@ router = APIRouter(prefix="/statistics", tags=["Statistics"])
 
 @router.get(
     "/jurisdictions-with-answer-percentage",
-    summary="Get all jurisdictions with answer data percentage",
+    summary="Jurisdiction answer coverage percentages",
     description=(
-        "Returns all jurisdictions with their complete data plus the percentage of answers "
-        "that contain data (not 'no data'). Percentage is calculated per jurisdiction."
+        "Returns every jurisdiction with its metadata (name, Alpha-3 code, legal family) and "
+        "an `answer_coverage` percentage indicating how many of the standardised questionnaire "
+        "questions have substantive answers (i.e. not 'No data'). Useful for assessing "
+        "data completeness across jurisdictions."
     ),
     responses={
         200: {
@@ -70,10 +71,11 @@ def get_jurisdictions_with_answer_coverage(
 
 @router.get(
     "/count-by-jurisdiction",
-    summary="Count records by jurisdiction for a specific table",
+    summary="Record counts grouped by jurisdiction for a table",
     description=(
-        "Returns count of rows grouped by jurisdiction for the specified table. "
-        "Supported tables: Court Decisions, Domestic Instruments, Literature."
+        "Returns the number of records per jurisdiction for the given table. "
+        "Supported tables: **Court Decisions**, **Domestic Instruments**, **Literature**. "
+        "Useful for visualising geographic distribution of data (e.g. choropleth maps)."
     ),
     response_model=list[JurisdictionCount],
     responses={
@@ -96,17 +98,17 @@ def count_by_jurisdiction(
     limit: int | None = Query(None, ge=1, description="Optional limit on number of results to return"),
     statistics_service: StatisticsService = Depends(get_statistics_service),
 ) -> list[JurisdictionCount]:
-    """Returns count of rows grouped by jurisdiction for the specified table."""
-
     return statistics_service.count_by_jurisdiction(table, limit)
 
 
 @router.get(
     "/counts",
-    summary="Counts for every entity in the dataverse",
+    summary="Record counts per entity type",
     description=(
-        "Returns counts per entity type, optionally scoped to a jurisdiction. "
-        "Plain GET so it can be cached at the edge by Cloudflare."
+        "Returns the total number of records for each entity type in the dataverse "
+        "(Court Decisions, Domestic Instruments, Literature, etc.). "
+        "Pass an optional `jurisdiction` Alpha-3 code to scope counts to a single country. "
+        "Useful for dashboard summaries and data completeness overviews."
     ),
     response_model=EntityCountsResponse,
 )

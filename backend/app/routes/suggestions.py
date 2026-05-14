@@ -34,14 +34,17 @@ router = APIRouter(
 
 
 def get_suggestion_service() -> SuggestionService:
-    """Dependency function to lazily instantiate the SuggestionService."""
     return SuggestionService()
 
 
 @router.post(
     "/",
-    summary="Submit a new data suggestion",
-    description=("Accepts arbitrary dictionaries from the frontend and stores them in a separate Postgres table."),
+    summary="Submit a new data suggestion (generic)",
+    description=(
+        "Submit a free-form data contribution for moderator review. The payload is stored as-is "
+        "in a separate suggestions table. Use the typed endpoints below (court-decisions, "
+        "domestic-instruments, etc.) for structured submissions. Requires authentication."
+    ),
     response_model=SuggestionResponse,
     status_code=status.HTTP_201_CREATED,
 )
@@ -163,8 +166,12 @@ def _table_key(path_segment: str) -> str | None:
 
 @router.get(
     "/moderation/summary",
-    summary="Get pending counts for all moderation categories",
-    description="Requires editor or admin role. Returns pending suggestion counts per category.",
+    summary="Moderation queue summary",
+    description=(
+        "Returns the number of pending suggestions in each moderation category "
+        "(court decisions, instruments, literature, case analyzer, feedback). "
+        "Requires editor or admin role."
+    ),
 )
 async def moderation_summary(
     _: dict[str, Any] = Depends(require_editor_or_admin),
@@ -197,8 +204,14 @@ async def moderation_summary(
 
 @router.get(
     "/pending/{category}",
-    summary="List pending suggestions for a category",
-    description="Requires editor or admin role. Returns list of pending suggestions for moderation.",
+    summary="List pending suggestions in a category",
+    description=(
+        "Returns all pending suggestions for the specified category slug. "
+        "For `case-analyzer`, set `show_all=true` to include non-pending items. "
+        "Requires editor or admin role.\n\n"
+        "**Category slugs:** `case-analyzer`, `court-decisions`, `domestic-instruments`, "
+        "`regional-instruments`, `international-instruments`, `literature`, `feedback`."
+    ),
 )
 async def list_pending_suggestions(
     category: str,
@@ -288,7 +301,12 @@ async def get_suggestion_detail(
 @router.post(
     "/{category}/{suggestion_id}/approve",
     summary="Approve a suggestion",
-    description="Requires editor or admin role. Marks a suggestion as approved and processes it for insertion",
+    description=(
+        "Mark a suggestion as approved and insert its data into the main CoLD database. "
+        "For case-analyzer suggestions, this runs the full approval pipeline. "
+        "For other categories, the payload is written directly to the target table. "
+        "Requires editor or admin role."
+    ),
 )
 async def approve_suggestion(
     category: str,
@@ -383,7 +401,7 @@ async def approve_suggestion(
 @router.post(
     "/{category}/{suggestion_id}/reject",
     summary="Reject a suggestion",
-    description="Requires editor or admin role. Marks a suggestion as rejected.",
+    description="Mark a suggestion as rejected. The record is preserved for audit but not inserted into CoLD. Requires editor or admin role.",
 )
 async def reject_suggestion(
     category: str,
@@ -391,7 +409,6 @@ async def reject_suggestion(
     user: dict = Depends(require_editor_or_admin),
     service: SuggestionService = Depends(get_suggestion_service),
 ) -> StatusMessage:
-    """Reject a suggestion."""
     table = _table_key(category)
     if not table:
         raise HTTPException(
@@ -424,7 +441,7 @@ async def reject_suggestion(
 @router.delete(
     "/{category}/{suggestion_id}",
     summary="Delete a suggestion",
-    description="Requires editor or admin role. Permanently deletes a suggestion.",
+    description="Permanently remove a suggestion. Only supported for the `case-analyzer` category. Requires editor or admin role.",
 )
 async def delete_suggestion(
     category: str,
@@ -432,7 +449,6 @@ async def delete_suggestion(
     _: dict[str, Any] = Depends(require_editor_or_admin),
     service: SuggestionService = Depends(get_suggestion_service),
 ) -> StatusMessage:
-    """Delete a suggestion permanently."""
     if category != "case-analyzer":
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,

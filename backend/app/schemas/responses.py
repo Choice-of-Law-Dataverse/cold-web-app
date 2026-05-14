@@ -11,12 +11,12 @@ from app.schemas.search_result import AnySearchResult
 class FullTextSearchResponse(BaseModel):
     model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
 
-    query: str | None = None
-    filters: list[FTSFilterOption] | None = None
-    total_matches: int
-    page: int
-    page_size: int
-    results: list[AnySearchResult]
+    query: str | None = Field(default=None, description="The search query string that was submitted.")
+    filters: list[FTSFilterOption] | None = Field(default=None, description="Active filters applied to the search.")
+    total_matches: int = Field(..., description="Total number of matching records across all pages.")
+    page: int = Field(..., description="Current page number (1-indexed).")
+    page_size: int = Field(..., description="Number of results per page.")
+    results: list[AnySearchResult] = Field(..., description="Array of search result records for the current page.")
 
 
 class JurisdictionCoverage(BaseModel):
@@ -25,12 +25,12 @@ class JurisdictionCoverage(BaseModel):
         populate_by_name=True,
     )
 
-    id: int
-    name: str
-    cold_id: str | None = None
-    legal_family: str | None = None
-    irrelevant: bool | None = None
-    answer_coverage: float = 0
+    id: int = Field(..., description="Internal jurisdiction identifier.")
+    name: str = Field(..., description="Full name of the jurisdiction (e.g. 'Switzerland').")
+    cold_id: str | None = Field(default=None, description="CoLD identifier for the jurisdiction.")
+    legal_family: str | None = Field(default=None, description="Legal tradition (e.g. 'Civil Law', 'Common Law').")
+    irrelevant: bool | None = Field(default=None, description="Whether this jurisdiction is excluded from analysis.")
+    answer_coverage: float = Field(0, description="Percentage of questionnaire items with substantive answers (0–100).")
 
 
 class PendingSuggestionItem(BaseModel):
@@ -70,30 +70,30 @@ class SuggestionDetailItem(BaseModel):
 class SitemapEntry(BaseModel):
     model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
 
-    loc: str
-    lastmod: str
+    loc: str = Field(..., description="Full URL of the page.")
+    lastmod: str = Field(..., description="Last modification date in ISO 8601 format.")
 
 
 class LandingPageJurisdiction(BaseModel):
     model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
 
-    code: str
-    has_data: int
+    code: str = Field(..., description="ISO 3166-1 Alpha-3 code (e.g. 'CHE').")
+    has_data: int = Field(..., description="1 if the jurisdiction has substantive answer data, 0 otherwise.")
 
 
 class ModerationSummaryItem(BaseModel):
     model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
 
-    category: str
-    label: str
-    pending_count: int
+    category: str = Field(..., description="URL-safe category slug (e.g. 'court-decisions').")
+    label: str = Field(..., description="Human-readable category name (e.g. 'Court Decisions').")
+    pending_count: int = Field(..., description="Number of suggestions awaiting moderation in this category.")
 
 
 class StatusMessage(BaseModel):
     model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
 
-    status: str
-    message: str
+    status: str = Field(..., description="Result status (e.g. 'success', 'ok').")
+    message: str = Field(..., description="Human-readable description of the outcome.")
 
 
 class JurisdictionCount(BaseModel):
@@ -137,12 +137,12 @@ class SpecialistResponse(BaseModel):
     )
 
     id: int = Field(..., description="Unique identifier for the specialist")
-    created_at: datetime | None = Field(None, description="Timestamp when the record was created")
-    updated_at: datetime | None = Field(None, description="Timestamp when the record was last updated")
-    created_by: str | None = Field(None, description="User who created the record")
-    updated_by: str | None = Field(None, description="User who last updated the record")
-    nc_order: float | None = Field(None, description="NocoDB order field")
-    nc_record_id: str | None = Field(None, description="NocoDB record identifier")
-    nc_record_hash: str | None = Field(None, description="NocoDB record hash")
-    specialist: str | None = Field(None, description="Name of the specialist")
-    created: datetime | None = Field(None, description="Creation date from source data")
+    created_at: datetime | None = Field(default=None, description="Timestamp when the record was created")
+    updated_at: datetime | None = Field(default=None, description="Timestamp when the record was last updated")
+    created_by: str | None = Field(default=None, description="User who created the record")
+    updated_by: str | None = Field(default=None, description="User who last updated the record")
+    nc_order: float | None = Field(default=None, description="NocoDB order field")
+    nc_record_id: str | None = Field(default=None, description="NocoDB record identifier")
+    nc_record_hash: str | None = Field(default=None, description="NocoDB record hash")
+    specialist: str | None = Field(default=None, description="Name of the specialist")
+    created: datetime | None = Field(default=None, description="Creation date from source data")

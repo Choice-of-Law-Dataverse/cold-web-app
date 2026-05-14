@@ -17,7 +17,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "echo \"$TOOL_INPUT\" | grep -q '\"file_path\".*\\.env\"' && echo 'BLOCKED: do not edit .env files — use .blueprint.env for templates' && exit 1; exit 0"
+            "command": "echo \"$TOOL_INPUT\" | grep -q '\"file_path\".*\\.env\"' && echo 'BLOCKED: do not edit .env files — use .env.blueprint for templates' && exit 1; exit 0"
           }
         ]
       },

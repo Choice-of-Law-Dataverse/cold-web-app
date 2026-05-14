@@ -5,7 +5,6 @@ from app.services.landing_page import LandingPageService
 
 
 def get_landing_page_service() -> LandingPageService:
-    """Dependency function to lazily instantiate the LandingPageService."""
     return LandingPageService()
 
 
