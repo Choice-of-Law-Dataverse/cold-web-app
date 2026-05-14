@@ -90,13 +90,20 @@ The Case Analyzer feeds new court decisions into this knowledge network. A user 
 
 ```mermaid
 flowchart TD
-    Upload["Upload PDF\nText validation + draft creation"] --> Stage1Jur["Jurisdiction\ndetection"]
-    Upload --> Stage1CoL["Choice-of-law\nsection extraction"]
+    Upload["Upload PDF\nText validation + draft creation"]
 
-    Stage1CoL --> Themes["Theme\nclassification"]
-    Stage1CoL --> Citation["Case\ncitation"]
-    Stage1CoL --> Facts["Relevant\nfacts"]
-    Stage1CoL --> PIL["PIL\nprovisions"]
+    subgraph Stage1 [Stage 1 — parallel]
+        direction LR
+        Jur["Jurisdiction\ndetection"]
+        CoL["Choice-of-law\nsection extraction"]
+    end
+
+    Upload --> Stage1
+
+    Stage1 --> Themes["Theme\nclassification"]
+    Stage1 --> Citation["Case\ncitation"]
+    Stage1 --> Facts["Relevant\nfacts"]
+    Stage1 --> PIL["PIL\nprovisions"]
 
     Themes --> Issue["Choice-of-law\nissue identification"]
 
@@ -112,7 +119,7 @@ flowchart TD
     Review --> Submit["Submitted for moderation"]
 ```
 
-The choice-of-law section uses a single jurisdiction-agnostic prompt so it can run before jurisdiction is known; the downstream prompts switch on the detected (or user-corrected) jurisdiction. Common-law and Indian decisions add obiter dicta and dissenting opinions; civil-law decisions skip those branches. Throughout the pipeline, all structured fields are emitted in English, with two source-language exceptions kept verbatim for reviewer fidelity: the extracted choice-of-law passages and the case citation.
+Every step past Stage 1 depends on both the choice-of-law section and the detected (or user-corrected) jurisdiction: the section anchors what to summarise, while the jurisdiction selects which prompt variant to use and gates obiter/dissent (which only run for common-law and Indian decisions). The choice-of-law section itself uses a single jurisdiction-agnostic prompt so it can start before detection completes. Throughout the pipeline, all structured fields are emitted in English, with two source-language exceptions kept verbatim for reviewer fidelity: the extracted choice-of-law passages and the case citation.
 
 **Stage 3 — Review and submission.** The user sees all extracted fields with confidence indicators and can edit any of them. The detected jurisdiction is also editable; changing it triggers a confirmation modal and a full re-run with the corrected value. Once satisfied, the user submits for moderation. A human moderator reviews every submission before it enters the Dataverse — the AI pre-populates, but humans decide what gets published.
 
