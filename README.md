@@ -6,9 +6,81 @@ Repository for the [Choice of Law Dataverse](https://cold.global) (CoLD) — an 
 
 ## Key Features
 
+### Connected Knowledge Network
+
+Every record in CoLD is linked to related records across the Dataverse, forming a navigable knowledge network. The diagram below shows how all 17 datasets connect to each other:
+
+```mermaid
+graph LR
+    J["Jurisdictions"] --- CD["Court\nDecisions"]
+    J --- DI["Domestic\nInstruments"]
+    J --- DLP["Domestic\nProvisions"]
+    J --- A["Answers"]
+    J --- AA["Arbitral\nAwards"]
+    J --- AInst["Arbitral\nInstitutions"]
+    J --- L["Literature"]
+    J --- S["Specialists"]
+
+    T["Themes"] --- Q["Questions"]
+    T --- CD
+    T --- DI
+    T --- DLP
+    T --- AA
+    T --- L
+    T --- HA["HCCH\nAnswers"]
+
+    Q --- A
+    Q --- HA
+    Q --- CD
+    Q --- DI
+    Q --- DLP
+    Q --- ILP["International\nProvisions"]
+    Q --- RLP["Regional\nProvisions"]
+
+    A --- CD
+    A --- DI
+    A --- DLP
+    A --- L
+
+    HA --- RI["Regional\nInstruments"]
+    HA --- RLP
+    HA --- II["International\nInstruments"]
+    HA --- ILP
+
+    CD --- DLP
+    CD --- AA
+
+    DI --- DLP
+    RI --- RLP
+    RI --- L
+    II --- ILP
+    II --- L
+    ILP --- L
+    RLP --- L
+
+    S --- II
+    S --- RI
+
+    AA --- AInst
+    AA --- AP["Arbitral\nProvisions"]
+    AInst --- AR["Arbitral\nRules"]
+    AInst --- AP
+    AR --- AP
+```
+
+When viewing any record — a court decision, a statute, a treaty, or a piece of literature — users see all directly connected records. Each link leads to that record's own page with its own connections. This design supports several research patterns:
+
+- **Trace a provision's impact.** Start from a domestic provision (e.g., Swiss IPRG Art. 116) and find every court decision that interpreted it, every questionnaire answer that references it, and every piece of literature that analyzes it.
+- **Compare across jurisdictions.** Browse a questionnaire question and see how different countries answered it, which instruments implement those answers, and which court decisions have tested the rules in practice.
+- **Explore arbitration networks.** Start from an arbitral award and navigate to the institution that administered it, the rules that governed the proceedings, the specific provisions applied, and related court decisions.
+- **Discover literature.** View a regional or international instrument and find all academic publications that discuss it, across jurisdictions and legal traditions.
+- **Find experts.** Browse a jurisdiction and see which specialists cover it, what international and regional instruments are relevant, and what cases and instruments exist.
+
+Every entity type connects to at least two others; most connect to four or more. The result is that researchers rarely hit dead ends — following any link opens a new set of connections to explore.
+
 ### Case Analyzer
 
-CoLD includes an AI-powered tool that lets anyone contribute court decisions to the Dataverse. A user uploads a PDF of a court decision, and the system guides them through a multi-stage workflow — from document ingestion to moderation-ready structured data.
+The Case Analyzer feeds new court decisions into this knowledge network. A user uploads a PDF of a court decision, and the system guides them through a multi-stage workflow — from document ingestion to moderation-ready structured data.
 
 #### How it works
 
@@ -21,20 +93,16 @@ flowchart TD
     Upload["Upload PDF\nText extraction + jurisdiction detection"] --> Confirm["User confirms jurisdiction"]
     Confirm --> CoL["Choice-of-law\nsection extraction"]
 
-    CoL --> P1["Parallel extraction"]
-
-    P1 --> Themes["Theme\nclassification"]
-    P1 --> Citation["Case\ncitation"]
-    P1 --> Facts["Relevant\nfacts"]
-    P1 --> PIL["PIL\nprovisions"]
+    CoL --> Themes["Theme\nclassification"]
+    CoL --> Citation["Case\ncitation"]
+    CoL --> Facts["Relevant\nfacts"]
+    CoL --> PIL["PIL\nprovisions"]
 
     Themes --> Issue["Choice-of-law\nissue identification"]
 
-    Issue --> P2["Parallel extraction"]
-
-    P2 --> Position["Court's\nposition"]
-    P2 --> Obiter["Obiter dicta\n(common law only)"]
-    P2 --> Dissent["Dissenting opinions\n(common law only)"]
+    Issue --> Position["Court's\nposition"]
+    Issue --> Obiter["Obiter dicta\n(common law only)"]
+    Issue --> Dissent["Dissenting opinions\n(common law only)"]
 
     Position --> QA["Consistency check\n+ targeted re-extraction"]
     Obiter --> QA
@@ -54,118 +122,6 @@ The first extraction — identifying the choice-of-law sections within the decis
 Progress is saved continuously, so if the connection drops mid-analysis, users can resume from where they left off. Past analyses are tracked in a personal dashboard with their status (draft, analyzing, completed, pending review, approved, or rejected).
 
 Try it at [cold.global/court-decision/new](https://cold.global/court-decision/new).
-
-### Connected Knowledge Network
-
-Every record in CoLD is linked to related records across the Dataverse, forming a navigable knowledge network. The diagram below shows how all 17 datasets connect to each other:
-
-```mermaid
-flowchart TD
-    subgraph questionnaire ["Questionnaire Data"]
-        Q["Questions"]
-        A["Answers"]
-        HA["HCCH Answers"]
-    end
-
-    subgraph caselaw ["Case Law"]
-        CD["Court Decisions"]
-    end
-
-    subgraph domestic ["Domestic Law"]
-        DI["Domestic\nInstruments"]
-        DLP["Domestic Legal\nProvisions"]
-    end
-
-    subgraph regional ["Regional Law"]
-        RI["Regional\nInstruments"]
-        RLP["Regional Legal\nProvisions"]
-    end
-
-    subgraph international ["International Law"]
-        II["International\nInstruments"]
-        ILP["International Legal\nProvisions"]
-    end
-
-    subgraph arbitration ["Arbitration"]
-        AA["Arbitral Awards"]
-        AI["Arbitral\nInstitutions"]
-        AR["Arbitral Rules"]
-        AP["Arbitral\nProvisions"]
-    end
-
-    subgraph crosscutting ["Cross-Cutting"]
-        J["Jurisdictions"]
-        T["Themes"]
-        L["Literature"]
-        S["Specialists"]
-    end
-
-    Q --- A
-    Q --- HA
-    Q --- CD
-    Q --- DI
-    Q --- DLP
-    Q --- ILP
-    Q --- RLP
-
-    A --- CD
-    A --- DI
-    A --- DLP
-    A --- L
-
-    HA --- RI
-    HA --- RLP
-    HA --- II
-    HA --- ILP
-
-    CD --- DLP
-    CD --- AA
-
-    DI --- DLP
-
-    RI --- RLP
-    RI --- L
-    II --- ILP
-    II --- L
-    ILP --- L
-    RLP --- L
-
-    AA --- AI
-    AA --- AP
-    AI --- AR
-    AI --- AP
-    AR --- AP
-
-    J --- CD
-    J --- DI
-    J --- DLP
-    J --- A
-    J --- AA
-    J --- AI
-    J --- L
-    J --- S
-
-    T --- Q
-    T --- CD
-    T --- DI
-    T --- DLP
-    T --- AA
-    T --- L
-    T --- HA
-
-    S --- II
-    S --- RI
-```
-
-When viewing any record — a court decision, a statute, a treaty, or a piece of literature — users see all directly connected records. Each link leads to that record's own page with its own connections. This design supports several research patterns:
-
-- **Trace a provision's impact.** Start from a domestic provision (e.g., Swiss IPRG Art. 116) and find every court decision that interpreted it, every questionnaire answer that references it, and every piece of literature that analyzes it.
-- **Compare across jurisdictions.** Browse a questionnaire question and see how different countries answered it, which instruments implement those answers, and which court decisions have tested the rules in practice.
-- **Explore arbitration networks.** Start from an arbitral award and navigate to the institution that administered it, the rules that governed the proceedings, the specific provisions applied, and related court decisions.
-- **Discover literature.** View a regional or international instrument and find all academic publications that discuss it, across jurisdictions and legal traditions.
-- **Find experts.** Browse a jurisdiction and see which specialists cover it, what international and regional instruments are relevant, and what cases and instruments exist.
-
-Every entity type connects to at least two others; most connect to four or more. The result is that researchers rarely hit dead ends — following any link opens a new set of connections to explore.
 
 ## Quick Start
 
