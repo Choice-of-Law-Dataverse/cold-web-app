@@ -8,6 +8,7 @@ from collections.abc import AsyncGenerator
 from typing import Any, cast
 
 import logfire
+from pydantic import BaseModel
 
 from .tools import (
     CaseCitationOutput,
@@ -34,16 +35,9 @@ from .tools import (
     extract_relevant_facts,
 )
 from .tools.document_nav import DocumentContext
+from .utils.legal_system import requires_common_law_steps
 
 logger = logging.getLogger(__name__)
-
-
-def _requires_common_law_steps(legal_system: str | None, jurisdiction: str | None) -> bool:
-    if legal_system and legal_system.strip().lower() == "common-law jurisdiction":
-        return True
-    if jurisdiction and jurisdiction.strip().lower() == "india":
-        return True
-    return False
 
 
 async def detect_jurisdiction(text: str) -> JurisdictionOutput:
@@ -62,27 +56,18 @@ async def detect_jurisdiction(text: str) -> JurisdictionOutput:
         return jurisdiction_result
 
 
-def _reconstruct_col_section(cached: dict[str, Any]) -> ColSectionOutput:
-    return ColSectionOutput(
-        col_sections=cached.get("col_sections", []),
-        confidence=cached.get("confidence", "medium"),
-        reasoning=cached.get("reasoning", "Restored from cache"),
-    )
-
-
-def _reconstruct_theme_classification(cached: dict[str, Any]) -> ThemeClassificationOutput:
-    return ThemeClassificationOutput(
-        themes=cached.get("themes", []),
-        confidence=cached.get("confidence", "medium"),
-        reasoning=cached.get("reasoning", "Restored from cache"),
-    )
-
-
-def _reconstruct_col_issue(cached: dict[str, Any]) -> ColIssueOutput:
-    return ColIssueOutput(
-        col_issue=cached.get("col_issue", ""),
-        confidence=cached.get("confidence", "medium"),
-        reasoning=cached.get("reasoning", "Restored from cache"),
+def _restore_from_cache[ModelT: BaseModel](
+    model_cls: type[ModelT],
+    cached: dict[str, Any],
+    field: str,
+    default: Any,
+) -> ModelT:
+    return model_cls.model_validate(
+        {
+            field: cached.get(field, default),
+            "confidence": cached.get("confidence", "medium"),
+            "reasoning": cached.get("reasoning", "Restored from cache"),
+        }
     )
 
 
@@ -137,7 +122,7 @@ async def analyze_case_streaming(
 
         legal_system = jurisdiction_data.legal_system_type
         jurisdiction = jurisdiction_data.precise_jurisdiction
-        run_common_law_branches = _requires_common_law_steps(legal_system, jurisdiction)
+        run_common_law_branches = requires_common_law_steps(legal_system, jurisdiction)
 
         if col_task is not None:
             try:
@@ -155,7 +140,7 @@ async def analyze_case_streaming(
                 yield {"step": "col_extraction", "status": "error", "error": str(e)}
                 return
         else:
-            col_result = _reconstruct_col_section(cached["col_extraction"])
+            col_result = _restore_from_cache(ColSectionOutput, cached["col_extraction"], "col_sections", [])
             yield {"step": "col_extraction", "status": "completed", "data": cached["col_extraction"]}
             col_section_text = str(col_result)
 
@@ -170,37 +155,25 @@ async def analyze_case_streaming(
         provisions_result: PILProvisionsOutput | None = None
 
         if not need_theme:
-            theme_result = _reconstruct_theme_classification(cached["theme_classification"])
+            theme_result = _restore_from_cache(ThemeClassificationOutput, cached["theme_classification"], "themes", [])
             yield {"step": "theme_classification", "status": "completed", "data": cached["theme_classification"]}
         else:
             yield {"step": "theme_classification", "status": "in_progress"}
 
         if not need_citation:
-            citation_result = CaseCitationOutput(
-                case_citation=cached["case_citation"].get("case_citation", ""),
-                confidence=cached["case_citation"].get("confidence", "medium"),
-                reasoning=cached["case_citation"].get("reasoning", "Restored from cache"),
-            )
+            citation_result = _restore_from_cache(CaseCitationOutput, cached["case_citation"], "case_citation", "")
             yield {"step": "case_citation", "status": "completed", "data": cached["case_citation"]}
         else:
             yield {"step": "case_citation", "status": "in_progress"}
 
         if not need_facts:
-            facts_result = RelevantFactsOutput(
-                relevant_facts=cached["relevant_facts"].get("relevant_facts", ""),
-                confidence=cached["relevant_facts"].get("confidence", "medium"),
-                reasoning=cached["relevant_facts"].get("reasoning", "Restored from cache"),
-            )
+            facts_result = _restore_from_cache(RelevantFactsOutput, cached["relevant_facts"], "relevant_facts", "")
             yield {"step": "relevant_facts", "status": "completed", "data": cached["relevant_facts"]}
         else:
             yield {"step": "relevant_facts", "status": "in_progress"}
 
         if not need_provisions:
-            provisions_result = PILProvisionsOutput(
-                pil_provisions=cached["pil_provisions"].get("pil_provisions", []),
-                confidence=cached["pil_provisions"].get("confidence", "medium"),
-                reasoning=cached["pil_provisions"].get("reasoning", "Restored from cache"),
-            )
+            provisions_result = _restore_from_cache(PILProvisionsOutput, cached["pil_provisions"], "pil_provisions", [])
             yield {"step": "pil_provisions", "status": "completed", "data": cached["pil_provisions"]}
         else:
             yield {"step": "pil_provisions", "status": "in_progress"}
@@ -274,7 +247,7 @@ async def analyze_case_streaming(
             return
 
         if "col_issue" in cached and cached["col_issue"].get("col_issue"):
-            issue_result = _reconstruct_col_issue(cached["col_issue"])
+            issue_result = _restore_from_cache(ColIssueOutput, cached["col_issue"], "col_issue", "")
             yield {"step": "col_issue", "status": "completed", "data": cached["col_issue"]}
         else:
             yield {"step": "col_issue", "status": "in_progress"}
@@ -312,31 +285,21 @@ async def analyze_case_streaming(
         )
 
         if not need_position:
-            position_result = CourtsPositionOutput(
-                courts_position=cached["courts_position"].get("courts_position", ""),
-                confidence=cached["courts_position"].get("confidence", "medium"),
-                reasoning=cached["courts_position"].get("reasoning", "Restored from cache"),
-            )
+            position_result = _restore_from_cache(CourtsPositionOutput, cached["courts_position"], "courts_position", "")
             yield {"step": "courts_position", "status": "completed", "data": cached["courts_position"]}
         else:
             yield {"step": "courts_position", "status": "in_progress"}
 
         if run_common_law_branches:
             if not need_obiter:
-                obiter_result = ObiterDictaOutput(
-                    obiter_dicta=cached["obiter_dicta"].get("obiter_dicta", ""),
-                    confidence=cached["obiter_dicta"].get("confidence", "medium"),
-                    reasoning=cached["obiter_dicta"].get("reasoning", "Restored from cache"),
-                )
+                obiter_result = _restore_from_cache(ObiterDictaOutput, cached["obiter_dicta"], "obiter_dicta", "")
                 yield {"step": "obiter_dicta", "status": "completed", "data": cached["obiter_dicta"]}
             else:
                 yield {"step": "obiter_dicta", "status": "in_progress"}
 
             if not need_dissent:
-                dissent_result = DissentingOpinionsOutput(
-                    dissenting_opinions=cached["dissenting_opinions"].get("dissenting_opinions", ""),
-                    confidence=cached["dissenting_opinions"].get("confidence", "medium"),
-                    reasoning=cached["dissenting_opinions"].get("reasoning", "Restored from cache"),
+                dissent_result = _restore_from_cache(
+                    DissentingOpinionsOutput, cached["dissenting_opinions"], "dissenting_opinions", ""
                 )
                 yield {"step": "dissenting_opinions", "status": "completed", "data": cached["dissenting_opinions"]}
             else:
@@ -453,5 +416,6 @@ async def analyze_case_streaming(
             except Exception as e:
                 logger.error("Abstract generation failed: %s", str(e))
                 yield {"step": "abstract", "status": "error", "error": str(e)}
+                return
 
         yield {"step": "analysis_complete", "status": "completed"}

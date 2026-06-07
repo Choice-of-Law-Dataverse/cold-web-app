@@ -8,6 +8,7 @@ from ..config import get_model, get_openai_client
 from ..prompts import get_prompt_module
 from ..runner import run_agent
 from ..utils import generate_system_prompt
+from ..utils.legal_system import requires_common_law_steps
 from .document_nav import DocumentContext, list_headings, read_head, read_tail, search
 from .models import (
     AbstractOutput,
@@ -54,7 +55,7 @@ async def extract_abstract(
             "court_position": court_position,
         }
 
-        if legal_system == "Common-law jurisdiction" or (jurisdiction and jurisdiction.lower() == "india"):
+        if requires_common_law_steps(legal_system, jurisdiction):
             obiter_dicta = obiter_dicta_output.obiter_dicta if obiter_dicta_output else ""
             dissenting_opinions = dissenting_opinions_output.dissenting_opinions if dissenting_opinions_output else ""
             prompt_vars.update({"obiter_dicta": obiter_dicta, "dissenting_opinions": dissenting_opinions})
