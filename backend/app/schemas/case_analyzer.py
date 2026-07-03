@@ -38,6 +38,14 @@ class ConfirmAnalysisRequest(BaseModel):
             "detected concurrently with the first extraction step."
         ),
     )
+    jurisdiction_confirmed: bool = Field(
+        False,
+        description=(
+            "Whether the jurisdiction in this request was explicitly confirmed or "
+            "corrected by the user. Retries and recovery flows that merely echo a "
+            "previously detected jurisdiction must leave this false."
+        ),
+    )
     resume: bool = Field(False, description="Whether to resume from last successful step (for error recovery)")
 
 

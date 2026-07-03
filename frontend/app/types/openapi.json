@@ -5336,6 +5336,11 @@
             ],
             "description": "Optional user-corrected jurisdiction. When omitted, jurisdiction is detected concurrently with the first extraction step."
           },
+          "jurisdictionConfirmed": {
+            "type": "boolean",
+            "description": "Whether the jurisdiction in this request was explicitly confirmed or corrected by the user. Retries and recovery flows that merely echo a previously detected jurisdiction must leave this false.",
+            "default": false
+          },
           "resume": {
             "type": "boolean",
             "description": "Whether to resume from last successful step (for error recovery)",

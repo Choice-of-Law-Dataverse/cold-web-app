@@ -1218,6 +1218,11 @@ export interface components {
       /** @description Optional user-corrected jurisdiction. When omitted, jurisdiction is detected concurrently with the first extraction step. */
       jurisdiction?: components["schemas"]["JurisdictionInfo"] | null;
       /**
+       * @description Whether the jurisdiction in this request was explicitly confirmed or corrected by the user. Retries and recovery flows that merely echo a previously detected jurisdiction must leave this false.
+       * @default false
+       */
+      jurisdictionConfirmed: boolean;
+      /**
        * @description Whether to resume from last successful step (for error recovery)
        * @default false
        */

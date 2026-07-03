@@ -578,6 +578,36 @@ class SuggestionService:
             session.execute(upd)
             session.commit()
 
+    def clear_analyzer_steps(self, draft_id: int, step_names: list[str]) -> None:
+        """Remove the given step keys from the analyzer column, keeping all other keys.
+
+        Used before a non-resume re-run so results from a previous run (possibly
+        under a different jurisdiction) cannot survive into the new analysis.
+        """
+        target = self.tables["case_analyzer"]
+        with suggestions_db_manager.get_session() as session:
+            sel = sa.select(target.c.analyzer).where(target.c.id == draft_id).limit(1)
+            row = session.execute(sel).first()
+
+            current: dict[str, Any] = {}
+            if row and row[0]:
+                if isinstance(row[0], dict):
+                    current = dict(row[0])
+                else:
+                    try:
+                        current = json.loads(row[0])
+                    except Exception:
+                        current = {}
+
+            removals = set(step_names)
+            remaining = {k: v for k, v in current.items() if k not in removals}
+            if remaining == current:
+                return
+
+            upd = sa.update(target).where(target.c.id == draft_id).values(analyzer=remaining)
+            session.execute(upd)
+            session.commit()
+
     def get_analyzer_data(self, draft_id: int) -> dict[str, Any] | None:
         """
         Get the analyzer column data for a case analyzer record.

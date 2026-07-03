@@ -15,6 +15,7 @@ from app.case_analyzer import (
     analyze_case_streaming,
     extract_text_from_pdf,
 )
+from app.case_analyzer.resume import ANALYSIS_STEP_KEYS, jurisdiction_from_analyzer_data, load_cached_results
 from app.schemas.case_analyzer import (
     ConfirmAnalysisRequest,
     DraftRecoveryResponse,
@@ -285,44 +286,31 @@ async def analyze_document(
                 yield f"data: {error_event}\n\n"
                 return
 
+            nonlocal jurisdiction_override
+            cached_results: dict[str, Any] | None = None
+            try:
+                if body.resume:
+                    analyzer_data = service.get_analyzer_data(draft_id) or {}
+                    cached_results = load_cached_results(analyzer_data)
+                    if jurisdiction_override is None:
+                        jurisdiction_override = jurisdiction_from_analyzer_data(analyzer_data)
+            except Exception as e:
+                logger.error("Failed to fetch cached results for resume: %s", str(e))
+
             try:
                 service.update_moderation_status(draft_id, "analyzing")
 
-                if jurisdiction_override is not None:
+                if not body.resume:
+                    service.clear_analyzer_steps(draft_id, ANALYSIS_STEP_KEYS)
+
+                if body.jurisdiction is not None and jurisdiction_override is not None:
                     service.update_analyzer_step(
                         draft_id,
                         "jurisdiction",
-                        {**jurisdiction_override.model_dump(), "user_confirmed": True},
+                        {**jurisdiction_override.model_dump(), "user_confirmed": body.jurisdiction_confirmed},
                     )
             except Exception as e:
-                logger.error("Failed to update jurisdiction in database: %s", str(e))
-
-            cached_results: dict[str, Any] | None = None
-            if body.resume:
-                try:
-                    analyzer_data = service.get_analyzer_data(draft_id)
-                    if analyzer_data:
-                        cached_results = {}
-                        for step_key in [
-                            "col_extraction",
-                            "theme_classification",
-                            "case_citation",
-                            "relevant_facts",
-                            "pil_provisions",
-                            "col_issue",
-                            "courts_position",
-                            "obiter_dicta",
-                            "dissenting_opinions",
-                            "abstract",
-                        ]:
-                            if step_key in analyzer_data and analyzer_data[step_key]:
-                                step_result = analyzer_data[step_key]
-                                if isinstance(step_result, dict) and "result" in step_result:
-                                    cached_results[step_key] = step_result["result"]
-                                else:
-                                    cached_results[step_key] = step_result
-                except Exception as e:
-                    logger.error("Failed to fetch cached results for resume: %s", str(e))
+                logger.error("Failed to prepare draft state in database: %s", str(e))
 
             with logfire.span(
                 "case_analysis_stream",
