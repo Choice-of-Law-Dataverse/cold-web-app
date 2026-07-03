@@ -7,7 +7,7 @@ No char-offset parameters — all tools use text anchors so agents don't drift.
 import re
 from dataclasses import dataclass, field
 
-from agents import RunContextWrapper, function_tool
+from agents import RunContextWrapper, Tool, function_tool
 from rapidfuzz import fuzz
 
 MAX_CHARS = 4000
@@ -127,3 +127,6 @@ def read_head(ctx: RunContextWrapper[DocumentContext], n_chars: int = 2000) -> s
 def read_tail(ctx: RunContextWrapper[DocumentContext], n_chars: int = 2000) -> str:
     """Return the last n_chars of the document (useful for signatures, dates, dissents)."""
     return _truncate(ctx.context.text[-n_chars:])
+
+
+NAV_TOOLS: list[Tool] = [search, get_paragraph_containing, list_headings, read_section, read_window, read_head, read_tail]

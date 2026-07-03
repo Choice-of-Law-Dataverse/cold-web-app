@@ -9,7 +9,7 @@ from ..prompts import get_prompt_module
 from ..runner import run_agent
 from ..utils import generate_system_prompt
 from ..utils.legal_system import requires_common_law_steps
-from .document_nav import DocumentContext, list_headings, read_head, read_tail, search
+from .document_nav import NAV_TOOLS, DocumentContext
 from .models import (
     AbstractOutput,
     ColIssueOutput,
@@ -67,7 +67,7 @@ async def extract_abstract(
             name="AbstractGenerator",
             instructions=system_prompt,
             output_type=AbstractOutput,
-            tools=[search, read_head, read_tail, list_headings],
+            tools=NAV_TOOLS,
             model=OpenAIResponsesModel(
                 model=get_model("abstract"),
                 openai_client=get_openai_client(),

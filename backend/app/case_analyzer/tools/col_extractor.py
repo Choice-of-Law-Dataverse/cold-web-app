@@ -8,16 +8,7 @@ from ..config import get_model, get_openai_client
 from ..prompts.col_section import COL_SECTION_PROMPT
 from ..runner import run_agent
 from ..utils import generate_system_prompt
-from .document_nav import (
-    DocumentContext,
-    get_paragraph_containing,
-    list_headings,
-    read_head,
-    read_section,
-    read_tail,
-    read_window,
-    search,
-)
+from .document_nav import NAV_TOOLS, DocumentContext
 from .models import ColSectionOutput, StepResult
 
 logger = logging.getLogger(__name__)
@@ -32,7 +23,7 @@ async def extract_col_section(
             name="ColSectionExtractor",
             instructions=generate_system_prompt(),
             output_type=ColSectionOutput,
-            tools=[search, get_paragraph_containing, list_headings, read_section, read_window, read_head, read_tail],
+            tools=NAV_TOOLS,
             model=OpenAIResponsesModel(
                 model=get_model("col_section"),
                 openai_client=get_openai_client(),

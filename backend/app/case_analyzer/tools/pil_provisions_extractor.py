@@ -8,7 +8,7 @@ from ..config import get_model, get_openai_client
 from ..prompts import get_prompt_module
 from ..runner import run_agent
 from ..utils import generate_system_prompt
-from .document_nav import DocumentContext, get_paragraph_containing, read_window, search
+from .document_nav import NAV_TOOLS, DocumentContext
 from .models import ColSectionOutput, PILProvisionsOutput, StepResult
 
 logger = logging.getLogger(__name__)
@@ -31,7 +31,7 @@ async def extract_pil_provisions(
             name="PILProvisionsExtractor",
             instructions=system_prompt,
             output_type=PILProvisionsOutput,
-            tools=[search, read_window, get_paragraph_containing],
+            tools=NAV_TOOLS,
             model=OpenAIResponsesModel(
                 model=get_model("pil_provisions"),
                 openai_client=get_openai_client(),

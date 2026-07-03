@@ -6,16 +6,7 @@ from agents.models.openai_responses import OpenAIResponsesModel
 
 from ..config import get_model, get_openai_client
 from ..runner import run_agent
-from .document_nav import (
-    DocumentContext,
-    get_paragraph_containing,
-    list_headings,
-    read_head,
-    read_section,
-    read_tail,
-    read_window,
-    search,
-)
+from .document_nav import NAV_TOOLS, DocumentContext
 from .models import CaseCitationOutput, StepResult
 
 logger = logging.getLogger(__name__)
@@ -55,7 +46,7 @@ async def extract_case_citation(
             name="CaseCitationExtractor",
             instructions=instructions,
             output_type=CaseCitationOutput,
-            tools=[search, get_paragraph_containing, list_headings, read_section, read_window, read_head, read_tail],
+            tools=NAV_TOOLS,
             model=OpenAIResponsesModel(
                 model=get_model("case_citation"),
                 openai_client=get_openai_client(),

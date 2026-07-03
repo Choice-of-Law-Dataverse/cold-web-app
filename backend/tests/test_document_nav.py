@@ -1,6 +1,7 @@
 """Tests for document navigation tools and DocumentContext."""
 
 import json
+import re
 from typing import Any
 
 import pytest
@@ -8,6 +9,7 @@ from agents.tool_context import ToolContext
 from agents.usage import Usage
 
 from app.case_analyzer.tools.document_nav import (
+    NAV_TOOLS,
     DocumentContext,
     _detect_headings,
     _truncate,
@@ -232,3 +234,28 @@ class TestReadHeadTail:
     async def test_read_tail_returns_end(self, doc: DocumentContext) -> None:
         result = await _invoke(read_tail, _make_ctx(doc), {"n_chars": 50})
         assert result == doc.text[-50:]
+
+
+class TestNavToolsRoster:
+    def test_preamble_matches_registered_tools(self) -> None:
+        from app.case_analyzer.prompts.shared import NAV_TOOLS_PREAMBLE
+
+        preamble_names = set(re.findall(r"- (\w+)\(", NAV_TOOLS_PREAMBLE))
+        tool_names = {tool.name for tool in NAV_TOOLS}
+        assert preamble_names == tool_names
+
+    def test_all_extractor_agents_use_full_roster(self) -> None:
+        import inspect
+        from pathlib import Path
+
+        import app.case_analyzer.tools as tools_pkg
+
+        tools_dir = Path(inspect.getfile(tools_pkg)).parent
+        extractor_files = list(tools_dir.glob("*_extractor.py")) + [
+            tools_dir / "theme_classifier.py",
+            tools_dir / "abstract_generator.py",
+        ]
+        for path in extractor_files:
+            source = path.read_text()
+            assert "tools=NAV_TOOLS" in source, f"{path.name} does not use NAV_TOOLS"
+            assert "tools=[" not in source, f"{path.name} still hardcodes a tool list"

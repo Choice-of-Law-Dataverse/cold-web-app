@@ -8,16 +8,7 @@ from ..config import get_model, get_openai_client
 from ..prompts import get_prompt_module
 from ..runner import run_agent
 from ..utils import generate_system_prompt
-from .document_nav import (
-    DocumentContext,
-    get_paragraph_containing,
-    list_headings,
-    read_head,
-    read_section,
-    read_tail,
-    read_window,
-    search,
-)
+from .document_nav import NAV_TOOLS, DocumentContext
 from .models import (
     ColIssueOutput,
     ColSectionOutput,
@@ -56,7 +47,7 @@ async def extract_obiter_dicta(
             name="ObiterDictaExtractor",
             instructions=system_prompt,
             output_type=ObiterDictaOutput,
-            tools=[search, get_paragraph_containing, list_headings, read_section, read_window, read_head, read_tail],
+            tools=NAV_TOOLS,
             model=OpenAIResponsesModel(
                 model=get_model("obiter_dicta"),
                 openai_client=get_openai_client(),
