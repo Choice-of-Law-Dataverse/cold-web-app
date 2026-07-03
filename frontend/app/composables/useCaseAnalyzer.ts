@@ -39,6 +39,7 @@ export function useCaseAnalyzer(
     jurisdictionInfo: JurisdictionInfo | null,
     resume = false,
     onJurisdictionDetected?: (jurisdiction: JurisdictionInfo) => void,
+    jurisdictionConfirmed = false,
   ): Promise<{ success: boolean; error?: string }> {
     isAnalyzing.value = true;
 
@@ -46,6 +47,7 @@ export function useCaseAnalyzer(
       const body: Record<string, unknown> = { draft_id: draftId, resume };
       if (jurisdictionInfo) {
         body.jurisdiction = jurisdictionInfo;
+        body.jurisdiction_confirmed = jurisdictionConfirmed;
       }
 
       await streamSSE<AnalysisStepPayload>({

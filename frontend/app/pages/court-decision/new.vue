@@ -118,7 +118,11 @@
 
 <script setup lang="ts">
 import { ref, watch, onMounted } from "vue";
-import type { JurisdictionOption, AnalysisStepPayload } from "~/types/analyzer";
+import type {
+  JurisdictionOption,
+  AnalysisStepPayload,
+  JurisdictionInfo,
+} from "~/types/analyzer";
 import { useAnalyzerForm } from "~/composables/useAnalyzerForm";
 import { useAnalysisSteps } from "~/composables/useAnalysisSteps";
 import { useDocumentUpload } from "~/composables/useDocumentUpload";
@@ -244,7 +248,10 @@ async function uploadDocument() {
   await confirmAndAnalyze(false);
 }
 
-async function confirmAndAnalyze(resume = false) {
+async function confirmAndAnalyze(
+  resume = false,
+  jurisdictionConfirmed = false,
+) {
   if (!draftId.value) return;
 
   currentStep.value = "analyzing";
@@ -269,6 +276,7 @@ async function confirmAndAnalyze(resume = false) {
     (jurisdiction) => {
       jurisdictionInfo.value = jurisdiction;
     },
+    jurisdictionConfirmed,
   );
 
   if (!result.success) {
@@ -284,17 +292,23 @@ function handleReAnalyze(
   legalSystemType: string,
   jurisdiction: JurisdictionOption | undefined,
 ) {
-  if (!jurisdictionInfo.value) return;
-  jurisdictionInfo.value.legal_system_type = legalSystemType;
+  const info: JurisdictionInfo = jurisdictionInfo.value ?? {
+    legal_system_type: "",
+    precise_jurisdiction: "",
+    jurisdiction_code: "",
+    confidence: "high",
+    reasoning: "Jurisdiction set manually by the user during review.",
+  };
+  info.legal_system_type = legalSystemType;
   if (jurisdiction) {
-    jurisdictionInfo.value.precise_jurisdiction = jurisdiction.name || "";
-    jurisdictionInfo.value.jurisdiction_code =
-      jurisdiction.coldId || jurisdictionInfo.value.jurisdiction_code;
+    info.precise_jurisdiction = jurisdiction.name || "";
+    info.jurisdiction_code = jurisdiction.coldId || info.jurisdiction_code;
     selectedJurisdiction.value = jurisdiction;
   }
+  jurisdictionInfo.value = info;
   analysisResults.value = {};
   resetEditableForm();
-  confirmAndAnalyze(false);
+  confirmAndAnalyze(false, true);
 }
 
 async function submitAnalyzerSuggestion() {
