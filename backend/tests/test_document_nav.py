@@ -223,6 +223,21 @@ class TestReadWindow:
         )
         assert result == text
 
+    @pytest.mark.asyncio
+    async def test_case_insensitive_anchor(self, doc: DocumentContext) -> None:
+        result = await _invoke(read_window, _make_ctx(doc), {"anchor": "rome i regulation"})
+        assert "Rome I Regulation" in result
+
+    @pytest.mark.asyncio
+    async def test_window_alignment_with_expanding_lowercase(self) -> None:
+        text = "İİİİİ karar metni uygulanacak hukuk hakkında"
+        result = await _invoke(
+            read_window,
+            _make_ctx(DocumentContext(draft_id=1, text=text)),
+            {"anchor": "uygulanacak hukuk", "chars_before": 0, "chars_after": 0},
+        )
+        assert result == "uygulanacak hukuk"
+
 
 class TestReadHeadTail:
     @pytest.mark.asyncio
@@ -234,6 +249,16 @@ class TestReadHeadTail:
     async def test_read_tail_returns_end(self, doc: DocumentContext) -> None:
         result = await _invoke(read_tail, _make_ctx(doc), {"n_chars": 50})
         assert result == doc.text[-50:]
+
+    @pytest.mark.asyncio
+    async def test_read_tail_zero_returns_end_not_start(self, doc: DocumentContext) -> None:
+        result = await _invoke(read_tail, _make_ctx(doc), {"n_chars": 0})
+        assert result == doc.text[-1:]
+
+    @pytest.mark.asyncio
+    async def test_read_head_zero_returns_first_char(self, doc: DocumentContext) -> None:
+        result = await _invoke(read_head, _make_ctx(doc), {"n_chars": 0})
+        assert result == doc.text[:1]
 
 
 class TestNavToolsRoster:

@@ -108,25 +108,24 @@ def read_window(
 ) -> str:
     """Return text surrounding the first occurrence of anchor (case-insensitive)."""
     text = ctx.context.text
-    needle_pos = text.lower().find(anchor.lower())
-    if needle_pos == -1:
+    match = re.search(re.escape(anchor), text, re.IGNORECASE)
+    if match is None:
         return "[anchor not found]"
-    start = max(0, needle_pos - chars_before)
-    end = min(len(text), needle_pos + len(anchor) + chars_after)
-    window = text[start:end]
-    return _truncate(window)
+    start = max(0, match.start() - max(0, chars_before))
+    end = min(len(text), match.end() + max(0, chars_after))
+    return _truncate(text[start:end])
 
 
 @function_tool
 def read_head(ctx: RunContextWrapper[DocumentContext], n_chars: int = 2000) -> str:
     """Return the first n_chars of the document (useful for case citation, parties, docket)."""
-    return _truncate(ctx.context.text[:n_chars])
+    return _truncate(ctx.context.text[: max(1, n_chars)])
 
 
 @function_tool
 def read_tail(ctx: RunContextWrapper[DocumentContext], n_chars: int = 2000) -> str:
     """Return the last n_chars of the document (useful for signatures, dates, dissents)."""
-    return _truncate(ctx.context.text[-n_chars:])
+    return _truncate(ctx.context.text[-max(1, n_chars) :])
 
 
 NAV_TOOLS: list[Tool] = [search, get_paragraph_containing, list_headings, read_section, read_window, read_head, read_tail]
