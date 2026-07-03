@@ -245,3 +245,28 @@ class TestErrorHandling:
         assert len(error_events) == 1
         assert error_events[0]["step"] == "col_extraction"
         assert "analysis_complete" not in [e["step"] for e in events]
+
+
+class TestEmptyColSections:
+    @pytest.mark.asyncio
+    async def test_empty_col_sections_fail_the_stream(self) -> None:
+        empty = ColSectionOutput(col_sections=[], confidence="low", reasoning="nothing found")
+        patches = dict(_CIVIL_PATCHES)
+        patches["extract_col_section"] = AsyncMock(return_value=_step(empty))
+        with patch.multiple(_SERVICE, **patches):
+            events = await _collect(_CIVIL_JURISDICTION, draft_id=1)
+        by_step = _by_step(events)
+        assert "error" in by_step["col_extraction"]
+        assert "theme_classification" not in by_step
+        assert "analysis_complete" not in by_step
+
+    @pytest.mark.asyncio
+    async def test_whitespace_only_col_sections_fail_the_stream(self) -> None:
+        blank = ColSectionOutput(col_sections=["   ", "\n"], confidence="low", reasoning="noise")
+        patches = dict(_CIVIL_PATCHES)
+        patches["extract_col_section"] = AsyncMock(return_value=_step(blank))
+        with patch.multiple(_SERVICE, **patches):
+            events = await _collect(_CIVIL_JURISDICTION, draft_id=1)
+        by_step = _by_step(events)
+        assert "error" in by_step["col_extraction"]
+        assert "analysis_complete" not in by_step

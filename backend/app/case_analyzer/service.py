@@ -129,16 +129,24 @@ async def analyze_case_streaming(
                 col_step = await col_task
                 col_result = col_step.output
                 last_response_id = col_step.response_id
-                yield {
-                    "step": "col_extraction",
-                    "status": "completed",
-                    "data": col_result.model_dump(),
-                }
-                col_section_text = str(col_result)
             except Exception as e:
                 logger.error("COL extraction failed: %s", str(e))
                 yield {"step": "col_extraction", "status": "error", "error": str(e)}
                 return
+            if not any(section.strip() for section in col_result.col_sections):
+                logger.error("COL extraction returned no sections for draft %d", draft_id)
+                yield {
+                    "step": "col_extraction",
+                    "status": "error",
+                    "error": "No choice-of-law sections could be extracted from this document.",
+                }
+                return
+            yield {
+                "step": "col_extraction",
+                "status": "completed",
+                "data": col_result.model_dump(),
+            }
+            col_section_text = str(col_result)
         else:
             col_result = _restore_from_cache(ColSectionOutput, cached["col_extraction"], "col_sections", [])
             yield {"step": "col_extraction", "status": "completed", "data": cached["col_extraction"]}
