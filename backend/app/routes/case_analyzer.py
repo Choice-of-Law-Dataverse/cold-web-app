@@ -127,7 +127,7 @@ async def upload_document(
             yield f"data: {json.dumps({'step': 'extracting_text', 'status': 'in_progress'})}\n\n"
 
             try:
-                await asyncio.to_thread(extract_text_from_pdf, pdf_bytes)
+                await asyncio.to_thread(extract_text_from_pdf, pdf_bytes, [0])
             except Exception:
                 logger.exception("Failed to extract text from PDF file=%s", file_name)
                 error_event = json.dumps(
