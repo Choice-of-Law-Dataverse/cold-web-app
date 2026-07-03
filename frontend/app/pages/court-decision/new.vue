@@ -375,10 +375,8 @@ onMounted(async () => {
       ) {
         currentStep.value = "analyzing";
         populateEditableForm();
-      } else if (result.data.jurisdictionInfo) {
-        await confirmAndAnalyze(false);
       } else {
-        currentStep.value = "upload";
+        await confirmAndAnalyze(true);
       }
     } else {
       error.value = result.error || "Failed to recover draft";
