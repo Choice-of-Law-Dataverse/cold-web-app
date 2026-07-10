@@ -194,6 +194,18 @@ const currentYear = new Date().getFullYear();
           </div>
         </div>
       </div>
+
+      <p class="footer-credit mt-8 text-center text-xs text-gray-400">
+        site by
+        <a
+          href="https://marcosmesser.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="footer-meta__link text-xs"
+        >
+          Marcos Messer
+        </a>
+      </p>
     </div>
   </footer>
 </template>
