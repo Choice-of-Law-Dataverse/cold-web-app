@@ -25,6 +25,9 @@ export default defineConfig({
     alias: {
       "@": fileURLToPath(new URL("./app", import.meta.url)),
       "~": fileURLToPath(new URL("./app", import.meta.url)),
+      "#components": fileURLToPath(
+        new URL("./vitest-components-mock.ts", import.meta.url),
+      ),
     },
   },
 });
