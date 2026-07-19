@@ -7,15 +7,15 @@ describe("ComparisonCaveats", () => {
     const wrapper = mount(ComparisonCaveats, {
       global: {
         stubs: {
-          ContentDoc: true
-        }
-      }
+          ContentDoc: true,
+        },
+      },
     });
-    
+
     // Find the stubbed ContentDoc component
-    const contentDoc = wrapper.find('content-doc-stub');
-    
+    const contentDoc = wrapper.find("content-doc-stub");
+
     expect(contentDoc.exists()).toBe(true);
-    expect(contentDoc.attributes('path')).toBe('/comparison_caveats');
+    expect(contentDoc.attributes("path")).toBe("/comparison_caveats");
   });
 });
