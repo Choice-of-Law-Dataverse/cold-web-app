@@ -36,6 +36,7 @@ TASK_MODELS = {
     "abstract": "gpt-5.4-mini",
     "case_citation": "gpt-5.4-nano",
     "col_issue": "gpt-5.6-terra",
+    "col_retrieval": "gpt-5.4-nano",
     "col_section": "gpt-5.6-terra",
     "courts_position": "gpt-5.6-terra",
     "dissenting_opinions": "gpt-5.6-terra",

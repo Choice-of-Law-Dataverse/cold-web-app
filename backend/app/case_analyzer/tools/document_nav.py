@@ -4,12 +4,18 @@ Provides content-anchored navigation over a court decision's markdown text.
 No char-offset parameters — all tools use text anchors so agents don't drift.
 """
 
+import asyncio
+import logging
 import re
 import unicodedata
 from dataclasses import dataclass, field
 
 from agents import RunContextWrapper, Tool, function_tool
 from rapidfuzz import fuzz
+
+from .semantic_index import EmbedFunction, SemanticHit, SemanticIndex
+
+logger = logging.getLogger(__name__)
 
 MAX_CHARS = 4000
 _MARKDOWN_HEADING_RE = re.compile(r"^#{1,6}\s+.+")
@@ -67,6 +73,14 @@ def _format_paragraph(paragraph_index: int, text: str) -> str:
     return f"[paragraph {paragraph_index + 1}]\n{text}"
 
 
+@dataclass(frozen=True)
+class LexicalHit:
+    paragraph_number: int
+    text: str
+    score: float
+    method: str
+
+
 @dataclass
 class DocumentContext:
     draft_id: int
@@ -75,37 +89,112 @@ class DocumentContext:
     paragraphs: list[str] = field(default_factory=list)
     headings: list[tuple[str, int]] = field(default_factory=list)
     normalized_paragraphs: list[str] = field(default_factory=list, repr=False)
+    semantic_embedder: EmbedFunction | None = field(default=None, repr=False)
+    _semantic_index: SemanticIndex | None = field(default=None, init=False, repr=False)
+    _semantic_build_lock: asyncio.Lock = field(default_factory=asyncio.Lock, init=False, repr=False)
+    _semantic_build_task: asyncio.Task[SemanticIndex] | None = field(default=None, init=False, repr=False)
+    _semantic_query_lock: asyncio.Lock = field(default_factory=asyncio.Lock, init=False, repr=False)
+    _semantic_query_cache: dict[str, list[float]] = field(default_factory=dict, init=False, repr=False)
+    semantic_unavailable_reason: str | None = field(default=None, init=False)
 
     def __post_init__(self) -> None:
         self.paragraphs = [p for p in re.split(r"\n\s*\n", self.text) if p.strip()]
         self.headings = _detect_headings(self.paragraphs)
         self.normalized_paragraphs = [_normalize_search_text(paragraph) for paragraph in self.paragraphs]
 
+    async def get_semantic_index(self) -> SemanticIndex | None:
+        """Build the request-scoped index once, sharing concurrent callers."""
+        if self._semantic_index is not None:
+            return self._semantic_index
+        if self.semantic_unavailable_reason is not None:
+            return None
+
+        async with self._semantic_build_lock:
+            if self._semantic_build_task is None:
+                index = SemanticIndex(self.paragraphs, embed=self.semantic_embedder)
+                self._semantic_build_task = asyncio.create_task(self._build_semantic_index(index))
+            task = self._semantic_build_task
+
+        try:
+            self._semantic_index = await task
+        except Exception as exc:
+            self.semantic_unavailable_reason = type(exc).__name__
+            logger.warning("Semantic retrieval unavailable for draft %d: %s", self.draft_id, type(exc).__name__)
+            return None
+        return self._semantic_index
+
+    async def _build_semantic_index(self, index: SemanticIndex) -> SemanticIndex:
+        await index.build()
+        return index
+
+    async def semantic_search(self, queries: list[str], *, top_k: int = 4) -> dict[str, list[SemanticHit]]:
+        """Rank chunks for multiple queries with a per-document embedding cache."""
+        index = await self.get_semantic_index()
+        if index is None:
+            return {}
+
+        normalized_queries = list(dict.fromkeys(" ".join(query.split()) for query in queries if query.strip()))
+        try:
+            async with self._semantic_query_lock:
+                missing = [query for query in normalized_queries if query.casefold() not in self._semantic_query_cache]
+                if missing:
+                    response = await index.embed_queries(missing)
+                    if len(response.vectors) != len(missing):
+                        raise ValueError("Embedding response count did not match query count")
+                    for query, vector in zip(missing, response.vectors, strict=True):
+                        self._semantic_query_cache[query.casefold()] = vector
+        except Exception as exc:
+            self.semantic_unavailable_reason = type(exc).__name__
+            logger.warning("Semantic query embedding unavailable for draft %d: %s", self.draft_id, type(exc).__name__)
+            return {}
+
+        return {
+            query: index.rank(query, self._semantic_query_cache[query.casefold()], top_k=top_k) for query in normalized_queries
+        }
+
+
+def find_lexical_hits(doc: DocumentContext, query: str, *, max_results: int = 5) -> list[LexicalHit]:
+    """Return structured exact or fuzzy paragraph hits without changing source text."""
+    normalized_query = _normalize_search_text(query)
+    if not normalized_query:
+        return []
+
+    exact_hits = [
+        LexicalHit(
+            paragraph_number=index + 1,
+            text=paragraph,
+            score=1.0,
+            method="heading" if any(heading_index == index for _heading, heading_index in doc.headings) else "exact",
+        )
+        for index, (normalized, paragraph) in enumerate(zip(doc.normalized_paragraphs, doc.paragraphs, strict=True))
+        if normalized_query in normalized
+    ]
+    if exact_hits:
+        return exact_hits[:max_results]
+    if len(normalized_query) <= 6:
+        return []
+
+    scored = sorted(
+        (
+            (fuzz.partial_ratio(normalized_query, normalized), index, paragraph)
+            for index, (normalized, paragraph) in enumerate(zip(doc.normalized_paragraphs, doc.paragraphs, strict=True))
+        ),
+        key=lambda item: (-item[0], item[1]),
+    )
+    return [
+        LexicalHit(paragraph_number=index + 1, text=paragraph, score=score / 100, method="fuzzy")
+        for score, index, paragraph in scored
+        if score >= 80
+    ][:max_results]
+
 
 @function_tool
 def search(ctx: RunContextWrapper[DocumentContext], query: str, max_results: int = 5) -> str:
     """Search paragraphs for a query and return numbered matches for follow-up reading."""
-    doc = ctx.context
-    normalized_query = _normalize_search_text(query)
-    if not normalized_query:
-        return "[no matches]"
-
-    indexed_paragraphs = list(enumerate(zip(doc.normalized_paragraphs, doc.paragraphs, strict=True)))
-    hits = [(i, paragraph) for i, (normalized, paragraph) in indexed_paragraphs if normalized_query in normalized]
-    if not hits and len(normalized_query) > 6:
-        scored = sorted(
-            (
-                (fuzz.partial_ratio(normalized_query, normalized), i, paragraph)
-                for i, (normalized, paragraph) in indexed_paragraphs
-            ),
-            key=lambda item: item[0],
-            reverse=True,
-        )
-        hits = [(i, paragraph) for score, i, paragraph in scored if score >= 80]
-    hits = hits[:max_results]
+    hits = find_lexical_hits(ctx.context, query, max_results=max_results)
     if not hits:
         return "[no matches]"
-    return _truncate("\n---\n".join(_format_paragraph(i, paragraph) for i, paragraph in hits))
+    return _truncate("\n---\n".join(_format_paragraph(hit.paragraph_number - 1, hit.text) for hit in hits))
 
 
 @function_tool

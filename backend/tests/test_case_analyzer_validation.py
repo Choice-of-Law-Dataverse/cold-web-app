@@ -1,8 +1,11 @@
 """Tests for case analyzer semantic and evidence policies."""
 
+from app.case_analyzer.tools.hybrid_retrieval import CandidatePassage
 from app.case_analyzer.tools.models import (
     AbstractOutput,
     CaseCitationOutput,
+    ColCandidateAuditOutput,
+    ColCandidateDecision,
     ColIssueOutput,
     ColSectionOutput,
     CourtsPositionOutput,
@@ -15,8 +18,10 @@ from app.case_analyzer.tools.models import (
 from app.case_analyzer.validation import (
     validate_abstract,
     validate_case_citation,
+    validate_col_candidate_audit,
     validate_col_issue,
     validate_col_section,
+    validate_col_section_provenance,
     validate_courts_position,
     validate_dissenting_opinions,
     validate_obiter_dicta,
@@ -35,6 +40,81 @@ def test_col_section_requires_content_bearing_tool() -> None:
     assert validate_col_section(output, NO_TOOLS) is not None
     assert validate_col_section(output, HEADINGS_ONLY) is not None
     assert validate_col_section(output, SEARCH_USED) is None
+
+
+def _candidate(candidate_id: str = "C001") -> CandidatePassage:
+    return CandidatePassage(
+        candidate_id=candidate_id,
+        start_paragraph=2,
+        end_paragraph=3,
+        text="reasoning\n\nholding",
+        concepts=("applicable_law",),
+        retrieval_methods=("semantic",),
+        reciprocal_rank_score=0.1,
+    )
+
+
+def test_candidate_audit_requires_every_candidate_disposition() -> None:
+    output = ColCandidateAuditOutput(decisions=[], confidence="low", reasoning="Nothing reviewed.")
+    assert "missing" in (validate_col_candidate_audit(output, [_candidate()]) or "")
+
+
+def test_candidate_audit_requires_verbatim_paragraph_provenance_and_court_role() -> None:
+    party_only = ColCandidateAuditOutput(
+        decisions=[
+            ColCandidateDecision(
+                candidate_id="C001",
+                disposition="include",
+                reason="A party invokes Swiss law.",
+                role="party_argument",
+                selected_paragraphs=[2],
+            )
+        ],
+        confidence="medium",
+        reasoning="Reviewed candidate.",
+    )
+    assert "court's own" in (validate_col_candidate_audit(party_only, [_candidate()]) or "")
+
+    holding = party_only.model_copy(deep=True)
+    holding.decisions[0].role = "court_holding"
+    assert validate_col_candidate_audit(holding, [_candidate()]) is None
+
+
+def test_candidate_audit_rejects_unresolved_and_out_of_range_candidates() -> None:
+    unresolved = ColCandidateAuditOutput(
+        decisions=[
+            ColCandidateDecision(
+                candidate_id="C001",
+                disposition="needs_additional_context",
+                reason="Need the next paragraph.",
+            )
+        ],
+        confidence="low",
+        reasoning="More context needed.",
+    )
+    assert "still needs context" in (validate_col_candidate_audit(unresolved, [_candidate()]) or "")
+
+    unresolved.decisions[0] = ColCandidateDecision(
+        candidate_id="C001",
+        disposition="include",
+        reason="Court holding.",
+        role="court_holding",
+        selected_paragraphs=[4],
+    )
+    assert "outside" in (validate_col_candidate_audit(unresolved, [_candidate()]) or "")
+
+
+def test_cached_col_provenance_must_reconstruct_sections_verbatim() -> None:
+    paragraphs = ["Background.", "The court applies Swiss law."]
+    output = ColSectionOutput(col_sections=[paragraphs[1]], confidence="high", reasoning="Holding.")
+    evidence = {
+        "candidates": [{"candidate_id": "C001"}],
+        "candidate_dispositions": [{"candidate_id": "C001", "disposition": "include", "reason": "Direct holding."}],
+        "col_sections": [{"section_index": 0, "paragraphs": [2], "role": "court_holding"}],
+    }
+    assert validate_col_section_provenance(output, evidence, paragraphs) is None
+    output.col_sections[0] = "Paraphrased Swiss-law holding."
+    assert "not verbatim" in (validate_col_section_provenance(output, evidence, paragraphs) or "")
 
 
 def test_negative_citation_requires_navigation_evidence() -> None:

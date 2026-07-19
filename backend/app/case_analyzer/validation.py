@@ -4,9 +4,11 @@ from collections.abc import Callable
 from typing import Any
 
 from .tools.document_nav import NAV_TOOLS
+from .tools.hybrid_retrieval import CandidatePassage
 from .tools.models import (
     AbstractOutput,
     CaseCitationOutput,
+    ColCandidateAuditOutput,
     ColIssueOutput,
     ColSectionOutput,
     CourtsPositionOutput,
@@ -73,6 +75,129 @@ def validate_col_section_content(output: ColSectionOutput, _tool_names: frozense
     """Validate persisted section content without requiring legacy tool metadata."""
     if not output.col_sections or any(not section.strip() for section in output.col_sections):
         return "No non-empty Choice of Law passages were returned. Re-read the decision and extract the relevant passages."
+    return None
+
+
+def validate_col_candidate_audit(
+    output: ColCandidateAuditOutput,
+    candidates: list[CandidatePassage],
+) -> str | None:
+    """Require a resolved, source-bounded disposition for every candidate."""
+    expected_ids = {candidate.candidate_id for candidate in candidates}
+    returned_ids = [decision.candidate_id for decision in output.decisions]
+    duplicate_ids = {candidate_id for candidate_id in returned_ids if returned_ids.count(candidate_id) > 1}
+    if duplicate_ids:
+        return f"Candidates received duplicate dispositions: {', '.join(sorted(duplicate_ids))}."
+    missing = expected_ids - set(returned_ids)
+    unknown = set(returned_ids) - expected_ids
+    if missing or unknown:
+        details = []
+        if missing:
+            details.append(f"missing: {', '.join(sorted(missing))}")
+        if unknown:
+            details.append(f"unknown: {', '.join(sorted(unknown))}")
+        return "Every candidate must receive exactly one disposition (" + "; ".join(details) + ")."
+
+    candidate_by_id = {candidate.candidate_id: candidate for candidate in candidates}
+    included_roles: set[str] = set()
+    for decision in output.decisions:
+        candidate = candidate_by_id[decision.candidate_id]
+        if not decision.reason.strip():
+            return f"Candidate {decision.candidate_id} has no disposition reason."
+        if decision.disposition == "needs_additional_context":
+            return (
+                f"Candidate {decision.candidate_id} still needs context. Read the adjacent paragraphs, then return a "
+                "final include or exclude disposition."
+            )
+        if decision.disposition == "exclude":
+            if decision.role is not None or decision.selected_paragraphs:
+                return f"Excluded candidate {decision.candidate_id} must not have a role or selected paragraphs."
+            continue
+        if decision.role is None:
+            return f"Included candidate {decision.candidate_id} must identify the passage role."
+        if not decision.selected_paragraphs:
+            return f"Included candidate {decision.candidate_id} must cite at least one source paragraph."
+        if len(decision.selected_paragraphs) != len(set(decision.selected_paragraphs)):
+            return f"Included candidate {decision.candidate_id} repeats a selected paragraph."
+        invalid_paragraphs = [
+            number
+            for number in decision.selected_paragraphs
+            if number < candidate.start_paragraph or number > candidate.end_paragraph
+        ]
+        if invalid_paragraphs:
+            return (
+                f"Candidate {decision.candidate_id} cites paragraphs outside its supplied range: "
+                f"{', '.join(str(number) for number in invalid_paragraphs)}."
+            )
+        included_roles.add(decision.role)
+
+    if not included_roles:
+        return "No candidate was included. Re-examine the retrieved passages for substantive choice-of-law material."
+    if not included_roles & {"court_holding", "court_reasoning"}:
+        return "At least one included passage must contain the court's own choice-of-law holding or reasoning."
+    return None
+
+
+def validate_col_section_provenance(
+    output: ColSectionOutput,
+    evidence: object,
+    paragraphs: list[str],
+) -> str | None:
+    """Validate cached outward sections against persisted paragraph provenance."""
+    if not isinstance(evidence, dict):
+        return "Choice-of-law extraction has no provenance metadata."
+    sections = evidence.get("col_sections")
+    candidates = evidence.get("candidates")
+    dispositions = evidence.get("candidate_dispositions")
+    if not isinstance(sections, list) or not isinstance(candidates, list) or not isinstance(dispositions, list):
+        return "Choice-of-law extraction provenance is incomplete."
+    candidate_id_list = [
+        candidate.get("candidate_id")
+        for candidate in candidates
+        if isinstance(candidate, dict) and isinstance(candidate.get("candidate_id"), str)
+    ]
+    disposition_id_list = [
+        disposition.get("candidate_id")
+        for disposition in dispositions
+        if isinstance(disposition, dict) and isinstance(disposition.get("candidate_id"), str)
+    ]
+    candidate_ids = set(candidate_id_list)
+    disposition_ids = set(disposition_id_list)
+    if (
+        not candidate_ids
+        or len(candidate_id_list) != len(candidates)
+        or len(candidate_ids) != len(candidate_id_list)
+        or len(disposition_id_list) != len(dispositions)
+        or len(disposition_ids) != len(disposition_id_list)
+        or disposition_ids != candidate_ids
+    ):
+        return "Not every retrieved candidate has a persisted disposition."
+    for disposition in dispositions:
+        if not isinstance(disposition, dict):
+            return "A persisted candidate disposition is invalid."
+        status = disposition.get("disposition")
+        reason = disposition.get("reason")
+        if status not in {"include", "exclude"} or not isinstance(reason, str) or not reason.strip():
+            return "A persisted candidate disposition is unresolved or incomplete."
+    if len(sections) != len(output.col_sections):
+        return "Persisted section provenance does not match the extracted section count."
+
+    substantive_role_found = False
+    for index, (section_text, section_evidence) in enumerate(zip(output.col_sections, sections, strict=True)):
+        if not isinstance(section_evidence, dict) or section_evidence.get("section_index") != index:
+            return "Persisted section provenance is misaligned."
+        paragraph_numbers = section_evidence.get("paragraphs")
+        if not isinstance(paragraph_numbers, list) or not paragraph_numbers:
+            return f"Extracted section {index + 1} has no source paragraphs."
+        if any(not isinstance(number, int) or number < 1 or number > len(paragraphs) for number in paragraph_numbers):
+            return f"Extracted section {index + 1} cites an invalid source paragraph."
+        expected_text = "\n\n".join(paragraphs[number - 1] for number in paragraph_numbers)
+        if section_text != expected_text:
+            return f"Extracted section {index + 1} is not verbatim in its cited source paragraphs."
+        if section_evidence.get("role") in {"court_holding", "court_reasoning"}:
+            substantive_role_found = True
+    if not substantive_role_found:
+        return "No extracted section is identified as the court's holding or reasoning."
     return None
 
 

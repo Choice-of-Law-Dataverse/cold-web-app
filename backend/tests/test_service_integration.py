@@ -79,6 +79,21 @@ _COMMON_PATCHES: dict[str, AsyncMock] = {
 }
 
 
+def _valid_cached_col() -> dict[str, object]:
+    return {
+        "col_sections": ["decision text"],
+        "confidence": "high",
+        "reasoning": "Cached holding.",
+        "_evidence": {
+            "navigation_tools": [],
+            "policy_version": 9,
+            "candidates": [{"candidate_id": "C001"}],
+            "candidate_dispositions": [{"candidate_id": "C001", "disposition": "include", "reason": "Direct holding."}],
+            "col_sections": [{"section_index": 0, "paragraphs": [1], "role": "court_holding"}],
+        },
+    }
+
+
 async def _collect(
     jurisdiction: JurisdictionOutput,
     cached: dict | None = None,
@@ -193,7 +208,7 @@ class TestCommonLawStream:
 class TestResumeFromCache:
     @pytest.mark.asyncio
     async def test_cached_col_skips_extraction(self) -> None:
-        cached = {"col_extraction": {"col_sections": ["Art. 3 applies."], "confidence": "high", "reasoning": "ok"}}
+        cached = {"col_extraction": _valid_cached_col()}
         col_mock = AsyncMock(return_value=_step(COL))
         patches_without_col = {k: v for k, v in _CIVIL_PATCHES.items() if "col_section" not in k}
         patches_without_col["extract_col_section"] = col_mock
@@ -205,15 +220,24 @@ class TestResumeFromCache:
 
     @pytest.mark.asyncio
     async def test_cached_step_emits_completed_immediately(self) -> None:
-        cached = {
-            "col_extraction": {"col_sections": ["Art. 3."], "confidence": "high", "reasoning": "ok"},
-        }
+        cached = {"col_extraction": _valid_cached_col()}
         with patch.multiple(_SERVICE, **_CIVIL_PATCHES):
             events = await _collect(_CIVIL_JURISDICTION, cached=cached, draft_id=1)
 
         col_events = [e for e in events if e["step"] == "col_extraction"]
         assert len(col_events) == 1
         assert col_events[0]["status"] == "completed"
+
+    @pytest.mark.asyncio
+    async def test_legacy_col_without_provenance_is_recomputed(self) -> None:
+        cached = {"col_extraction": {"col_sections": ["Art. 3."], "confidence": "high", "reasoning": "old"}}
+        col_mock = AsyncMock(return_value=_step(COL))
+        patches = {**_CIVIL_PATCHES, "extract_col_section": col_mock}
+
+        with patch.multiple(_SERVICE, **patches):
+            await _collect(_CIVIL_JURISDICTION, cached=cached, draft_id=1)
+
+        col_mock.assert_awaited_once()
 
     @pytest.mark.asyncio
     async def test_legacy_negative_citation_without_evidence_is_recomputed(self) -> None:
@@ -259,7 +283,7 @@ class TestResumeFromCache:
                 "identifier_type": None,
                 "confidence": "low",
                 "reasoning": "Not found",
-                "_evidence": {"navigation_tools": ["search"], "policy_version": 7},
+                "_evidence": {"navigation_tools": ["search"], "policy_version": 9},
             },
         }
         citation_mock = AsyncMock(return_value=_step(CITATION))
@@ -320,7 +344,7 @@ class TestResumeFromCache:
         citation_event = next(event for event in events if event["step"] == "case_citation" and event["status"] == "completed")
         assert citation_event["data"]["_evidence"] == {
             "navigation_tools": ["read_head", "search"],
-            "policy_version": 7,
+            "policy_version": 9,
         }
         assert citation_event["data"]["case_citation"] == CITATION.case_citation
         assert citation_event["data"]["source_text"] == CITATION.source_text

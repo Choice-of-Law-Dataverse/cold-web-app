@@ -43,6 +43,7 @@ from .validation import (
     validate_case_citation,
     validate_col_issue,
     validate_col_section_content,
+    validate_col_section_provenance,
     validate_courts_position,
     validate_dissenting_opinions,
     validate_obiter_dicta,
@@ -56,7 +57,7 @@ logger = logging.getLogger(__name__)
 _EVIDENCE_KEY = "_evidence"
 _NAVIGATION_TOOLS_KEY = "navigation_tools"
 _POLICY_VERSION_KEY = "policy_version"
-_EVIDENCE_POLICY_VERSION = 7
+_EVIDENCE_POLICY_VERSION = 9
 
 
 async def detect_jurisdiction(text: str) -> JurisdictionOutput:
@@ -97,6 +98,7 @@ def _step_data(step: StepResult[Any]) -> dict[str, Any]:
     return {
         **step.output.model_dump(),
         _EVIDENCE_KEY: {
+            **step.evidence,
             _NAVIGATION_TOOLS_KEY: list(step.tool_names),
             _POLICY_VERSION_KEY: _EVIDENCE_POLICY_VERSION,
         },
@@ -131,7 +133,9 @@ def _cache_is_valid[ModelT: BaseModel](
         return False
     evidence = cached_step.get(_EVIDENCE_KEY)
     policy_version = evidence.get(_POLICY_VERSION_KEY) if isinstance(evidence, dict) else None
-    if (policy_version is not None or step_name == "case_citation") and policy_version != _EVIDENCE_POLICY_VERSION:
+    if (policy_version is not None or step_name in {"case_citation", "col_extraction"}) and (
+        policy_version != _EVIDENCE_POLICY_VERSION
+    ):
         logger.info("Re-running cached %s from an older analysis policy", step_name)
         return False
     validation_error = validator(output, _cached_tool_names(cached_step))
@@ -170,6 +174,16 @@ async def analyze_case_streaming(
             [],
             validate_col_section_content,
         )
+        if col_cached:
+            cached_col = _restore_from_cache(ColSectionOutput, cached["col_extraction"], "col_sections", [])
+            provenance_error = validate_col_section_provenance(
+                cached_col,
+                cached["col_extraction"].get(_EVIDENCE_KEY),
+                doc_ctx.paragraphs,
+            )
+            if provenance_error is not None:
+                logger.info("Re-running cached col_extraction step: %s", provenance_error)
+                col_cached = False
 
         if jurisdiction_override is None:
             yield {"step": "jurisdiction_detection", "status": "in_progress"}

@@ -37,3 +37,27 @@ More specifically, when preparing the output, prioritize: (1) The court's direct
 """
     + NAV_TOOLS_PREAMBLE
 )
+
+COL_RETRIEVAL_QUERY_PROMPT = """
+TASK: Propose source-language search queries that can locate this judgment's choice-of-law analysis.
+
+Return two to six short queries. Use the actual language or languages visible in the supplied excerpt and headings.
+Prefer local legal terms, statutory references, and phrases likely to occur verbatim in this particular judgment.
+Cover the court's applicable-law holding and reasoning, not merely jurisdiction or the parties' names.
+Do not answer the legal question and do not use external knowledge.
+"""
+
+COL_CANDIDATE_AUDIT_PROMPT = """
+TASK: Audit every retrieved candidate for choice-of-law relevance.
+
+For every candidate ID supplied below, return exactly one disposition:
+- include: the candidate contains material that belongs in the Choice of Law extraction;
+- exclude: it is irrelevant, duplicative, purely jurisdictional, or otherwise outside scope;
+- needs_additional_context: only while you inspect adjacent paragraphs with the navigation tools.
+
+Before returning the final structured output, resolve every needs_additional_context candidate to include or exclude.
+For each included candidate, classify its role and select the exact full paragraph numbers that should be reproduced.
+Prioritize the court's own holding and reasoning. Distinguish party arguments and quoted authorities from the court's
+own position. Do not select a paragraph outside the candidate's numbered range. Account for every candidate even when
+several candidates overlap or are irrelevant. Base all decisions solely on the supplied judgment passages.
+"""

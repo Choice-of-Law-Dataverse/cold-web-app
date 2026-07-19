@@ -1,8 +1,8 @@
 """Pydantic models for case analyzer outputs and classification."""
 
 import re
-from dataclasses import dataclass
-from typing import Literal, Self
+from dataclasses import dataclass, field
+from typing import Any, Literal, Self
 
 from pydantic import BaseModel, Field, model_validator
 
@@ -18,6 +18,7 @@ class StepResult[T]:
     output: T
     response_id: str | None = None
     tool_names: tuple[str, ...] = ()
+    evidence: dict[str, Any] = field(default_factory=dict)
 
 
 class ConfidenceReasoningModel(BaseModel):
@@ -46,13 +47,53 @@ class ColSectionOutput(ConfidenceReasoningModel):
         return "\n\n".join(self.col_sections)
 
 
+class ColRetrievalQueryPlan(BaseModel):
+    queries: list[str] = Field(
+        description=(
+            "Two to six short case-specific search queries in the judgment's source language(s), using terms likely "
+            "to locate the court's choice-of-law reasoning and holding"
+        )
+    )
+
+
+ColCandidateRole = Literal[
+    "court_holding",
+    "court_reasoning",
+    "party_argument",
+    "cited_authority",
+    "procedural_context",
+]
+
+
+class ColCandidateDecision(BaseModel):
+    candidate_id: str = Field(description="The candidate identifier exactly as provided")
+    disposition: Literal["include", "exclude", "needs_additional_context"]
+    reason: str = Field(description="Concise source-grounded reason for the disposition")
+    role: ColCandidateRole | None = Field(
+        default=None,
+        description="Required for included candidates; null for excluded candidates",
+    )
+    selected_paragraphs: list[int] = Field(
+        default_factory=list,
+        description=(
+            "For included candidates, the exact numbered source paragraphs to reproduce; empty for excluded candidates"
+        ),
+    )
+
+
+class ColCandidateAuditOutput(ConfidenceReasoningModel):
+    decisions: list[ColCandidateDecision] = Field(description="Exactly one disposition for every supplied retrieval candidate")
+
+
 class CaseCitationOutput(ConfidenceReasoningModel):
     case_citation: str = Field(
         description=(
-            "Canonical case citation exactly as it appears in the decision. Use the document's own format and language; "
-            "do not translate or expand court names, abbreviations, or docket numbers. If the decision text contains no "
-            "citation but the original filename unambiguously encodes one, separator characters may be normalized into "
-            "its conventional form. Return 'NA' when neither source provides a citation."
+            "Highest-priority canonical identifier exactly as it appears in the decision: prefer an official neutral "
+            "identifier such as ECLI, then an official reporter citation, then a docket or case number. Never return a "
+            "descriptive page title, court name, decision date, publication status, or party caption. Use the document's "
+            "own format and language; do not translate or expand abbreviations. If only the original filename "
+            "unambiguously encodes an identifier, file-safe separators may be normalized into its conventional form. "
+            "Return 'NA' when neither source provides a citation."
         )
     )
     source_text: str | None = Field(
