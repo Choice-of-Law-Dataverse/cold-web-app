@@ -201,3 +201,4 @@ backend/*.csv
 .playwright-mcp
 .desloppify/
 .claude-octopus/
+coverage/
