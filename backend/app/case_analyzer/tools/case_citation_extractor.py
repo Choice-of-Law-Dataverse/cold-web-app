@@ -57,6 +57,22 @@ def _citation_appends_date_to_candidate(citation: str, candidates: tuple[str, ..
     return False
 
 
+def _citation_copies_descriptive_filename(file_name: str | None, citation: str) -> bool:
+    """Detect page-title filenames returned wholesale instead of a canonical identifier."""
+    if not file_name:
+        return False
+    stem = PurePath(file_name).stem
+    alpha_word_count = sum(any(character.isalpha() for character in word) for word in stem.split())
+    normalized_stem = _normalize_identifier(stem)
+    normalized_citation = _normalize_identifier(citation)
+    return (
+        alpha_word_count >= 4
+        and len(normalized_citation) >= 20
+        and normalized_citation in normalized_stem
+        and len(normalized_citation) / len(normalized_stem) >= 0.7
+    )
+
+
 def _validate_citation_against_document(
     doc_ctx: DocumentContext,
     output: CaseCitationOutput,
@@ -66,6 +82,12 @@ def _validate_citation_against_document(
     candidates = _filename_identifier_candidates(doc_ctx.file_name)
     if len(output.reasoning.strip()) > _MAX_REASONING_CHARS:
         return "Citation reasoning must be one short sentence about where the identifier was found."
+    if _citation_copies_descriptive_filename(doc_ctx.file_name, output.case_citation):
+        return (
+            "The result copies a descriptive filename or page title rather than a canonical citation. Search the decision "
+            "for the highest-priority identifier: an official neutral identifier such as ECLI, then an official reporter "
+            "citation, then a docket or case number."
+        )
     if is_placeholder_text(output.case_citation) and candidates:
         return (
             "The original filename contains strong identifier-shaped segment(s): "
@@ -148,8 +170,12 @@ async def extract_case_citation(
         instructions = (
             "Extract the canonical case citation as it appears in the court decision. "
             "Treat the original filename and the supplied beginning/end excerpts as parallel evidence. Compare them before "
-            "answering. If they agree after separator normalization, prefer the exact identifier format printed in the "
-            "decision and use high confidence. If only the filename identifies the decision, return its conventional form, "
+            "answering. Rank identifiers in this order: (1) an official neutral identifier such as ECLI or its "
+            "jurisdictional equivalent, (2) an official reporter citation, (3) a docket or case number, and only then "
+            "(4) filename metadata. Return only the highest-ranked identifier available for this decision. Never return a "
+            "descriptive page title, court name, decision date, publication status, or party caption as the citation. "
+            "If the filename and decision agree after separator normalization, prefer the exact identifier format printed "
+            "in the decision and use high confidence. If only the filename identifies the decision, return its conventional form, "
             "copy the complete filename exactly into source_text, set source_location to 'original filename', and use "
             "medium or low confidence. File-safe underscores, dashes, and spaces may encode conventional separators. "
             "Use the document's own citation format and language verbatim — do not translate, "

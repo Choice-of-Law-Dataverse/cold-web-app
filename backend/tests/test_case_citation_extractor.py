@@ -137,6 +137,56 @@ async def test_filename_and_excerpts_are_supplied_to_one_model_pass() -> None:
     assert result == expected
 
 
+@pytest.mark.asyncio
+async def test_descriptive_legifrance_title_falls_back_to_ecli() -> None:
+    page_title = "Cour de cassation, civile, Chambre civile 1, 11 février 2026, 24-18.329, Publié au bulletin – Légifrance"
+    file_name = f"{page_title}.pdf"
+    ecli = "ECLI:FR:CCASS:2026:C100098"
+    text = f"{page_title}\n" + ("H" * 5000) + f"\n{ecli}\n" + ("T" * 5000)
+    doc_ctx = DocumentContext(draft_id=10, text=text, file_name=file_name)
+    initial = StepResult(
+        output=CaseCitationOutput(
+            case_citation=page_title,
+            source_text=page_title,
+            source_location="document beginning",
+            identifier_type="case title",
+            confidence="high",
+            reasoning="The page title appears in the document header.",
+        ),
+        response_id="response-title",
+    )
+    expected = StepResult(
+        output=CaseCitationOutput(
+            case_citation=ecli,
+            source_text=ecli,
+            source_location="paragraph 3",
+            identifier_type="ECLI neutral identifier",
+            confidence="high",
+            reasoning="The ECLI is printed in the decision metadata.",
+        ),
+        response_id="response-ecli",
+        tool_names=("search",),
+    )
+    run_agent = AsyncMock(side_effect=[initial, expected])
+
+    with (
+        patch("app.case_analyzer.tools.case_citation_extractor.Agent", MagicMock()),
+        patch("app.case_analyzer.tools.case_citation_extractor.OpenAIResponsesModel", MagicMock()),
+        patch("app.case_analyzer.tools.case_citation_extractor.get_openai_client", MagicMock()),
+        patch("app.case_analyzer.tools.case_citation_extractor.run_agent", run_agent),
+    ):
+        result = await extract_case_citation(doc_ctx, "Civil-law jurisdiction", "France")
+
+    assert result == expected
+    assert run_agent.await_count == 2
+    first_call, second_call = run_agent.await_args_list
+    assert "validate" not in first_call.kwargs
+    fallback_prompt = second_call.kwargs["input"][0]["content"]
+    assert "descriptive filename or page title" in fallback_prompt
+    assert "ECLI" in fallback_prompt
+    assert second_call.kwargs["validate"](expected.output, frozenset({"search"})) is None
+
+
 def test_validator_rejects_source_text_not_in_document() -> None:
     doc_ctx = DocumentContext(draft_id=3, text="Decision header without a citation.")
     output = CaseCitationOutput(
