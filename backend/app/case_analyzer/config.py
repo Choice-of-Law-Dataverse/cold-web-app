@@ -31,17 +31,17 @@ def get_openai_client() -> openai.AsyncOpenAI:
 # Task-specific model configuration
 # gpt-5.4-nano: Fast, cheap, good for classification and simple extraction
 # gpt-5.4-mini: Balanced, good for summarization and text generation
-# gpt-5.4: High reasoning capability, best for complex legal analysis
+# gpt-5.6-terra: Balanced frontier reasoning for complex legal analysis
 TASK_MODELS = {
     "abstract": "gpt-5.4-mini",
     "case_citation": "gpt-5.4-nano",
-    "col_issue": "gpt-5.4",
-    "col_section": "gpt-5.4",
-    "courts_position": "gpt-5.4",
-    "dissenting_opinions": "gpt-5.4",
+    "col_issue": "gpt-5.6-terra",
+    "col_section": "gpt-5.6-terra",
+    "courts_position": "gpt-5.6-terra",
+    "dissenting_opinions": "gpt-5.6-terra",
     "jurisdiction_classification": "gpt-5.4-nano",
     "legal_system": "gpt-5.4-nano",
-    "obiter_dicta": "gpt-5.4",
+    "obiter_dicta": "gpt-5.6-terra",
     "pil_provisions": "gpt-5.4-nano",
     "relevant_facts": "gpt-5.4-mini",
     "themes": "gpt-5.4-nano",
