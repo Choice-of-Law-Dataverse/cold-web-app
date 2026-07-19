@@ -82,8 +82,7 @@ const props = defineProps<{
 
 function isCompatible(
   field:
-    | "compatibleWithTheUncitralModelLaw"
-    | "compatibleWithTheHcchPrinciples",
+    "compatibleWithTheUncitralModelLaw" | "compatibleWithTheHcchPrinciples",
 ): boolean {
   return isTruthy(props.data[field]);
 }
