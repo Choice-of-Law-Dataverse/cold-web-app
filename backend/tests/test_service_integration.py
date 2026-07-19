@@ -259,7 +259,7 @@ class TestResumeFromCache:
                 "identifier_type": None,
                 "confidence": "low",
                 "reasoning": "Not found",
-                "_evidence": {"navigation_tools": ["search"], "policy_version": 6},
+                "_evidence": {"navigation_tools": ["search"], "policy_version": 7},
             },
         }
         citation_mock = AsyncMock(return_value=_step(CITATION))
@@ -320,7 +320,7 @@ class TestResumeFromCache:
         citation_event = next(event for event in events if event["step"] == "case_citation" and event["status"] == "completed")
         assert citation_event["data"]["_evidence"] == {
             "navigation_tools": ["read_head", "search"],
-            "policy_version": 6,
+            "policy_version": 7,
         }
         assert citation_event["data"]["case_citation"] == CITATION.case_citation
         assert citation_event["data"]["source_text"] == CITATION.source_text

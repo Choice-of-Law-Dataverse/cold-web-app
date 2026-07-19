@@ -5,7 +5,6 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 
 from app.case_analyzer.tools.case_citation_extractor import (
-    _FilenameCitationCandidate,
     _validate_citation_against_document,
     extract_case_citation,
 )
@@ -58,18 +57,18 @@ async def test_extractor_receives_document_head_and_tail() -> None:
     assert tail_citation in prompt_text
     assert middle_citation not in prompt_text
     assert omitted_marker not in prompt_text
-    validator = run_call.kwargs["validate"]
-    assert validator(expected.output, frozenset()) is None
+    assert "validate" not in run_call.kwargs
+    assert _validate_citation_against_document(doc_ctx, expected.output, frozenset()) is None
     assert result == expected
 
 
 @pytest.mark.asyncio
-async def test_missing_citation_is_left_to_model_without_metadata_shortcuts() -> None:
+async def test_missing_citation_uses_navigation_model_fallback() -> None:
     doc_ctx = DocumentContext(
         draft_id=2,
         text="The extracted PDF text does not contain its own header.",
     )
-    expected = StepResult(
+    initial = StepResult(
         output=CaseCitationOutput(
             case_citation="NA",
             source_text=None,
@@ -78,9 +77,10 @@ async def test_missing_citation_is_left_to_model_without_metadata_shortcuts() ->
             confidence="low",
             reasoning="Not found.",
         ),
-        response_id="response-2",
+        response_id="response-1",
     )
-    run_agent = AsyncMock(return_value=expected)
+    expected = StepResult(output=initial.output, response_id="response-2", tool_names=("search",))
+    run_agent = AsyncMock(side_effect=[initial, expected])
 
     with (
         patch("app.case_analyzer.tools.case_citation_extractor.Agent", MagicMock()),
@@ -91,30 +91,31 @@ async def test_missing_citation_is_left_to_model_without_metadata_shortcuts() ->
         result = await extract_case_citation(doc_ctx, "Civil-law jurisdiction", "Switzerland")
 
     assert result == expected
-    run_agent.assert_awaited_once()
+    assert run_agent.await_count == 2
+    first_call, second_call = run_agent.await_args_list
+    assert "validate" not in first_call.kwargs
+    assert "validate" in second_call.kwargs
+    assert "navigation fallback" not in first_call.kwargs["input"][0]["content"]
+    assert "Use the navigation tools" in second_call.kwargs["input"][0]["content"]
 
 
 @pytest.mark.asyncio
-async def test_strong_filename_candidate_uses_isolated_fast_path() -> None:
+async def test_filename_and_excerpts_are_supplied_to_one_model_pass() -> None:
     file_name = "4A_305_2025 13.03.2026.pdf"
-    decision_text = "Decision text with unrelated choice-of-law analysis."
+    decision_text = "4A_305/2025 13.03.2026\nDecision text with unrelated choice-of-law analysis."
     doc_ctx = DocumentContext(draft_id=3, text=decision_text, file_name=file_name)
     expected = StepResult(
         output=CaseCitationOutput(
             case_citation="4A_305/2025",
-            source_text=file_name,
-            source_location="original filename",
+            source_text="4A_305/2025",
+            source_location="document beginning",
             identifier_type="docket number",
-            confidence="medium",
-            reasoning="Derived from the identifier-shaped filename segment '4A_305_2025'.",
+            confidence="high",
+            reasoning="The filename and document header identify the decision as 4A_305/2025.",
         ),
         response_id="response-3",
     )
-    candidate_step = StepResult(
-        output=_FilenameCitationCandidate(case_citation="4A_305/2025", identifier_type="docket number"),
-        response_id="response-3",
-    )
-    run_agent = AsyncMock(return_value=candidate_step)
+    run_agent = AsyncMock(return_value=expected)
 
     with (
         patch("app.case_analyzer.tools.case_citation_extractor.Agent", MagicMock()),
@@ -127,11 +128,11 @@ async def test_strong_filename_candidate_uses_isolated_fast_path() -> None:
     run_call = run_agent.await_args
     assert run_call is not None
     prompt = run_call.kwargs["input"]
-    assert file_name in prompt
-    assert "Identifier-shaped segment(s): 4A_305_2025" in prompt
-    assert decision_text not in prompt
-    assert "previous_response_id" not in run_call.kwargs
-    assert run_call.kwargs["validate"](candidate_step.output, frozenset()) is None
+    prompt_text = prompt[0]["content"]
+    assert file_name in prompt_text
+    assert "Identifier-like filename segments: 4A_305_2025" in prompt_text
+    assert decision_text in prompt_text
+    assert "validate" not in run_call.kwargs
     assert result.tool_names == ()
     assert result == expected
 
@@ -220,17 +221,33 @@ def test_validator_rejects_na_when_filename_contains_strong_identifier_candidate
 
 def test_validator_rejects_adjacent_date_in_filename_citation() -> None:
     file_name = "4A_305_2025 13.03.2026.pdf"
-    doc_ctx = DocumentContext(draft_id=8, text="Decision text.", file_name=file_name)
+    source_text = "4A_305/2025 13.03.2026"
+    doc_ctx = DocumentContext(draft_id=8, text=f"{source_text}\nDecision text.", file_name=file_name)
     output = CaseCitationOutput(
-        case_citation="4A_305/2025 13.03.2026",
-        source_text=file_name,
-        source_location="original filename",
+        case_citation=source_text,
+        source_text=source_text,
+        source_location="document beginning",
         identifier_type="docket number",
-        confidence="medium",
-        reasoning="Derived from the filename.",
+        confidence="high",
+        reasoning="Found in the document header.",
     )
 
     error = _validate_citation_against_document(doc_ctx, output, frozenset())
 
     assert error is not None
-    assert "Exclude adjacent dates" in error
+    assert "adjacent decision date" in error
+
+
+def test_validator_rejects_verbose_or_issue_focused_reasoning() -> None:
+    citation = "BGE 150 III 123"
+    doc_ctx = DocumentContext(draft_id=9, text=citation)
+    output = CaseCitationOutput(
+        case_citation=citation,
+        source_text=citation,
+        source_location="document beginning",
+        identifier_type="reporter citation",
+        confidence="high",
+        reasoning=" ".join(f"irrelevant-detail-{index}" for index in range(30)),
+    )
+
+    assert _validate_citation_against_document(doc_ctx, output, frozenset()) is not None

@@ -56,7 +56,7 @@ logger = logging.getLogger(__name__)
 _EVIDENCE_KEY = "_evidence"
 _NAVIGATION_TOOLS_KEY = "navigation_tools"
 _POLICY_VERSION_KEY = "policy_version"
-_EVIDENCE_POLICY_VERSION = 6
+_EVIDENCE_POLICY_VERSION = 7
 
 
 async def detect_jurisdiction(text: str) -> JurisdictionOutput:
