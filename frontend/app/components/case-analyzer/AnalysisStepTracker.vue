@@ -53,10 +53,10 @@ function getStatusColor(status: string): string {
 <template>
   <UCard>
     <template #header>
-      <CardHeaderModern>
+      <div>
         <h3 class="font-semibold text-gray-900 dark:text-white">Analysis</h3>
         <p class="text-xs text-gray-500 dark:text-gray-400">Steps</p>
-      </CardHeaderModern>
+      </div>
     </template>
 
     <div class="flex flex-row flex-wrap gap-3 lg:flex-col">
