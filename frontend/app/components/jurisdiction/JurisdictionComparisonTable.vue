@@ -103,72 +103,8 @@
               </button>
             </div>
           </div>
-          <div
-            v-if="matchStats && showCaveats"
-            class="comparison-caveats__body"
-          >
-            <p>A few caveats should be expressed at the outset:</p>
-            <ul>
-              <li>
-                Simplification may be necessary to concentrate on a limited
-                number of key options that legislators, courts, or further
-                authorities may have when implementing, interpreting, or
-                applying a specific rule regarding an issue addressed in the
-                <NuxtLink to="/learn/methodology#questionnaire">
-                  Questionnaire </NuxtLink
-                >.
-              </li>
-              <li>
-                Similarly, it is difficult to adequately compare the individual
-                instruments or jurisdictions in view of the different legal
-                methods used in various parts of the world, and the varying
-                degree of sophistication. A certain degree of asymmetry of
-                information must be taken into consideration; while some
-                specialists were able to rely on sophisticated codifications of
-                PIL rules, or numerous court decisions and academic writings,
-                such privileges were not available to specialists of some of the
-                countries where party choice of law is limited, or rarely
-                practiced.
-              </li>
-              <li>
-                Finally, CoLD deals with legal cultures that address choice of
-                law problems in different ways, as prominently illustrated by
-                the dichotomy between common-law and civil-law jurisdictions.
-                For example, various jurisdictions based in the common-law
-                tradition have not enacted PIL codifications addressing party
-                choice of law, whereas many civil law-based jurisdictions have
-                enacted, or are in the process of enacting, such codifications.
-                These differences have a direct impact on the methods used by
-                courts and practitioners to apply, and interpret, rules dealing
-                with choice of law, the results of which are sometimes difficult
-                to compare.
-              </li>
-              <li>
-                At times, a sophisticated user may find that the Jurisdiction
-                Comparison tool is an attempt to compare apples with oranges.
-                This phenomenon is not atypical in comparative law. We strongly
-                recommend consulting the additional information linked to the
-                answers (by clicking on it).
-              </li>
-            </ul>
-            <h4 class="comparison-caveats__heading">
-              Availability of information
-            </h4>
-            <p>
-              Many specialists in private international law, with a focus on
-              their respective jurisdictions, have contributed to the data
-              collection. Their names are indicated in the country report.
-              Nevertheless, certain jurisdictions may contain more data points
-              than others. This might be related to:
-            </p>
-            <ul>
-              <li>availability of information about choice of law rules;</li>
-              <li>
-                importance of the jurisdiction from an economic, social, or
-                cultural perspective;
-              </li>
-              <li>availability of specialists.</li>
-            </ul>
+          <div v-if="matchStats && showCaveats" class="contents">
+            <ComparisonCaveats />
           </div>
         </div>
 
@@ -281,56 +217,7 @@
             :class="{ 'overflow-x-auto': isScrollable }"
           >
             <div class="comparison-grid" :style="{ gridTemplateColumns }">
-              <div
-                class="comparison-header-cell sticky top-0 bg-white py-3"
-                :class="isScrollable ? 'sticky-col-1' : ''"
-              >
-                <span class="comparison-header-label">Question</span>
-              </div>
-              <div
-                v-for="(jurisdiction, index) in jurisdictions"
-                :key="'h-' + (jurisdiction.coldId || jurisdiction.name)"
-                class="comparison-header-cell sticky top-0 bg-white py-3 text-center"
-                :class="index === 0 && isScrollable ? 'sticky-col-2' : ''"
-                :style="
-                  index === 0 && isScrollable ? { left: stickyColLeft } : {}
-                "
-              >
-                <button
-                  type="button"
-                  class="jurisdiction-action-button"
-                  :class="{ removable: index > 0 }"
-                  :aria-label="
-                    index > 0
-                      ? `Remove ${jurisdiction.name} from comparison`
-                      : jurisdiction.name
-                  "
-                  :disabled="index === 0"
-                  @click="
-                    index > 0 ? removeJurisdiction(jurisdiction.coldId) : null
-                  "
-                >
-                  <img
-                    v-if="jurisdiction.avatar"
-                    :src="jurisdiction.avatar"
-                    :alt="`${jurisdiction.name} flag`"
-                    class="h-3.5 w-5 flex-shrink-0 rounded-sm object-cover"
-                  />
-                  <span class="min-w-0 truncate">{{
-                    jurisdictionLabel(jurisdiction)
-                  }}</span>
-                  <UIcon
-                    v-if="index > 0"
-                    name="i-heroicons-x-mark-20-solid"
-                    class="h-4 w-4 flex-shrink-0"
-                  />
-                </button>
-              </div>
-              <div
-                class="comparison-header-cell comparison-header-cell--match sticky top-0 bg-white py-3"
-                :class="isScrollable ? 'sticky-col-match' : ''"
-                aria-hidden="true"
-              />
+              <ComparisonHeader />
 
               <template v-for="item in groupedRows" :key="item.key">
                 <div
@@ -345,99 +232,7 @@
                     </span>
                   </span>
                 </div>
-                <div v-else class="comparison-row">
-                  <div
-                    :id="`question-${item.row.id}`"
-                    class="comparison-cell comparison-cell--question text-sm whitespace-pre-line"
-                    :class="[
-                      { 'font-semibold': isBoldQuestion(item.row.id) },
-                      { 'sticky-col-1': isScrollable },
-                    ]"
-                    :style="{ paddingLeft: `${item.row.level * 2}em` }"
-                  >
-                    {{ item.row.question }}
-                  </div>
-
-                  <div
-                    v-for="(jurisdiction, jIndex) in jurisdictions"
-                    :key="jurisdiction.coldId || jurisdiction.name"
-                    class="comparison-cell comparison-cell--answer"
-                    :class="{ 'sticky-col-2': jIndex === 0 && isScrollable }"
-                    :style="
-                      jIndex === 0 && isScrollable
-                        ? { left: stickyColLeft }
-                        : {}
-                    "
-                  >
-                    <div
-                      v-if="
-                        answersLoading &&
-                        !hasAnswersForJurisdiction(jurisdiction.coldId)
-                      "
-                    >
-                      <USkeleton class="h-4 w-16" />
-                    </div>
-                    <UTooltip
-                      v-else-if="
-                        jurisdiction.coldId &&
-                        item.row.answers?.[jurisdiction.coldId]
-                      "
-                      :text="item.row.answers[jurisdiction.coldId]"
-                      :disabled="
-                        shouldShowDash(item.row.answers[jurisdiction.coldId])
-                      "
-                      :delay-duration="300"
-                    >
-                      <a
-                        :href="getAnswerLink(jurisdiction.coldId, item.row.id)"
-                        class="answer-button"
-                        @click="
-                          handleAnswerClick(
-                            $event,
-                            jurisdiction.coldId,
-                            item.row.id,
-                          )
-                        "
-                      >
-                        <template
-                          v-if="
-                            shouldShowDash(
-                              item.row.answers[jurisdiction.coldId],
-                            )
-                          "
-                        >
-                          —
-                        </template>
-                        <span v-else class="line-clamp-2">{{
-                          item.row.answers[jurisdiction.coldId]
-                        }}</span>
-                      </a>
-                    </UTooltip>
-                    <span v-else class="text-gray-400">—</span>
-                  </div>
-
-                  <div
-                    class="comparison-cell comparison-cell--match"
-                    :class="isScrollable ? 'sticky-col-match' : ''"
-                  >
-                    <USkeleton
-                      v-if="!allJurisdictionsHaveAnswersLoaded"
-                      class="h-4 w-4 rounded-full"
-                    />
-                    <UIcon
-                      v-else-if="item.row.matchStatus === 'match'"
-                      name="i-material-symbols:check-circle-rounded"
-                      class="match-indicator match-indicator--match"
-                      :title="`All ${jurisdictions.length} jurisdictions agree`"
-                    />
-                    <UIcon
-                      v-else-if="item.row.matchStatus === 'mismatch'"
-                      name="i-material-symbols:remove-rounded"
-                      class="match-indicator match-indicator--mismatch"
-                      title="Answers differ"
-                    />
-                  </div>
-                </div>
+                <ComparisonRow v-else :row="item.row" />
               </template>
             </div>
           </div>
@@ -555,7 +350,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch, onMounted } from "vue";
+import { computed, ref, watch, onMounted, provide } from "vue";
 import { useRoute } from "vue-router";
 import { useQuestions } from "@/composables/useFullTable";
 import {
@@ -569,6 +364,11 @@ import LoadingBar from "@/components/layout/LoadingBar.vue";
 import InlineError from "@/components/ui/InlineError.vue";
 import { useEntityDrawer } from "@/composables/useEntityDrawer";
 import type { JurisdictionOption } from "@/types/analyzer";
+import ComparisonCaveats from "@/components/jurisdiction/ComparisonCaveats.vue";
+import ComparisonHeader from "@/components/jurisdiction/ComparisonHeader.vue";
+import ComparisonRow from "@/components/jurisdiction/ComparisonRow.vue";
+import { ComparisonStateKey } from "@/components/jurisdiction/comparisonState";
+import type { Row } from "@/components/jurisdiction/comparisonState";
 
 const { openDrawer } = useEntityDrawer();
 
@@ -788,17 +588,6 @@ const getMatchStatus = (answers: Record<string, string>): MatchStatus => {
   return new Set(normalized).size === 1 ? "match" : "mismatch";
 };
 
-type Row = {
-  id: string;
-  question: string | null | undefined;
-  answer?: string;
-  answerLink?: string;
-  answers?: Record<string, string>;
-  matchStatus: MatchStatus;
-  level: number;
-  theme: string;
-};
-
 type MatchStats = { matching: number; total: number; percentage: number };
 
 type GroupedRow =
@@ -937,6 +726,22 @@ const matchStats = computed(() => {
   if (isSingleJurisdiction.value) return null;
   if (!allJurisdictionsHaveAnswersLoaded.value) return null;
   return aggregateMatchStats(rows.value);
+});
+
+provide(ComparisonStateKey, {
+  jurisdictions,
+  answersMap,
+  removeJurisdiction,
+  answersLoading,
+  isScrollable,
+  stickyColLeft,
+  allJurisdictionsHaveAnswersLoaded,
+  hasAnswersForJurisdiction,
+  shouldShowDash,
+  handleAnswerClick,
+  getAnswerLink,
+  isBoldQuestion,
+  jurisdictionLabel,
 });
 </script>
 
@@ -1254,17 +1059,17 @@ const matchStats = computed(() => {
   color: var(--color-cold-night);
 }
 
-.comparison-caveats__body p,
-.comparison-caveats__body ul {
+.comparison-caveats__body :deep(p),
+.comparison-caveats__body :deep(ul) {
   margin: 0 0 0.75rem;
 }
 
-.comparison-caveats__body ul {
+.comparison-caveats__body :deep(ul) {
   padding-left: 1.25rem;
   list-style: disc;
 }
 
-.comparison-caveats__body li + li {
+.comparison-caveats__body :deep(li + li) {
   margin-top: 0.5rem;
 }
 
@@ -1273,7 +1078,7 @@ const matchStats = computed(() => {
   text-decoration: underline;
 }
 
-.comparison-caveats__heading {
+.comparison-caveats__body :deep(h4) {
   margin: 1rem 0 0.5rem;
   font-size: 0.875rem;
   font-weight: 600;
