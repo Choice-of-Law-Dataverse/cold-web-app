@@ -8,6 +8,7 @@ from ..config import get_model, get_openai_client
 from ..prompts import get_prompt_module
 from ..runner import run_agent
 from ..utils import generate_system_prompt
+from ..validation import validate_relevant_facts
 from .document_nav import NAV_TOOLS, DocumentContext
 from .models import ColSectionOutput, RelevantFactsOutput, StepResult
 
@@ -19,7 +20,6 @@ async def extract_relevant_facts(
     col_section_output: ColSectionOutput,
     legal_system: str,
     jurisdiction: str | None,
-    previous_response_id: str | None = None,
 ) -> StepResult[RelevantFactsOutput]:
     with logfire.span("relevant_facts"):
         FACTS_PROMPT = get_prompt_module(legal_system, "analysis", jurisdiction).FACTS_PROMPT
@@ -37,4 +37,9 @@ async def extract_relevant_facts(
                 openai_client=get_openai_client(),
             ),
         )
-        return await run_agent(agent, input=prompt, context=doc_ctx, previous_response_id=previous_response_id)
+        return await run_agent(
+            agent,
+            input=prompt,
+            context=doc_ctx,
+            validate=validate_relevant_facts,
+        )

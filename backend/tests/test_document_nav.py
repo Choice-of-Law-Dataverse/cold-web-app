@@ -16,6 +16,7 @@ from app.case_analyzer.tools.document_nav import (
     get_paragraph_containing,
     list_headings,
     read_head,
+    read_paragraphs,
     read_section,
     read_tail,
     read_window,
@@ -94,6 +95,9 @@ class TestDocumentContext:
         ctx = DocumentContext(draft_id=1, text=text)
         assert len(ctx.paragraphs) == 2
 
+    def test_normalized_paragraphs_are_precomputed(self, doc: DocumentContext) -> None:
+        assert len(doc.normalized_paragraphs) == len(doc.paragraphs)
+
 
 class TestTruncate:
     def test_short_text_unchanged(self) -> None:
@@ -124,6 +128,16 @@ class TestDetectHeadings:
         headings = _detect_headings(paragraphs)
         assert any("CHOICE OF LAW" in h for h, _ in headings)
 
+    def test_non_ascii_all_caps_heading_detected(self) -> None:
+        paragraphs = ["RÈGLES DE CONFLIT", "La loi applicable est..."]
+        headings = _detect_headings(paragraphs)
+        assert headings == [("RÈGLES DE CONFLIT", 0)]
+
+    def test_non_latin_all_caps_heading_detected(self) -> None:
+        paragraphs = ["ПРИМЕНИМОЕ ПРАВО", "Суд установил применимое право."]
+        headings = _detect_headings(paragraphs)
+        assert headings == [("ПРИМЕНИМОЕ ПРАВО", 0)]
+
     def test_plain_body_not_a_heading(self) -> None:
         paragraphs = ["The court held that Article 3 applies."]
         assert _detect_headings(paragraphs) == []
@@ -134,11 +148,42 @@ class TestSearchTool:
     async def test_exact_match_found(self, doc: DocumentContext) -> None:
         result = await _invoke(search, _make_ctx(doc), {"query": "party autonomy"})
         assert "party autonomy" in result.lower()
+        assert "[paragraph " in result
 
     @pytest.mark.asyncio
     async def test_case_insensitive(self, doc: DocumentContext) -> None:
         result = await _invoke(search, _make_ctx(doc), {"query": "PLAINTIFF"})
         assert "plaintiff" in result.lower()
+
+    @pytest.mark.asyncio
+    async def test_multilingual_unicode_casefold(self) -> None:
+        text = "Das maßgebliche Recht bestimmt sich nach dem engsten Zusammenhang."
+        result = await _invoke(
+            search,
+            _make_ctx(DocumentContext(draft_id=1, text=text)),
+            {"query": "MASSGEBLICHE RECHT"},
+        )
+        assert text in result
+
+    @pytest.mark.asyncio
+    async def test_accent_insensitive_search_preserves_source_text(self) -> None:
+        text = "La loi étrangère régit les obligations contractuelles."
+        result = await _invoke(
+            search,
+            _make_ctx(DocumentContext(draft_id=1, text=text)),
+            {"query": "loi etrangere"},
+        )
+        assert text in result
+
+    @pytest.mark.asyncio
+    async def test_pdf_line_break_hyphenation_is_ignored(self) -> None:
+        text = "Das anzuwen-\ndende Recht ist nach dem IPRG zu bestimmen."
+        result = await _invoke(
+            search,
+            _make_ctx(DocumentContext(draft_id=1, text=text)),
+            {"query": "anzuwendende Recht"},
+        )
+        assert text in result
 
     @pytest.mark.asyncio
     async def test_no_match_returns_sentinel(self, doc: DocumentContext) -> None:
@@ -165,6 +210,37 @@ class TestGetParagraphContaining:
         result = await _invoke(get_paragraph_containing, _make_ctx(doc), {"text_snippet": "Acme Corp"})
         assert "Acme Corp" in result
         assert len(result) > len("Acme Corp")
+
+    @pytest.mark.asyncio
+    async def test_matches_normalized_multilingual_snippet(self) -> None:
+        text = "La règle de conflit désigne la loi applicable."
+        result = await _invoke(
+            get_paragraph_containing,
+            _make_ctx(DocumentContext(draft_id=1, text=text)),
+            {"text_snippet": "regle de conflit"},
+        )
+        assert text in result
+
+
+class TestReadParagraphs:
+    @pytest.mark.asyncio
+    async def test_reads_search_hit_and_following_paragraph(self, doc: DocumentContext) -> None:
+        search_result = await _invoke(search, _make_ctx(doc), {"query": "Background Facts"})
+        paragraph_number = int(re.search(r"\[paragraph (\d+)\]", search_result).group(1))  # type: ignore[union-attr]
+
+        result = await _invoke(
+            read_paragraphs,
+            _make_ctx(doc),
+            {"start_paragraph": paragraph_number, "count": 2},
+        )
+
+        assert "Background Facts" in result
+        assert "sales agreement" in result
+
+    @pytest.mark.asyncio
+    async def test_out_of_range_returns_sentinel(self, doc: DocumentContext) -> None:
+        result = await _invoke(read_paragraphs, _make_ctx(doc), {"start_paragraph": 999})
+        assert result == "[paragraph out of range]"
 
     @pytest.mark.asyncio
     async def test_not_found_returns_sentinel(self, doc: DocumentContext) -> None:

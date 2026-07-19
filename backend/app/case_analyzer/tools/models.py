@@ -17,6 +17,7 @@ def _strip_repetitive_suffix(text: str) -> str:
 class StepResult[T]:
     output: T
     response_id: str | None = None
+    tool_names: tuple[str, ...] = ()
 
 
 class ConfidenceReasoningModel(BaseModel):
@@ -48,12 +49,46 @@ class ColSectionOutput(ConfidenceReasoningModel):
 class CaseCitationOutput(ConfidenceReasoningModel):
     case_citation: str = Field(
         description=(
-            "Canonical case citation as it appears in the decision (e.g., 'BGE 138 III 232', "
-            "'OGH 6 Ob 24/19f', '[2023] EWHC 123 (Comm)'). Use the document's own format and "
-            "language; do not translate or expand court names, abbreviations, or docket numbers. "
-            "Return 'NA' if no citation is present in the text."
+            "Canonical case citation exactly as it appears in the decision. Use the document's own format and language; "
+            "do not translate or expand court names, abbreviations, or docket numbers. If the decision text contains no "
+            "citation but the original filename unambiguously encodes one, separator characters may be normalized into "
+            "its conventional form. Return 'NA' when neither source provides a citation."
         )
     )
+    source_text: str | None = Field(
+        description=(
+            "Exact verbatim line or compact passage from the decision containing the case citation, or the complete "
+            "original filename when that is the only source. Return null when case_citation is 'NA'."
+        )
+    )
+    source_location: str | None = Field(
+        description=(
+            "Location of source_text: 'document beginning', 'document end', 'original filename', or a numbered paragraph "
+            "returned by a navigation tool. Return null when case_citation is 'NA'."
+        )
+    )
+    identifier_type: str | None = Field(
+        description=(
+            "Short generic description of the identifier, such as neutral citation, docket number, reporter citation, "
+            "or ECLI. Return null when case_citation is 'NA'."
+        )
+    )
+
+    @model_validator(mode="after")
+    def _normalize_negative_evidence(self) -> Self:
+        placeholders = {"", "na", "n/a", "none", "not applicable", "unknown"}
+
+        def is_placeholder(value: str | None) -> bool:
+            return value is None or value.strip().lower().rstrip(".") in placeholders
+
+        if is_placeholder(self.case_citation):
+            if is_placeholder(self.source_text):
+                self.source_text = None
+            if is_placeholder(self.source_location):
+                self.source_location = None
+            if is_placeholder(self.identifier_type):
+                self.identifier_type = None
+        return self
 
 
 class RelevantFactsOutput(ConfidenceReasoningModel):

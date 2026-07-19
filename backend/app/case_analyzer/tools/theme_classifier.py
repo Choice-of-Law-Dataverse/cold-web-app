@@ -8,6 +8,7 @@ from ..config import get_model, get_openai_client
 from ..prompts import get_prompt_module
 from ..runner import run_agent
 from ..utils import THEMES_TABLE_STR, generate_system_prompt
+from ..validation import validate_themes
 from .document_nav import NAV_TOOLS, DocumentContext
 from .models import StepResult, ThemeClassificationOutput
 
@@ -19,7 +20,6 @@ async def classify_themes(
     col_section: str,
     legal_system: str,
     jurisdiction: str | None,
-    previous_response_id: str | None = None,
 ) -> StepResult[ThemeClassificationOutput]:
     with logfire.span("themes"):
         PIL_THEME_PROMPT = get_prompt_module(legal_system, "theme", jurisdiction).PIL_THEME_PROMPT
@@ -38,8 +38,12 @@ async def classify_themes(
                     openai_client=get_openai_client(),
                 ),
             )
-            return await run_agent(agent, input=prompt, context=doc_ctx, previous_response_id=previous_response_id)
+            return await run_agent(
+                agent,
+                input=prompt,
+                context=doc_ctx,
+                validate=validate_themes,
+            )
         except Exception as e:
             logger.error("Error during theme classification: %s", e)
-            fallback_reason = f"Classification failed: {str(e)}"
-            return StepResult(output=ThemeClassificationOutput(themes=["NA"], confidence="low", reasoning=fallback_reason))
+            raise

@@ -9,6 +9,7 @@ from ..prompts import get_prompt_module
 from ..runner import run_agent
 from ..utils import generate_system_prompt
 from ..utils.legal_system import requires_common_law_steps
+from ..validation import validate_abstract
 from .document_nav import NAV_TOOLS, DocumentContext
 from .models import (
     AbstractOutput,
@@ -36,7 +37,6 @@ async def extract_abstract(
     court_position_output: CourtsPositionOutput,
     obiter_dicta_output: ObiterDictaOutput | None = None,
     dissenting_opinions_output: DissentingOpinionsOutput | None = None,
-    previous_response_id: str | None = None,
 ) -> StepResult[AbstractOutput]:
     with logfire.span("abstract"):
         ABSTRACT_PROMPT = get_prompt_module(legal_system, "analysis", jurisdiction).ABSTRACT_PROMPT
@@ -73,4 +73,9 @@ async def extract_abstract(
                 openai_client=get_openai_client(),
             ),
         )
-        return await run_agent(agent, input=prompt, context=doc_ctx, previous_response_id=previous_response_id)
+        return await run_agent(
+            agent,
+            input=prompt,
+            context=doc_ctx,
+            validate=validate_abstract,
+        )

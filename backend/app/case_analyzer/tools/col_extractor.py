@@ -8,6 +8,7 @@ from ..config import get_model, get_openai_client
 from ..prompts.col_section import COL_SECTION_PROMPT
 from ..runner import run_agent
 from ..utils import generate_system_prompt
+from ..validation import validate_col_section
 from .document_nav import NAV_TOOLS, DocumentContext
 from .models import ColSectionOutput, StepResult
 
@@ -16,7 +17,6 @@ logger = logging.getLogger(__name__)
 
 async def extract_col_section(
     doc_ctx: DocumentContext,
-    previous_response_id: str | None = None,
 ) -> StepResult[ColSectionOutput]:
     with logfire.span("col_section"):
         agent = Agent[DocumentContext](
@@ -31,7 +31,12 @@ async def extract_col_section(
         )
 
         try:
-            return await run_agent(agent, input=COL_SECTION_PROMPT, context=doc_ctx, previous_response_id=previous_response_id)
+            return await run_agent(
+                agent,
+                input=COL_SECTION_PROMPT,
+                context=doc_ctx,
+                validate=validate_col_section,
+            )
         except Exception as e:
             logger.error("Error in extract_col_section: %s", e)
             raise

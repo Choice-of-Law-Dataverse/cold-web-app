@@ -8,6 +8,7 @@ from ..config import get_model, get_openai_client
 from ..prompts import get_prompt_module
 from ..runner import run_agent
 from ..utils import generate_system_prompt
+from ..validation import validate_dissenting_opinions
 from .document_nav import NAV_TOOLS, DocumentContext
 from .models import (
     ColIssueOutput,
@@ -27,7 +28,6 @@ async def extract_dissenting_opinions(
     jurisdiction: str | None,
     themes_output: ThemeClassificationOutput,
     col_issue_output: ColIssueOutput,
-    previous_response_id: str | None = None,
 ) -> StepResult[DissentingOpinionsOutput]:
     with logfire.span("dissenting_opinions"):
         prompt_module = get_prompt_module(legal_system, "analysis", jurisdiction)
@@ -53,4 +53,9 @@ async def extract_dissenting_opinions(
                 openai_client=get_openai_client(),
             ),
         )
-        return await run_agent(agent, input=prompt, context=doc_ctx, previous_response_id=previous_response_id)
+        return await run_agent(
+            agent,
+            input=prompt,
+            context=doc_ctx,
+            validate=validate_dissenting_opinions,
+        )

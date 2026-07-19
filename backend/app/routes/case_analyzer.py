@@ -260,6 +260,7 @@ async def analyze_document(
             # Get full text from Azure blob storage
             legacy_data = record.get("data", {})
             pdf_url = legacy_data.get("pdf_url")
+            file_name = legacy_data.get("file_name")
             if not pdf_url:
                 logger.error("No pdf_url found for draft: %d", draft_id)
                 error_event = json.dumps(
@@ -323,6 +324,7 @@ async def analyze_document(
                         cached_results,
                         draft_id=draft_id,
                         jurisdiction_override=jurisdiction_override,
+                        file_name=file_name if isinstance(file_name, str) else None,
                     )
                     generator_exhausted = False
                     analysis_completed = False

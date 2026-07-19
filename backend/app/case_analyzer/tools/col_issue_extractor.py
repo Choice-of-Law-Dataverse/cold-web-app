@@ -8,6 +8,7 @@ from ..config import get_model, get_openai_client
 from ..prompts import get_prompt_module
 from ..runner import run_agent
 from ..utils import filter_themes_by_list, generate_system_prompt
+from ..validation import validate_col_issue
 from .document_nav import NAV_TOOLS, DocumentContext
 from .models import ColIssueOutput, ColSectionOutput, StepResult, ThemeClassificationOutput
 
@@ -20,7 +21,6 @@ async def extract_col_issue(
     legal_system: str,
     jurisdiction: str | None,
     themes_output: ThemeClassificationOutput,
-    previous_response_id: str | None = None,
 ) -> StepResult[ColIssueOutput]:
     with logfire.span("col_issue"):
         COL_ISSUE_PROMPT = get_prompt_module(legal_system, "analysis", jurisdiction).COL_ISSUE_PROMPT
@@ -41,4 +41,9 @@ async def extract_col_issue(
                 openai_client=get_openai_client(),
             ),
         )
-        return await run_agent(agent, input=prompt, context=doc_ctx, previous_response_id=previous_response_id)
+        return await run_agent(
+            agent,
+            input=prompt,
+            context=doc_ctx,
+            validate=validate_col_issue,
+        )

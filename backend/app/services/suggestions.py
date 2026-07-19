@@ -56,6 +56,16 @@ class SuggestionService:
         return None
 
     @staticmethod
+    def _normalize_case_citation(value: Any) -> str | None:
+        """Return a persistable citation, mapping model placeholders to SQL null."""
+        if not isinstance(value, str):
+            return None
+        stripped = value.strip()
+        if stripped.lower().rstrip(".") in {"", "na", "n/a", "none", "not applicable", "unknown"}:
+            return None
+        return stripped
+
+    @staticmethod
     def _parse_json(val: Any) -> dict[str, Any] | None:
         """Parse a JSON value that may be a dict, string, or None."""
         if val is None:
@@ -110,7 +120,7 @@ class SuggestionService:
                         case_citation_value = payload["case_citation"].get("case_citation")
                     elif isinstance(payload.get("case_citation"), str):
                         case_citation_value = payload["case_citation"]
-                    values["case_citation"] = case_citation_value
+                    values["case_citation"] = self._normalize_case_citation(case_citation_value)
                 stmt = target.insert().values(**values).returning(target.c.id)
             else:
                 stmt = (
@@ -573,8 +583,12 @@ class SuggestionService:
             # Add/update the step
             current[step_name] = self._to_jsonable(step_data)
 
-            # Update the record
-            upd = sa.update(target).where(target.c.id == draft_id).values(analyzer=current)
+            # Keep the searchable column and recovery JSON synchronized in one update.
+            values: dict[str, Any] = {"analyzer": current}
+            if step_name == "case_citation" and hasattr(target.c, "case_citation"):
+                values["case_citation"] = self._normalize_case_citation(step_data.get("case_citation"))
+
+            upd = sa.update(target).where(target.c.id == draft_id).values(**values)
             session.execute(upd)
             session.commit()
 

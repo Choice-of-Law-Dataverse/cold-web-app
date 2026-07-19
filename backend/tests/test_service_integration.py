@@ -43,7 +43,14 @@ def _step(output: object, response_id: str = "resp-001") -> StepResult:
 
 COL = ColSectionOutput(col_sections=["Art. 3 applies."], confidence="high", reasoning="ok")
 THEMES = ThemeClassificationOutput(themes=["Party autonomy"], confidence="high", reasoning="ok")
-CITATION = CaseCitationOutput(case_citation="BGE 123 III 456", confidence="high", reasoning="ok")
+CITATION = CaseCitationOutput(
+    case_citation="BGE 123 III 456",
+    source_text="BGE 123 III 456",
+    source_location="document beginning",
+    identifier_type="reporter citation",
+    confidence="high",
+    reasoning="ok",
+)
 FACTS = RelevantFactsOutput(relevant_facts="The parties signed a contract.", confidence="high", reasoning="ok")
 PROVISIONS = PILProvisionsOutput(pil_provisions=["Art. 3 Rome I"], confidence="high", reasoning="ok")
 ISSUE = ColIssueOutput(col_issue="Which law governs?", confidence="high", reasoning="ok")
@@ -72,9 +79,20 @@ _COMMON_PATCHES: dict[str, AsyncMock] = {
 }
 
 
-async def _collect(jurisdiction: JurisdictionOutput, cached: dict | None = None, draft_id: int = 0) -> list[dict]:
+async def _collect(
+    jurisdiction: JurisdictionOutput,
+    cached: dict | None = None,
+    draft_id: int = 0,
+    file_name: str | None = None,
+) -> list[dict]:
     events = []
-    async for event in analyze_case_streaming("decision text", cached, draft_id=draft_id, jurisdiction_override=jurisdiction):
+    async for event in analyze_case_streaming(
+        "decision text",
+        cached,
+        draft_id=draft_id,
+        jurisdiction_override=jurisdiction,
+        file_name=file_name,
+    ):
         events.append(event)
     return events
 
@@ -87,6 +105,19 @@ def _by_step(events: list[dict]) -> dict[str, list[str]]:
 
 
 class TestCivilLawStream:
+    @pytest.mark.asyncio
+    async def test_original_filename_reaches_citation_extractor(self) -> None:
+        citation_mock = AsyncMock(return_value=_step(CITATION))
+        patches = {**_CIVIL_PATCHES, "extract_case_citation": citation_mock}
+
+        with patch.multiple(_SERVICE, **patches):
+            await _collect(_CIVIL_JURISDICTION, draft_id=1, file_name="decision-2026-XYZ.pdf")
+
+        citation_call = citation_mock.await_args
+        assert citation_call is not None
+        citation_context = citation_call.args[0]
+        assert citation_context.file_name == "decision-2026-XYZ.pdf"
+
     @pytest.mark.asyncio
     async def test_all_expected_steps_present(self) -> None:
         with patch.multiple(_SERVICE, **_CIVIL_PATCHES):
@@ -183,6 +214,122 @@ class TestResumeFromCache:
         col_events = [e for e in events if e["step"] == "col_extraction"]
         assert len(col_events) == 1
         assert col_events[0]["status"] == "completed"
+
+    @pytest.mark.asyncio
+    async def test_legacy_negative_citation_without_evidence_is_recomputed(self) -> None:
+        cached = {
+            "col_extraction": {"col_sections": ["Art. 3."], "confidence": "high", "reasoning": "ok"},
+            "case_citation": {"case_citation": "NA", "confidence": "low", "reasoning": "Not found"},
+        }
+        citation_mock = AsyncMock(return_value=_step(CITATION))
+        patches = {**_CIVIL_PATCHES, "extract_case_citation": citation_mock}
+
+        with patch.multiple(_SERVICE, **patches):
+            await _collect(_CIVIL_JURISDICTION, cached=cached, draft_id=1)
+
+        citation_mock.assert_awaited_once()
+
+    @pytest.mark.asyncio
+    async def test_inspected_negative_citation_from_older_policy_is_recomputed(self) -> None:
+        cached = {
+            "col_extraction": {"col_sections": ["Art. 3."], "confidence": "high", "reasoning": "ok"},
+            "case_citation": {
+                "case_citation": "NA",
+                "confidence": "high",
+                "reasoning": "Not found after searching",
+                "_evidence": {"navigation_tools": ["search"]},
+            },
+        }
+        citation_mock = AsyncMock(return_value=_step(CITATION))
+        patches = {**_CIVIL_PATCHES, "extract_case_citation": citation_mock}
+
+        with patch.multiple(_SERVICE, **patches):
+            await _collect(_CIVIL_JURISDICTION, cached=cached, draft_id=1)
+
+        citation_mock.assert_awaited_once()
+
+    @pytest.mark.asyncio
+    async def test_inspected_negative_citation_is_restored_from_cache(self) -> None:
+        cached = {
+            "col_extraction": {"col_sections": ["Art. 3."], "confidence": "high", "reasoning": "ok"},
+            "case_citation": {
+                "case_citation": "NA",
+                "source_text": None,
+                "source_location": None,
+                "identifier_type": None,
+                "confidence": "low",
+                "reasoning": "Not found",
+                "_evidence": {"navigation_tools": ["search"], "policy_version": 6},
+            },
+        }
+        citation_mock = AsyncMock(return_value=_step(CITATION))
+        patches = {**_CIVIL_PATCHES, "extract_case_citation": citation_mock}
+
+        with patch.multiple(_SERVICE, **patches):
+            await _collect(_CIVIL_JURISDICTION, cached=cached, draft_id=1)
+
+        citation_mock.assert_not_awaited()
+
+    @pytest.mark.asyncio
+    async def test_non_citation_step_from_context_chaining_policy_is_recomputed(self) -> None:
+        cached = {
+            "col_extraction": {"col_sections": ["Art. 3."], "confidence": "high", "reasoning": "ok"},
+            "theme_classification": {
+                "themes": ["Mandatory rules"],
+                "confidence": "high",
+                "reasoning": "Old chained-context result",
+                "_evidence": {"navigation_tools": [], "policy_version": 5},
+            },
+        }
+        theme_mock = AsyncMock(return_value=_step(THEMES))
+        patches = {**_CIVIL_PATCHES, "classify_themes": theme_mock}
+
+        with patch.multiple(_SERVICE, **patches):
+            await _collect(_CIVIL_JURISDICTION, cached=cached, draft_id=1)
+
+        theme_mock.assert_awaited_once()
+
+    @pytest.mark.asyncio
+    async def test_inspected_empty_provisions_are_restored_from_cache(self) -> None:
+        cached = {
+            "col_extraction": {"col_sections": ["Art. 3."], "confidence": "high", "reasoning": "ok"},
+            "pil_provisions": {
+                "pil_provisions": [],
+                "confidence": "medium",
+                "reasoning": "No provisions found",
+                "_evidence": {"navigation_tools": ["search"]},
+            },
+        }
+        provisions_mock = AsyncMock(return_value=_step(PROVISIONS))
+        patches = {**_CIVIL_PATCHES, "extract_pil_provisions": provisions_mock}
+
+        with patch.multiple(_SERVICE, **patches):
+            await _collect(_CIVIL_JURISDICTION, cached=cached, draft_id=1)
+
+        provisions_mock.assert_not_awaited()
+
+    @pytest.mark.asyncio
+    async def test_fresh_step_includes_persistable_tool_evidence(self) -> None:
+        citation_step = StepResult(output=CITATION, response_id="resp", tool_names=("read_head", "search"))
+        citation_mock = AsyncMock(return_value=citation_step)
+        patches = {**_CIVIL_PATCHES, "extract_case_citation": citation_mock}
+
+        with patch.multiple(_SERVICE, **patches):
+            events = await _collect(_CIVIL_JURISDICTION, draft_id=1)
+
+        citation_event = next(event for event in events if event["step"] == "case_citation" and event["status"] == "completed")
+        assert citation_event["data"]["_evidence"] == {
+            "navigation_tools": ["read_head", "search"],
+            "policy_version": 6,
+        }
+        assert citation_event["data"]["case_citation"] == CITATION.case_citation
+        assert citation_event["data"]["source_text"] == CITATION.source_text
+        assert citation_event["data"]["source_location"] == CITATION.source_location
+        assert citation_event["data"]["identifier_type"] == CITATION.identifier_type
+        citation_mock.assert_awaited_once()
+        citation_call = citation_mock.await_args
+        assert citation_call is not None
+        assert "previous_response_id" not in citation_call.kwargs
 
 
 async def _collect_auto_detect(cached: dict | None = None, draft_id: int = 0) -> list[dict]:
