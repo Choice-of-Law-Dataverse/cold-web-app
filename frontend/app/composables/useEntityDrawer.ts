@@ -1,4 +1,4 @@
-import { ref, computed } from "vue";
+import { ref, computed, inject } from "vue";
 import type { TableName } from "@/types/api";
 
 const MOBILE_BREAKPOINT = 640;
@@ -15,6 +15,7 @@ const entity = ref<DrawerEntity | null>(null);
 const history = ref<DrawerEntity[]>([]);
 
 export function useEntityDrawer() {
+  const inDrawer = inject("in-entity-drawer", false);
   const canGoBack = computed(() => history.value.length > 0);
 
   function openDrawer(
@@ -29,7 +30,16 @@ export function useEntityDrawer() {
       return;
     }
     if (entity.value) {
-      history.value = [...history.value, entity.value].slice(-MAX_HISTORY);
+      if (entity.value.coldId === coldId && entity.value.table === table) {
+        return;
+      }
+      if (inDrawer) {
+        history.value = [...history.value, entity.value].slice(-MAX_HISTORY);
+      } else {
+        history.value = [];
+      }
+    } else {
+      history.value = [];
     }
     entity.value = { coldId, table, basePath };
     if (!isOpen.value) {
