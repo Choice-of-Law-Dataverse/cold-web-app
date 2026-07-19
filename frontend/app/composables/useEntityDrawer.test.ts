@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { defineComponent } from "vue";
 import { mount } from "@vue/test-utils";
-import { useEntityDrawer } from "./useEntityDrawer";
+import { useEntityDrawer, IN_ENTITY_DRAWER_KEY } from "./useEntityDrawer";
 
 // Mock navigateTo which is a Nuxt auto-import
 const mockNavigateTo = vi.fn();
@@ -43,7 +43,7 @@ describe("useEntityDrawer", () => {
     mount(TestComponent, {
       global: {
         provide: {
-          "in-entity-drawer": inDrawer,
+          [IN_ENTITY_DRAWER_KEY as symbol]: inDrawer,
         },
       },
     });

@@ -100,7 +100,10 @@
 
 <script setup lang="ts">
 import { computed, watch, provide, type Component } from "vue";
-import { useEntityDrawer } from "@/composables/useEntityDrawer";
+import {
+  useEntityDrawer,
+  IN_ENTITY_DRAWER_KEY,
+} from "@/composables/useEntityDrawer";
 import { useEntityData } from "@/composables/useEntityData";
 import DetailRow from "@/components/ui/DetailRow.vue";
 import EntityContent from "@/components/entity/EntityContent.vue";
@@ -134,7 +137,7 @@ const contentComponents: Record<string, Component> = {
 const route = useRoute();
 const { isOpen, entity, canGoBack, closeDrawer, goBack } = useEntityDrawer();
 
-provide("in-entity-drawer", true);
+provide(IN_ENTITY_DRAWER_KEY, true);
 
 watch(
   () => route.fullPath,

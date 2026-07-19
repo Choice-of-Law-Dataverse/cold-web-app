@@ -1,5 +1,8 @@
-import { ref, computed, inject } from "vue";
+import { ref, computed, inject, type InjectionKey } from "vue";
 import type { TableName } from "@/types/api";
+
+export const IN_ENTITY_DRAWER_KEY: InjectionKey<boolean> =
+  Symbol("in-entity-drawer");
 
 const MOBILE_BREAKPOINT = 640;
 const MAX_HISTORY = 3;
@@ -15,7 +18,7 @@ const entity = ref<DrawerEntity | null>(null);
 const history = ref<DrawerEntity[]>([]);
 
 export function useEntityDrawer() {
-  const inDrawer = inject("in-entity-drawer", false);
+  const inDrawer = inject(IN_ENTITY_DRAWER_KEY, false);
   const canGoBack = computed(() => history.value.length > 0);
 
   function openDrawer(

@@ -4,6 +4,7 @@ import { ref, inject, computed } from "vue";
 import EntityDrawer from "./EntityDrawer.vue";
 import * as entityDrawerModule from "@/composables/useEntityDrawer";
 import * as entityDataModule from "@/composables/useEntityData";
+import { IN_ENTITY_DRAWER_KEY } from "@/composables/useEntityDrawer";
 
 vi.stubGlobal(
   "useRoute",
@@ -155,7 +156,7 @@ describe("EntityDrawer", () => {
         stubs: {
           USlideover: {
             setup() {
-              providedValue = inject("in-entity-drawer");
+              providedValue = inject(IN_ENTITY_DRAWER_KEY);
               return () => null;
             },
           },
