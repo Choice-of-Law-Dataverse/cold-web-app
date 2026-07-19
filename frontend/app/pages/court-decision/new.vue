@@ -97,7 +97,7 @@
         <!-- Step 2: Review & Submit -->
         <AnalysisReviewForm
           v-if="currentStep === 'analyzing'"
-          v-model:editable-form="editableForm"
+          :editable-form="editableForm"
           :document-name="selectedFile?.name || 'Unknown'"
           :selected-jurisdiction="selectedJurisdiction"
           :legal-system-type="jurisdictionInfo?.legal_system_type || ''"
@@ -119,6 +119,7 @@
 <script setup lang="ts">
 import { ref, watch, onMounted } from "vue";
 import type {
+  EditedAnalysisValues,
   JurisdictionOption,
   AnalysisStepPayload,
   JurisdictionInfo,
@@ -183,7 +184,7 @@ const {
   analysisSteps,
   stepsMap,
   getFieldStatus,
-  isFieldLoading,
+  isFieldLoading: isAnalysisStepLoading,
   updateStepStatus,
   handleUploadStepChange,
   hydrateAnalysisStepsFromResults,
@@ -193,6 +194,9 @@ const {
 const analysis = useCaseAnalyzer(analysisSteps, stepsMap, analysisResults, () =>
   populateEditableForm(),
 );
+
+const isFieldLoading = (fieldName: keyof EditedAnalysisValues) =>
+  isAnalysisStepLoading(fieldName, analysis.isAnalyzing.value);
 
 const {
   editableForm,
@@ -369,10 +373,7 @@ onMounted(async () => {
         });
       }
 
-      if (
-        result.data.status === "completed" ||
-        result.data.status === "analyzing"
-      ) {
+      if (result.data.status === "completed") {
         currentStep.value = "analyzing";
         populateEditableForm();
       } else {

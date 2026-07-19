@@ -114,6 +114,16 @@ async def upload_document(
                 else:
                     # Run blocking I/O in thread pool
                     pdf_bytes = await asyncio.to_thread(download_blob_with_managed_identity, blob_url)
+                    if len(pdf_bytes) > MAX_PDF_SIZE_BYTES:
+                        error_event = json.dumps(
+                            {
+                                "step": "error",
+                                "status": "error",
+                                "error": f"PDF file too large ({len(pdf_bytes) / 1024 / 1024:.1f}MB). Maximum size is {MAX_PDF_SIZE_BYTES / 1024 / 1024}MB",
+                            }
+                        )
+                        yield f"data: {error_event}\n\n"
+                        return
                     azure_blob_url = blob_url
             except Exception as e:
                 logger.error("Failed to get PDF content: %s", str(e))
@@ -231,10 +241,23 @@ async def upload_document(
 )
 async def analyze_document(
     body: ConfirmAnalysisRequest,
-    _: dict = Depends(require_user),
+    user: dict = Depends(require_user),
     service: SuggestionService = Depends(get_suggestion_service),
 ) -> StreamingResponse:
     draft_id = body.draft_id
+    record = service.get_case_analyzer_full(draft_id)
+    if not record:
+        logger.error("Draft not found: %d", draft_id)
+        raise HTTPException(status_code=404, detail="Draft not found")
+
+    token_sub = extract_user_identity(user)
+    if not token_sub:
+        raise HTTPException(status_code=401, detail="Unable to identify user")
+    record_email = record.get("user_email")
+    if not isinstance(record_email, str) or token_sub != record_email:
+        logger.warning("User %s attempted to analyze draft %d owned by %s", token_sub, draft_id, record_email)
+        raise HTTPException(status_code=403, detail="You can only analyze your own drafts")
+
     jurisdiction_override: JurisdictionOutput | None = None
     if body.jurisdiction is not None:
         jurisdiction_override = JurisdictionOutput.model_validate(body.jurisdiction.model_dump())
@@ -248,14 +271,6 @@ async def analyze_document(
             # Yield immediately so the client knows the stream is connected
             init_event = json.dumps({"step": "initializing", "status": "in_progress"})
             yield f"data: {init_event}\n\n"
-
-            # Get the draft record to retrieve full_text and pdf_url
-            record = service.get_case_analyzer_full(draft_id)
-            if not record:
-                logger.error("Draft not found: %d", draft_id)
-                error_event = json.dumps({"step": "error", "status": "error", "error": "Draft not found"})
-                yield f"data: {error_event}\n\n"
-                return
 
             # Get full text from Azure blob storage
             legacy_data = record.get("data", {})

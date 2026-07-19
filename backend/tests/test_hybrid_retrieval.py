@@ -72,5 +72,6 @@ async def test_overlapping_hits_are_merged_and_deduplicated() -> None:
     result = await retrieve_choice_of_law_candidates(doc, ["choice of law", "governing law"])
     ranges = [(candidate.start_paragraph, candidate.end_paragraph) for candidate in result.candidates]
     assert len(ranges) == len(set(ranges))
+    assert result.overlap_count > 0
     for left, right in zip(ranges, ranges[1:], strict=False):
         assert left[1] < right[0]

@@ -117,6 +117,18 @@ def test_cached_col_provenance_must_reconstruct_sections_verbatim() -> None:
     assert "not verbatim" in (validate_col_section_provenance(output, evidence, paragraphs) or "")
 
 
+def test_cached_col_provenance_preserves_repetitive_source_suffix() -> None:
+    source = "The court applies Swiss law. FOOTER FOOTER FOOTER FOOTER"
+    output = ColSectionOutput(col_sections=[source], confidence="high", reasoning="Holding.")
+    evidence = {
+        "candidates": [{"candidate_id": "C001"}],
+        "candidate_dispositions": [{"candidate_id": "C001", "disposition": "include", "reason": "Direct holding."}],
+        "col_sections": [{"section_index": 0, "paragraphs": [1], "role": "court_holding"}],
+    }
+    assert output.col_sections == [source]
+    assert validate_col_section_provenance(output, evidence, [source]) is None
+
+
 def test_negative_citation_requires_navigation_evidence() -> None:
     output = CaseCitationOutput(
         case_citation="NA",

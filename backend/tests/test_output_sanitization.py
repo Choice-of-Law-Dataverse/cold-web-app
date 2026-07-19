@@ -39,16 +39,14 @@ class TestModelSanitization:
         assert "PMID" not in output.col_issue
         assert output.col_issue == "What law applies?"
 
-    def test_col_section_list_sanitized(self):
+    def test_col_section_verbatim_source_text_is_not_sanitized(self):
+        source_text = "Section 1 text.} PMID: N/A.} PMID: N/A.} PMID: N/A.} PMID: N/A."
         output = ColSectionOutput(
             confidence="high",
             reasoning="ok",
-            col_sections=[
-                "Section 1 text.} PMID: N/A.} PMID: N/A.} PMID: N/A.} PMID: N/A.",
-                "Section 2 clean.",
-            ],
+            col_sections=[source_text, "Section 2 clean."],
         )
-        assert "PMID" not in output.col_sections[0]
+        assert output.col_sections[0] == source_text
         assert output.col_sections[1] == "Section 2 clean."
 
     def test_reasoning_also_sanitized(self):

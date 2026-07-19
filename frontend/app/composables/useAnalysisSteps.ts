@@ -112,8 +112,6 @@ export function useAnalysisSteps() {
     },
   ]);
 
-  const isAnalyzing = ref(false);
-
   // O(1) lookup map
   const stepsMap = computed(
     () => new Map(analysisSteps.value.map((s) => [s.name, s])),
@@ -172,11 +170,14 @@ export function useAnalysisSteps() {
     return stepsMap.value.get(stepName) || null;
   }
 
-  function isFieldLoading(fieldName: keyof EditedAnalysisValues): boolean {
+  function isFieldLoading(
+    fieldName: keyof EditedAnalysisValues,
+    analysisRunning = false,
+  ): boolean {
     const step = getFieldStatus(fieldName);
     return (
       step?.status === "in_progress" ||
-      (isAnalyzing.value && step?.status === "pending")
+      (analysisRunning && step?.status === "pending")
     );
   }
 
@@ -224,7 +225,6 @@ export function useAnalysisSteps() {
   return {
     analysisSteps,
     stepsMap,
-    isAnalyzing,
     updateStepStatus,
     handleUploadStepChange,
     getFieldStatus,

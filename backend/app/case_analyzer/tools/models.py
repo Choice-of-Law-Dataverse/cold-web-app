@@ -2,7 +2,7 @@
 
 import re
 from dataclasses import dataclass, field
-from typing import Any, Literal, Self
+from typing import Any, ClassVar, Literal, Self
 
 from pydantic import BaseModel, Field, model_validator
 
@@ -24,6 +24,8 @@ class StepResult[T]:
 class ConfidenceReasoningModel(BaseModel):
     """Shared confidence and reasoning fields."""
 
+    verbatim_fields: ClassVar[frozenset[str]] = frozenset()
+
     confidence: Literal["low", "medium", "high"] = Field(
         description="Confidence level in the analysis: 'low', 'medium', or 'high'"
     )
@@ -32,6 +34,8 @@ class ConfidenceReasoningModel(BaseModel):
     @model_validator(mode="after")
     def _sanitize_strings(self) -> Self:
         for name in self.__class__.model_fields:
+            if name in self.verbatim_fields:
+                continue
             value = getattr(self, name)
             if isinstance(value, str):
                 setattr(self, name, _strip_repetitive_suffix(value))
@@ -41,6 +45,7 @@ class ConfidenceReasoningModel(BaseModel):
 
 
 class ColSectionOutput(ConfidenceReasoningModel):
+    verbatim_fields: ClassVar[frozenset[str]] = frozenset({"col_sections"})
     col_sections: list[str] = Field(description="List of extracted Choice of Law section texts")
 
     def __str__(self) -> str:

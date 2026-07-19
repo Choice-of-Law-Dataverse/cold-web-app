@@ -265,7 +265,6 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  "update:editableForm": [form: EditedAnalysisValues];
   submit: [];
   reset: [];
   "re-analyze": [
@@ -298,10 +297,7 @@ const showConfirmModal = ref(false);
 const pendingLegalSystem = ref<string | null>(null);
 const pendingJurisdiction = ref<JurisdictionOption | undefined>(undefined);
 
-const localForm = computed({
-  get: () => props.editableForm,
-  set: (value) => emit("update:editableForm", value),
-});
+const localForm = computed(() => props.editableForm);
 
 function isFieldDisabled(fieldName: keyof EditedAnalysisValues): boolean {
   if (props.isSubmitted) return true;

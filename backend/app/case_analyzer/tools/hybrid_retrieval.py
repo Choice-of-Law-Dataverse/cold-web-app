@@ -159,7 +159,8 @@ async def retrieve_choice_of_law_candidates(
                 key = (hit.chunk.start_paragraph, hit.chunk.end_paragraph)
                 item = aggregated.setdefault(key, _RankedRange(start=key[0], end=key[1]))
                 item.reciprocal_rank_score += 1 / (RRF_OFFSET + rank)
-                item.semantic_score = max(item.semantic_score or -1.0, hit.score)
+                previous_score = item.semantic_score if item.semantic_score is not None else -1.0
+                item.semantic_score = max(previous_score, hit.score)
                 item.concepts.add(concept)
                 item.methods.add("semantic")
                 semantic_ranges.add(key)
@@ -210,7 +211,9 @@ async def retrieve_choice_of_law_candidates(
 
         index = doc._semantic_index
         semantic_available = bool(semantic_by_query) and doc.semantic_unavailable_reason is None
-        overlap_count = len(lexical_ranges & semantic_ranges)
+        overlap_count = sum(
+            any(start <= paragraph <= end for start, end in semantic_ranges) for paragraph, _same_paragraph in lexical_ranges
+        )
         logfire.info(
             "Choice-of-law candidates retrieved",
             candidate_count=len(candidates),
