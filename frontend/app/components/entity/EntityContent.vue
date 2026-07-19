@@ -93,8 +93,7 @@ const resolvedFields = computed<ResolvedField[]>(() => {
 
 const resolvedRelations = computed<ResolvedRelation[]>(() => {
   const relData = (props.data as Record<string, unknown>).relations as
-    | Record<string, Record<string, unknown>[]>
-    | undefined;
+    Record<string, Record<string, unknown>[]> | undefined;
   if (!relData) return [];
   const exclude = new Set(entityConfig.value?.excludeRelations ?? []);
   return Object.entries(RELATION_RENDERERS)

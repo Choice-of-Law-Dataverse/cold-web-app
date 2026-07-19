@@ -1897,11 +1897,7 @@ export interface components {
      * @enum {string}
      */
     FeedbackType:
-      | "improve"
-      | "missing_data"
-      | "wrong_info"
-      | "outdated"
-      | "other";
+      "improve" | "missing_data" | "wrong_info" | "outdated" | "other";
     /** FeedbackUpdate */
     FeedbackUpdate: {
       moderationStatus: components["schemas"]["FeedbackModerationStatus"];
