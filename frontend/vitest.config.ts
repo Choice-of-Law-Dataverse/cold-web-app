@@ -1,4 +1,4 @@
-import { defineConfig } from "vitest/config";
+import { configDefaults, defineConfig } from "vitest/config";
 import vue from "@vitejs/plugin-vue";
 import { fileURLToPath } from "node:url";
 
@@ -8,6 +8,7 @@ export default defineConfig({
     environment: "happy-dom",
     globals: true,
     setupFiles: ["./vitest.setup.ts"],
+    exclude: [...configDefaults.exclude, "test/e2e/**"],
     coverage: {
       provider: "v8",
       reporter: ["text", "json", "html"],
