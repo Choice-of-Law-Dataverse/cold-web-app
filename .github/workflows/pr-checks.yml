@@ -200,6 +200,7 @@ jobs:
           (cd backend && nohup uv run uvicorn app.main:app --host 0.0.0.0 --port 8000 > /tmp/backend.log 2>&1 &)
           (cd frontend && nohup pnpm dev > /tmp/frontend.log 2>&1 &)
         env:
+          LOGFIRE_SEND_TO_LOGFIRE: "false"
           SQL_CONN_STRING: ${{ secrets.SQL_CONN_STRING }}
           SUGGESTIONS_SQL_CONN_STRING: ${{ secrets.SUGGESTIONS_SQL_CONN_STRING }}
           NOCODB_API_TOKEN: ${{ secrets.NOCODB_API_TOKEN }}
