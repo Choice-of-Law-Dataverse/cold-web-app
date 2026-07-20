@@ -195,6 +195,10 @@ jobs:
           wait $backend_pid
           wait $frontend_pid
 
+      - name: Install Playwright browser
+        working-directory: frontend
+        run: pnpm exec playwright-core install --with-deps --only-shell chromium
+
       - name: Start backend and frontend servers
         run: |
           (cd backend && nohup uv run uvicorn app.main:app --host 0.0.0.0 --port 8000 > /tmp/backend.log 2>&1 < /dev/null &)
