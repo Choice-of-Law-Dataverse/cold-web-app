@@ -159,16 +159,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
 
-      - name: Install uv
-        uses: astral-sh/setup-uv@v7
-        with:
-          enable-cache: true
-
-      - name: Set up Python
-        uses: actions/setup-python@v6
-        with:
-          python-version-file: backend/.python-version
-
       - name: Install pnpm
         uses: pnpm/action-setup@v5
         with:
@@ -186,18 +176,32 @@ jobs:
           cp backend/.env.blueprint backend/.env
           cp frontend/.env.blueprint frontend/.env
 
-      - name: Install backend and frontend dependencies in parallel
-        run: |
-          (cd backend && uv sync --all-extras --all-packages --group dev) &
-          backend_pid=$!
-          (cd frontend && pnpm install --frozen-lockfile) &
-          frontend_pid=$!
-          wait $backend_pid
-          wait $frontend_pid
-
-      - name: Install Playwright browser
+      - name: Install frontend dependencies
         working-directory: frontend
-        run: pnpm exec playwright-core install --with-deps --only-shell chromium
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright browser in the background
+        working-directory: frontend
+        run: |
+          rm -f /tmp/playwright-ready
+          (
+            pnpm exec playwright-core install --with-deps --only-shell chromium \
+              > /tmp/playwright-install.log 2>&1 && touch /tmp/playwright-ready
+          ) &
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version-file: backend/.python-version
+
+      - name: Install backend dependencies
+        working-directory: backend
+        run: uv sync --all-extras --all-packages --group dev
 
       - name: Start backend and frontend servers
         run: |
@@ -233,6 +237,20 @@ jobs:
           echo "Servers did not become live in time"
           echo "=== backend log ==="; cat /tmp/backend.log || true
           echo "=== frontend log ==="; cat /tmp/frontend.log || true
+          exit 1
+
+      - name: Ensure Playwright browser is ready
+        run: |
+          for i in $(seq 1 60); do
+            if [ -f /tmp/playwright-ready ]; then
+              echo "Playwright browser installed"
+              exit 0
+            fi
+            echo "Waiting for Playwright browser install... attempt $i"
+            sleep 2
+          done
+          echo "Playwright browser did not install in time"
+          cat /tmp/playwright-install.log || true
           exit 1
 
       - name: Run e2e tests
