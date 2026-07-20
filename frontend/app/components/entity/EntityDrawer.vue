@@ -11,7 +11,10 @@
     }"
   >
     <template #content>
-      <div class="flex h-full flex-col overflow-hidden">
+      <div
+        data-testid="entity-drawer"
+        class="flex h-full flex-col overflow-hidden"
+      >
         <header class="drawer-header">
           <div class="drawer-header__top">
             <UButton

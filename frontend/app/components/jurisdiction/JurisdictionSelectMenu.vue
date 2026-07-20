@@ -2,6 +2,7 @@
   <USelectMenu
     v-model="internalSelected"
     :search-input="{ placeholder: 'Search a Jurisdiction...' }"
+    data-testid="jurisdiction-compare-select"
     class="z-200 w-full"
     :placeholder="placeholder"
     :items="selectItems"

@@ -5,8 +5,6 @@
 </template>
 
 <script setup lang="ts">
-import printCss from "@/assets/print.css?url";
-
 useSeoMeta({
   description: "Choice of Law Dataverse",
   ogTitle: "Choice of Law Dataverse",
@@ -31,7 +29,7 @@ useHead({
     },
     {
       rel: "stylesheet",
-      href: printCss,
+      href: "/print.css",
       media: "print",
     },
     {

@@ -2,9 +2,7 @@
 defineProps<{
   isLoading: boolean;
   fieldStatus:
-    | { confidence: string | null; reasoning: string | null }
-    | null
-    | undefined;
+    { confidence: string | null; reasoning: string | null } | null | undefined;
 }>();
 </script>
 

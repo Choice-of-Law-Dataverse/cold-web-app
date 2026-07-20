@@ -47,8 +47,7 @@
           <div class="flex flex-col gap-3">
             <pre
               class="overflow-x-auto rounded-md bg-gray-50 p-4 font-mono text-xs"
-              >{{ bibtexContent }}</pre
-            >
+              >{{ bibtexContent }}</pre>
             <div class="flex gap-3">
               <UButton
                 variant="outline"
