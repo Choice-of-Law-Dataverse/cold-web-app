@@ -25,6 +25,7 @@
               :href="
                 row.original.coldId ? rowHref(row.original.coldId) : undefined
               "
+              data-testid="entity-row-link"
               class="table-row-link"
               :class="row.original.coldId ? '' : 'text-gray-400'"
               @click="

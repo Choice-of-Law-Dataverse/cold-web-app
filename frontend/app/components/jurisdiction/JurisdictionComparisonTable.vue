@@ -280,7 +280,11 @@
             class="hidden md:block"
             :class="{ 'overflow-x-auto': isScrollable }"
           >
-            <div class="comparison-grid" :style="{ gridTemplateColumns }">
+            <div
+              data-testid="comparison-grid"
+              class="comparison-grid"
+              :style="{ gridTemplateColumns }"
+            >
               <div
                 class="comparison-header-cell sticky top-0 bg-white py-3"
                 :class="isScrollable ? 'sticky-col-1' : ''"
