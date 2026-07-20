@@ -197,8 +197,8 @@ jobs:
 
       - name: Start backend and frontend servers
         run: |
-          (cd backend && nohup uv run uvicorn app.main:app --host 0.0.0.0 --port 8000 > /tmp/backend.log 2>&1 &)
-          (cd frontend && nohup pnpm dev > /tmp/frontend.log 2>&1 &)
+          (cd backend && nohup uv run uvicorn app.main:app --host 0.0.0.0 --port 8000 > /tmp/backend.log 2>&1 < /dev/null &)
+          (cd frontend && nohup pnpm dev > /tmp/frontend.log 2>&1 < /dev/null &)
         env:
           LOGFIRE_SEND_TO_LOGFIRE: "false"
           SQL_CONN_STRING: ${{ secrets.SQL_CONN_STRING }}
@@ -242,3 +242,9 @@ jobs:
         run: |
           echo "=== backend log ==="; cat /tmp/backend.log || true
           echo "=== frontend log ==="; cat /tmp/frontend.log || true
+
+      - name: Stop servers
+        if: always()
+        run: |
+          pkill -f "uvicorn app.main:app" || true
+          pkill -f "nuxt" || true
