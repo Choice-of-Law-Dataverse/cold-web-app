@@ -150,3 +150,94 @@ jobs:
             echo "One or more frontend checks failed"
             exit 1
           fi
+
+  frontend-e2e:
+    runs-on: ubuntu-latest
+    needs: path-filter
+    if: needs.path-filter.outputs.frontend == 'true' || needs.path-filter.outputs.backend == 'true'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version-file: backend/.python-version
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          package_json_file: frontend/package.json
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: frontend/.nvmrc
+          cache: "pnpm"
+          cache-dependency-path: frontend/pnpm-lock.yaml
+
+      - name: Set up environment files
+        run: |
+          cp backend/.env.blueprint backend/.env
+          cp frontend/.env.blueprint frontend/.env
+
+      - name: Install backend and frontend dependencies in parallel
+        run: |
+          (cd backend && uv sync --all-extras --all-packages --group dev) &
+          backend_pid=$!
+          (cd frontend && pnpm install --frozen-lockfile) &
+          frontend_pid=$!
+          wait $backend_pid
+          wait $frontend_pid
+
+      - name: Start backend and frontend servers
+        run: |
+          (cd backend && nohup uv run uvicorn app.main:app --host 0.0.0.0 --port 8000 > /tmp/backend.log 2>&1 &)
+          (cd frontend && nohup pnpm dev > /tmp/frontend.log 2>&1 &)
+        env:
+          SQL_CONN_STRING: ${{ secrets.SQL_CONN_STRING }}
+          SUGGESTIONS_SQL_CONN_STRING: ${{ secrets.SUGGESTIONS_SQL_CONN_STRING }}
+          NOCODB_API_TOKEN: ${{ secrets.NOCODB_API_TOKEN }}
+          NOCODB_BASE_URL: ${{ secrets.NOCODB_BASE_URL }}
+          NOCODB_POSTGRES_SCHEMA: ${{ secrets.NOCODB_POSTGRES_SCHEMA }}
+          API_KEY: ${{ secrets.API_KEY }}
+          NUXT_API_BASE_URL: http://localhost:8000
+          NUXT_API_KEY: ${{ secrets.API_KEY }}
+          NUXT_SITE_URL: http://localhost:3000
+          AUTH0_SECRET: ci-dummy-secret-unused-for-public-read-routes
+          AUTH0_CLIENT_ID: ci-dummy-client-id
+          AUTH0_CLIENT_SECRET: ci-dummy-client-secret
+          AUTH0_AUDIENCE: https://ci-dummy-api.example.com
+
+      - name: Wait for servers to be live
+        run: |
+          for i in $(seq 1 60); do
+            if curl -sf http://localhost:8000/api/v1 > /dev/null \
+               && curl -sf http://localhost:3000 > /dev/null; then
+              echo "Both servers are live"
+              exit 0
+            fi
+            echo "Waiting for servers to be live... attempt $i"
+            sleep 2
+          done
+          echo "Servers did not become live in time"
+          echo "=== backend log ==="; cat /tmp/backend.log || true
+          echo "=== frontend log ==="; cat /tmp/frontend.log || true
+          exit 1
+
+      - name: Run e2e tests
+        working-directory: frontend
+        run: pnpm run test:e2e
+        env:
+          NUXT_E2E_HOST: http://localhost:3000
+
+      - name: Dump server logs on failure
+        if: failure()
+        run: |
+          echo "=== backend log ==="; cat /tmp/backend.log || true
+          echo "=== frontend log ==="; cat /tmp/frontend.log || true
