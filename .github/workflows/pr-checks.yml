@@ -207,7 +207,7 @@ jobs:
           NOCODB_BASE_URL: ${{ secrets.NOCODB_BASE_URL }}
           NOCODB_POSTGRES_SCHEMA: ${{ secrets.NOCODB_POSTGRES_SCHEMA }}
           API_KEY: ${{ secrets.API_KEY }}
-          NUXT_API_BASE_URL: http://localhost:8000
+          NUXT_API_BASE_URL: http://localhost:8000/api/v1
           NUXT_API_KEY: ${{ secrets.API_KEY }}
           NUXT_SITE_URL: http://localhost:3000
           AUTH0_SECRET: ci-dummy-secret-unused-for-public-read-routes
