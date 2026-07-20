@@ -94,25 +94,13 @@
           @error="(msg) => (error = msg)"
         />
 
-        <!-- Step 2: Jurisdiction Confirmation -->
-        <JurisdictionConfirmCard
-          v-if="currentStep === 'confirm'"
-          v-model:selected-jurisdiction="selectedJurisdiction"
-          :document-name="selectedFile?.name || 'Unknown'"
-          :jurisdiction-info="jurisdictionInfo"
-          :is-loading="analysis.isAnalyzing.value"
-          @continue="confirmAndAnalyze(false)"
-          @reset="resetAnalysis"
-          @jurisdiction-updated="onJurisdictionSelected"
-          @legal-system-updated="onLegalSystemSelected"
-        />
-
-        <!-- Step 3: Review & Submit -->
+        <!-- Step 2: Review & Submit -->
         <AnalysisReviewForm
           v-if="currentStep === 'analyzing'"
-          v-model:editable-form="editableForm"
+          :editable-form="editableForm"
           :document-name="selectedFile?.name || 'Unknown'"
           :selected-jurisdiction="selectedJurisdiction"
+          :legal-system-type="jurisdictionInfo?.legal_system_type || ''"
           :is-common-law-jurisdiction="isCommonLawJurisdiction"
           :is-analyzing="analysis.isAnalyzing.value"
           :is-submitting="analysis.isSubmitting.value"
@@ -121,6 +109,7 @@
           :is-field-loading="isFieldLoading"
           @submit="submitAnalyzerSuggestion"
           @reset="resetAnalysis"
+          @re-analyze="handleReAnalyze"
         />
       </div>
     </div>
@@ -129,14 +118,18 @@
 
 <script setup lang="ts">
 import { ref, watch, onMounted } from "vue";
-import type { JurisdictionOption, AnalysisStepPayload } from "~/types/analyzer";
+import type {
+  EditedAnalysisValues,
+  JurisdictionOption,
+  AnalysisStepPayload,
+  JurisdictionInfo,
+} from "~/types/analyzer";
 import { useAnalyzerForm } from "~/composables/useAnalyzerForm";
 import { useAnalysisSteps } from "~/composables/useAnalysisSteps";
 import { useDocumentUpload } from "~/composables/useDocumentUpload";
 import { useCaseAnalyzer } from "~/composables/useCaseAnalyzer";
 import { useJurisdictionLookup } from "@/composables/useJurisdictions";
 import FileUploadCard from "@/components/case-analyzer/FileUploadCard.vue";
-import JurisdictionConfirmCard from "@/components/case-analyzer/JurisdictionConfirmCard.vue";
 import AnalysisReviewForm from "@/components/case-analyzer/AnalysisReviewForm.vue";
 import AnalysisStepTracker from "@/components/case-analyzer/AnalysisStepTracker.vue";
 import SubmissionDisclaimer, {
@@ -168,13 +161,14 @@ const user = useUser();
 const route = useRoute();
 
 // State
-const currentStep = ref<"upload" | "confirm" | "analyzing">("upload");
+const currentStep = ref<"upload" | "analyzing">("upload");
 const error = ref<string | null>(null);
 const analysisResults = ref<Record<string, AnalysisStepPayload>>({});
 const selectedJurisdiction = ref<JurisdictionOption | undefined>(undefined);
 
 // Composables
-const { findJurisdictionByName } = useJurisdictionLookup();
+const { findJurisdictionByName, data: jurisdictionOptions } =
+  useJurisdictionLookup();
 
 const {
   selectedFile,
@@ -190,7 +184,7 @@ const {
   analysisSteps,
   stepsMap,
   getFieldStatus,
-  isFieldLoading,
+  isFieldLoading: isAnalysisStepLoading,
   updateStepStatus,
   handleUploadStepChange,
   hydrateAnalysisStepsFromResults,
@@ -201,6 +195,9 @@ const analysis = useCaseAnalyzer(analysisSteps, stepsMap, analysisResults, () =>
   populateEditableForm(),
 );
 
+const isFieldLoading = (fieldName: keyof EditedAnalysisValues) =>
+  isAnalysisStepLoading(fieldName, analysis.isAnalyzing.value);
+
 const {
   editableForm,
   isCommonLawJurisdiction,
@@ -210,13 +207,13 @@ const {
 
 // Watch upload step to update step tracker
 watch(uploadStep, (step) => {
-  handleUploadStepChange(step, jurisdictionInfo.value);
+  handleUploadStepChange(step);
 });
 
 // Initialize selectedJurisdiction when jurisdictionInfo changes
 watch(
-  () => jurisdictionInfo.value?.precise_jurisdiction,
-  (preciseJurisdiction) => {
+  [() => jurisdictionInfo.value?.precise_jurisdiction, jurisdictionOptions],
+  ([preciseJurisdiction]) => {
     if (preciseJurisdiction) {
       const match = findJurisdictionByName(preciseJurisdiction);
       if (match) {
@@ -243,45 +240,47 @@ async function uploadDocument() {
 
   const result = await performUpload();
 
-  if (result.success) {
-    currentStep.value = "confirm";
-    if (draftId.value) {
-      await navigateTo({ query: { draft: draftId.value.toString() } });
-    }
-  } else {
+  if (!result.success) {
     error.value = result.error || "Upload failed";
     updateStepStatus("document_upload", "error");
+    return;
   }
+
+  if (draftId.value) {
+    await navigateTo({ query: { draft: draftId.value.toString() } });
+  }
+  await confirmAndAnalyze(false);
 }
 
-function onJurisdictionSelected(jurisdiction: JurisdictionOption) {
-  if (jurisdictionInfo.value) {
-    jurisdictionInfo.value.precise_jurisdiction = jurisdiction.name || "";
-    jurisdictionInfo.value.jurisdiction_code =
-      jurisdiction.coldId || jurisdictionInfo.value.jurisdiction_code;
-  }
-}
-
-function onLegalSystemSelected(legalSystemType: string) {
-  if (jurisdictionInfo.value) {
-    jurisdictionInfo.value.legal_system_type = legalSystemType;
-  }
-}
-
-async function confirmAndAnalyze(resume = false) {
-  if (!draftId.value || !jurisdictionInfo.value) return;
+async function confirmAndAnalyze(
+  resume = false,
+  jurisdictionConfirmed = false,
+) {
+  if (!draftId.value) return;
 
   currentStep.value = "analyzing";
   error.value = null;
 
   if (!resume) {
-    resetAnalysisSteps(new Set(["document_upload", "jurisdiction_detection"]));
+    resetAnalysisSteps(new Set(["document_upload"]));
+    analysisResults.value = {};
+  }
+
+  if (jurisdictionInfo.value) {
+    updateStepStatus("jurisdiction_detection", "completed", {
+      confidence: jurisdictionInfo.value.confidence,
+      reasoning: jurisdictionInfo.value.reasoning,
+    });
   }
 
   const result = await analysis.startAnalysis(
     draftId.value,
     jurisdictionInfo.value,
     resume,
+    (jurisdiction) => {
+      jurisdictionInfo.value = jurisdiction;
+    },
+    jurisdictionConfirmed,
   );
 
   if (!result.success) {
@@ -291,6 +290,29 @@ async function confirmAndAnalyze(resume = false) {
 
 function handleRetry(_stepName: string) {
   confirmAndAnalyze(true);
+}
+
+function handleReAnalyze(
+  legalSystemType: string,
+  jurisdiction: JurisdictionOption | undefined,
+) {
+  const info: JurisdictionInfo = jurisdictionInfo.value ?? {
+    legal_system_type: "",
+    precise_jurisdiction: "",
+    jurisdiction_code: "",
+    confidence: "high",
+    reasoning: "Jurisdiction set manually by the user during review.",
+  };
+  info.legal_system_type = legalSystemType;
+  if (jurisdiction) {
+    info.precise_jurisdiction = jurisdiction.name || "";
+    info.jurisdiction_code = jurisdiction.coldId || info.jurisdiction_code;
+    selectedJurisdiction.value = jurisdiction;
+  }
+  jurisdictionInfo.value = info;
+  analysisResults.value = {};
+  resetEditableForm();
+  confirmAndAnalyze(false, true);
 }
 
 async function submitAnalyzerSuggestion() {
@@ -351,16 +373,11 @@ onMounted(async () => {
         });
       }
 
-      if (
-        result.data.status === "completed" ||
-        result.data.status === "analyzing"
-      ) {
+      if (result.data.status === "completed") {
         currentStep.value = "analyzing";
         populateEditableForm();
-      } else if (result.data.jurisdictionInfo) {
-        currentStep.value = "confirm";
       } else {
-        currentStep.value = "upload";
+        await confirmAndAnalyze(true);
       }
     } else {
       error.value = result.error || "Failed to recover draft";

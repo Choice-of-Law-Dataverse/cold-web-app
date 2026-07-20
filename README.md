@@ -84,42 +84,67 @@ The Case Analyzer feeds new court decisions into this knowledge network. A user 
 
 #### How it works
 
-**Stage 1 — Upload and jurisdiction detection.** The system reads the PDF, extracts the text, and identifies which country's court issued the decision. The user confirms or corrects the detected jurisdiction before proceeding.
+**Stage 1 — Upload.** The user uploads the PDF. The system stores it, confirms the text can be read, and creates a draft entry. Nothing is interpreted yet — the file just lands safely.
 
-**Stage 2 — AI analysis.** The system runs 10 extraction steps in a dependency-aware order. Some steps run in parallel where they can; others must wait for earlier results:
+**Stage 2 — AI analysis.** The system reads the decision and streams results live as each field is extracted. Rather than feeding the entire judgment into every prompt, each extractor navigates the decision and pulls only the passages it needs. The jurisdiction of the court is identified in parallel with the choice-of-law passages; the remaining fields then fan out in an order that respects what each one depends on:
 
 ```mermaid
 flowchart TD
-    Upload["Upload PDF\nText extraction + jurisdiction detection"] --> Confirm["User confirms jurisdiction"]
-    Confirm --> CoL["Choice-of-law\nsection extraction"]
+    Upload["Upload PDF\nText validation + draft creation"]
+    Upload --> Jur["Jurisdiction\ndetection"]
+    Upload --> CoL["Choice-of-law\nsection extraction"]
 
     CoL --> Themes["Theme\nclassification"]
     CoL --> Citation["Case\ncitation"]
     CoL --> Facts["Relevant\nfacts"]
     CoL --> PIL["PIL\nprovisions"]
 
-    Themes --> Issue["Choice-of-law\nissue identification"]
+    Jur -.-> Themes
+    Jur -.-> Citation
+    Jur -.-> Facts
+    Jur -.-> PIL
 
-    Issue --> Position["Court's\nposition"]
-    Issue --> Obiter["Obiter dicta\n(common law only)"]
-    Issue --> Dissent["Dissenting opinions\n(common law only)"]
+    CoL --> Issue["Choice-of-law\nissue identification"]
+    Themes --> Issue
+    Jur -.-> Issue
 
-    Position --> QA["Consistency check\n+ targeted re-extraction"]
-    Obiter --> QA
-    Dissent --> QA
+    CoL --> Position["Court's\nposition"]
+    Themes --> Position
+    Issue --> Position
+    Jur -.-> Position
 
-    QA --> Abstract["Abstract\ngeneration"]
+    subgraph CommonLaw [Common law / India only]
+        Obiter["Obiter dicta"]
+        Dissent["Dissenting opinions"]
+    end
+
+    CoL --> Obiter
+    Themes --> Obiter
+    Issue --> Obiter
+    CoL --> Dissent
+    Themes --> Dissent
+    Issue --> Dissent
+    Jur -.-> CommonLaw
+
+    Themes --> Abstract["Abstract\ngeneration"]
+    Facts --> Abstract
+    PIL --> Abstract
+    Issue --> Abstract
+    Position --> Abstract
+    Obiter --> Abstract
+    Dissent --> Abstract
+    Jur -.-> Abstract
+
     Abstract --> Review["User reviews & edits all fields"]
+    Citation --> Review
     Review --> Submit["Submitted for moderation"]
 ```
 
-The first extraction — identifying the choice-of-law sections within the decision — is the foundation. Once that completes, four fields are extracted simultaneously: the legal themes, case citation, relevant facts, and PIL provisions. The choice-of-law issue is then identified using the themes as context. From there, the court's position is extracted in parallel with obiter dicta and dissenting opinions (these two only appear for common-law jurisdictions and India).
+Solid arrows show one extraction feeding into the next — the choice-of-law passages anchor the rest of the analysis, the themes shape how the issue is framed, and so on. Dotted arrows show the jurisdiction's influence: it tunes the prompts so a German civil-law decision is read with civil-law conventions and an English judgment with common-law ones, and it decides whether obiter dicta and dissenting opinions are extracted at all (those only apply to common-law jurisdictions and India). The Abstract is written last because it synthesises everything that came before. Throughout the pipeline, every field is rendered in English so the dataset is comparable across jurisdictions — with two deliberate exceptions kept verbatim in the original language: the extracted choice-of-law passages (so reviewers can check the AI against the source) and the case citation (so it matches the conventions of the court that issued it).
 
-**Stage 3 — Consistency check.** After all fields are extracted, the system cross-checks them against each other: Do the themes match the choice-of-law issue? Are the facts actually relevant? Do the provisions relate to the identified themes? If inconsistencies are found, the affected fields are re-extracted with corrective guidance.
+**Stage 3 — Review and submission.** The user sees every extracted field with a confidence indicator and can edit any of them. The jurisdiction can also be corrected here; doing so prompts a confirmation and re-runs the analysis with the corrected value. Once satisfied, the user submits the draft for moderation. A human moderator reviews every submission before it enters the Dataverse — the AI pre-populates, but humans decide what gets published.
 
-**Stage 4 — Review and submission.** The user sees all extracted fields with confidence indicators and can edit any of them. Once satisfied, they submit for moderation. A human moderator reviews every submission before it enters the Dataverse — the AI pre-populates, but humans decide what gets published.
-
-Progress is saved continuously, so if the connection drops mid-analysis, users can resume from where they left off. Past analyses are tracked in a personal dashboard with their status (draft, analyzing, completed, pending review, approved, or rejected).
+Progress is saved continuously, so if the connection drops mid-analysis the user can resume from where they left off. Past analyses appear in a personal dashboard with their status (draft, analyzing, completed, pending review, approved, or rejected).
 
 Try it at [cold.global/court-decision/new](https://cold.global/court-decision/new).
 

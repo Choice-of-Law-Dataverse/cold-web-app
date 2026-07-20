@@ -3,7 +3,6 @@ import type {
   AnalysisStep,
   AnalysisStepPayload,
   EditedAnalysisValues,
-  JurisdictionInfo,
 } from "~/types/analyzer";
 import type { SSEEventStatus } from "~/utils/sseStream";
 
@@ -113,8 +112,6 @@ export function useAnalysisSteps() {
     },
   ]);
 
-  const isAnalyzing = ref(false);
-
   // O(1) lookup map
   const stepsMap = computed(
     () => new Map(analysisSteps.value.map((s) => [s.name, s])),
@@ -149,27 +146,21 @@ export function useAnalysisSteps() {
   }
 
   /**
-   * Maps upload SSE steps to analysis step tracker updates
+   * Maps upload SSE steps to analysis step tracker updates.
+   * Jurisdiction detection now runs during /analyze (in parallel with col_section),
+   * so the upload phase tracks document_upload only.
    */
-  function handleUploadStepChange(
-    uploadStep: string | null,
-    jurisdictionInfo?: JurisdictionInfo | null,
-  ) {
+  function handleUploadStepChange(uploadStep: string | null) {
     if (!uploadStep) return;
 
     if (
       uploadStep === "uploading_to_storage" ||
-      uploadStep === "extracting_text"
+      uploadStep === "extracting_text" ||
+      uploadStep === "saving_draft"
     ) {
       updateStepStatus("document_upload", "in_progress");
-    } else if (uploadStep === "detecting_jurisdiction") {
+    } else if (uploadStep === "upload_complete") {
       updateStepStatus("document_upload", "completed");
-      updateStepStatus("jurisdiction_detection", "in_progress");
-    } else if (uploadStep === "upload_complete" && jurisdictionInfo) {
-      updateStepStatus("jurisdiction_detection", "completed", {
-        confidence: jurisdictionInfo.confidence,
-        reasoning: jurisdictionInfo.reasoning,
-      });
     }
   }
 
@@ -179,11 +170,14 @@ export function useAnalysisSteps() {
     return stepsMap.value.get(stepName) || null;
   }
 
-  function isFieldLoading(fieldName: keyof EditedAnalysisValues): boolean {
+  function isFieldLoading(
+    fieldName: keyof EditedAnalysisValues,
+    analysisRunning = false,
+  ): boolean {
     const step = getFieldStatus(fieldName);
     return (
       step?.status === "in_progress" ||
-      (isAnalyzing.value && step?.status === "pending")
+      (analysisRunning && step?.status === "pending")
     );
   }
 
@@ -231,7 +225,6 @@ export function useAnalysisSteps() {
   return {
     analysisSteps,
     stepsMap,
-    isAnalyzing,
     updateStepStatus,
     handleUploadStepChange,
     getFieldStatus,
