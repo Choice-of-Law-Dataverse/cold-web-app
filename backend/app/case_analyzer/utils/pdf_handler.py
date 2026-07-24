@@ -9,12 +9,13 @@ import pymupdf4llm
 logger = logging.getLogger(__name__)
 
 
-def extract_text_from_pdf(pdf_bytes: bytes) -> str:
+def extract_text_from_pdf(pdf_bytes: bytes, pages: list[int] | None = None) -> str:
     """
     Extract text from PDF bytes using pymupdf4llm.
 
     Args:
         pdf_bytes: PDF file content as bytes
+        pages: Optional list of 0-based page indices to extract; None extracts all pages
 
     Returns:
         Extracted text as markdown string
@@ -29,7 +30,7 @@ def extract_text_from_pdf(pdf_bytes: bytes) -> str:
             tmp_path = Path(tmp_file.name)
 
         try:
-            markdown_text = pymupdf4llm.to_markdown(str(tmp_path))
+            markdown_text = pymupdf4llm.to_markdown(str(tmp_path), pages=pages)
 
             if isinstance(markdown_text, str):
                 return markdown_text

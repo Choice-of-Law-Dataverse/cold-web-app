@@ -12,7 +12,6 @@
       content:
         'max-h-(--reka-combobox-content-available-height) w-max min-w-(--reka-combobox-trigger-width)',
     }"
-    @update:model-value="onInternalSelect"
   >
     <template #item="{ item }">
       <div class="flex items-center">
@@ -40,7 +39,7 @@
         <JurisdictionFlag
           :iso3="internalSelected.original.coldId"
           :faded="!hasCoverage(internalSelected.original.answerCoverage)"
-          class="mr-1.5"
+          class="mr-1.5 !h-4 !w-auto"
         />
         <span class="truncate">{{ internalSelected.label }}</span>
       </span>
@@ -52,7 +51,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from "vue";
+import { computed } from "vue";
 import type { JurisdictionOption } from "@/types/analyzer";
 import JurisdictionFlag from "@/components/ui/JurisdictionFlag.vue";
 
@@ -116,29 +115,21 @@ const emit = defineEmits<{
   ): void;
 }>();
 
-const internalSelected = ref<SelectItem | undefined>(undefined);
-
-// Sync external modelValue to internal state
-watch(
-  () => props.modelValue,
-  (newVal) => {
-    if (newVal) {
-      const found = selectItems.value.find(
-        (item) =>
-          item.original.coldId === newVal.coldId ||
-          item.original.name === newVal.name,
-      );
-      internalSelected.value = found;
-    } else {
-      internalSelected.value = undefined;
+const internalSelected = computed<SelectItem | undefined>({
+  get() {
+    if (!props.modelValue) {
+      return undefined;
     }
+    return selectItems.value.find(
+      (item) =>
+        item.original.coldId === props.modelValue?.coldId ||
+        item.original.name === props.modelValue?.name,
+    );
   },
-  { immediate: true },
-);
-
-const onInternalSelect = (value: SelectItem | undefined) => {
-  const jurisdiction = value?.original;
-  emit("update:modelValue", jurisdiction);
-  emit("jurisdiction-selected", jurisdiction);
-};
+  set(value) {
+    const jurisdiction = value?.original;
+    emit("update:modelValue", jurisdiction);
+    emit("jurisdiction-selected", jurisdiction);
+  },
+});
 </script>

@@ -146,6 +146,7 @@ export const ANALYZER_FIELD_MAP: Record<
 };
 
 export const ANALYZER_STEP_LABELS: Record<string, string> = {
+  jurisdiction_detection: "Jurisdiction Detection",
   col_extraction: "Choice of Law Extraction",
   theme_classification: "Theme Classification",
   case_citation: "Case Citation",

@@ -257,6 +257,7 @@ logfire.configure(
 logfire.instrument_fastapi(app)
 logfire.instrument_sqlalchemy()
 logfire.instrument_requests()
+logfire.instrument_openai_agents()
 
 
 def main():

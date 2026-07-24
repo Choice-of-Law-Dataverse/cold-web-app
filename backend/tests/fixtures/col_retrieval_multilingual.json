@@ -1,0 +1,47 @@
+[
+  {
+    "name": "english_contract",
+    "paragraphs": [
+      "The appeal concerns payment for machinery supplied in 2019.",
+      "The claimant described the negotiations and delivery schedule.",
+      "The defendant disputed the amount of the invoices.",
+      "The parties made submissions about witness credibility.",
+      "Clause 14 states that the agreement is governed by Swiss law.",
+      "The court holds that party autonomy requires Clause 14 to be respected and therefore applies Swiss law.",
+      "The remaining damages calculation follows from the expert report.",
+      "The parties shall bear their own costs."
+    ],
+    "relevant_paragraphs": [5, 6],
+    "direct_holding_paragraphs": [6]
+  },
+  {
+    "name": "french_contract",
+    "paragraphs": [
+      "Le recours porte sur le paiement de marchandises livrées.",
+      "La demanderesse expose les faits et la procédure antérieure.",
+      "Les parties discutent ensuite le montant du dommage.",
+      "La clause 9 prévoit que le contrat est soumis au droit italien.",
+      "La Cour retient que la règle de conflit consacre l'autonomie des parties et désigne la loi italienne comme loi applicable.",
+      "Les autres griefs concernent uniquement l'appréciation des preuves.",
+      "Le calcul des intérêts est confirmé.",
+      "Les frais sont mis à la charge de la défenderesse."
+    ],
+    "relevant_paragraphs": [4, 5],
+    "direct_holding_paragraphs": [5]
+  },
+  {
+    "name": "german_contract",
+    "paragraphs": [
+      "Die Klage betrifft die Vergütung aus einem Liefervertrag.",
+      "Das Berufungsgericht stellte den bisherigen Prozessverlauf dar.",
+      "Die Parteien streiten über die Menge der gelieferten Ware.",
+      "Mehrere Zeugen wurden zur Übergabe befragt.",
+      "Ziffer 12 des Vertrags enthält eine Rechtswahl zugunsten österreichischen Rechts.",
+      "Das Gericht entscheidet, dass aufgrund der Parteiautonomie österreichisches Recht auf den Vertrag anzuwenden ist.",
+      "Die Einwendungen zur Beweiswürdigung bleiben ohne Erfolg.",
+      "Die Kostenentscheidung folgt aus der Prozessordnung."
+    ],
+    "relevant_paragraphs": [5, 6],
+    "direct_holding_paragraphs": [6]
+  }
+]
