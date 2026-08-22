@@ -149,13 +149,6 @@ export default defineNuxtConfig({
         ],
       },
       {
-        userAgent: ["OAI-SearchBot"],
-        allow: ["/"],
-        disallow: NON_PUBLIC_PATHS,
-        contentSignal: CONTENT_SIGNAL,
-        comment: ["AI search indexes may index and cite CoLD content."],
-      },
-      {
         userAgent: ["Amazonbot", "ClaudeBot", "meta-externalagent"],
         disallow: ["/"],
         contentSignal: { "ai-train": "no" },
