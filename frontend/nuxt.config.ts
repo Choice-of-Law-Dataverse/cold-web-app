@@ -1,4 +1,5 @@
 import tailwindcss from "@tailwindcss/vite";
+import { AI_TRAINING_CRAWLERS } from "./config/aiTrainingCrawlers";
 
 const NON_PUBLIC_PATHS = ["/search", "/moderation", "*/new", "*/edit"];
 
@@ -148,17 +149,7 @@ export default defineNuxtConfig({
         ],
       },
       {
-        userAgent: [
-          "anthropic-ai",
-          "Applebot-Extended",
-          "Bytespider",
-          "CCBot",
-          "Claude-Web",
-          "ClaudeBot",
-          "Google-Extended",
-          "GPTBot",
-          "meta-externalagent",
-        ],
+        userAgent: AI_TRAINING_CRAWLERS,
         disallow: ["/"],
         contentSignal: { "ai-train": "no" },
         comment: [
