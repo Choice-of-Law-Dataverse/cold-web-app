@@ -1,4 +1,13 @@
 import tailwindcss from "@tailwindcss/vite";
+import { AI_TRAINING_CRAWLERS } from "./config/aiTrainingCrawlers";
+
+const NON_PUBLIC_PATHS = ["/search", "/moderation", "*/new", "*/edit"];
+
+const CONTENT_SIGNAL = {
+  search: "yes",
+  "ai-input": "yes",
+  "ai-train": "no",
+} as const;
 
 export default defineNuxtConfig({
   compatibilityDate: "2025-01-01",
@@ -130,8 +139,23 @@ export default defineNuxtConfig({
     sitemap: ["/sitemap.txt"],
     groups: [
       {
-        allow: [],
+        userAgent: ["*"],
+        allow: ["/"],
+        disallow: NON_PUBLIC_PATHS,
+        contentSignal: CONTENT_SIGNAL,
+        comment: [
+          "CoLD content is licensed CC BY 4.0 — reuse requires attribution.",
+          "Machine-readable resources: /.well-known/api-catalog",
+        ],
+      },
+      {
+        userAgent: AI_TRAINING_CRAWLERS,
         disallow: ["/"],
+        contentSignal: { "ai-train": "no" },
+        comment: [
+          "Crawlers that collect content for model training. AI assistants",
+          "fetching pages for a user are allowed by the group above.",
+        ],
       },
     ],
   },
