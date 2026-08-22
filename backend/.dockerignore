@@ -14,3 +14,5 @@ cicd/
 deployment/
 infrastructure/
 tests/
+.env
+.env.*

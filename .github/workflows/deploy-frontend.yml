@@ -37,10 +37,26 @@ jobs:
               echo "$output_name=$value" >> $GITHUB_OUTPUT
             done
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v5
+      - name: Configure Auth0 runtime secrets
+        uses: azure/cli@v2
         with:
-          node-version: 20
+          inlineScript: |
+            az containerapp secret set \
+              --name cold-frontend \
+              --resource-group cold \
+              --secrets \
+                auth0-audience="${{ steps.fetch-secrets.outputs.AUTH0_AUDIENCE }}" \
+                auth0-client-id="${{ steps.fetch-secrets.outputs.AUTH0_CLIENT_ID }}" \
+                auth0-client-secret="${{ steps.fetch-secrets.outputs.AUTH0_CLIENT_SECRET }}" \
+                auth0-session-secret="${{ steps.fetch-secrets.outputs.AUTH0_SECRET }}"
+            az containerapp update \
+              --name cold-frontend \
+              --resource-group cold \
+              --set-env-vars \
+                NUXT_AUTH0_AUDIENCE=secretref:auth0-audience \
+                NUXT_AUTH0_CLIENT_ID=secretref:auth0-client-id \
+                NUXT_AUTH0_CLIENT_SECRET=secretref:auth0-client-secret \
+                NUXT_AUTH0_SESSION_SECRET=secretref:auth0-session-secret
 
       - name: Build and deploy to Azure Container Apps
         uses: azure/container-apps-deploy-action@v2
@@ -55,8 +71,4 @@ jobs:
           resourceGroup: cold
           targetPort: 3000
           buildArguments: |
-            AUTH0_AUDIENCE=${{ steps.fetch-secrets.outputs.AUTH0_AUDIENCE }}
-            AUTH0_CLIENT_ID=${{ steps.fetch-secrets.outputs.AUTH0_CLIENT_ID }}
-            AUTH0_CLIENT_SECRET=${{ steps.fetch-secrets.outputs.AUTH0_CLIENT_SECRET }}
-            AUTH0_SECRET=${{ steps.fetch-secrets.outputs.AUTH0_SECRET }}
             NUXT_SITE_URL=${{ steps.fetch-secrets.outputs.NUXT_SITE_URL }}
