@@ -152,7 +152,7 @@ Try it at [cold.global/court-decision/new](https://cold.global/court-decision/ne
 
 ### Prerequisites
 
-- **Node.js v20+** with pnpm 10+
+- **Node.js v22.13+** with pnpm 11+
 - **Python 3.12** (managed by uv)
 - **uv** (Python package manager): `brew install uv` (macOS) or see [uv docs](https://docs.astral.sh/uv/)
 
