@@ -1,5 +1,35 @@
 import tailwindcss from "@tailwindcss/vite";
 
+const NON_PUBLIC_PATHS = ["/search", "/moderation", "*/new", "*/edit"];
+
+const CONTENT_SIGNAL = {
+  search: "yes",
+  "ai-input": "yes",
+  "ai-train": "no",
+} as const;
+
+const AI_ASSISTANT_BOTS = [
+  "ChatGPT-User",
+  "Claude-SearchBot",
+  "Claude-User",
+  "OAI-SearchBot",
+  "Perplexity-User",
+  "PerplexityBot",
+];
+
+const AI_TRAINING_BOTS = [
+  "Amazonbot",
+  "anthropic-ai",
+  "Applebot-Extended",
+  "Bytespider",
+  "CCBot",
+  "Claude-Web",
+  "ClaudeBot",
+  "Google-Extended",
+  "GPTBot",
+  "meta-externalagent",
+];
+
 export default defineNuxtConfig({
   compatibilityDate: "2025-01-01",
   future: {
@@ -130,8 +160,29 @@ export default defineNuxtConfig({
     sitemap: ["/sitemap.txt"],
     groups: [
       {
-        allow: [],
+        userAgent: ["*"],
+        allow: ["/"],
+        disallow: NON_PUBLIC_PATHS,
+        contentSignal: CONTENT_SIGNAL,
+        comment: [
+          "CoLD content is licensed CC BY 4.0 — reuse requires attribution.",
+          "Machine-readable resources: /.well-known/api-catalog",
+        ],
+      },
+      {
+        userAgent: AI_ASSISTANT_BOTS,
+        allow: ["/"],
+        disallow: NON_PUBLIC_PATHS,
+        contentSignal: CONTENT_SIGNAL,
+        comment: [
+          "AI assistants may read and cite CoLD content on behalf of a user.",
+        ],
+      },
+      {
+        userAgent: AI_TRAINING_BOTS,
         disallow: ["/"],
+        contentSignal: { "ai-train": "no" },
+        comment: ["Bulk collection for AI training is not permitted."],
       },
     ],
   },
