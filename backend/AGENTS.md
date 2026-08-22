@@ -8,6 +8,12 @@ uv sync --all-extras --all-packages --group dev  # or: make setup
 make dev  # http://localhost:8000
 ```
 
+`make dev` and `make serve` accept `PORT=n` and `HOST=x` (defaults `8000` / `0.0.0.0`),
+either as make variables or environment variables.
+
+From the repo root, `pnpm run setup:api` / `pnpm run dev:api` / `pnpm run check:api`
+delegate to the same targets.
+
 ## API Auth
 
 - Read-only data endpoints: publicly accessible (no auth required)
@@ -32,6 +38,18 @@ Data is served through SQL views managed in `alembic_views/`:
 - **Detail function** (`get_entity_detail`): single-entity lookup returning base + relation data
 
 Relation sort order belongs in `data_views.get_entity_detail` (jsonb_agg ORDER BY), not in Python services or frontend comparators.
+
+## Validation
+
+- `make check` — ruff format, pyright, pytest. **Rewrites files** (`ruff format`, `ruff check --fix`).
+- `make check-ci` — same checks read-only (`ruff format --check`, `ruff check`). Matches CI.
+
+## Configuration
+
+`app/config.py` loads `.env` via pydantic-settings' `env_file`. This populates the `Config`
+object only — it does **not** put anything into `os.environ`. Any library that reads its own
+environment variables directly (as Logfire does with `LOGFIRE_TOKEN`) must be passed the value
+explicitly from `config`, or it will not see it.
 
 ## Common Issues
 

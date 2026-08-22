@@ -5,6 +5,7 @@ Nuxt 4 frontend (Vue.js, TypeScript, TailwindCSS, Nuxt UI 4). Light mode only â€
 - **Auto-imports**: Vue/Nuxt built-ins (`ref`, `computed`, `useRoute`, etc.) are auto-imported. Custom composables, utils, and third-party libraries require explicit imports.
 - **Color mode**: Light only (no dark mode)
 - **Type checking**: Run `pnpm run check` (type checking is disabled in nuxt.config â€” run it manually)
+- **Validation**: `pnpm run check` **rewrites files** (Prettier, `eslint --fix`). Use `pnpm run check:ci` for a read-only pass/fail â€” that is what CI runs.
 
 ## Setup
 
@@ -12,6 +13,11 @@ Nuxt 4 frontend (Vue.js, TypeScript, TailwindCSS, Nuxt UI 4). Light mode only â€
 cd frontend && pnpm install
 pnpm run dev      # http://localhost:3000
 ```
+
+`nuxt dev` reads `PORT` (also `NUXT_PORT` / `NITRO_PORT`) from the environment.
+
+From the repo root, `pnpm run setup:web` / `pnpm run dev:web` / `pnpm run check:web`
+delegate to the same scripts.
 
 ## Route Params
 
