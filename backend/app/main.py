@@ -251,6 +251,8 @@ logfire.configure(
     service_name="backend",
     service_version="1.0.0",
     distributed_tracing=True,
+    token=config.LOGFIRE_TOKEN,
+    send_to_logfire="if-token-present",
 )
 
 # Enable auto-instrumentation

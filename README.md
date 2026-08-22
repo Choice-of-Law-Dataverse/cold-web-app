@@ -158,18 +158,20 @@ Try it at [cold.global/court-decision/new](https://cold.global/court-decision/ne
 
 ### Running Locally
 
-```bash
-# Frontend (in one terminal)
-cd frontend
-pnpm install
-pnpm run dev
-# Open http://localhost:3000/
+From the repository root:
 
-# Backend (in another terminal)
-cd backend
-make setup
-make dev
-# API docs at http://localhost:8000/api/v1/docs
+```bash
+pnpm run setup     # installs frontend (pnpm) and backend (uv) dependencies
+
+pnpm run dev:web   # in one terminal  — http://localhost:3000/
+pnpm run dev:api   # in another       — http://localhost:8000/api/v1/docs
+```
+
+The root `package.json` only delegates; each package can still be driven directly:
+
+```bash
+cd frontend && pnpm install && pnpm run dev
+cd backend && make setup && make dev
 ```
 
 ## Development Workflow
@@ -179,12 +181,15 @@ make dev
 Always run validation checks before committing:
 
 ```bash
-# Frontend validation
-cd frontend && pnpm run check
+pnpm run check       # both packages (rewrites files: prettier, eslint --fix, ruff format)
 
-# Backend validation
-cd backend && make check
+pnpm run check:web   # or: cd frontend && pnpm run check
+pnpm run check:api   # or: cd backend && make check
 ```
+
+`pnpm run check:ci` (and `check:ci:web` / `check:ci:api`) runs the same checks read-only —
+formatting and lint are verified instead of applied. This is what CI enforces, so use it
+when you want a pass/fail answer without touching the working tree.
 
 ### Code Standards
 

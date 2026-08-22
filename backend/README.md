@@ -118,7 +118,8 @@ See [Makefile](Makefile) for complete documentation. Common commands:
 ```bash
 make setup        # First-time setup
 make dev          # Start development server
-make check        # Run all quality checks
+make check        # Run all quality checks (rewrites files)
+make check-ci     # Same checks, read-only
 make test         # Run tests
 make coverage     # Run tests with coverage (95% threshold)
 ```

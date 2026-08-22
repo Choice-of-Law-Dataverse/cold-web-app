@@ -1,0 +1,26 @@
+{
+  "name": "cold-web-app",
+  "private": true,
+  "packageManager": "pnpm@11.22.0",
+  "engines": {
+    "node": "^22.18"
+  },
+  "scripts": {
+    "setup": "pnpm run setup:web && pnpm run setup:api",
+    "setup:web": "pnpm --dir frontend install",
+    "setup:api": "make -C backend sync",
+    "dev:web": "pnpm --dir frontend run dev",
+    "dev:api": "make -C backend dev",
+    "build:web": "pnpm --dir frontend run build",
+    "check": "pnpm run check:web && pnpm run check:api",
+    "check:web": "pnpm --dir frontend run check",
+    "check:api": "make -C backend check",
+    "check:ci": "pnpm run check:ci:web && pnpm run check:ci:api",
+    "check:ci:web": "pnpm --dir frontend run check:ci",
+    "check:ci:api": "make -C backend check-ci",
+    "test:web": "pnpm --dir frontend run test:run",
+    "test:e2e": "pnpm --dir frontend run test:e2e",
+    "test:api": "make -C backend test",
+    "generate:api": "pnpm --dir frontend run generate:api"
+  }
+}

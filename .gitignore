@@ -173,7 +173,7 @@ backend/app/mapping/deprecated/*
 # nuxt and node
 frontend/.env
 frontend/.nuxt
-frontend/node_modules
+node_modules
 frontend/public/.Rhistory
 frontend/public/temp_Answers-All data.csv
 frontend/public/temp_Jurisdictions-All data.csv

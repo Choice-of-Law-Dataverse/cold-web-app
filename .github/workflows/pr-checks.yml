@@ -34,6 +34,7 @@ jobs:
     needs: path-filter
     if: needs.path-filter.outputs.backend == 'true'
     outputs:
+      ruff-format: ${{ steps.ruff-format.outcome }}
       ruff: ${{ steps.ruff.outcome }}
       pyright: ${{ steps.pyright.outcome }}
       pytest: ${{ steps.pytest.outcome }}
@@ -59,6 +60,12 @@ jobs:
         working-directory: backend
         run: uv sync --all-extras --all-packages --group dev
 
+      - name: Run ruff formatter check
+        id: ruff-format
+        working-directory: backend
+        run: uv run ruff format --check
+        continue-on-error: true
+
       - name: Run ruff linter
         id: ruff
         working-directory: backend
@@ -80,7 +87,8 @@ jobs:
       - name: Check all backend steps
         if: always()
         run: |
-          if [ "${{ steps.ruff.outcome }}" != "success" ] || \
+          if [ "${{ steps.ruff-format.outcome }}" != "success" ] || \
+             [ "${{ steps.ruff.outcome }}" != "success" ] || \
              [ "${{ steps.pyright.outcome }}" != "success" ] || \
              [ "${{ steps.pytest.outcome }}" != "success" ]; then
             echo "One or more backend checks failed"

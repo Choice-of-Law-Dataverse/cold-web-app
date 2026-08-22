@@ -16,6 +16,7 @@ class Config(BaseSettings):
     TEST: str | None = None
     # Logging configuration
     LOG_LEVEL: str = "INFO"
+    LOGFIRE_TOKEN: str | None = None
     # NocoDB configuration
     NOCODB_BASE_URL: str | None = None
     NOCODB_API_TOKEN: str | None = None
