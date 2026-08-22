@@ -135,7 +135,6 @@ export default defineNuxtConfig({
   },
   robots: {
     robotsTxt: true,
-    blockAiBots: true,
     sitemap: ["/sitemap.txt"],
     groups: [
       {
@@ -149,10 +148,23 @@ export default defineNuxtConfig({
         ],
       },
       {
-        userAgent: ["Amazonbot", "ClaudeBot", "meta-externalagent"],
+        userAgent: [
+          "anthropic-ai",
+          "Applebot-Extended",
+          "Bytespider",
+          "CCBot",
+          "Claude-Web",
+          "ClaudeBot",
+          "Google-Extended",
+          "GPTBot",
+          "meta-externalagent",
+        ],
         disallow: ["/"],
         contentSignal: { "ai-train": "no" },
-        comment: ["Training crawlers not covered by blockAiBots."],
+        comment: [
+          "Crawlers that collect content for model training. AI assistants",
+          "fetching pages for a user are allowed by the group above.",
+        ],
       },
     ],
   },
