@@ -14,6 +14,7 @@
   "scripts": {
     "build": "nuxt build --log-level silent",
     "check": "pnpm run format && pnpm run lint:fix && pnpm run typecheck && pnpm run test:run",
+    "check:ci": "pnpm run format:check && pnpm run lint && pnpm run typecheck && pnpm run test:run",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",

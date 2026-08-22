@@ -11,6 +11,8 @@ RESET := \033[0m
 
 # Variables
 COVERAGE_THRESHOLD := 95
+HOST ?= 0.0.0.0
+PORT ?= 8000
 
 .PHONY: help
 help: ## Show this help message
@@ -37,6 +39,12 @@ format: ## Format code with ruff
 	@echo "$(GREEN)Formatting code$(RESET)"
 	@uv run ruff format
 	@uv run ruff check --fix
+
+.PHONY: format-check
+format-check: ## Check formatting and lint without writing changes
+	@echo "$(GREEN)Checking formatting$(RESET)"
+	@uv run ruff format --check
+	@uv run ruff check
 
 .PHONY: type-check
 type-check: ## Run type checking with pyright
@@ -112,25 +120,26 @@ clean: ## Clean up generated files
 	@find . -type f -name "*.pyc" -delete
 
 .PHONY: check
-check: format type-check test ## Run all quality checks
+check: format type-check test ## Run all quality checks (rewrites files)
+
+.PHONY: check-ci
+check-ci: format-check type-check test ## Run all quality checks read-only
 
 .PHONY: ci
-ci: check coverage ## Run all CI checks
+ci: check-ci coverage ## Run all CI checks
 
 .PHONY: all
 all: sync check coverage ## Run everything (sync, check, coverage)
 
 .PHONY: dev
-dev: ## Run the application locally for development
-	@echo "$(GREEN)Starting development server$(RESET)"
-	@uv run uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
-	@echo "$(GREEN)Development server started on http://localhost:8000$(RESET)"
+dev: ## Run the application locally for development (override with PORT=n HOST=x)
+	@echo "$(GREEN)Starting development server on http://localhost:$(PORT)$(RESET)"
+	@uv run uvicorn app.main:app --host $(HOST) --port $(PORT) --reload
 
 .PHONY: serve
-serve: ## Run the application locally (production mode)
-	@echo "$(GREEN)Starting production server$(RESET)"
-	@uv run uvicorn app.main:app --host 0.0.0.0 --port 8000
-	@echo "$(GREEN)Server started on http://localhost:8000$(RESET)"
+serve: ## Run the application locally in production mode (override with PORT=n HOST=x)
+	@echo "$(GREEN)Starting production server on http://localhost:$(PORT)$(RESET)"
+	@uv run uvicorn app.main:app --host $(HOST) --port $(PORT)
 
 .PHONY: build
 build: ## Build the Docker image
