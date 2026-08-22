@@ -9,8 +9,8 @@ ARG NUXT_SITE_URL
 # Set working directory
 WORKDIR /app
 
-# Copy package manifest and lockfile
-COPY package.json pnpm-lock.yaml ./
+# Copy package manifest, lockfile and pnpm settings (pnpm 11 reads settings from pnpm-workspace.yaml)
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 
 # Activate the pnpm version pinned in package.json's packageManager field
 RUN corepack enable pnpm && corepack install

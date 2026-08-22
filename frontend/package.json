@@ -7,7 +7,7 @@
   },
   "private": true,
   "type": "module",
-  "packageManager": "pnpm@10.30.3",
+  "packageManager": "pnpm@11.22.0",
   "engines": {
     "node": "^22.18"
   },
@@ -72,17 +72,6 @@
     "v-calendar": "^3.1.2",
     "vue": "^3.5.40",
     "zod": "^3.25.76"
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "@parcel/watcher",
-      "better-sqlite3",
-      "esbuild",
-      "unrs-resolver"
-    ],
-    "overrides": {
-      "serialize-javascript@<=7.0.2": ">=7.0.3"
-    }
   },
   "devDependencies": {
     "@iconify-json/lucide": "^1.2.118",
