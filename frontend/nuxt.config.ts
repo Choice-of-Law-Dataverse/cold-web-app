@@ -8,28 +8,6 @@ const CONTENT_SIGNAL = {
   "ai-train": "no",
 } as const;
 
-const AI_ASSISTANT_BOTS = [
-  "ChatGPT-User",
-  "Claude-SearchBot",
-  "Claude-User",
-  "OAI-SearchBot",
-  "Perplexity-User",
-  "PerplexityBot",
-];
-
-const AI_TRAINING_BOTS = [
-  "Amazonbot",
-  "anthropic-ai",
-  "Applebot-Extended",
-  "Bytespider",
-  "CCBot",
-  "Claude-Web",
-  "ClaudeBot",
-  "Google-Extended",
-  "GPTBot",
-  "meta-externalagent",
-];
-
 export default defineNuxtConfig({
   compatibilityDate: "2025-01-01",
   future: {
@@ -157,6 +135,7 @@ export default defineNuxtConfig({
   },
   robots: {
     robotsTxt: true,
+    blockAiBots: true,
     sitemap: ["/sitemap.txt"],
     groups: [
       {
@@ -170,19 +149,17 @@ export default defineNuxtConfig({
         ],
       },
       {
-        userAgent: AI_ASSISTANT_BOTS,
+        userAgent: ["OAI-SearchBot"],
         allow: ["/"],
         disallow: NON_PUBLIC_PATHS,
         contentSignal: CONTENT_SIGNAL,
-        comment: [
-          "AI assistants may read and cite CoLD content on behalf of a user.",
-        ],
+        comment: ["AI search indexes may index and cite CoLD content."],
       },
       {
-        userAgent: AI_TRAINING_BOTS,
+        userAgent: ["Amazonbot", "ClaudeBot", "meta-externalagent"],
         disallow: ["/"],
         contentSignal: { "ai-train": "no" },
-        comment: ["Bulk collection for AI training is not permitted."],
+        comment: ["Training crawlers not covered by blockAiBots."],
       },
     ],
   },
