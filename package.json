@@ -6,21 +6,49 @@
     "node": "^22.18"
   },
   "scripts": {
+    "prepare": "husky",
     "setup": "pnpm run setup:web && pnpm run setup:api",
     "setup:web": "pnpm --dir frontend install",
     "setup:api": "make -C backend sync",
     "dev:web": "pnpm --dir frontend run dev",
     "dev:api": "make -C backend dev",
     "build:web": "pnpm --dir frontend run build",
-    "check": "pnpm run check:web && pnpm run check:api",
+    "check": "pnpm run format && pnpm run check:web && pnpm run check:api",
     "check:web": "pnpm --dir frontend run check",
     "check:api": "make -C backend check",
-    "check:ci": "pnpm run check:ci:web && pnpm run check:ci:api",
+    "format": "prettier --log-level warn --write .",
+    "format:check": "prettier --log-level warn --check .",
+    "check:ci": "pnpm run format:check && pnpm run check:ci:web && pnpm run check:ci:api",
     "check:ci:web": "pnpm --dir frontend run check:ci",
     "check:ci:api": "make -C backend check-ci",
     "test:web": "pnpm --dir frontend run test:run",
     "test:e2e": "pnpm --dir frontend run test:e2e",
     "test:api": "make -C backend test",
-    "generate:api": "pnpm --dir frontend run generate:api"
+    "generate:api": "pnpm --dir frontend run generate:api",
+    "hooks": "lint-staged"
+  },
+  "devDependencies": {
+    "husky": "^9.1.7",
+    "lint-staged": "^17.3.0",
+    "prettier": "^3.9.5"
+  },
+  "lint-staged": {
+    "frontend/**/*.{js,mjs,cjs,ts,vue}": [
+      "pnpm --dir frontend exec prettier --log-level warn --write",
+      "pnpm --dir frontend exec eslint --fix --quiet --no-warn-ignored"
+    ],
+    "frontend/**/*.{json,jsonc,css,md,yml,yaml}": [
+      "pnpm --dir frontend exec prettier --log-level warn --write"
+    ],
+    "backend/**/*.py": [
+      "uv run --directory backend ruff format --force-exclude",
+      "uv run --directory backend ruff check --fix --force-exclude"
+    ],
+    "./*.{json,md,yml,yaml}": [
+      "prettier --log-level warn --write"
+    ],
+    "{.github,.claude,.gemini}/**/*.{json,md,yml,yaml}": [
+      "prettier --log-level warn --write"
+    ]
   }
 }
