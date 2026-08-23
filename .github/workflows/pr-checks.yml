@@ -12,6 +12,7 @@ concurrency:
 jobs:
   path-filter:
     runs-on: ubuntu-latest
+    if: ${{ !startsWith(github.head_ref, 'release-please--') }}
     outputs:
       backend: ${{ steps.filter.outputs.backend }}
       frontend: ${{ steps.filter.outputs.frontend }}
@@ -31,6 +32,7 @@ jobs:
 
   root-checks:
     runs-on: ubuntu-latest
+    if: ${{ !startsWith(github.head_ref, 'release-please--') }}
     steps:
       - name: Checkout
         uses: actions/checkout@v7
