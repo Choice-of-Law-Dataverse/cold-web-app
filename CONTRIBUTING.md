@@ -60,11 +60,12 @@ right; see [Pull Requests](#pull-requests).
 companion, since merge commits skip `pre-commit`) that runs [lint-staged] over **staged files
 only**:
 
-| Staged path | What runs |
-| --- | --- |
-| `frontend/**/*.{js,mjs,cjs,ts,vue}` | `prettier --write`, then `eslint --fix` |
-| `frontend/**/*.{json,jsonc,css,md,yml,yaml}` | `prettier --write` |
-| `backend/**/*.py` | `ruff format`, then `ruff check --fix` |
+| Staged path                                        | What runs                               |
+| -------------------------------------------------- | --------------------------------------- |
+| `frontend/**/*.{js,mjs,cjs,ts,vue}`                | `prettier --write`, then `eslint --fix` |
+| `frontend/**/*.{json,jsonc,css,md,yml,yaml}`       | `prettier --write`                      |
+| `backend/**/*.py`                                  | `ruff format`, then `ruff check --fix`  |
+| Root files plus `.github/`, `.claude/`, `.gemini/` | `prettier --write`                      |
 
 Anything the tools fix is re-staged for you. Anything they cannot fix — a type error, a lint rule
 with no autofix — aborts the commit with the error. Unstaged changes in a partially staged file

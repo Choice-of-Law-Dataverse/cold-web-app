@@ -43,6 +43,28 @@ This is what CI enforces.
 
 Always run validation before committing. Do not commit if checks fail.
 
+## Commit Hooks
+
+`pnpm install` at the repository root installs `pre-commit` and `pre-merge-commit` hooks that run
+lint-staged over **staged files only**:
+
+- `frontend/**/*.{js,mjs,cjs,ts,vue}` — Prettier, then `eslint --fix`
+- `frontend/**/*.{json,jsonc,css,md,yml,yaml}` — Prettier
+- `backend/**/*.py` — `ruff format`, then `ruff check --fix`
+- Root files plus `.github/`, `.claude/`, `.gemini/` — Prettier
+
+Whatever the tools fix is re-staged for you; anything they cannot fix aborts the commit.
+
+**Do not run Prettier, ESLint, or ruff by hand before committing** — the hook does it on the
+staged files, so running it yourself is redundant and reformats files you did not touch. Verify
+with typecheck, tests, or the build instead, then commit and let the hook format.
+
+Type-checking and tests are deliberately **not** in the hook: they are too slow for every commit
+and CI covers them. Run `pnpm run check` yourself before pushing.
+
+`.husky/_/` is generated and untracked, so every clone and every `git worktree` needs its own
+root `pnpm install` before hooks fire. Without it the hook is silently absent.
+
 ## Cross-Package Workflows
 
 - **Regenerate API types after backend schema changes**: `pnpm run generate:api` (or `cd frontend && pnpm run generate:api`)

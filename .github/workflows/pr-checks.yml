@@ -29,6 +29,31 @@ jobs:
             frontend:
               - 'frontend/**'
 
+  root-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Install pnpm
+        uses: pnpm/setup@v2
+        with:
+          package-json-file: package.json
+          install: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: frontend/.nvmrc
+          cache: "pnpm"
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install root dependencies
+        run: pnpm install --frozen-lockfile --ignore-scripts
+
+      - name: Check formatting of root, .github, and agent config files
+        run: pnpm run format:check
+
   backend-checks:
     runs-on: ubuntu-latest
     needs: path-filter

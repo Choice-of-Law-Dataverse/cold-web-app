@@ -181,7 +181,12 @@ cd backend && make setup && make dev
 
 ### Before Committing
 
-Always run validation checks before committing:
+A `pre-commit` hook formats and lints your **staged files** automatically — Prettier and ESLint
+for the frontend, ruff for the backend, Prettier for root and `.github/` files. It needs a root
+`pnpm install` to be active, in every clone and every worktree. See
+[CONTRIBUTING.md](CONTRIBUTING.md#commit-hooks).
+
+Type-checking and tests are not in the hook. Run validation yourself before committing:
 
 ```bash
 pnpm run check       # both packages (rewrites files: prettier, eslint --fix, ruff format)

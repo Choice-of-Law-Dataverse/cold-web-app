@@ -13,10 +13,12 @@
     "dev:web": "pnpm --dir frontend run dev",
     "dev:api": "make -C backend dev",
     "build:web": "pnpm --dir frontend run build",
-    "check": "pnpm run check:web && pnpm run check:api",
+    "check": "pnpm run format && pnpm run check:web && pnpm run check:api",
     "check:web": "pnpm --dir frontend run check",
     "check:api": "make -C backend check",
-    "check:ci": "pnpm run check:ci:web && pnpm run check:ci:api",
+    "format": "prettier --log-level warn --write .",
+    "format:check": "prettier --log-level warn --check .",
+    "check:ci": "pnpm run format:check && pnpm run check:ci:web && pnpm run check:ci:api",
     "check:ci:web": "pnpm --dir frontend run check:ci",
     "check:ci:api": "make -C backend check-ci",
     "test:web": "pnpm --dir frontend run test:run",
@@ -27,7 +29,8 @@
   },
   "devDependencies": {
     "husky": "^9.1.7",
-    "lint-staged": "^17.3.0"
+    "lint-staged": "^17.3.0",
+    "prettier": "^3.9.5"
   },
   "lint-staged": {
     "frontend/**/*.{js,mjs,cjs,ts,vue}": [
@@ -40,6 +43,12 @@
     "backend/**/*.py": [
       "uv run --directory backend ruff format --force-exclude",
       "uv run --directory backend ruff check --fix --force-exclude"
+    ],
+    "./*.{json,md,yml,yaml}": [
+      "prettier --log-level warn --write"
+    ],
+    "{.github,.claude,.gemini}/**/*.{json,md,yml,yaml}": [
+      "prettier --log-level warn --write"
     ]
   }
 }
