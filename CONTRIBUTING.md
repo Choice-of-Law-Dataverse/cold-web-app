@@ -182,7 +182,7 @@ Nobody edits a version or a changelog by hand.
    commits landed since the last release, for `frontend` and `backend` independently. Release
    Please assigns each commit to a package by the **file paths** it touches, so a PR spanning both
    packages releases both.
-3. Merging the release PR tags each released package — `frontend-v0.3.0`, `backend-v0.3.0` — and
+3. Merging the release PR tags each released package — `frontend-v1.0.0`, `backend-v1.0.0` — and
    publishes a GitHub Release per package.
 4. Each tag push triggers `.github/workflows/deploy.yml`, which deploys **only** the package the
    tag names. The version becomes the container image tag.
