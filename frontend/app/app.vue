@@ -22,6 +22,18 @@ const canonicalUrl = computed(() =>
   toAbsoluteUrl(siteUrl.value, toCanonicalPath(route.path)),
 );
 
+/**
+ * ARD discovery link. `rel="ai-catalog"` is not in unhead's `Link` union, which
+ * only models standard relations, so the cast is what lets it through.
+ *
+ * @see https://agenticresourcediscovery.org/
+ */
+const agentCatalogLink = {
+  rel: "ai-catalog",
+  type: "application/json",
+  href: "/.well-known/ai-catalog.json",
+} as unknown as { rel: "canonical"; href: string };
+
 const siteJsonLd = computed(() =>
   JSON.stringify(
     buildJsonLdGraph([
@@ -31,18 +43,33 @@ const siteJsonLd = computed(() =>
   ),
 );
 
+/**
+ * Social platforms do not render SVG, so this has to stay a raster image.
+ * Regenerate from `@/assets/og-image.svg` if the card design changes.
+ */
+const ogImageUrl = computed(() =>
+  toAbsoluteUrl(siteUrl.value, "/og-image.png"),
+);
+
 useSeoMeta({
   description: "Choice of Law Dataverse",
   ogTitle: "Choice of Law Dataverse",
   ogDescription: "Navigate private international law issues with precision",
-  ogImage: "https://assets.cold.global/assets/cold_og_image.svg",
+  ogImage: ogImageUrl,
+  ogImageWidth: 1200,
+  ogImageHeight: 630,
+  ogImageType: "image/png",
+  ogImageAlt:
+    "Choice of Law Dataverse — navigate private international law issues with precision",
   ogUrl: canonicalUrl,
   ogSiteName: "Choice of Law Dataverse",
   twitterTitle: "Choice of Law Dataverse",
   twitterDescription:
     "Navigate private international law issues with precision",
-  twitterImage: "https://assets.cold.global/assets/cold_og_image.svg",
-  twitterCard: "summary",
+  twitterImage: ogImageUrl,
+  twitterImageAlt:
+    "Choice of Law Dataverse — navigate private international law issues with precision",
+  twitterCard: "summary_large_image",
 });
 
 useHead({
@@ -87,6 +114,7 @@ useHead({
       rel: "manifest",
       href: "/site.webmanifest",
     },
+    agentCatalogLink,
   ]),
   meta: [{ name: "apple-mobile-web-app-title", content: "CoLD" }],
   script: [

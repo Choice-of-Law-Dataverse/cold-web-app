@@ -131,6 +131,16 @@ export default defineNuxtConfig({
     "/fonts/**": {
       headers: { "cache-control": "public, max-age=31536000, immutable" },
     },
+    "/og-image.png": {
+      headers: { "cache-control": "public, max-age=604800" },
+    },
+    "/llms.txt": {
+      headers: {
+        "content-type": "text/markdown; charset=utf-8",
+        "cache-control":
+          "public, max-age=0, s-maxage=3600, stale-while-revalidate=86400",
+      },
+    },
     "/favicon.ico": {
       headers: { "cache-control": "public, max-age=604800" },
     },
