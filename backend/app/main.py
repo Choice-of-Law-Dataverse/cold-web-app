@@ -1,5 +1,6 @@
 import logging
 from contextlib import asynccontextmanager
+from importlib.metadata import version as package_version
 
 import logfire
 import uvicorn
@@ -20,6 +21,8 @@ from app.routes import (
 )
 from app.services.db_manager import db_manager, suggestions_db_manager
 from app.services.http_session_manager import http_session_manager
+
+APP_VERSION = package_version("backend")
 
 # Configure logging to send to Logfire
 logging.basicConfig(level=getattr(logging, config.LOG_LEVEL.upper()), handlers=[logfire.LogfireLoggingHandler()])
@@ -80,7 +83,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     title="CoLD API — Choice of Law Dataverse",
-    version="1.0.0",
+    version=APP_VERSION,
     description=(
         "# Choice of Law Dataverse (CoLD) API\n\n"
         "Open-access REST API for the **[Choice of Law Dataverse](https://cold.global)**, "
@@ -243,7 +246,7 @@ def root():
 # Initialize Logfire with service name for distributed tracing
 logfire.configure(
     service_name="backend",
-    service_version="1.0.0",
+    service_version=APP_VERSION,
     distributed_tracing=True,
     token=config.LOGFIRE_TOKEN,
     send_to_logfire="if-token-present",

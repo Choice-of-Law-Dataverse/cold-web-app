@@ -19,8 +19,8 @@ Prerequisites and per-package alternatives are documented in the
 
 ## Branching
 
-Branch off `main` and open your pull request against `main`. `prod` tracks what is deployed —
-never commit to it directly.
+Branch off `main` and open your pull request against `main`. What is deployed is recorded by the
+`frontend-v*` and `backend-v*` tags, not by a branch; see [Releases](#releases).
 
 Name branches `<author>/<topic>` (for example `marcosmesser/split-comparison-table`) or
 `task/<ticket>/<topic>` when the work has a tracker ID. The branch name is never used as a
@@ -28,31 +28,65 @@ commit message, so it only has to be recognizable in a branch list.
 
 ## Commits
 
-Every commit message must follow [Conventional Commits](https://www.conventionalcommits.org/)
-**with a scope**:
+Every commit message must follow [Conventional Commits](https://www.conventionalcommits.org/):
 
 ```
-type(scope): description
+type(optional scope): description
 ```
 
-**Types**: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`
+### Types
 
-**Scope** is the area you touched. Use the package when a change is broad
-(`frontend`, `backend`), the shared tooling when it is repo-level (`repo`, `ci`, `docs`), or a
-narrower area when that reads better (`case-analyzer`, `search`, `auth`, `views`, `entities`,
-`ui`). Prefer a scope that already appears in `git log` over inventing a new one.
+Only the eleven types below are accepted.
 
-**Description** is lower-case, imperative, and has no trailing period:
+| Type       | Use for                                                     | Changelog                    |
+| ---------- | ----------------------------------------------------------- | ---------------------------- |
+| `feat`     | A new capability                                            | **Features**                 |
+| `fix`      | A bug fix                                                   | **Bug Fixes**                |
+| `perf`     | A change that improves performance                          | **Performance Improvements** |
+| `revert`   | Reverting a previous change                                 | **Reverts**                  |
+| `refactor` | A code change that neither fixes a bug nor adds a feature   | hidden                       |
+| `docs`     | Documentation only                                          | hidden                       |
+| `style`    | Formatting only — whitespace, semicolons, no meaning change | hidden                       |
+| `test`     | Adding or correcting tests                                  | hidden                       |
+| `build`    | Build system or external dependencies                       | hidden                       |
+| `ci`       | CI configuration, workflows, and scripts                    | hidden                       |
+| `chore`    | Anything else that does not touch src or test files         | hidden                       |
+
+Version bumps follow the spec: `!` or a `BREAKING CHANGE` footer bumps **major**, `feat` bumps
+**minor**, `fix` bumps **patch**. See [Releases](#releases).
+
+### Scopes
+
+Scopes are optional and unrestricted by the linter. Keep them lowercase and use the domain the
+change lives in (e.g. `case-analyzer`, `search`, `auth`, `views`, `entities`, `ui`). **Do not use
+package names (`frontend`, `backend`) as scopes** — Release Please assigns commits to packages by
+the **file paths** they touch, not by the scope you write, so a scope that disagrees with the diff
+is misleading. Omit the scope when a change is genuinely repo-wide.
+
+### Description
+
+The description is lower-case, imperative, and has no trailing period:
 
 ```
-feat(frontend): collapse long relations lists and show item count
+feat(entities): collapse long relations lists and show item count
 fix(auth): recover from callback errors and hydrate user past CDN cache
-chore(ci): pin the uv setup action
+ci: pin the uv setup action
 ```
 
-Nothing enforces this automatically — it is upheld in review. Because we squash merge, the
-**PR title** is the line that actually lands in history, so that is the one that has to be
-right; see [Pull Requests](#pull-requests).
+### Breaking changes
+
+Put `!` before the colon and explain the migration in the pull request body:
+
+```
+feat(entities)!: drop the legacy relation payload shape
+```
+
+Because a PR title is a single line, `!` is the only way to flag a break — the `BREAKING CHANGE:`
+footer has nowhere to live once the title is squashed.
+
+Individual commit messages are upheld in review. Because we squash merge, the **PR title** is the
+line that actually lands in history and the one Release Please reads, so that is the one that has
+to be right; see [Pull Requests](#pull-requests).
 
 ## Commit Hooks
 
@@ -115,9 +149,11 @@ anything that writes — submitting a case analysis, saving a draft — as a cha
 We **squash merge** every pull request, and GitHub composes the squash commit from the
 **PR title and description**. That has two consequences:
 
-1. **The PR title must be a valid `type(scope): description` line.** It becomes the commit
-   subject on `main`, with the PR number appended automatically. Your individual commits are
-   collapsed, so the title — not the last commit — is what shows up in `git log`.
+1. **The PR title must be a valid `type(optional scope): description` line.** It becomes the
+   commit subject on `main`, with the PR number appended automatically. Your individual commits
+   are collapsed, so the title — not the last commit — is what shows up in `git log`, and it is
+   what Release Please reads to decide version bumps. A malformed title is a failed check:
+   `.github/workflows/pr-title.yml` validates it on every open, edit, reopen, and push.
 2. **The PR description becomes the commit body.** Write it for someone reading history six
    months from now. Fill in [the template](.github/pull_request_template.md), and delete the
    HTML comment hints and any section you left empty — whatever stays in the description is
@@ -134,6 +170,36 @@ Beyond that:
   and the data worth spot-checking. Leave out anything CI already reports.
 - Address review comments with additional commits rather than a force-push, so reviewers can
   follow what changed. Squashing is handled at merge time.
+
+## Releases
+
+Releases are orchestrated by [Release Please](https://github.com/googleapis/release-please).
+Nobody edits a version or a changelog by hand.
+
+1. Every push to `main` runs `.github/workflows/release-please.yml`, which maintains a single
+   open **release pull request** titled `chore: release main`.
+2. That PR accumulates the version bumps and `CHANGELOG.md` entries implied by the conventional
+   commits landed since the last release, for `frontend` and `backend` independently. Release
+   Please assigns each commit to a package by the **file paths** it touches, so a PR spanning both
+   packages releases both.
+3. Merging the release PR tags each released package — `frontend-v1.0.0`, `backend-v1.0.0` — and
+   publishes a GitHub Release per package.
+4. Each tag push triggers `.github/workflows/deploy.yml`, which deploys **only** the package the
+   tag names. The version becomes the container image tag.
+
+So a release is one merge, and deployment is its consequence. Nothing deploys from a branch.
+
+### Deploying by hand
+
+`deploy.yml` also accepts `workflow_dispatch`. Run it from a tag ref to redeploy exactly that
+package and version; run it from a branch and it deploys **both** packages at that commit, tagging
+the images with the commit SHA. Keep this for incident response — the tag path is the normal one.
+
+### Versions
+
+`frontend/package.json` and `backend/pyproject.toml` hold the current version of each package, and
+`.release-please-manifest.json` is Release Please's own record of them. All three are written by
+the release PR. Do not edit them in a feature branch.
 
 ## Code Standards
 

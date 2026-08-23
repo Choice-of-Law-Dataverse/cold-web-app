@@ -1,14 +1,105 @@
-name: Manual deployment of cold-frontend
+name: Deploy
 
 on:
+  push:
+    tags:
+      - "backend-v*"
+      - "frontend-v*"
   workflow_dispatch:
 
 jobs:
-  build-and-deploy:
+  filter:
+    name: Filter
     runs-on: ubuntu-latest
+
+    outputs:
+      backend: ${{ steps.filter.outputs.backend }}
+      frontend: ${{ steps.filter.outputs.frontend }}
+      version: ${{ steps.filter.outputs.version }}
+
+    steps:
+      - name: Resolve package and version from tag
+        id: filter
+        run: |
+          backend=false
+          frontend=false
+
+          case "$GITHUB_REF_NAME" in
+            backend-v*)
+              backend=true
+              version="${GITHUB_REF_NAME#backend-v}"
+              ;;
+            frontend-v*)
+              frontend=true
+              version="${GITHUB_REF_NAME#frontend-v}"
+              ;;
+            *)
+              backend=true
+              frontend=true
+              version="$GITHUB_SHA"
+              ;;
+          esac
+
+          {
+            echo "backend=$backend"
+            echo "frontend=$frontend"
+            echo "version=$version"
+          } >>"$GITHUB_OUTPUT"
+
+  backend-deploy:
+    name: Backend / Deploy
+    runs-on: ubuntu-latest
+
+    if: needs.filter.outputs.backend == 'true'
+
+    needs: filter
+
+    concurrency: production-backend
+
     permissions:
       id-token: write
       contents: read
+
+    environment:
+      name: production
+      url: https://api.cold.global
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Azure Login
+        uses: azure/login@v3
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Build and deploy to Azure Container Apps
+        uses: azure/container-apps-deploy-action@v2
+        with:
+          appSourcePath: ${{ github.workspace }}/backend
+          containerAppName: cold-backend
+          imageToBuild: choiceoflawdataverse/cold-backend:${{ needs.filter.outputs.version }}
+          registryPassword: ${{ secrets.COLDFRONTEND_REGISTRY_PASSWORD }}
+          registryUrl: docker.io
+          registryUsername: ${{ secrets.COLDFRONTEND_REGISTRY_USERNAME }}
+          resourceGroup: cold
+
+  frontend-deploy:
+    name: Frontend / Deploy
+    runs-on: ubuntu-latest
+
+    if: needs.filter.outputs.frontend == 'true'
+
+    needs: filter
+
+    concurrency: production-frontend
+
+    permissions:
+      id-token: write
+      contents: read
+
     environment:
       name: production
       url: https://cold.global
@@ -62,7 +153,7 @@ jobs:
         uses: azure/container-apps-deploy-action@v2
         with:
           appSourcePath: ${{ github.workspace }}/frontend
-          imageToBuild: choiceoflawdataverse/cold-frontend:${{ github.sha }}
+          imageToBuild: choiceoflawdataverse/cold-frontend:${{ needs.filter.outputs.version }}
           registryPassword: ${{ secrets.COLDFRONTEND_REGISTRY_PASSWORD }}
           registryUrl: docker.io
           registryUsername: ${{ secrets.COLDFRONTEND_REGISTRY_USERNAME }}

@@ -1,5 +1,7 @@
 <!--
-Title format: type(scope): description  —  e.g. fix(frontend): stop drawer from pushing duplicate history entries
+Title format: type(optional scope): description  —  e.g. fix(entities): stop drawer from pushing duplicate history entries
+Scopes are optional; never use frontend/backend as a scope — Release Please assigns commits to
+packages by file path.
 This PR is squash-merged, so the title becomes the commit subject and the text below
 becomes the commit body. Delete every comment block and unused section before merging,
 otherwise it ends up in `git log`. See CONTRIBUTING.md.

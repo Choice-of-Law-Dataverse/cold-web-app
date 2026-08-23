@@ -26,12 +26,15 @@ jobs:
           types: |
             feat
             fix
+            perf
+            revert
+            refactor
             docs
             style
-            refactor
             test
+            build
+            ci
             chore
-          requireScope: true
           subjectPattern: ^(?![A-Z]).*[^.]$
           subjectPatternError: |
             The subject "{subject}" in "{title}" is invalid.
