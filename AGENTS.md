@@ -8,6 +8,13 @@ The Choice of Law Dataverse (CoLD) is a monorepo with a Nuxt 4 frontend and Fast
 - `frontend/.claude/rules/` — frontend-specific rules (Vue, TypeScript, data fetching, entities, generated types)
 - `backend/.claude/rules/` — backend-specific rules (Python style, schemas, migrations)
 
+## Scoped Rules
+
+Before editing or reviewing a file, inspect `.claude/rules/` and the relevant package-specific
+`.claude/rules/` directory. Apply rules without `paths` frontmatter globally. Only apply a rule
+with `paths` frontmatter when one of its globs matches the repository-relative path of the file
+being worked on.
+
 ## Root Scripts
 
 The root `package.json` delegates to each package (`pnpm --dir frontend`, `make -C backend`).

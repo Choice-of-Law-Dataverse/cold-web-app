@@ -27,6 +27,10 @@ const publicPages = [
   { path: "/learn/methodology", marker: "Methodology — CoLD" },
   { path: "/learn/glossary", marker: "Glossary — CoLD" },
   { path: "/learn/data-sets", marker: "Data Sets — CoLD" },
+  {
+    path: "/learn/technical-documentation",
+    marker: "Technical Documentation — CoLD",
+  },
   { path: "/about/team", marker: "Team — CoLD" },
   { path: "/about/supporters", marker: "Supporters — CoLD" },
   { path: "/about/press", marker: "Press — CoLD" },
@@ -42,6 +46,13 @@ describe("public pages render server-side", () => {
       expect(html).toContain(marker);
     },
   );
+
+  it("publishes the migrated search documentation at a stable anchor", async () => {
+    const html = await $fetch<string>("/learn/technical-documentation");
+
+    expect(html).toContain('id="search"');
+    expect(html).toContain("PostgreSQL full-text search");
+  });
 });
 
 describe("backend integration through the proxy", () => {
@@ -120,6 +131,7 @@ describe("every indexable page has exactly one h1", () => {
     "/learn/glossary",
     "/learn/methodology",
     "/learn/data-sets",
+    "/learn/technical-documentation",
     "/about/team",
     "/about/about-cold",
     "/contact",

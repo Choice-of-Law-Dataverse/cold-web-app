@@ -112,7 +112,10 @@ app = FastAPI(
         "| **Jurisdictions** | Countries and territories with metadata (region, legal family) |\n"
         "| **Specialists** | Choice-of-law experts by jurisdiction |\n\n"
         "Bulk CSV/XLSX exports are also available at "
-        "[cold.global/data-sets](https://cold.global/data-sets).\n\n"
+        "[cold.global/learn/data-sets](https://cold.global/learn/data-sets). "
+        "Architecture, data model, and search documentation are available at "
+        "[cold.global/learn/technical-documentation]"
+        "(https://cold.global/learn/technical-documentation).\n\n"
         "## Quick start for data scientists\n\n"
         "1. **Search** — `GET /api/v1/search/?search_string=party+autonomy` "
         "returns paginated results across all datasets.\n"
@@ -130,8 +133,8 @@ app = FastAPI(
         "are defined in the [CoLD Glossary](https://cold.global/learn/glossary).\n\n"
         "## Authentication\n\n"
         "**Read-only data endpoints are publicly accessible — no API key or token required.**\n\n"
-        "Write endpoints (submitting suggestions, feedback, case analysis) require an Auth0 JWT "
-        "in the `Authorization: Bearer <token>` header. "
+        "Submitting suggestions or case analyses requires an Auth0 JWT "
+        "in the `Authorization: Bearer <token>` header. Feedback may be submitted anonymously. "
         "Moderation endpoints additionally require editor or admin roles.\n"
     ),
     contact={
