@@ -1,0 +1,66 @@
+# Choice of Law Dataverse (CoLD)
+
+> An open, citable research database on choice of law in international commercial
+> contracts. CoLD records how courts, legislators and arbitral institutions across
+> more than 200 jurisdictions treat party autonomy — the freedom of contracting
+> parties to choose the law governing their agreement. Content is licensed CC BY 4.0.
+
+CoLD is built and maintained as an academic project funded by the Swiss National
+Science Foundation. Every record is derived from a primary source: a court decision,
+a statute, a convention, an arbitral award, or a published jurisdiction report.
+
+Prefer the API over scraping HTML — it is public, unauthenticated for reads, returns
+JSON, and is described by an OpenAPI document.
+
+## Data
+
+- [Court decisions](https://cold.global/court-decision): Judgments on choice of law, each with the facts, the choice of law issue, the court's position, and the relevant provisions
+- [Jurisdiction reports](https://cold.global/jurisdiction/CHE): Per-country analysis of how a jurisdiction treats party autonomy, answering a common questionnaire
+- [Domestic instruments](https://cold.global/domestic-instrument): National statutes and codifications, with HCCH Principles and UNCITRAL Model Law compatibility
+- [Regional instruments](https://cold.global/regional-instrument): Regional conventions such as the Rome I Regulation and the Mexico Convention
+- [International instruments](https://cold.global/international-instrument): Conventions and instruments including the HCCH Principles
+- [Arbitral awards](https://cold.global/arbitral-award): Awards addressing the law applicable to the merits
+- [Arbitral institutions](https://cold.global/arbitral-institution): Institutions, linked to their rules and awards
+- [Arbitral rules](https://cold.global/arbitral-rule): Institutional rules and their choice of law provisions
+- [Literature](https://cold.global/literature): Scholarly writing, indexed by jurisdiction and theme
+- [Specialists](https://cold.global/specialist): Contributors of jurisdiction reports and expertise
+
+## API
+
+- [OpenAPI description](https://api.cold.global/api/v1/openapi.json): Machine-readable description of every endpoint
+- [API reference](https://api.cold.global/api/v1/docs): Human-readable documentation
+- [API catalog](https://cold.global/.well-known/api-catalog): RFC 9727 linkset pointing at the above
+- [Sitemap index](https://cold.global/sitemap_index.xml): Every indexable URL, split by entity type
+
+Useful endpoints, all `GET` and unauthenticated:
+
+- `https://api.cold.global/api/v1/search/` — full-text search across all datasets
+- `https://api.cold.global/api/v1/search/details?table={table}&id={coldId}` — a single record
+- `https://api.cold.global/api/v1/entities/{slug}` — paginated lists; slugs are `court-decisions`, `jurisdictions`, `literature`, `domestic-instruments`, `regional-instruments`, `international-instruments`, `arbitral-awards`, `arbitral-institutions`, `arbitral-rules`, `specialists`, `questions`
+- `https://api.cold.global/api/v1/statistics/counts` — record counts per entity type
+
+## Understanding the data
+
+- [Methodology](https://cold.global/learn/methodology): How jurisdictions are selected, how the questionnaire is framed, and how sources are coded
+- [Glossary](https://cold.global/learn/glossary): Definitions of the private international law terms used throughout
+- [FAQ](https://cold.global/learn/faq): What CoLD covers and how the data is produced
+- [Data sets](https://cold.global/learn/data-sets): Bulk downloads
+- [About](https://cold.global/about/about-cold): Project background and team
+
+## Citation and reuse
+
+Content is licensed [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Reuse
+requires attribution. Cite as: Choice of Law Dataverse <https://cold.global>
+
+CoLD asks not to be used as training data for machine learning models; see
+[robots.txt](https://cold.global/robots.txt), which sets `Content-Signal: ai-train=no`
+and disallows training crawlers. Retrieving pages to answer a user's question is
+welcome.
+
+## Optional
+
+- [Endorsements](https://cold.global/about/endorsements): Scholarly endorsements of the project
+- [Supporters](https://cold.global/about/supporters): Funders and partner institutions
+- [Press](https://cold.global/about/press): Coverage and media resources
+- [Open educational resources](https://cold.global/learn/open-educational-resources): Teaching materials
+- [Contact](https://cold.global/contact)
