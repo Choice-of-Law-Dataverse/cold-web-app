@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/Choice-of-Law-Dataverse/cold-web-app/compare/backend-v1.0.0...backend-v1.1.0) (2026-08-23)
+
+
+### Features
+
+* move technical wiki into main site ([#535](https://github.com/Choice-of-Law-Dataverse/cold-web-app/issues/535)) ([e803de4](https://github.com/Choice-of-Law-Dataverse/cold-web-app/commit/e803de4123c03206dd1ae5d8fe9ee519a4a5888d))
+
 ## [1.0.0](https://github.com/Choice-of-Law-Dataverse/cold-web-app/compare/backend-v0.2.16...backend-v1.0.0) (2026-08-23)
 
 
