@@ -4,11 +4,20 @@ import type { paths } from "@/types/api-schema";
 /**
  * Typed client for the CoLD backend.
  *
- * In the browser every call goes through `/api/proxy` so the API key stays on
- * the server and the Auth0 session is attached. During SSR we talk to the
- * backend directly instead: routing a server render back out through our own
- * public origin would add a full network round-trip (plus a CDN hop) to every
- * request, which server-side prefetching makes hot path.
+ * In the browser every call goes through `/api/proxy`, which attaches the API
+ * key and the caller's Auth0 token server-side.
+ *
+ * During SSR we call the backend directly and attach the key ourselves,
+ * because the proxy is only reachable over our own public origin: a render
+ * would have to leave Azure, cross the CDN and re-enter this same process,
+ * holding a second concurrent request slot while the first blocks on it.
+ * Under crawl load that halves capacity and can deadlock a replica once it
+ * hits max concurrency.
+ *
+ * Two things are traded away. The backend call no longer joins the
+ * distributed trace, which is a real if minor loss. It also no longer carries
+ * the user's token — deliberate, since server-rendered HTML has to stay
+ * identical for every visitor to be safe for a shared cache.
  */
 export function useApiClient() {
   const config = useRuntimeConfig();
