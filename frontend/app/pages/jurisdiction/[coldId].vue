@@ -2,6 +2,7 @@
   <div>
     <BaseDetailLayout
       table="Jurisdictions"
+      :page-heading="pageHeading"
       :loading="isLoading"
       :error="error"
       :data="data"
@@ -71,7 +72,13 @@
       </template>
     </ClientOnly>
 
-    <PageSeoMeta :title-candidates="[data?.name]" fallback="Jurisdiction" />
+    <PageSeoMeta
+      :title-candidates="[jurisdictionTitle]"
+      fallback="Jurisdiction"
+      :description-candidates="descriptionCandidates"
+      :breadcrumbs="breadcrumbs"
+      :json-ld="jsonLd"
+    />
   </div>
 </template>
 
@@ -84,6 +91,7 @@ import JurisdictionComparisonTable from "@/components/jurisdiction/JurisdictionC
 import LoadingBar from "@/components/layout/LoadingBar.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
 import { useEntityData } from "@/composables/useEntityData";
+import { buildJurisdictionNode } from "@/utils/structuredData";
 import { flagUrl } from "@/config/assets";
 import GradientTopBorder from "@/components/ui/GradientTopBorder.vue";
 
@@ -91,6 +99,33 @@ const route = useRoute();
 const coldId = ref((route.params.coldId as string).toUpperCase());
 
 const { data, isLoading, error } = useEntityData("/jurisdiction", coldId);
+
+const pageHeading = computed(() =>
+  data.value?.name ? `Choice of law in ${data.value.name}` : "",
+);
+
+const jurisdictionTitle = computed(() =>
+  data.value?.name ? `Choice of law in ${data.value.name}` : null,
+);
+
+const descriptionCandidates = computed(() => [
+  data.value?.jurisdictionSummary,
+  data.value?.name
+    ? `How ${data.value.name} treats party autonomy and choice of law in international commercial contracts.`
+    : null,
+  data.value?.legalFamily ? `Legal family: ${data.value.legalFamily}` : null,
+]);
+
+const breadcrumbs = computed(() => [
+  { name: "Home", path: "/" },
+  {
+    name: data.value?.name ?? "Jurisdiction",
+    path: `/jurisdiction/${coldId.value}`,
+  },
+]);
+
+const jsonLd = (siteUrl: string, path: string) =>
+  data.value ? buildJurisdictionNode(siteUrl, path, data.value) : null;
 
 const jurisdictionOption = computed(() => {
   if (!data.value) return null;

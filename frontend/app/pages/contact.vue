@@ -7,8 +7,13 @@
 <script setup lang="ts">
 import ContentPageLayout from "@/components/layout/ContentPageLayout.vue";
 
-useHead({
+useSeoMeta({
   title: "Contact — CoLD",
+  description:
+    "Get in touch with the Choice of Law Dataverse team about the data, contributions or collaboration.",
+  ogTitle: "Contact — CoLD",
+  ogDescription:
+    "Get in touch with the Choice of Law Dataverse team about the data, contributions or collaboration.",
 });
 
 const { data: page } = await useAsyncData("contact", () =>

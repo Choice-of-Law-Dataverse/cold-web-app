@@ -33,8 +33,13 @@ import GradientTopBorder from "@/components/ui/GradientTopBorder.vue";
 import { useEntityList } from "@/composables/useEntityList";
 import { formatDate, sanitizeCell } from "@/utils/format";
 
-useHead({
+useSeoMeta({
   title: "Arbitral Rules — CoLD",
+  description:
+    "Sets of institutional arbitration rules and the provisions that govern how tribunals determine the law applicable to the merits.",
+  ogTitle: "Arbitral Rules — CoLD",
+  ogDescription:
+    "Sets of institutional arbitration rules and the provisions that govern how tribunals determine the law applicable to the merits.",
 });
 
 const page = ref(1);

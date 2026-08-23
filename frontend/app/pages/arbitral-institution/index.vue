@@ -33,8 +33,13 @@ import GradientTopBorder from "@/components/ui/GradientTopBorder.vue";
 import { useEntityList } from "@/composables/useEntityList";
 import { sanitizeCell } from "@/utils/format";
 
-useHead({
+useSeoMeta({
   title: "Arbitral Institutions — CoLD",
+  description:
+    "Arbitral institutions indexed in the Choice of Law Dataverse, linked to their arbitration rules and the awards rendered under them.",
+  ogTitle: "Arbitral Institutions — CoLD",
+  ogDescription:
+    "Arbitral institutions indexed in the Choice of Law Dataverse, linked to their arbitration rules and the awards rendered under them.",
 });
 
 const page = ref(1);

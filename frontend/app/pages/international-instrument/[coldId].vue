@@ -25,6 +25,9 @@
     <PageSeoMeta
       :title-candidates="[data?.name]"
       fallback="International Instrument"
+      :description-candidates="descriptionCandidates"
+      :breadcrumbs="breadcrumbs"
+      :json-ld="jsonLd"
     />
   </div>
 </template>
@@ -37,6 +40,7 @@ import InternationalInstrumentContent from "@/components/entity/content/Internat
 import InternationalInstrumentComparisonTable from "@/components/international-instrument/InternationalInstrumentComparisonTable.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
 import { useEntityData } from "@/composables/useEntityData";
+import { buildLegislationNode } from "@/utils/structuredData";
 
 const route = useRoute();
 const coldId = ref(route.params.coldId as string);
@@ -47,4 +51,22 @@ const { data, isLoading, error } = useEntityData(
 );
 
 const hcchAnswers = computed(() => data.value?.relations.hcchAnswers ?? []);
+
+const descriptionCandidates = computed(() => [
+  data.value?.name,
+  data.value?.date ? `Concluded ${data.value.date}` : null,
+  "International instrument on choice of law in international commercial contracts.",
+]);
+
+const breadcrumbs = computed(() => [
+  { name: "Home", path: "/" },
+  { name: "International Instruments", path: "/international-instrument" },
+  {
+    name: data.value?.name ?? "International Instrument",
+    path: `/international-instrument/${coldId.value}`,
+  },
+]);
+
+const jsonLd = (siteUrl: string, path: string) =>
+  data.value ? buildLegislationNode(siteUrl, path, data.value) : null;
 </script>

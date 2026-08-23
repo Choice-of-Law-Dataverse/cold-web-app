@@ -1,6 +1,7 @@
 import { computed, type MaybeRefOrGetter, toValue } from "vue";
 import { keepPreviousData, useQuery } from "@tanstack/vue-query";
 import { useApiClient } from "@/composables/useApiClient";
+import { useServerPrefetch } from "@/composables/useServerPrefetch";
 import type { components } from "@/types/api-schema";
 
 type Schemas = components["schemas"];
@@ -56,7 +57,7 @@ export function useEntityList<S extends EntitySlug>(
 ) {
   const { client } = useApiClient();
 
-  return useQuery({
+  const query = useQuery({
     queryKey: computed(() => [
       "entityList",
       slug,
@@ -98,4 +99,8 @@ export function useEntityList<S extends EntitySlug>(
         ? computed(() => toValue(params.enabled!))
         : undefined,
   });
+
+  useServerPrefetch(query.suspense);
+
+  return query;
 }

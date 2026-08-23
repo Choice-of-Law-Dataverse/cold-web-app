@@ -13,8 +13,13 @@
 import ContentPageLayout from "@/components/layout/ContentPageLayout.vue";
 import { learnNavLinks } from "@/config/navigation";
 
-useHead({
+useSeoMeta({
   title: "Methodology — CoLD",
+  description:
+    "How the Choice of Law Dataverse selects jurisdictions, frames its questions and codes court decisions and instruments into comparable answers.",
+  ogTitle: "Methodology — CoLD",
+  ogDescription:
+    "How the Choice of Law Dataverse selects jurisdictions, frames its questions and codes court decisions and instruments into comparable answers.",
 });
 
 const { data: intro } = await useAsyncData("methodology_intro", () =>

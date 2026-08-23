@@ -7,8 +7,13 @@
 <script setup lang="ts">
 import ContentPageLayout from "@/components/layout/ContentPageLayout.vue";
 
-useHead({
+useSeoMeta({
   title: "Disclaimer — CoLD",
+  description:
+    "Terms of use and disclaimer for the Choice of Law Dataverse. The content is for research purposes and is not legal advice.",
+  ogTitle: "Disclaimer — CoLD",
+  ogDescription:
+    "Terms of use and disclaimer for the Choice of Law Dataverse. The content is for research purposes and is not legal advice.",
 });
 
 const { data: page } = await useAsyncData("disclaimer", () =>

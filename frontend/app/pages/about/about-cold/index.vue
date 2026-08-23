@@ -9,8 +9,13 @@ import { onMounted, nextTick } from "vue";
 import { useRoute } from "vue-router";
 import ContentPageLayout from "@/components/layout/ContentPageLayout.vue";
 
-useHead({
+useSeoMeta({
   title: "About CoLD — CoLD",
+  description:
+    "The Choice of Law Dataverse is an open research project mapping how jurisdictions worldwide treat party autonomy in international commercial contracts.",
+  ogTitle: "About CoLD — CoLD",
+  ogDescription:
+    "The Choice of Law Dataverse is an open research project mapping how jurisdictions worldwide treat party autonomy in international commercial contracts.",
 });
 
 const { data: page } = await useAsyncData("about_cold", () =>

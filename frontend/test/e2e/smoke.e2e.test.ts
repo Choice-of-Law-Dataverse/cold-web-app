@@ -64,3 +64,124 @@ describe("backend integration through the proxy", () => {
     expect(rows.length).toBeGreaterThan(0);
   });
 });
+
+describe("entity pages render their content server-side", () => {
+  const entityPages = [
+    {
+      path: "/court-decision/CD-ISR-524",
+      marker: "Klausner v Berkovitz",
+      label: "Court Decision",
+    },
+    {
+      path: "/jurisdiction/CHE",
+      marker: "Choice of law in Switzerland",
+      label: "Jurisdiction",
+    },
+  ];
+
+  it.each(entityPages)(
+    "$path puts the record title in the SSR title and an h1",
+    async ({ path, marker, label }) => {
+      const html = await $fetch<string>(path);
+
+      expect(html).toContain(`<title>${marker}`);
+      expect(html).toMatch(new RegExp(`<h1[^>]*>${marker}</h1>`));
+      expect(html).not.toContain(`<title>${label} — CoLD</title>`);
+    },
+  );
+
+  it("gives each record a description that is not just its title", async () => {
+    const html = await $fetch<string>("/court-decision/CD-ISR-524");
+    const description = /<meta name="description" content="([^"]*)"/.exec(
+      html,
+    )?.[1];
+
+    expect(description).toBeTruthy();
+    expect(description).not.toBe("Court Decision — CoLD");
+  });
+
+  it("emits structured data for a record", async () => {
+    const html = await $fetch<string>("/court-decision/CD-ISR-524");
+
+    expect(html).toContain("application/ld+json");
+    expect(html).toContain('"BreadcrumbList"');
+  });
+});
+
+describe("canonical URLs collapse duplicates", () => {
+  it.each([
+    "/court-decision/",
+    "/court-decision?page=3&foo=bar",
+    "/court-decision",
+  ])("%s canonicalises to the bare path", async (path) => {
+    const html = await $fetch<string>(path);
+    const canonical = /<link rel="canonical" href="([^"]*)"/.exec(html)?.[1];
+
+    expect(canonical).toBeTruthy();
+    expect(canonical?.endsWith("/court-decision")).toBe(true);
+  });
+});
+
+describe("missing records are not soft 404s", () => {
+  it.each(["/court-decision/CD-DOES-NOT-EXIST", "/literature/DOES-NOT-EXIST"])(
+    "%s responds 404",
+    async (path) => {
+      const response = await fetch(new URL(path, host), {
+        headers: { accept: "text/html" },
+      });
+
+      expect(response.status).toBe(404);
+    },
+  );
+});
+
+describe("thin question answers stay out of the index", () => {
+  it("marks a jurisdiction-specific answer noindex", async () => {
+    const html = await $fetch<string>("/question/CPV_28-Arb");
+
+    expect(html).toMatch(/<meta name="robots"[^>]*content="noindex, follow"/);
+  });
+});
+
+describe("sitemap", () => {
+  it("indexes one sitemap per entity collection", async () => {
+    const xml = await $fetch<string>("/sitemap_index.xml");
+
+    for (const name of [
+      "pages",
+      "court-decisions",
+      "jurisdictions",
+      "literature",
+      "domestic-instruments",
+      "specialists",
+      "questions",
+    ]) {
+      expect(xml).toContain(`/__sitemap__/${name}.xml`);
+    }
+  });
+
+  it("lists real detail URLs, not just static routes", async () => {
+    const xml = await $fetch<string>("/__sitemap__/court-decisions.xml");
+    const locations = xml.match(/<loc>/g) ?? [];
+
+    expect(locations.length).toBeGreaterThan(1000);
+    expect(xml).toContain("/court-decision/CD-");
+  });
+
+  it("omits the jurisdiction-specific question answers", async () => {
+    const xml = await $fetch<string>("/__sitemap__/questions.xml");
+    const answerUrls = xml.match(
+      /<loc>[^<]*\/question\/[A-Z]{3}_[^<]*<\/loc>/g,
+    );
+
+    expect(answerUrls).toBeNull();
+  });
+
+  it("keeps gated routes out of the pages sitemap", async () => {
+    const xml = await $fetch<string>("/__sitemap__/pages.xml");
+
+    for (const path of ["/search", "/moderation", "/new", "/edit"]) {
+      expect(xml).not.toContain(`${path}</loc>`);
+    }
+  });
+});

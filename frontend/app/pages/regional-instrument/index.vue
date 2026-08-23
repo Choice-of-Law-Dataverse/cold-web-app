@@ -33,8 +33,13 @@ import GradientTopBorder from "@/components/ui/GradientTopBorder.vue";
 import { useEntityList } from "@/composables/useEntityList";
 import { formatDate, sanitizeCell } from "@/utils/format";
 
-useHead({
+useSeoMeta({
   title: "Regional Instruments — CoLD",
+  description:
+    "Regional instruments governing choice of law in international commercial contracts, such as the Rome I Regulation and the Mexico Convention.",
+  ogTitle: "Regional Instruments — CoLD",
+  ogDescription:
+    "Regional instruments governing choice of law in international commercial contracts, such as the Rome I Regulation and the Mexico Convention.",
 });
 
 const page = ref(1);

@@ -33,8 +33,13 @@ import GradientTopBorder from "@/components/ui/GradientTopBorder.vue";
 import { useEntityList } from "@/composables/useEntityList";
 import { sanitizeCell } from "@/utils/format";
 
-useHead({
+useSeoMeta({
   title: "Specialists — CoLD",
+  description:
+    "Researchers and practitioners who contribute jurisdiction reports and expertise on choice of law to the Choice of Law Dataverse.",
+  ogTitle: "Specialists — CoLD",
+  ogDescription:
+    "Researchers and practitioners who contribute jurisdiction reports and expertise on choice of law to the Choice of Law Dataverse.",
 });
 
 const page = ref(1);

@@ -1,7 +1,35 @@
 import tailwindcss from "@tailwindcss/vite";
 import { AI_TRAINING_CRAWLERS } from "./config/aiTrainingCrawlers";
+import { SITEMAP_GROUPS } from "./server/utils/sitemapSources";
 
 const NON_PUBLIC_PATHS = ["/search", "/moderation", "*/new", "*/edit"];
+
+/**
+ * Routes kept out of every sitemap: gated pages, single-use flows and the
+ * section stubs that only redirect.
+ *
+ * `/question/**` is not listed here — the `questions` source publishes the 60
+ * comparative question pages. The ~15k jurisdiction-specific answers under the
+ * same route are excluded by not being in that source, and carry `noindex`.
+ */
+const SITEMAP_EXCLUDE = [
+  "/search",
+  "/moderation/**",
+  "/**/new",
+  "/**/edit",
+  "/confirmation",
+  "/court-decision/my-analyses",
+  "/event/**",
+  "/about",
+  "/learn",
+];
+
+const ENTITY_SITEMAPS = Object.fromEntries(
+  Object.keys(SITEMAP_GROUPS).map((group) => [
+    group,
+    { sources: [`/api/__sitemap__/${group}`] },
+  ]),
+);
 
 const CONTENT_SIGNAL = {
   search: "yes",
@@ -27,6 +55,10 @@ export default defineNuxtConfig({
     },
   },
   routeRules: {
+    "/api/__sitemap__/**": {
+      swr: 3600,
+    },
+    "/sitemap.txt": { redirect: { to: "/sitemap_index.xml", statusCode: 301 } },
     "/_nuxt/**": {
       headers: { "cache-control": "public, max-age=31536000, immutable" },
     },
@@ -134,9 +166,25 @@ export default defineNuxtConfig({
       additionalOrigins: process.env.NUXT_ADDITIONAL_ORIGINS,
     },
   },
+  site: {
+    url: process.env.NUXT_SITE_URL,
+    name: process.env.NUXT_SITE_NAME || "Choice of Law Dataverse",
+  },
+  sitemap: {
+    exclude: SITEMAP_EXCLUDE,
+    defaults: { changefreq: "monthly", priority: 0.5 },
+    sitemaps: {
+      pages: {
+        includeAppSources: true,
+        exclude: SITEMAP_EXCLUDE,
+        defaults: { changefreq: "weekly", priority: 0.7 },
+      },
+      ...ENTITY_SITEMAPS,
+    },
+  },
   robots: {
     robotsTxt: true,
-    sitemap: ["/sitemap.txt"],
+    sitemap: ["/sitemap_index.xml"],
     groups: [
       {
         userAgent: ["*"],
