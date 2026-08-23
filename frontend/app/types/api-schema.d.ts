@@ -250,26 +250,6 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  "/sitemap/urls": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /**
-     * List all indexable frontend URLs
-     * @description Returns every public-facing URL for the CoLD frontend. Intended for generating XML sitemaps for search engine indexing.
-     */
-    get: operations["get_all_frontend_urls_api_v1_sitemap_urls_get"];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
   "/landing-page/jurisdictions": {
     parameters: {
       query?: never;
@@ -3014,13 +2994,6 @@ export interface components {
       /** @description Comma-separated thematic categories. */
       themes?: string | null;
     };
-    /** SitemapEntry */
-    SitemapEntry: {
-      /** @description Full URL of the page. */
-      loc: string;
-      /** @description Last modification date in ISO 8601 format. */
-      lastmod: string;
-    };
     /** SpecialistDetail */
     SpecialistDetail: {
       /** @description CoLD unique identifier (e.g. 'CD-CHE-42', 'DI-FRA-3'). */
@@ -3809,26 +3782,6 @@ export interface operations {
         };
         content: {
           "text/html": string;
-        };
-      };
-    };
-  };
-  get_all_frontend_urls_api_v1_sitemap_urls_get: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description Array of URL entries with loc and optional lastmod/priority. */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["SitemapEntry"][];
         };
       };
     };

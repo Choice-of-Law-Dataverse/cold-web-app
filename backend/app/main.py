@@ -14,7 +14,6 @@ from app.routes import (
     feedback,
     landing_page,
     search,
-    sitemap,
     statistics,
     submarine,
     suggestions as suggestions_router,
@@ -184,10 +183,6 @@ app = FastAPI(
             "description": "Helper endpoints for the CoLD landing page, including jurisdiction data-availability flags.",
         },
         {
-            "name": "Sitemap",
-            "description": "Returns all indexable frontend URLs for search-engine sitemap generation.",
-        },
-        {
             "name": "Suggestions",
             "description": (
                 "Community data contributions. Authenticated users can submit new court decisions, instruments, "
@@ -229,7 +224,6 @@ api_router.include_router(search.router)
 api_router.include_router(ai.router)
 api_router.include_router(case_analyzer.router)
 api_router.include_router(submarine.router)
-api_router.include_router(sitemap.router)
 api_router.include_router(landing_page.router)
 api_router.include_router(statistics.router)
 api_router.include_router(entities.router)
