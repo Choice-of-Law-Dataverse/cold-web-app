@@ -69,6 +69,18 @@ root `pnpm install` before hooks fire. Without it the hook is silently absent.
 
 - **Regenerate API types after backend schema changes**: `pnpm run generate:api` (or `cd frontend && pnpm run generate:api`)
 
+## Releases
+
+Releases are automated by Release Please (`release-please-config.json`). A push to `main` updates
+an open release pull request; merging it tags `frontend-v*` / `backend-v*`, and each tag triggers
+`.github/workflows/deploy.yml` for that package alone.
+
+- Never hand-edit `frontend/package.json` version, `backend/pyproject.toml` version,
+  `.release-please-manifest.json`, or any `CHANGELOG.md` — the release PR owns them.
+- Commits are assigned to a package by **file path**, not by commit scope. Do not use `frontend`
+  or `backend` as a commit scope.
+- Deployment follows from a release; there is no deploy-from-branch path.
+
 ## Database Constraints
 
 - Only a production database exists — there is no dev or staging environment.

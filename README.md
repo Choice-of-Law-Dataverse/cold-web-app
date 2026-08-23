@@ -201,7 +201,7 @@ when you want a pass/fail answer without touching the working tree.
 
 ### Code Standards
 
-- **Conventional Commits**: `type(scope): description` — types: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`
+- **Conventional Commits**: `type(optional scope): description` — types: `feat`, `fix`, `perf`, `revert`, `refactor`, `docs`, `style`, `test`, `build`, `ci`, `chore`. Scopes are optional; never use `frontend`/`backend` as a scope — [Release Please](https://github.com/googleapis/release-please) assigns commits to packages by file path
 - **No Barrel Files**: Avoid `index.ts`/`index.js`/`__init__.py` re-exports
 - **TypeScript Only**: All frontend code must be `.ts` or `.vue` (never `.js`)
 

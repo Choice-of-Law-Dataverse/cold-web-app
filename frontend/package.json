@@ -1,5 +1,6 @@
 {
   "name": "nuxt-app",
+  "version": "0.2.16",
   "author": {
     "name": "Marcos Messer",
     "email": "git@marcosmesser.com",
