@@ -43,7 +43,8 @@ Browser requests from the website pass through a same-origin server proxy. This 
 | File storage                     | Azure Blob Storage                                                               |
 | Hosting                          | Azure Container Apps and Azure Database for PostgreSQL                           |
 | Observability                    | Logfire with OpenTelemetry instrumentation                                       |
-| Delivery                         | GitHub Actions, container images, and Cloudflare edge caching                    |
+| Delivery                         | Release Please, GitHub Actions, container images, and Cloudflare edge caching    |
+| Preview deployments              | Vercel previews for pull-request branches                                        |
 
 The source code and contribution instructions are available in the [CoLD web application repository](https://github.com/Choice-of-Law-Dataverse/cold-web-app).
 
@@ -137,8 +138,10 @@ By default, matching records are ordered by relevance. Answers containing “No 
 
 ## Deployment and Operations
 
-The public frontend and API are deployed as separate containers to Azure Container Apps, and PostgreSQL is hosted on Azure. This separation allows the website and API to be released independently.
+The public frontend and API are deployed as separate containers to Azure Container Apps, and PostgreSQL is hosted on Azure. Each application is versioned and released independently.
 
-Production deployments are manually triggered through GitHub Actions. Each workflow builds an image from the selected revision and updates the corresponding Container App. After a frontend deployment, the workflow purges the Cloudflare cache when the required credentials are available.
+Production releases are automated with Release Please. A push to `main` updates a release pull request for each package with releasable changes. Merging a release pull request creates a `frontend-v*` or `backend-v*` tag, and that tag triggers the shared GitHub Actions deployment workflow for the corresponding package only. The workflow can also be dispatched manually as an operational fallback; a manual dispatch deploys both packages from the selected revision.
+
+Backend releases build a versioned container image and update the `cold-backend` Azure Container App. Frontend releases load runtime configuration from Azure Key Vault, build a versioned image, update the `cold-frontend` Container App, and purge the Cloudflare cache when credentials are available. Vercel provides pull-request previews, but deployments from `main` and Release Please branches are disabled there; production is released through the tag-driven Azure workflow.
 
 CoLD has one live production data environment. Local development runs the Nuxt and FastAPI services separately, but there is no development or staging copy of the production database. Database access and the NocoDB editorial interface are restricted to authorized team members; the public website and read-only API expose only publication-ready data.
