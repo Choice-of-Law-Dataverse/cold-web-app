@@ -24,6 +24,70 @@ const SITEMAP_EXCLUDE = [
   "/learn",
 ];
 
+/**
+ * Cache policy for server-rendered HTML.
+ *
+ * `max-age=0` keeps browsers revalidating so a reader never sees stale law,
+ * while `s-maxage` lets the CDN answer instantly and refresh in the
+ * background. This is only safe while the edge is configured to bypass the
+ * cache for requests carrying an Auth0 session cookie: the SSR payload embeds
+ * `useUser()`, so a cached authenticated render would leak that profile.
+ */
+const PUBLIC_CACHE_CONTROL =
+  "public, max-age=0, s-maxage=600, stale-while-revalidate=86400, stale-if-error=86400";
+
+/** Anything personalised, gated, or mid-workflow must never reach a shared cache. */
+const PRIVATE_CACHE_CONTROL = "private, no-store";
+
+const PUBLIC_HTML_ROUTES = [
+  "/",
+  "/arbitral-award/**",
+  "/arbitral-institution/**",
+  "/arbitral-rule/**",
+  "/court-decision/**",
+  "/domestic-instrument/**",
+  "/international-instrument/**",
+  "/jurisdiction/**",
+  "/literature/**",
+  "/question/**",
+  "/regional-instrument/**",
+  "/specialist/**",
+  "/about/**",
+  "/learn/**",
+  "/event/**",
+  "/contact",
+  "/disclaimer",
+  "/submit",
+];
+
+/**
+ * Listed as exact paths rather than a `/**\/new` glob so they unambiguously
+ * beat the entity patterns above when Nitro resolves overlapping rules.
+ */
+const PRIVATE_HTML_ROUTES = [
+  "/search",
+  "/confirmation",
+  "/moderation/**",
+  "/court-decision/new",
+  "/court-decision/my-analyses",
+  "/domestic-instrument/new",
+  "/international-instrument/new",
+  "/international-instrument/*/edit",
+  "/literature/new",
+  "/regional-instrument/new",
+  "/auth/**",
+  "/api/**",
+];
+
+function cacheRules(routes: string[], cacheControl: string) {
+  return Object.fromEntries(
+    routes.map((route) => [
+      route,
+      { headers: { "cache-control": cacheControl } },
+    ]),
+  );
+}
+
 const ENTITY_SITEMAPS = Object.fromEntries(
   Object.keys(SITEMAP_GROUPS).map((group) => [
     group,
@@ -55,6 +119,8 @@ export default defineNuxtConfig({
     },
   },
   routeRules: {
+    ...cacheRules(PUBLIC_HTML_ROUTES, PUBLIC_CACHE_CONTROL),
+    ...cacheRules(PRIVATE_HTML_ROUTES, PRIVATE_CACHE_CONTROL),
     "/api/__sitemap__/**": {
       swr: 3600,
     },
@@ -171,6 +237,7 @@ export default defineNuxtConfig({
     name: process.env.NUXT_SITE_NAME || "Choice of Law Dataverse",
   },
   sitemap: {
+    cacheMaxAgeSeconds: 3600,
     exclude: SITEMAP_EXCLUDE,
     defaults: { changefreq: "monthly", priority: 0.5 },
     sitemaps: {

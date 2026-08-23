@@ -169,6 +169,55 @@ describe("thin question answers stay out of the index", () => {
   });
 });
 
+describe("cache policy", () => {
+  async function cacheControl(path: string) {
+    const response = await fetch(new URL(path, host), {
+      headers: { accept: "text/html" },
+    });
+    return response.headers.get("cache-control") ?? "";
+  }
+
+  it.each([
+    "/",
+    "/court-decision",
+    "/court-decision/CD-ISR-524",
+    "/jurisdiction/CHE",
+    "/question/01-P",
+    "/learn/faq",
+  ])(
+    "%s is shared-cacheable but always revalidated by the browser",
+    async (path) => {
+      const header = await cacheControl(path);
+
+      expect(header).toContain("s-maxage=");
+      expect(header).toContain("max-age=0");
+      expect(header).not.toContain("no-store");
+    },
+  );
+
+  it.each([
+    "/search",
+    "/moderation",
+    "/court-decision/new",
+    "/court-decision/my-analyses",
+    "/literature/new",
+    "/international-instrument/II-HCCH-1/edit",
+  ])("%s is never stored by a shared cache", async (path) => {
+    const header = await cacheControl(path);
+
+    expect(header).toContain("no-store");
+    expect(header).not.toContain("s-maxage");
+  });
+});
+
+describe("server-rendered HTML does not vary by session", () => {
+  it("keeps the signed-in entity action off the server render", async () => {
+    const html = await $fetch<string>("/court-decision/CD-ISR-524");
+
+    expect(html).not.toContain('href="/court-decision/new"');
+  });
+});
+
 describe("sitemap", () => {
   it("indexes one sitemap per entity collection", async () => {
     const xml = await $fetch<string>("/sitemap_index.xml");

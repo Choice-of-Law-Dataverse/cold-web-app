@@ -72,3 +72,41 @@ jobs:
           targetPort: 3000
           buildArguments: |
             NUXT_SITE_URL=${{ steps.fetch-secrets.outputs.NUXT_SITE_URL }}
+
+      - name: Fetch Cloudflare credentials
+        uses: azure/cli@v3
+        id: cloudflare-secrets
+        with:
+          inlineScript: |
+            for secret in CLOUDFLARE-ZONE-ID CLOUDFLARE-API-TOKEN; do
+              value=$(az keyvault secret show --vault-name cold-key-vault --name $secret --query value -o tsv 2>/dev/null || true)
+              if [ -n "$value" ]; then
+                echo "::add-mask::$value"
+              fi
+              echo "$(echo $secret | tr '-' '_')=$value" >> $GITHUB_OUTPUT
+            done
+
+      - name: Purge Cloudflare cache
+        env:
+          ZONE_ID: ${{ steps.cloudflare-secrets.outputs.CLOUDFLARE_ZONE_ID }}
+          API_TOKEN: ${{ steps.cloudflare-secrets.outputs.CLOUDFLARE_API_TOKEN }}
+        run: |
+          if [ -z "$ZONE_ID" ] || [ -z "$API_TOKEN" ]; then
+            echo "CLOUDFLARE-ZONE-ID / CLOUDFLARE-API-TOKEN not set in cold-key-vault; skipping purge."
+            echo "The deploy succeeded, but edge-cached HTML will serve until its TTL expires."
+            exit 0
+          fi
+
+          response=$(curl -sS -X POST \
+            "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/purge_cache" \
+            -H "Authorization: Bearer $API_TOKEN" \
+            -H "Content-Type: application/json" \
+            --data '{"purge_everything":true}')
+
+          echo "$response" | jq -e '.success == true' > /dev/null || {
+            echo "Cloudflare purge failed:"
+            echo "$response" | jq .
+            exit 1
+          }
+
+          echo "Cloudflare cache purged."
