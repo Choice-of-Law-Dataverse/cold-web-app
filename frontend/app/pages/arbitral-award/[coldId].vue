@@ -21,6 +21,9 @@
     <PageSeoMeta
       :title-candidates="[caseNumberTitle]"
       fallback="Arbitral Award"
+      :description-candidates="descriptionCandidates"
+      :breadcrumbs="breadcrumbs"
+      :json-ld="jsonLd"
     />
   </div>
 </template>
@@ -31,6 +34,7 @@ import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layout/BaseDetailLayout.vue";
 import EntityContent from "@/components/entity/EntityContent.vue";
 import { useEntityData } from "@/composables/useEntityData";
+import { buildArbitralAwardNode } from "@/utils/structuredData";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
 
 const route = useRoute();
@@ -59,4 +63,23 @@ const caseNumberTitle = computed(() => {
   const cn = data.value?.caseNumber;
   return cn?.trim() ? `Case Number ${cn}` : null;
 });
+
+const descriptionCandidates = computed(() => [
+  data.value?.natureOfTheAward,
+  data.value?.seatTown ? `Seat of arbitration: ${data.value.seatTown}` : null,
+  data.value?.year ? `Award of ${data.value.year}` : null,
+  data.value?.awardSummary,
+]);
+
+const breadcrumbs = computed(() => [
+  { name: "Home", path: "/" },
+  { name: "Arbitral Awards", path: "/arbitral-award" },
+  {
+    name: data.value?.displayTitle ?? "Arbitral Award",
+    path: `/arbitral-award/${coldId.value}`,
+  },
+]);
+
+const jsonLd = (siteUrl: string, path: string) =>
+  data.value ? buildArbitralAwardNode(siteUrl, path, data.value) : null;
 </script>

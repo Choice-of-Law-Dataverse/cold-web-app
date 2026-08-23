@@ -29,6 +29,9 @@ export default defineConfig({
       "#components": fileURLToPath(
         new URL("./vitest-components-mock.ts", import.meta.url),
       ),
+      "#imports": fileURLToPath(
+        new URL("./vitest-nuxt-imports-mock.ts", import.meta.url),
+      ),
     },
   },
 });

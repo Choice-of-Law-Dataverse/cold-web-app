@@ -293,12 +293,19 @@
 </template>
 
 <script setup lang="ts">
-import { defineAsyncComponent, onBeforeUnmount, onMounted, ref } from "vue";
+import {
+  computed,
+  defineAsyncComponent,
+  onBeforeUnmount,
+  onMounted,
+  ref,
+} from "vue";
 import ConnectCard from "@/components/landing-page/ConnectCard.vue";
 import NumberCard from "@/components/landing-page/NumberCard.vue";
 import CompareJurisdictionsCard from "@/components/landing-page/CompareJurisdictionsCard.vue";
 import StayConnectedCard from "@/components/landing-page/StayConnectedCard.vue";
-import { useHead, useRuntimeConfig } from "#imports";
+import { useHead, useRuntimeConfig, useSeoMeta } from "#imports";
+import { buildDataset, buildJsonLdGraph } from "@/utils/structuredData";
 import { useEntityCounts } from "@/composables/useEntityCounts";
 
 const JurisdictionMap = defineAsyncComponent(
@@ -355,19 +362,32 @@ onBeforeUnmount(() => {
   mapObserver = null;
 });
 
-useHead({
+const homeDescription =
+  "An open, citable database of choice of law in international commercial contracts: court decisions, domestic and international instruments, arbitral awards and jurisdiction reports from over 200 jurisdictions.";
+
+useSeoMeta({
   title: "Choice of Law Dataverse — CoLD",
-  link: [
+  description: homeDescription,
+  ogTitle: "Choice of Law Dataverse — CoLD",
+  ogDescription: homeDescription,
+  ogType: "website",
+  twitterDescription: homeDescription,
+});
+
+useHead({
+  script: [
     {
-      rel: "canonical",
-      href: `${config.public.siteUrl}/`,
-    },
-  ],
-  meta: [
-    {
-      name: "description",
-      content:
-        "Choice of Law Dataverse — Navigate private international law issues with precision.",
+      key: "page-json-ld",
+      type: "application/ld+json",
+      innerHTML: computed(() =>
+        JSON.stringify(
+          buildJsonLdGraph([
+            buildDataset(String(config.public.siteUrl ?? ""), {
+              description: homeDescription,
+            }),
+          ]),
+        ),
+      ),
     },
   ],
 });

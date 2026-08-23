@@ -6,7 +6,7 @@
       <div
         class="max-w-container mx-auto flex min-h-[50vh] w-full flex-col items-center justify-center text-center"
       >
-        <h2>{{ heading }}</h2>
+        <h1>{{ heading }}</h1>
         <p v-if="detail" class="text-cold-night-alpha mt-2 text-sm">
           {{ detail }}
         </p>
@@ -30,6 +30,7 @@
 import type { NuxtError } from "#app";
 import { computed } from "vue";
 import { useRoute } from "vue-router";
+import { useRobotsRule, useSeoMeta } from "#imports";
 import Nav from "@/components/layout/Nav.vue";
 import Footer from "@/components/layout/Footer.vue";
 
@@ -48,6 +49,16 @@ const heading = computed(() => {
   }
   return "Something went wrong.";
 });
+
+const pageTitle = computed(() =>
+  props.error?.statusCode === 404
+    ? "Page not found — CoLD"
+    : "Something went wrong — CoLD",
+);
+
+useSeoMeta({ title: pageTitle });
+
+useRobotsRule({ noindex: true, follow: true });
 
 const detail = computed(() => {
   const code = props.error?.statusCode;

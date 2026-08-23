@@ -948,30 +948,6 @@
         }
       }
     },
-    "/sitemap/urls": {
-      "get": {
-        "tags": ["Sitemap"],
-        "summary": "List all indexable frontend URLs",
-        "description": "Returns every public-facing URL for the CoLD frontend. Intended for generating XML sitemaps for search engine indexing.",
-        "operationId": "get_all_frontend_urls_api_v1_sitemap_urls_get",
-        "responses": {
-          "200": {
-            "description": "Array of URL entries with loc and optional lastmod/priority.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "items": {
-                    "$ref": "#/components/schemas/SitemapEntry"
-                  },
-                  "type": "array",
-                  "title": "Response Get All Frontend Urls Api V1 Sitemap Urls Get"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/landing-page/jurisdictions": {
       "get": {
         "tags": ["LandingPage"],
@@ -14403,21 +14379,6 @@
         "type": "object",
         "title": "SearchResultBase"
       },
-      "SitemapEntry": {
-        "properties": {
-          "loc": {
-            "type": "string",
-            "description": "Full URL of the page."
-          },
-          "lastmod": {
-            "type": "string",
-            "description": "Last modification date in ISO 8601 format."
-          }
-        },
-        "type": "object",
-        "required": ["loc", "lastmod"],
-        "title": "SitemapEntry"
-      },
       "SpecialistDetail": {
         "properties": {
           "coldId": {
@@ -15263,10 +15224,6 @@
     {
       "name": "LandingPage",
       "description": "Helper endpoints for the CoLD landing page, including jurisdiction data-availability flags."
-    },
-    {
-      "name": "Sitemap",
-      "description": "Returns all indexable frontend URLs for search-engine sitemap generation."
     },
     {
       "name": "Suggestions",

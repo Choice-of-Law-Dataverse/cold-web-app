@@ -124,7 +124,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from "vue";
-import { useRoute, useRouter, useRuntimeConfig, useHead } from "#imports";
+import { useRoute, useRouter, useHead } from "#imports";
 import { z } from "zod";
 import BaseDetailLayout from "@/components/layout/BaseDetailLayout.vue";
 import InfoPopover from "@/components/ui/InfoPopover.vue";
@@ -141,7 +141,6 @@ const tooltipInternationalInstrumentLink =
 
 const route = useRoute();
 const router = useRouter();
-const config = useRuntimeConfig();
 const isEditPage = computed(() => {
   const slug = route.params.slug;
   return Array.isArray(slug) && slug.length === 2 && slug[1] === "edit";
@@ -303,16 +302,10 @@ watch(
           : "Edit International Instrument — CoLD";
       useHead({
         title: pageTitle,
-        link: [
-          {
-            rel: "canonical",
-            href: `${config.public.siteUrl}${route.fullPath}`,
-          },
-        ],
         meta: [
           {
-            name: "description",
-            content: pageTitle,
+            name: "robots",
+            content: "noindex, nofollow",
           },
         ],
       });

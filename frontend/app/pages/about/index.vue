@@ -3,14 +3,14 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from "vue";
-import { useRoute } from "vue-router";
-
-const route = useRoute();
-
-onMounted(() => {
-  if (route.path === "/about") {
-    navigateTo("/about/about-cold", { replace: true });
-  }
+/**
+ * `/about` is a section entry point with no content of its own. The redirect
+ * runs as route middleware rather than in `onMounted` so it is a real 301 for
+ * crawlers instead of a blank page they would index.
+ */
+definePageMeta({
+  middleware: [
+    () => navigateTo("/about/about-cold", { redirectCode: 301, replace: true }),
+  ],
 });
 </script>

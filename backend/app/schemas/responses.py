@@ -67,13 +67,6 @@ class SuggestionDetailItem(BaseModel):
     user_email: str | None = None
 
 
-class SitemapEntry(BaseModel):
-    model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
-
-    loc: str = Field(..., description="Full URL of the page.")
-    lastmod: str = Field(..., description="Last modification date in ISO 8601 format.")
-
-
 class LandingPageJurisdiction(BaseModel):
     model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
 

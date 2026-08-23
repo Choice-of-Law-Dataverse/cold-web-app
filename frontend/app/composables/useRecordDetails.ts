@@ -2,6 +2,7 @@ import { computed, type Ref } from "vue";
 import { useQuery } from "@tanstack/vue-query";
 import type createClient from "openapi-fetch";
 import { useApiClient } from "@/composables/useApiClient";
+import { useServerPrefetch } from "@/composables/useServerPrefetch";
 import type { TableName, TableDetailMap } from "@/types/api";
 import type { paths } from "@/types/api-schema";
 
@@ -34,9 +35,13 @@ export function useRecordDetails<
 ) {
   const { client } = useApiClient();
 
-  return useQuery({
+  const query = useQuery({
     queryKey: computed(() => [table, id.value]),
     queryFn: () => fetchRecordDetails(client, table, id.value, process),
     enabled: computed(() => Boolean(id.value)),
   });
+
+  useServerPrefetch(query.suspense);
+
+  return query;
 }

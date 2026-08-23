@@ -1,6 +1,7 @@
 import { computed, type MaybeRefOrGetter, toValue } from "vue";
 import { useQuery } from "@tanstack/vue-query";
 import { useApiClient } from "@/composables/useApiClient";
+import { useServerPrefetch } from "@/composables/useServerPrefetch";
 
 export type EntityCountKey =
   | "answers"
@@ -28,7 +29,7 @@ export function useEntityCounts(
 ) {
   const { client } = useApiClient();
 
-  return useQuery({
+  const query = useQuery({
     queryKey: computed(() => ["entityCounts", toValue(jurisdiction) ?? null]),
     queryFn: async (): Promise<EntityCounts> => {
       const { data, error } = await client.GET("/statistics/counts", {
@@ -42,4 +43,8 @@ export function useEntityCounts(
       return (data.counts ?? {}) as EntityCounts;
     },
   });
+
+  useServerPrefetch(query.suspense);
+
+  return query;
 }

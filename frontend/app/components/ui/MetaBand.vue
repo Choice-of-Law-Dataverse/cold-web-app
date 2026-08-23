@@ -226,7 +226,14 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, ref, watch, defineAsyncComponent } from "vue";
+import {
+  computed,
+  nextTick,
+  onMounted,
+  ref,
+  watch,
+  defineAsyncComponent,
+} from "vue";
 import { useRoute, useRouter } from "vue-router";
 import JurisdictionFlag from "@/components/ui/JurisdictionFlag.vue";
 import EntityFeedback from "@/components/ui/EntityFeedback.vue";
@@ -301,7 +308,22 @@ const { findJurisdictionByCode, findJurisdictionByName } =
 
 const isCiteOpen = ref(false);
 const isNewMode = computed(() => props.headerMode === "new");
-const isLoggedIn = computed(() => !!user.value);
+
+/**
+ * Held false until mount so the server and the first client render agree.
+ *
+ * `useUser()` is populated during SSR by the global auth0 middleware, so
+ * rendering the signed-in action directly would make the HTML vary by session
+ * and be unsafe for any shared cache to store. Deferring to the client keeps
+ * the server output identical for everyone, and matches how the footer
+ * already handles its login link.
+ */
+const isMounted = ref(false);
+onMounted(() => {
+  isMounted.value = true;
+});
+
+const isLoggedIn = computed(() => isMounted.value && !!user.value);
 
 const newEntityHref = computed(() => {
   if (props.headerMode === "new") return undefined;

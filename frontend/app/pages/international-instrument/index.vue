@@ -33,8 +33,13 @@ import GradientTopBorder from "@/components/ui/GradientTopBorder.vue";
 import { useEntityList } from "@/composables/useEntityList";
 import { formatDate, sanitizeCell } from "@/utils/format";
 
-useHead({
+useSeoMeta({
   title: "International Instruments — CoLD",
+  description:
+    "International conventions and instruments on choice of law in international commercial contracts, including the HCCH Principles.",
+  ogTitle: "International Instruments — CoLD",
+  ogDescription:
+    "International conventions and instruments on choice of law in international commercial contracts, including the HCCH Principles.",
 });
 
 const page = ref(1);

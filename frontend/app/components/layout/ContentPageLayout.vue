@@ -1,5 +1,6 @@
 <template>
   <UCard>
+    <h1 v-if="pageHeading" class="sr-only">{{ pageHeading }}</h1>
     <div class="px-6 pt-6">
       <SectionNav v-if="navLinks" :links="navLinks" />
       <SectionNav v-else />
@@ -26,11 +27,17 @@ interface NavLink {
 interface Props {
   navLinks?: NavLink[] | null;
   enableHierarchicalNumbering?: boolean;
+  /**
+   * Rendered as a visually hidden `h1`. The markdown these pages render starts
+   * at `h2`, so without it the document has no top-level heading.
+   */
+  pageHeading?: string;
 }
 
 withDefaults(defineProps<Props>(), {
   navLinks: null,
   enableHierarchicalNumbering: false,
+  pageHeading: "",
 });
 </script>
 

@@ -43,8 +43,13 @@ import { useEntityList } from "@/composables/useEntityList";
 import { sanitizeCell } from "@/utils/format";
 import type { JurisdictionOption } from "@/types/analyzer";
 
-useHead({
+useSeoMeta({
   title: "Arbitral Awards — CoLD",
+  description:
+    "Arbitral awards on choice of law in international commercial contracts, with the seat of arbitration, the applicable rules and the tribunal's reasoning.",
+  ogTitle: "Arbitral Awards — CoLD",
+  ogDescription:
+    "Arbitral awards on choice of law in international commercial contracts, with the seat of arbitration, the applicable rules and the tribunal's reasoning.",
 });
 
 const page = ref(1);

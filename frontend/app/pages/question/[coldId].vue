@@ -21,8 +21,11 @@
     </div>
 
     <PageSeoMeta
-      :title-candidates="[soleJurisdiction?.name, data?.question]"
+      :title-candidates="[questionTitle, data?.question]"
       fallback="Question"
+      :description-candidates="descriptionCandidates"
+      :breadcrumbs="breadcrumbs"
+      :noindex="isJurisdictionAnswer"
     />
   </div>
 </template>
@@ -45,6 +48,43 @@ const soleJurisdiction = computed(() => {
   const jurisdictions = data.value?.relations.jurisdictions;
   if (jurisdictions?.length !== 1) return null;
   return jurisdictions[0];
+});
+
+/**
+ * Jurisdiction-specific answers are ~15k near-identical pages built from the
+ * same 60 questions. They are kept crawlable so link equity reaches the
+ * jurisdiction reports that aggregate them, but excluded from the index (and
+ * from the sitemap) as thin content.
+ */
+const isJurisdictionAnswer = computed(() => coldId.value.includes("_"));
+
+const questionTitle = computed(() =>
+  soleJurisdiction.value?.name && data.value?.question
+    ? `${data.value.question} — ${soleJurisdiction.value.name}`
+    : (soleJurisdiction.value?.name ?? null),
+);
+
+const descriptionCandidates = computed(() => [
+  data.value?.answer,
+  soleJurisdiction.value?.name
+    ? `Answer for ${soleJurisdiction.value.name} in the Choice of Law Dataverse.`
+    : null,
+  data.value?.moreInformation,
+]);
+
+const breadcrumbs = computed(() => {
+  const trail = [{ name: "Home", path: "/" }];
+  if (soleJurisdiction.value?.name && soleJurisdiction.value.coldId) {
+    trail.push({
+      name: soleJurisdiction.value.name,
+      path: `/jurisdiction/${soleJurisdiction.value.coldId}`,
+    });
+  }
+  trail.push({
+    name: data.value?.question ?? "Question",
+    path: `/question/${coldId.value}`,
+  });
+  return trail;
 });
 
 const questionSuffix = computed(() => {

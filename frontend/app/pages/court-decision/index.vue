@@ -44,8 +44,13 @@ import { useEntityList } from "@/composables/useEntityList";
 import { formatDate, sanitizeCell } from "@/utils/format";
 import type { JurisdictionOption } from "@/types/analyzer";
 
-useHead({
+useSeoMeta({
   title: "Court Decisions — CoLD",
+  description:
+    "Court decisions on choice of law in international commercial contracts from over 200 jurisdictions, each with the facts, the choice of law issue and the court's position.",
+  ogTitle: "Court Decisions — CoLD",
+  ogDescription:
+    "Court decisions on choice of law in international commercial contracts from over 200 jurisdictions, each with the facts, the choice of law issue and the court's position.",
 });
 
 const route = useRoute();

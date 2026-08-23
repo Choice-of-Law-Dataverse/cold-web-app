@@ -53,8 +53,13 @@ import GradientTopBorder from "@/components/ui/GradientTopBorder.vue";
 import { useEntityList } from "@/composables/useEntityList";
 import { sanitizeCell } from "@/utils/format";
 
-useHead({
+useSeoMeta({
   title: "Literature — CoLD",
+  description:
+    "Scholarly literature on choice of law and party autonomy in international commercial contracts, indexed by jurisdiction and theme.",
+  ogTitle: "Literature — CoLD",
+  ogDescription:
+    "Scholarly literature on choice of law and party autonomy in international commercial contracts, indexed by jurisdiction and theme.",
 });
 
 const page = ref(1);

@@ -1,7 +1,99 @@
 import tailwindcss from "@tailwindcss/vite";
 import { AI_TRAINING_CRAWLERS } from "./config/aiTrainingCrawlers";
+import { SITEMAP_GROUPS } from "./server/utils/sitemapSources";
 
 const NON_PUBLIC_PATHS = ["/search", "/moderation", "*/new", "*/edit"];
+
+/**
+ * Routes kept out of every sitemap: gated pages, single-use flows and the
+ * section stubs that only redirect.
+ *
+ * `/question/**` is not listed here — the `questions` source publishes the 60
+ * comparative question pages. The ~15k jurisdiction-specific answers under the
+ * same route are excluded by not being in that source, and carry `noindex`.
+ */
+const SITEMAP_EXCLUDE = [
+  "/search",
+  "/moderation/**",
+  "/**/new",
+  "/**/edit",
+  "/confirmation",
+  "/court-decision/my-analyses",
+  "/event/**",
+  "/about",
+  "/learn",
+];
+
+/**
+ * Cache policy for server-rendered HTML.
+ *
+ * `max-age=0` keeps browsers revalidating so a reader never sees stale law,
+ * while `s-maxage` lets the CDN answer instantly and refresh in the
+ * background. This is only safe while the edge is configured to bypass the
+ * cache for requests carrying an Auth0 session cookie: the SSR payload embeds
+ * `useUser()`, so a cached authenticated render would leak that profile.
+ */
+const PUBLIC_CACHE_CONTROL =
+  "public, max-age=0, s-maxage=600, stale-while-revalidate=86400, stale-if-error=86400";
+
+/** Anything personalised, gated, or mid-workflow must never reach a shared cache. */
+const PRIVATE_CACHE_CONTROL = "private, no-store";
+
+const PUBLIC_HTML_ROUTES = [
+  "/",
+  "/arbitral-award/**",
+  "/arbitral-institution/**",
+  "/arbitral-rule/**",
+  "/court-decision/**",
+  "/domestic-instrument/**",
+  "/international-instrument/**",
+  "/jurisdiction/**",
+  "/literature/**",
+  "/question/**",
+  "/regional-instrument/**",
+  "/specialist/**",
+  "/about/**",
+  "/learn/**",
+  "/event/**",
+  "/contact",
+  "/disclaimer",
+  "/submit",
+];
+
+/**
+ * Listed as exact paths rather than a `/**\/new` glob so they unambiguously
+ * beat the entity patterns above when Nitro resolves overlapping rules.
+ */
+const PRIVATE_HTML_ROUTES = [
+  "/search",
+  "/confirmation",
+  "/moderation/**",
+  "/court-decision/new",
+  "/court-decision/my-analyses",
+  "/domestic-instrument/new",
+  "/international-instrument/new",
+  "/international-instrument/*/edit",
+  "/literature/new",
+  "/regional-instrument/new",
+  "/auth/**",
+  "/api/**",
+];
+
+function cacheRules(routes: string[], cacheControl: string) {
+  return Object.fromEntries(
+    routes.map((route) => [
+      route,
+      { headers: { "cache-control": cacheControl } },
+    ]),
+  );
+}
+
+const ENTITY_SITEMAPS = Object.fromEntries(
+  Object.keys(SITEMAP_GROUPS).map((group) => [
+    group,
+    { sources: [`/api/__sitemap__/${group}`] },
+  ]),
+);
 
 const CONTENT_SIGNAL = {
   search: "yes",
@@ -27,6 +119,12 @@ export default defineNuxtConfig({
     },
   },
   routeRules: {
+    ...cacheRules(PUBLIC_HTML_ROUTES, PUBLIC_CACHE_CONTROL),
+    ...cacheRules(PRIVATE_HTML_ROUTES, PRIVATE_CACHE_CONTROL),
+    "/api/__sitemap__/**": {
+      swr: 3600,
+    },
+    "/sitemap.txt": { redirect: { to: "/sitemap_index.xml", statusCode: 301 } },
     "/_nuxt/**": {
       headers: { "cache-control": "public, max-age=31536000, immutable" },
     },
@@ -134,9 +232,26 @@ export default defineNuxtConfig({
       additionalOrigins: process.env.NUXT_ADDITIONAL_ORIGINS,
     },
   },
+  site: {
+    url: process.env.NUXT_SITE_URL,
+    name: process.env.NUXT_SITE_NAME || "Choice of Law Dataverse",
+  },
+  sitemap: {
+    cacheMaxAgeSeconds: 3600,
+    exclude: SITEMAP_EXCLUDE,
+    defaults: { changefreq: "monthly", priority: 0.5 },
+    sitemaps: {
+      pages: {
+        includeAppSources: true,
+        exclude: SITEMAP_EXCLUDE,
+        defaults: { changefreq: "weekly", priority: 0.7 },
+      },
+      ...ENTITY_SITEMAPS,
+    },
+  },
   robots: {
     robotsTxt: true,
-    sitemap: ["/sitemap.txt"],
+    sitemap: ["/sitemap_index.xml"],
     groups: [
       {
         userAgent: ["*"],

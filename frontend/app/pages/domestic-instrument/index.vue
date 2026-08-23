@@ -42,8 +42,13 @@ import { useEntityList } from "@/composables/useEntityList";
 import { formatDate, sanitizeCell } from "@/utils/format";
 import type { JurisdictionOption } from "@/types/analyzer";
 
-useHead({
+useSeoMeta({
   title: "Domestic Instruments — CoLD",
+  description:
+    "National statutes and codifications governing choice of law in international commercial contracts, with their provisions and HCCH Principles compatibility.",
+  ogTitle: "Domestic Instruments — CoLD",
+  ogDescription:
+    "National statutes and codifications governing choice of law in international commercial contracts, with their provisions and HCCH Principles compatibility.",
 });
 
 const page = ref(1);
