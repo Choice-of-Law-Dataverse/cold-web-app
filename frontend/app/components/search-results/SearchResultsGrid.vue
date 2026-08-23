@@ -41,21 +41,9 @@
       </div>
 
       <div v-if="!loading" class="result-value-small pt-4 text-center">
-        <UButton
-          to="https://choice-of-law-dataverse.github.io/search-algorithm"
-          variant="link"
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="Learn How the Search Works (opens in new tab)"
-        >
+        <UButton to="/learn/technical-documentation#search" variant="link">
           Learn How the Search Works
         </UButton>
-        <UIcon
-          name="i-material-symbols:open-in-new"
-          class="ml-[-6px] inline-block"
-          style="color: var(--color-cold-purple); position: relative; top: 2px"
-          aria-hidden="true"
-        />
       </div>
     </template>
   </div>

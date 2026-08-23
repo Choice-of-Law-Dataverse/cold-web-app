@@ -20,4 +20,9 @@ export const learnNavLinks = [
   { label: "Methodology", key: "methodology", path: "/learn/methodology" },
   { label: "Glossary", key: "glossary", path: "/learn/glossary" },
   { label: "Data Sets", key: "data-sets", path: "/learn/data-sets" },
+  {
+    label: "Technical Documentation",
+    key: "technical-documentation",
+    path: "/learn/technical-documentation",
+  },
 ];

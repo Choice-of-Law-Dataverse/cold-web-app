@@ -220,11 +220,11 @@ The public API serves 17 datasets (court decisions, instruments, literature, arb
 
 - **Production**: [api.cold.global/api/v1/docs](https://api.cold.global/api/v1/docs)
 - **Local**: [localhost:8000/api/v1/docs](http://localhost:8000/api/v1/docs)
-- **Bulk exports**: [cold.global/data-sets](https://cold.global/data-sets) (CSV and XLSX)
+- **Bulk exports**: [cold.global/learn/data-sets](https://cold.global/learn/data-sets) (CSV and XLSX)
 
 ## Further Resources
 
-- **[Tech Wiki](https://choice-of-law-dataverse.github.io/)** — architecture documentation and technical decisions
+- **[Technical documentation](https://cold.global/learn/technical-documentation)** — architecture, data model, public API, search behavior, and deployment
 - **[Glossary](https://cold.global/learn/glossary)** — private international law terms used across the platform
 - **[Methodology](https://cold.global/learn/methodology)** — how the CoLD questionnaire is structured and data is collected
 
