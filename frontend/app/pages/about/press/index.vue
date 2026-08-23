@@ -1,5 +1,5 @@
 <template>
-  <ContentPageLayout>
+  <ContentPageLayout page-heading="Press">
     <ContentRenderer v-if="page" :value="page" />
   </ContentPageLayout>
 </template>

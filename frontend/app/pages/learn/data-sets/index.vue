@@ -1,5 +1,5 @@
 <template>
-  <ContentPageLayout :nav-links="learnNavLinks">
+  <ContentPageLayout page-heading="Data sets" :nav-links="learnNavLinks">
     <ContentRenderer v-if="page" :value="page" />
   </ContentPageLayout>
 </template>

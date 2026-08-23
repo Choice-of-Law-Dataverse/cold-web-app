@@ -1,5 +1,5 @@
 <template>
-  <ContentPageLayout>
+  <ContentPageLayout page-heading="About the Choice of Law Dataverse">
     <ContentRenderer v-if="page" :value="page" />
   </ContentPageLayout>
 </template>

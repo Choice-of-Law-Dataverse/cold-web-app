@@ -1,5 +1,6 @@
 <template>
   <ContentPageLayout
+    page-heading="Methodology"
     :nav-links="learnNavLinks"
     :enable-hierarchical-numbering="true"
   >

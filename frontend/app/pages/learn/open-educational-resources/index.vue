@@ -1,5 +1,8 @@
 <template>
-  <ContentPageLayout :nav-links="learnNavLinks">
+  <ContentPageLayout
+    page-heading="Open educational resources"
+    :nav-links="learnNavLinks"
+  >
     <ContentRenderer v-if="page" :value="page" />
   </ContentPageLayout>
 </template>

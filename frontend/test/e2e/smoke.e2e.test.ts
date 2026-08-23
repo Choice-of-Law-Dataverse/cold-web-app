@@ -108,6 +108,32 @@ describe("entity pages render their content server-side", () => {
   });
 });
 
+describe("every indexable page has exactly one h1", () => {
+  const headingPages = [
+    "/",
+    "/court-decision",
+    "/court-decision/CD-ISR-524",
+    "/jurisdiction/CHE",
+    "/literature",
+    "/specialist",
+    "/learn/faq",
+    "/learn/glossary",
+    "/learn/methodology",
+    "/learn/data-sets",
+    "/about/team",
+    "/about/about-cold",
+    "/contact",
+    "/disclaimer",
+  ];
+
+  it.each(headingPages)("%s", async (path) => {
+    const html = await $fetch<string>(path);
+    const headings = (html.match(/<h1[\s>]/g) ?? []).length;
+
+    expect(headings).toBe(1);
+  });
+});
+
 describe("canonical URLs collapse duplicates", () => {
   it.each([
     "/court-decision/",

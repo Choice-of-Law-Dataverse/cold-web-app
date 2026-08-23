@@ -1,5 +1,8 @@
 <template>
-  <ContentPageLayout :nav-links="learnNavLinks">
+  <ContentPageLayout
+    page-heading="Glossary of private international law terms"
+    :nav-links="learnNavLinks"
+  >
     <ContentRenderer v-if="page" :value="page" />
   </ContentPageLayout>
 </template>

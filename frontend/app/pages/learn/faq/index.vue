@@ -1,5 +1,8 @@
 <template>
-  <ContentPageLayout :nav-links="learnNavLinks">
+  <ContentPageLayout
+    page-heading="Frequently asked questions"
+    :nav-links="learnNavLinks"
+  >
     <ContentRenderer v-if="page" :value="page" />
   </ContentPageLayout>
 </template>
