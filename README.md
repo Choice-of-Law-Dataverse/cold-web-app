@@ -161,6 +161,7 @@ Try it at [cold.global/court-decision/new](https://cold.global/court-decision/ne
 From the repository root:
 
 ```bash
+pnpm install       # root dev tooling — also installs the git commit hooks
 pnpm run setup     # installs frontend (pnpm) and backend (uv) dependencies
 
 pnpm run dev:web   # in one terminal  — http://localhost:3000/
@@ -175,6 +176,8 @@ cd backend && make setup && make dev
 ```
 
 ## Development Workflow
+
+[CONTRIBUTING.md](CONTRIBUTING.md) covers branching, commit format, and how pull requests are merged.
 
 ### Before Committing
 
@@ -197,12 +200,13 @@ when you want a pass/fail answer without touching the working tree.
 - **No Barrel Files**: Avoid `index.ts`/`index.js`/`__init__.py` re-exports
 - **TypeScript Only**: All frontend code must be `.ts` or `.vue` (never `.js`)
 
-See [AGENTS.md](AGENTS.md) for detailed coding conventions.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the full contribution workflow and [AGENTS.md](AGENTS.md) for detailed coding conventions.
 
 ## Project Structure
 
 - **[frontend/](frontend/)**: Nuxt 4 application — see [frontend/README.md](frontend/README.md)
 - **[backend/](backend/)**: FastAPI application — see [backend/README.md](backend/README.md)
+- **[CONTRIBUTING.md](CONTRIBUTING.md)**: Branching, commits, pull requests, and code standards
 - **[AGENTS.md](AGENTS.md)**: Instructions for AI coding agents
 
 ## API Documentation
