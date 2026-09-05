@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/Choice-of-Law-Dataverse/cold-web-app/compare/backend-v1.1.0...backend-v1.1.1) (2026-09-05)
+
+
+### Bug Fixes
+
+* support NocoDB 2026.08.2 upgrade ([#538](https://github.com/Choice-of-Law-Dataverse/cold-web-app/issues/538)) ([12c1fb3](https://github.com/Choice-of-Law-Dataverse/cold-web-app/commit/12c1fb3c6c897f996343f63ce4e7bf99e10036c1)), closes [#537](https://github.com/Choice-of-Law-Dataverse/cold-web-app/issues/537)
+
 ## [1.1.0](https://github.com/Choice-of-Law-Dataverse/cold-web-app/compare/backend-v1.0.0...backend-v1.1.0) (2026-08-23)
 
 
