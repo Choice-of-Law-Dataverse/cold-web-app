@@ -1,14 +1,14 @@
 export const tooltips: Record<string, string> = {
   jurisdictionalDifferentiator:
     "Jurisdictional peculiarities, such as the judicial hierarchy. To be read before consulting jurisdictional information.",
-  question: "Question pertaining to chosen topic and jurisdiction.",
+  question: "Analytical framework according to the Questionnaire (see Methodology), covering 12 main themes related to choice of law.",
   answer:
     "Predetermined response mostly limited to 'Yes', 'No', 'Not applicable', or 'No data'. Not a detailed or explanatory answer.",
   domesticLegalProvisions: "Relevant domestic legal provisions.",
   oupBookQuote:
-    "Reference to the relevant question from the jurisdiction-specific chapter in 'The Elgar Companion to the Hague Conference on Private International Law'.",
-  courtDecisionsId: "Court decisions that have addressed the same legal issue.",
-  relatedLiterature: "Relevant academic literature.",
+    "The source of the answer is the paragraph quoted from 'Choice of Law in International Commercial Contracts: Global Perspectives on the Hague Principles', Daniel Girsberger, Thomas Kadner Graziano, and Jan L. Neels (general editors), Oxford University Press, 2021.",
+  courtDecisionsId: "Supporting case law associated with the answer",
+  relatedLiterature: "Relevant academic literature associated with the answer, the country, and the theme.",
   caseTitle:
     "Main information to identify the case, extracted from the case citation.",
   caseCitation: "Official and generally accepted citation of a case.",
@@ -20,7 +20,7 @@ export const tooltips: Record<string, string> = {
     "Position of the deciding court within the hierarchy of the judiciary.",
   abstract: "Short summary of the case, similar to a headnote.",
   relevantFacts:
-    "Concise description of the factual background, emphasising facts relevant to the choice of law issue.",
+    "Concise description of the factual background, emphasizing facts relevant to the choice of law issue.",
   pilProvisions: "PIL provisions referred to by the court.",
   textOfTheRelevantLegalProvisions:
     "Full text of the relevant legal provisions.",
@@ -36,15 +36,15 @@ export const tooltips: Record<string, string> = {
   titleInEnglish:
     "English translation or accepted name of the instrument, typically a statute or regulation.",
   compatibility:
-    "Whether the instrument is compatible with the HCCH Principles or UNCITRAL Model Law.",
+    "Whether the instrument is compatible with the Principles on Choice of Law in International Commercial Contracts or UNCITRAL Model Law on International Commercial Arbitration.",
   officialTitle: "Title of the instrument in the original language.",
   abbreviation: "Commonly used abbreviation.",
   date: "Date of enactment or entry into force.",
   entryIntoForce: "Date on which the instrument came into effect.",
   publicationDate: "Date of publication in the official reporter or gazette.",
-  literature: "Relevant academic literature.",
+  literature: "Literature related to the jurisdiction.",
   regionalLegalProvisions: "Key provisions relevant to choice of law.",
   specialists:
-    "Academics who have published on or are otherwise associated with this topic.",
+    "Experts who contributed to the data collection or analysis in the given jurisdiction.",
   selectedProvisions: "Key provisions relevant to choice of law.",
 };
