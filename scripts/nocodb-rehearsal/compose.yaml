@@ -1,0 +1,49 @@
+services:
+  postgres:
+    build:
+      context: .
+      dockerfile: postgres.Dockerfile
+      args:
+        POSTGRES_VERSION: ${POSTGRES_VERSION:-16}
+    image: cold-nocodb-rehearsal-postgres:${POSTGRES_VERSION:-16}
+    command:
+      - postgres
+      - -c
+      - shared_preload_libraries=pg_cron
+      - -c
+      - cron.database_name=cold
+    environment:
+      POSTGRES_DB: cold
+      POSTGRES_PASSWORD: local-rehearsal-only
+      POSTGRES_USER: postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d cold"]
+      interval: 2s
+      timeout: 5s
+      retries: 30
+    ports:
+      - "127.0.0.1:${POSTGRES_PORT:-5433}:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - rehearsal
+
+  nocodb:
+    image: nocodb/nocodb:${NOCODB_VERSION:?Set NOCODB_VERSION}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      NC_DB: pg://postgres:5432?u=postgres&p=local-rehearsal-only&d=cold
+    ports:
+      - "127.0.0.1:${NOCODB_PORT:-8080}:8080"
+    networks:
+      - rehearsal
+    profiles:
+      - nocodb
+
+networks:
+  rehearsal:
+
+volumes:
+  postgres-data:
