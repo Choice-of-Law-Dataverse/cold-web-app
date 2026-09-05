@@ -24,6 +24,7 @@
     "test:web": "pnpm --dir frontend run test:run",
     "test:e2e": "pnpm --dir frontend run test:e2e",
     "test:api": "make -C backend test",
+    "rehearse:nocodb": "bash scripts/nocodb-rehearsal/rehearse.sh",
     "generate:api": "pnpm --dir frontend run generate:api",
     "hooks": "lint-staged"
   },

@@ -12,10 +12,25 @@ from urllib.parse import urlparse
 from app.config import config
 from app.services.azure_storage import download_blob_with_managed_identity
 from app.services.moderation_writer import MainDBWriter
-from app.services.nocodb import NocoDBService
+from app.services.nocodb import (
+    COURT_DECISIONS_JURISDICTIONS_FIELD_ID,
+    COURT_DECISIONS_PDF_FIELD_ID,
+    COURT_DECISIONS_TABLE_ID,
+    NocoDBService,
+)
 from app.services.suggestions import SuggestionService
 
 logger = logging.getLogger(__name__)
+
+NOCO_API_FIELD_TITLES = {
+    "Case_Citation": "Case Citation",
+    "Choice_of_Law_Issue": "Choice of Law Issue",
+    "Court_s_Position": "Court's Position",
+    "Date_of_Judgment": "Date of Judgment",
+    "Internal_Notes": "Internal Notes",
+    "PIL_Provisions": "PIL Provisions",
+    "Relevant_Facts": "Relevant Facts",
+}
 
 
 def norm_key_map(d: dict[str, Any]) -> dict[str, Any]:
@@ -384,7 +399,8 @@ def prepare_nocodb_data(
         if key == "jurisdiction":
             # Skip jurisdiction - handled separately via link_records
             continue
-        nocodb_column = column_mapping.get(key, key)
+        physical_column = column_mapping.get(key, key)
+        nocodb_column = NOCO_API_FIELD_TITLES.get(physical_column, physical_column)
         if value is not None and value != "":
             nocodb_data[nocodb_column] = value
 
@@ -400,9 +416,9 @@ def link_jurisdictions(
     if jurisdiction_ids:
         try:
             nocodb_service.link_records(
-                table="mdmls7kc3a3w1vu",
+                table_id=COURT_DECISIONS_TABLE_ID,
                 record_id=int(merged_id),
-                field_id="c2rumo81p8xw0pg",
+                field_id=COURT_DECISIONS_JURISDICTIONS_FIELD_ID,
                 linked_record_ids=jurisdiction_ids,
             )
         except Exception as e:
@@ -432,9 +448,9 @@ def handle_pdf_upload(
             filename = f"{filename}.pdf"
 
         nocodb_service.upload_file(
-            table="mdmls7kc3a3w1vu",
+            table_id=COURT_DECISIONS_TABLE_ID,
             record_id=int(merged_id),
-            field_id="ciw1ko4kixrlep0",
+            field_id=COURT_DECISIONS_PDF_FIELD_ID,
             file_data=pdf_data,
             filename=filename,
             mime_type="application/pdf",
@@ -521,7 +537,7 @@ async def approve_case_analyzer(
 
     jurisdiction_ids = resolve_jurisdiction_ids(nocodb_service, court_decision_data)
     nocodb_data = prepare_nocodb_data(writer, court_decision_data)
-    created_record = nocodb_service.create_row("mdmls7kc3a3w1vu", nocodb_data)
+    created_record = nocodb_service.create_row(COURT_DECISIONS_TABLE_ID, nocodb_data)
     merged_id = created_record.get("id") or created_record.get("Id")
 
     if not merged_id:

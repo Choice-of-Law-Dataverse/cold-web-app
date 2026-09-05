@@ -6,12 +6,18 @@ from app.services.http_session_manager import http_session_manager
 
 logger = logging.getLogger(__name__)
 
+COURT_DECISIONS_TABLE_ID = "mdmls7kc3a3w1vu"
+JURISDICTIONS_TABLE_ID = "mifmhrp3j91oao8"
+COURT_DECISIONS_JURISDICTIONS_FIELD_ID = "c2rumo81p8xw0pg"
+COURT_DECISIONS_PDF_FIELD_ID = "ciw1ko4kixrlep0"
+
 
 class NocoDBService:
     def __init__(self, base_url: str, api_token: str | None = None):
         if not base_url:
             raise ValueError("NocoDB base URL not configured")
         self.base_url = base_url.rstrip("/")
+        self.api_root = self.base_url.split("/api/", 1)[0]
         self.headers: dict[str, str] = {}
         if api_token:
             # X nocodb API token header
@@ -19,12 +25,15 @@ class NocoDBService:
         # Use singleton HTTP session manager for connection pooling
         self.session = http_session_manager.get_session()
 
-    def get_row(self, table: str, record_id: str) -> dict[str, Any]:
+    def _records_url(self, table_id: str) -> str:
+        return f"{self.api_root}/api/v2/tables/{table_id}/records"
+
+    def get_row(self, table_id: str, record_id: str) -> dict[str, Any]:
         """
         Fetch full record data and metadata for a specific row from NocoDB.
         """
-        logger.debug("Fetching row %s from table %s in NocoDB", record_id.strip(), table.strip())
-        url = f"{self.base_url}/{table}/{record_id}"
+        logger.debug("Fetching row %s from table %s in NocoDB", record_id.strip(), table_id.strip())
+        url = f"{self._records_url(table_id)}/{record_id}"
         logger.debug("NocoDBService.get_row: GET %s", url)
         logger.debug("NocoDBService headers: %s", self.headers)
         resp = self.session.get(url, headers=self.headers)
@@ -37,7 +46,7 @@ class NocoDBService:
 
     def list_rows(
         self,
-        table: str,
+        table_id: str,
         filters: Sequence[Any] | None = None,
         limit: int = 100,
     ) -> list[dict[str, Any]]:
@@ -59,7 +68,7 @@ class NocoDBService:
                     where_clauses.append(f"({col},{op},{val})")
         where_param = "~and".join(where_clauses) if where_clauses else None
         while True:
-            url = f"{self.base_url}/{table}"
+            url = self._records_url(table_id)
             params: dict[str, Any] = {"limit": limit, "offset": offset}
             if where_param:
                 params["where"] = where_param
@@ -87,13 +96,13 @@ class NocoDBService:
             offset += limit
         return records
 
-    def create_row(self, table: str, data: dict[str, Any]) -> dict[str, Any]:
+    def create_row(self, table_id: str, data: dict[str, Any]) -> dict[str, Any]:
         """
         Create a new record in NocoDB via API.
         Returns the created record with its ID and metadata.
         """
-        logger.debug("Creating row in table %s with data: %s", table, data)
-        url = f"{self.base_url}/{table}"
+        logger.debug("Creating row in table %s with data: %s", table_id, data)
+        url = self._records_url(table_id)
         resp = self.session.post(url, headers=self.headers, json=data)
         logger.debug("Create row response: %s %s", resp.status_code, resp.text[:200])
         resp.raise_for_status()
@@ -103,7 +112,7 @@ class NocoDBService:
 
     def upload_file(
         self,
-        table: str,
+        table_id: str,
         record_id: int,
         field_id: str,
         file_data: bytes,
@@ -114,10 +123,10 @@ class NocoDBService:
         """
         Upload a file to a NocoDB attachment field using a two-step process:
         1. Upload file to NocoDB storage (v2 API) to get attachment metadata
-        2. Update the record (v1 API) with the attachment metadata
+        2. Update the record (v2 API) with the attachment metadata
 
         Args:
-            table: Table ID
+            table_id: Table ID
             record_id: Record ID
             field_id: Field ID (for fetching current attachments)
             file_data: Binary file data
@@ -131,19 +140,14 @@ class NocoDBService:
 
         logger.debug(
             "Uploading file to table %s, record %s, field %s, filename %s",
-            table,
+            table_id,
             record_id,
             field_id,
             filename,
         )
 
         # Step 1: Upload file to NocoDB storage
-        base_parts = self.base_url.split("/api/")
-        if len(base_parts) >= 2:
-            storage_base = base_parts[0]
-            upload_url = f"{storage_base}/api/v2/storage/upload"
-        else:
-            upload_url = f"{self.base_url}/api/v2/storage/upload"
+        upload_url = f"{self.api_root}/api/v2/storage/upload"
 
         files = {"file": (filename, BytesIO(file_data), mime_type)}
 
@@ -155,12 +159,13 @@ class NocoDBService:
         logger.debug("Upload file result: %s", upload_result)
 
         # Step 2: Update the record with the attachment metadata
-        update_url = f"{self.base_url}/{table}/{record_id}"
+        update_url = f"{self._records_url(table_id)}/{record_id}"
 
         # Get current attachments if any
         try:
-            current_row = self.get_row(table, str(record_id))
-            current_attachments = current_row.get(field_id, [])
+            current_row = self.get_row(table_id, str(record_id))
+            current_field = field_name if field_name else field_id
+            current_attachments = current_row.get(current_field, [])
             if not isinstance(current_attachments, list):
                 current_attachments = []
         except Exception as e:
@@ -188,7 +193,7 @@ class NocoDBService:
 
     def link_records(
         self,
-        table: str,
+        table_id: str,
         record_id: int,
         field_id: str,
         linked_record_ids: list[int],
@@ -199,9 +204,9 @@ class NocoDBService:
         Uses POST /api/v2/tables/{tableId}/links/{linkFieldId}/records/{recordId}
 
         Args:
-            table: The source table ID (e.g., "mdmls7kc3a3w1vu")
+            table_id: The source table ID
             record_id: The ID of the record in the source table
-            field_id: The link field ID (e.g., "c6rj8tua651icm0" for Jurisdictions)
+            field_id: The link field ID
             linked_record_ids: List of IDs to link from the target table
 
         Returns:
@@ -209,20 +214,13 @@ class NocoDBService:
         """
         logger.debug(
             "Linking records in table %s, record %s, field %s, linked IDs: %s",
-            table,
+            table_id,
             record_id,
             field_id,
             linked_record_ids,
         )
 
-        # Extract base URL for v2 API
-        base_parts = self.base_url.split("/api/")
-        if len(base_parts) >= 2:
-            storage_base = base_parts[0]
-            # Use v2 API endpoint structure
-            url = f"{storage_base}/api/v2/tables/{table}/links/{field_id}/records/{record_id}"
-        else:
-            url = f"{self.base_url}/api/v2/tables/{table}/links/{field_id}/records/{record_id}"
+        url = f"{self.api_root}/api/v2/tables/{table_id}/links/{field_id}/records/{record_id}"
 
         # Payload is an array of record IDs with capital "Id" per v2 API
         data = [{"Id": link_id} for link_id in linked_record_ids]
@@ -255,7 +253,7 @@ class NocoDBService:
         try:
             jur_id = int(jurisdiction_value.strip())
             # Verify it exists by fetching jurisdictions
-            rows = self.list_rows("Jurisdictions", limit=1000)
+            rows = self.list_rows(JURISDICTIONS_TABLE_ID, limit=1000)
             for row in rows:
                 row_id = row.get("id") or row.get("Id")
                 if row_id and int(row_id) == jur_id:
@@ -269,11 +267,11 @@ class NocoDBService:
         # Search by Alpha_3_Code or Name
         # Note: This is a simplified implementation
         # In production, you'd want to use proper NocoDB filtering
-        rows = self.list_rows("Jurisdictions", limit=1000)
+        rows = self.list_rows(JURISDICTIONS_TABLE_ID, limit=1000)
 
         search_value = jurisdiction_value.strip().lower()
         for row in rows:
-            alpha3 = row.get("Alpha_3_Code", "")
+            alpha3 = row.get("Alpha-3 Code") or row.get("Alpha_3_Code", "")
             name = row.get("Name", "")
 
             if (alpha3 and alpha3.lower() == search_value) or (name and name.lower() == search_value):

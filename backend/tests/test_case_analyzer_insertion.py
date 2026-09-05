@@ -6,8 +6,11 @@ Test case analyzer suggestion insertion into Court_Decisions table.
 from unittest.mock import patch
 
 import pytest
+import sqlalchemy as sa
+from sqlalchemy.orm import sessionmaker
 
 from app.services.moderation_writer import MainDBWriter
+from app.services.suggestion_approval import prepare_nocodb_data
 
 
 class TestCaseAnalyzerInsertion:
@@ -164,6 +167,57 @@ class TestCaseAnalyzerInsertion:
             # username and user_email should not be in the result
             assert "username" not in result
             assert "user_email" not in result
+
+    def test_insert_record_maps_id_number_and_ignores_legacy_audit_fields(self):
+        engine = sa.create_engine("sqlite://")
+        metadata = sa.MetaData()
+        court_decisions = sa.Table(
+            "Court_Decisions",
+            metadata,
+            sa.Column("id", sa.Integer, primary_key=True),
+            sa.Column("ID_Number", sa.String),
+            sa.Column("created_by", sa.String),
+        )
+        metadata.create_all(engine)
+
+        writer = MainDBWriter.__new__(MainDBWriter)
+        writer.engine = engine
+        writer.schema = None
+        writer.metadata = sa.MetaData()
+        writer.Session = sessionmaker(bind=engine, expire_on_commit=False)
+
+        record_id = writer.insert_record(
+            "Court_Decisions",
+            {
+                "id_number": "case-123",
+                "created_by": "must-not-be-written",
+            },
+        )
+
+        with engine.connect() as connection:
+            row = connection.execute(
+                sa.select(court_decisions.c.ID_Number, court_decisions.c.created_by).where(court_decisions.c.id == record_id)
+            ).one()
+
+        assert row.ID_Number == "case-123"
+        assert row.created_by is None
+
+    def test_prepare_nocodb_data_uses_api_field_titles(self):
+        writer = MainDBWriter.__new__(MainDBWriter)
+
+        result = prepare_nocodb_data(
+            writer,
+            {
+                "case_citation": "Example",
+                "courts_position": "Position",
+                "jurisdiction": "GTM",
+            },
+        )
+
+        assert result == {
+            "Case Citation": "Example",
+            "Court's Position": "Position",
+        }
 
 
 if __name__ == "__main__":

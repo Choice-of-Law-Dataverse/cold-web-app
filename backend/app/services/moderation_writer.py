@@ -9,6 +9,13 @@ from app.config import config
 
 
 class MainDBWriter:
+    READ_ONLY_FIELDS = {
+        "added_by",
+        "created_by",
+        "last_modified",
+        "last_modified_by",
+    }
+
     def __init__(self) -> None:
         conn = config.SQL_CONN_STRING
         if not conn:
@@ -36,20 +43,16 @@ class MainDBWriter:
             "quote": "Quote",
             "copyright_issues": "Copyright_Issues",
             "relevant_facts": "Relevant_Facts",
-            "id_number": "ID_number",
+            "id_number": "ID_Number",
             "case_rank": "Case_Rank",
             "decision_date": "Date_of_Judgment",
             "original_text": "Original_Text",
             "created": "Created",
-            "last_modified": "Last_Modified",
-            "last_modified_by": "Last_Modified_By",
-            "added_by": "Added_By",
             "date": "Date",
             "case_title": "Case_Title",
             "instance": "Instance",
             "official_keywords": "Official_Keywords",
             "publication_date_iso": "Publication_Date_ISO",
-            "created_by": "Created_By",
         },
         # Domestic Instruments
         "Domestic_Instruments": {
@@ -167,6 +170,8 @@ class MainDBWriter:
 
         coerced: dict[str, Any] = {}
         for key, value in data.items():
+            if key in self.READ_ONLY_FIELDS:
+                continue
             db_key = mapping.get(key, key)
             if db_key not in valid_columns:
                 # Skip keys that don't exist on the target table
@@ -197,8 +202,8 @@ class MainDBWriter:
                 raise ValueError(f"No valid columns to insert for table {table_name}")
             stmt = table.insert().values(**coerced).returning(table.c.id)
             result = session.execute(stmt)
-            session.commit()
             new_id = result.scalar_one()
+            session.commit()
             return int(new_id)
 
     def prepare_case_analyzer_for_court_decisions(self, normalized: dict[str, Any]) -> dict[str, Any]:
