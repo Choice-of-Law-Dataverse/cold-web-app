@@ -29,9 +29,9 @@ title: Team — CoLD
 The Dataverse connects [specialists](https://cold.global/specialist) across legal traditions and national borders, making research done in one jurisdiction visible and usable in others. It has mobilized scholars from more than 60 universities and institutions worldwide, and the network remains open — [new specialists are welcome](https://cold.global/about/supporters).
 
 ## Scientific Committee
- 
-Prof. Geneviève Saumier, Université de Montréal    
-Prof. Jan L Neels, University of Johannesburg   
+
+Prof. Geneviève Saumier, Université de Montréal  
+Prof. Jan L Neels, University of Johannesburg  
 Prof. Eesa A Fredericks, University of Johannesburg\
 Prof. Béligh Elbalti, Osaka University  
 Prof. Lauro Gama, Pontifical Catholic University of Rio de Janeiro  
