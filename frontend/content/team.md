@@ -6,98 +6,53 @@ title: Team — CoLD
 
 <img src="https://www.unilu.ch/fileadmin/_processed_/a/b/csm_Girsberger_Daniel_Q_d862e28b53.jpg" alt="Daniel Girsberger" style="width: 150px"/>
 
-**Daniel Girsberger** Project Leader
+**Daniel Girsberger** Senior Advisor
 
 <a href="https://www.unilu.ch/en/faculties/faculty-of-law/professorships/girsberger-daniel/" target="_blank">Daniel<img
     src="https://assets.cold.global/assets/external_link.svg"
     alt="external link"
     class="external-link-icon"
-  /></a> is the grant holder of the SNF Project. He oversees the strategic and operational decisions and is responsible for data quality control for the Dataverse. Daniel steers the Scientific Board, composed of legal experts from all continents.
+  /></a> was the grant holder of the SNSF project and led it through its funded phase. He remains on board as Senior Advisor and continues to steer the Scientific Board, composed of legal experts from all continents.
 
-<img src="https://www.unilu.ch/fileadmin/_processed_/b/2/csm_Brandao_de_Oliveira_Agatha-1452-20230619_f5c03e5ebb.jpg" alt="Agatha Brandão de Oliveira" style="width: 150px"/>
+<img src="https://www.unilu.ch/fileadmin/_processed_/b/2/csm_Brandao_de_Oliveira_Agatha-1452-20230619_f5c03e5ebb.jpg" alt="Agatha Brandão" style="width: 150px"/>
 
-**Agatha Brandão de Oliveira** Project Coordinator
+**Agatha Brandão** Project Lead
 
-<a href="https://www.unilu.ch/en/faculties/faculty-of-law/professorships/girsberger-daniel/staff/agatha-brandao-de-oliveira-mlaw" target="_blank">Agatha<img
+<a href="https://www.agathabrandao.com" target="_blank">Agatha<img
     src="https://assets.cold.global/assets/external_link.svg"
     alt="external link"
     class="external-link-icon"
-  /></a> is responsible for the strategic vision and practical execution of the project. She manages a multidisciplinary staff and is in charge of fostering partnerships. Agatha also acts as a Senior Researcher for the Dataverse, with a focus on data input.
-
-<img src="https://www.unilu.ch/fileadmin/_processed_/e/f/csm_Tovar_Rorick_Q_b319006387.jpg" alt="Rorick Daniel Tovar Galván" style="width: 150px"/>
-
-**Rorick Daniel Tovar Galván** Senior Researcher
-
-<a href="https://www.unilu.ch/en/faculties/faculty-of-law/professorships/girsberger-daniel/staff/dr-rorick-daniel-tovar-galvan-llm/" target="_blank">Rorick<img
-    src="https://assets.cold.global/assets/external_link.svg"
-    alt="external link"
-    class="external-link-icon"
-  /></a> holds a Ph.D. from the University of Bern, Switzerland. He oversees data input from Latin American countries into the Dataverse.
-
-<img src="https://www.unilu.ch/fileadmin/_processed_/d/8/csm_Ptitsina_Anna_Q_76218e9380.jpg" alt="Anna Ptitsina" style="width: 150px"/>
-
-**Anna Ptitsina** Editorial Assistant
-
-<a href="https://www.unilu.ch/en/faculties/faculty-of-law/professorships/girsberger-daniel/staff/anna-ptitsina/#tab=c163381" target="_blank">Anna<img
-    src="https://assets.cold.global/assets/external_link.svg"
-    alt="external link"
-    class="external-link-icon"
-  /></a> is in charge of integrating the Dataverse information into academic publications.
-
-<img src="https://www.unilu.ch/fileadmin/_processed_/3/c/csm_McMahon_Dominic-C_16574ec129.jpg" alt="Dominic McMahon" style="width: 150px"/>
-
-**Dominic McMahon** Legal NLP Specialist & Data Analytics Lead
-
-<a href="https://www.unilu.ch/fakultaeten/rf/professuren/girsberger-daniel/mitarbeitende/dominic-mcmahon-mlaw/" target="_blank">Dominic<img
-    src="https://assets.cold.global/assets/external_link.svg"
-    alt="external link"
-    class="external-link-icon"
-  /></a> has recently completed his Master's degree in Law at the University of Lucerne. He acts as a Researcher for the Dataverse, with a focus on data analysis and data input. Dominic is also responsible for administrative tasks and event coordination.
-
-## Partners
-
-Prof. Geneviève Saumier, Université de Montréal  
-Prof. Jan L Neels, University of Johannesburg  
-Prof. Eesa A Fredericks, University of Johannesburg
-
-The partners oversee specialized task forces for case law review, refinement of data, and indexing of new information linked to CoLD.
-
-## External Researchers
-
-Prince Obiri-Korang, Assistant to Prof. Jan Neels (African Task Force)  
-Solomon Okorley, Assistant to Prof. Eesa Fredericks (African Task Force)  
-Ying Wang (North American Task Force)  
-Isha Suraj Puthenpurakal (Asian Task Force)
+  /></a> leads the current phase of the Dataverse, focused on expanding its scope, building new partnerships, and establishing CoLD as an independent organization.
 
 ## International Network
 
-The Dataverse fosters collaboration by promoting exchange among researchers across legal systems and national borders. The previous research project, “The Hague Principles and Beyond,” mobilized scholars from more than 60 universities and other institutions around the globe.
+The Dataverse connects [specialists](https://cold.global/specialist) across legal traditions and national borders, making research done in one jurisdiction visible and usable in others. It has mobilized scholars from more than 60 universities and institutions worldwide, and the network remains open — [new specialists are welcome](https://cold.global/about/supporters).
 
 ## Scientific Committee
 
-**Project Partners**  
-Prof. Geneviève Saumier  
-Prof. Jan L Neels  
-Prof. Eesa A Fredericks
-
+Prof. Geneviève Saumier, Université de Montréal  
+Prof. Jan L Neels, University of Johannesburg  
+Prof. Eesa A Fredericks, University of Johannesburg\
 Prof. Béligh Elbalti, Osaka University  
 Prof. Lauro Gama, Pontifical Catholic University of Rio de Janeiro  
 Prof. Thomas Kadner Graziano, University of Geneva  
 Prof. Brooke Marshall, University of Oxford  
-Prof. José Moreno Rodríguez, National University of Asuncion  
+Prof. José Moreno Rodríguez, National University of Asunción  
 Prof. Yuko Nishitani, Kyoto University  
 Prof. Marta Pertegás, Maastricht University
 
 ## Former Assistants and Volunteers
 
+Rorick Daniel Tovar Galván (2024-2026)\
+Dominic McMahon (2023-2026)\
+Anna Ptitsina (2025-2026)\
+Isha Suraj Puthenpurakal (2025)\
+Ying Wang (2025-2026)\
+Solomon Okorley (2024-2026)\
+Simon Weigold (2023-2025)\
+Fabian Aiolfi (2023-2025)\
+Olga Shpakova (2023-2025)\
+Prince Obiri-Korang (2024-2025)\
+Anna Fonseca (2021)\
+Rebecca Zimmerman (2020)\
 Linda Dosch (2019-2021)
-
-Rebecca Zimmerman (2020)
-
-Anna Fonseca (2021)
-
-Olga Shpakova (2023-2025)
-
-Simon Weigold (2023-2025)
-
-Fabian Aiolfi (2023-2025)
