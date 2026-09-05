@@ -277,6 +277,9 @@ run_target_only() {
   fi
 
   echo "Target rehearsal passed. Reports: $REPORT_DIR"
+  if [[ -z ${NOCODB_API_TOKEN:-} ]]; then
+    echo "REST API smoke tests were skipped because NOCODB_API_TOKEN was not supplied."
+  fi
 }
 
 clean_local() {
