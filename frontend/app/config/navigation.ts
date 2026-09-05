@@ -16,6 +16,7 @@ export const learnNavLinks = [
     key: "open-educational-resources",
     path: "/learn/open-educational-resources",
   },
+  { label: "Open Data", key: "open-data", path: "/learn/open-data" },
   { label: "FAQ", key: "faq", path: "/learn/faq" },
   { label: "Methodology", key: "methodology", path: "/learn/methodology" },
   { label: "Glossary", key: "glossary", path: "/learn/glossary" },
