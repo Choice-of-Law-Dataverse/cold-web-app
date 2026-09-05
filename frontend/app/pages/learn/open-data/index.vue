@@ -1,8 +1,5 @@
 <template>
-  <ContentPageLayout
-    page-heading="Open Data"
-    :nav-links="learnNavLinks"
-  >
+  <ContentPageLayout page-heading="Open Data" :nav-links="learnNavLinks">
     <ContentRenderer v-if="page" :value="page" />
   </ContentPageLayout>
 </template>
@@ -13,11 +10,11 @@ import { learnNavLinks } from "@/config/navigation";
 
 useSeoMeta({
   title: "Open Data — CoLD",
-description:
-  "Comparative private international law research is fragmented and duplicated. CoLD makes its underlying data — decisions, legislation, literature — findable, accessible, interoperable, and reusable.",
-ogTitle: "Open Data — CoLD",
-ogDescription:
-  "Legal sources as structured, openly licensed data — FAIR by design, across 100+ jurisdictions.",
+  description:
+    "Comparative private international law research is fragmented and duplicated. CoLD makes its underlying data — decisions, legislation, literature — findable, accessible, interoperable, and reusable.",
+  ogTitle: "Open Data — CoLD",
+  ogDescription:
+    "Legal sources as structured, openly licensed data — FAIR by design, across 100+ jurisdictions.",
 });
 
 const { data: page } = await useAsyncData("open_data", () =>

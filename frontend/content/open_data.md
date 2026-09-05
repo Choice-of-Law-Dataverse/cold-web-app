@@ -2,9 +2,9 @@
 title: Open Data — CoLD
 ---
 
-# Legal Data and the FAIR Principles
+## Legal Data and the FAIR Principles
 
-*Synthesis of an interview conducted and written by **Claire Hoffmann**.*
+_Synthesis of an interview conducted and written by **Claire Hoffmann**._
 
 ---
 
@@ -83,6 +83,6 @@ An early obstacle was the complete absence of metadata awareness among legal res
 
 This synthesis was prepared as an annex to Claire Hoffmann's master's thesis, which we recommend reading in full:
 
-> Claire Hoffmann, *De l'arrêt à la donnée : pratiques et recommandations pour une application des principes FAIR aux données juridiques en Suisse*, Master's thesis, University of Fribourg, 2026.
+> Claire Hoffmann, _De l'arrêt à la donnée : pratiques et recommandations pour une application des principes FAIR aux données juridiques en Suisse_, Master's thesis, University of Fribourg, 2026.
 
 It is, to our knowledge, the first sustained treatment of what the FAIR principles concretely require of legal data in Switzerland — and it asks the question from the right end: not what open science expects of law in the abstract, but what actually happens when a court decision is turned into a data point.
