@@ -1,14 +1,16 @@
 export const tooltips: Record<string, string> = {
   jurisdictionalDifferentiator:
     "Jurisdictional peculiarities, such as the judicial hierarchy. To be read before consulting jurisdictional information.",
-  question: "Analytical framework according to the Questionnaire (see Methodology), covering 12 main themes related to choice of law.",
+  question:
+    "Analytical framework according to the Questionnaire (see Methodology), covering 12 main themes related to choice of law.",
   answer:
     "Predetermined response mostly limited to 'Yes', 'No', 'Not applicable', or 'No data'. Not a detailed or explanatory answer.",
   domesticLegalProvisions: "Relevant domestic legal provisions.",
   oupBookQuote:
     "The source of the answer is the paragraph quoted from 'Choice of Law in International Commercial Contracts: Global Perspectives on the Hague Principles', Daniel Girsberger, Thomas Kadner Graziano, and Jan L. Neels (general editors), Oxford University Press, 2021.",
   courtDecisionsId: "Supporting case law associated with the answer",
-  relatedLiterature: "Relevant academic literature associated with the answer, the country, and the theme.",
+  relatedLiterature:
+    "Relevant academic literature associated with the answer, the country, and the theme.",
   caseTitle:
     "Main information to identify the case, extracted from the case citation.",
   caseCitation: "Official and generally accepted citation of a case.",
