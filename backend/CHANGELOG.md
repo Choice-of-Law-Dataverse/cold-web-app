@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/Choice-of-Law-Dataverse/cold-web-app/compare/backend-v1.1.1...backend-v1.2.0) (2026-09-05)
+
+
+### Features
+
+* revise team roles and update member information ([#540](https://github.com/Choice-of-Law-Dataverse/cold-web-app/issues/540)) ([df913f6](https://github.com/Choice-of-Law-Dataverse/cold-web-app/commit/df913f69d36473fdf31d848dac0555c14ece1ee7))
+
 ## [1.1.1](https://github.com/Choice-of-Law-Dataverse/cold-web-app/compare/backend-v1.1.0...backend-v1.1.1) (2026-09-05)
 
 

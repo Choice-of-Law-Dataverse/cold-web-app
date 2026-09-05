@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.2.0](https://github.com/Choice-of-Law-Dataverse/cold-web-app/compare/frontend-v1.1.0...frontend-v1.2.0) (2026-09-05)
+
+
+### Features
+
+* open data page ([#542](https://github.com/Choice-of-Law-Dataverse/cold-web-app/issues/542)) ([413ee23](https://github.com/Choice-of-Law-Dataverse/cold-web-app/commit/413ee2336bda9f2cd6781cda91afdc2fbae38e6b))
+* reorder and update funding information in supporters.md ([#541](https://github.com/Choice-of-Law-Dataverse/cold-web-app/issues/541)) ([8c3b1ab](https://github.com/Choice-of-Law-Dataverse/cold-web-app/commit/8c3b1abbcdc463120fef323ab4c1bb9f6f44b3b6))
+* revise team roles and update member information ([#540](https://github.com/Choice-of-Law-Dataverse/cold-web-app/issues/540)) ([df913f6](https://github.com/Choice-of-Law-Dataverse/cold-web-app/commit/df913f69d36473fdf31d848dac0555c14ece1ee7))
+* update tooltips with revised descriptions and terms ([#543](https://github.com/Choice-of-Law-Dataverse/cold-web-app/issues/543)) ([0abb361](https://github.com/Choice-of-Law-Dataverse/cold-web-app/commit/0abb3611be9181d738b16ceb97669f52a20e8a3c))
+
 ## [1.1.0](https://github.com/Choice-of-Law-Dataverse/cold-web-app/compare/frontend-v1.0.0...frontend-v1.1.0) (2026-08-23)
 
 
