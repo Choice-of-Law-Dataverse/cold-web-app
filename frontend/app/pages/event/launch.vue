@@ -12,7 +12,7 @@
           <p
             class="text-cold-purple text-xs font-medium tracking-[3px] uppercase"
           >
-            Online via Zoom &middot; Free &amp; Open
+            Recordings Available &middot; Free &amp; Open
           </p>
           <h1
             class="text-cold-night mt-4 text-4xl leading-tight font-bold sm:text-5xl"
@@ -34,9 +34,15 @@
             <span
               class="border-cold-purple text-cold-night inline-block border px-5 py-2 text-xs font-medium tracking-[1.5px] uppercase"
             >
-              28 April 2026 &middot; 11.30 am – 7.00 pm CEST
+              Held 28 April 2026 &middot; Online via Zoom
             </span>
           </div>
+          <p
+            class="text-cold-charcoal mx-auto mt-5 max-w-xl text-sm leading-relaxed font-light"
+          >
+            The launch event has concluded. Watch the recordings of each session
+            below.
+          </p>
         </div>
 
         <div class="mt-0 flex flex-col">
@@ -48,6 +54,12 @@
               Welcome &amp; live demonstration of the platform's main features.
             </p>
             <p><strong>Agatha Brandão</strong></p>
+            <template #recording>
+              <EventRecording
+                video-id="wuInDfduDrU"
+                title="Understanding the Choice of Law Dataverse"
+              />
+            </template>
           </EventSession>
 
           <EventSession
@@ -66,6 +78,12 @@
               <strong>Gérald Goldstein</strong>
             </p>
             <p>Moderated by <strong>Daniel Girsberger</strong></p>
+            <template #recording>
+              <EventRecording
+                video-id="8-pMQGflqCc"
+                title="Party Autonomy: Sacred Principle or Legal Fiction?"
+              />
+            </template>
           </EventSession>
 
           <EventSession
@@ -77,17 +95,18 @@
               in International Commercial Contracts.
             </p>
             <p><strong>Raquel Peixoto</strong></p>
+            <template #recording>
+              <EventRecording
+                video-id="DZwif-xDd-M"
+                title="Permanent Bureau Remarks on Ten Years of the HCCH Principles"
+              />
+            </template>
           </EventSession>
 
-          <EventSession
-            time="2.00 pm"
-            title="Bilateral Q&amp;A"
-            tag="Slots available"
-            :special-tag="true"
-          >
+          <EventSession time="2.00 pm" title="Bilateral Q&amp;A">
             <p>
-              15-minute private sessions to explore the Dataverse for your
-              research, ask questions, or sign up as a specialist.
+              15-minute private sessions exploring the Dataverse for individual
+              research questions.
             </p>
           </EventSession>
 
@@ -101,6 +120,12 @@
               <EventDot />
               Max Chocolatier, Luzern
             </p>
+            <template #recording>
+              <EventRecording
+                video-id="hxMn9UXxraM"
+                title="From Promise to Practice: CoLD Assessment"
+              />
+            </template>
           </EventSession>
 
           <EventSession
@@ -116,6 +141,16 @@
               <EventDot />
               <strong>Ying Wang</strong>
             </p>
+            <template #recording>
+              <EventRecording
+                video-id="SyijtyskG3Y"
+                title="Using the Dataverse for Advancing PIL Research (part 1)"
+              />
+              <EventRecording
+                video-id="lGA-nLXZAuY"
+                title="Using the Dataverse for Advancing PIL Research (part 2)"
+              />
+            </template>
           </EventSession>
         </div>
 
@@ -143,10 +178,18 @@
 <script setup lang="ts">
 import { ASSET_BASE_URL } from "@/config/assets";
 import EventSession from "@/components/event/EventSession.vue";
+import EventRecording from "@/components/event/EventRecording.vue";
 import EventDot from "@/components/event/EventDot.vue";
 
 useHead({
-  title: "CoLD Launch — 28 April 2026",
+  title: "CoLD Launch Recordings — 28 April 2026",
+  meta: [
+    {
+      name: "description",
+      content:
+        "Watch the session recordings from the Choice of Law Dataverse launch event, held online on 28 April 2026.",
+    },
+  ],
 });
 </script>
 
