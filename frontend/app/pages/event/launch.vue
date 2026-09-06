@@ -55,10 +55,7 @@
             </p>
             <p><strong>Agatha Brandão</strong></p>
             <template #recording>
-              <EventRecording
-                video-id="wuInDfduDrU"
-                title="Understanding the Choice of Law Dataverse"
-              />
+              <EventRecording v-bind="LAUNCH_EVENT_RECORDINGS.overview" />
             </template>
           </EventSession>
 
@@ -79,10 +76,7 @@
             </p>
             <p>Moderated by <strong>Daniel Girsberger</strong></p>
             <template #recording>
-              <EventRecording
-                video-id="8-pMQGflqCc"
-                title="Party Autonomy: Sacred Principle or Legal Fiction?"
-              />
+              <EventRecording v-bind="LAUNCH_EVENT_RECORDINGS.partyAutonomy" />
             </template>
           </EventSession>
 
@@ -96,10 +90,7 @@
             </p>
             <p><strong>Raquel Peixoto</strong></p>
             <template #recording>
-              <EventRecording
-                video-id="DZwif-xDd-M"
-                title="Permanent Bureau Remarks on Ten Years of the HCCH Principles"
-              />
+              <EventRecording v-bind="LAUNCH_EVENT_RECORDINGS.hcchPrinciples" />
             </template>
           </EventSession>
 
@@ -121,10 +112,7 @@
               Max Chocolatier, Luzern
             </p>
             <template #recording>
-              <EventRecording
-                video-id="hxMn9UXxraM"
-                title="From Promise to Practice: CoLD Assessment"
-              />
+              <EventRecording v-bind="LAUNCH_EVENT_RECORDINGS.assessment" />
             </template>
           </EventSession>
 
@@ -143,12 +131,10 @@
             </p>
             <template #recording>
               <EventRecording
-                video-id="SyijtyskG3Y"
-                title="Using the Dataverse for Advancing PIL Research (part 1)"
+                v-bind="LAUNCH_EVENT_RECORDINGS.pilResearchPartOne"
               />
               <EventRecording
-                video-id="lGA-nLXZAuY"
-                title="Using the Dataverse for Advancing PIL Research (part 2)"
+                v-bind="LAUNCH_EVENT_RECORDINGS.pilResearchPartTwo"
               />
             </template>
           </EventSession>
@@ -180,6 +166,7 @@ import { ASSET_BASE_URL } from "@/config/assets";
 import EventSession from "@/components/event/EventSession.vue";
 import EventRecording from "@/components/event/EventRecording.vue";
 import EventDot from "@/components/event/EventDot.vue";
+import { LAUNCH_EVENT_RECORDINGS } from "@/config/launchEvent";
 
 useHead({
   title: "CoLD Launch Recordings — 28 April 2026",
