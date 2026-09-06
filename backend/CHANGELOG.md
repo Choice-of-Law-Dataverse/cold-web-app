@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/Choice-of-Law-Dataverse/cold-web-app/compare/backend-v1.2.0...backend-v1.3.0) (2026-09-06)
+
+
+### Features
+
+* **event:** showcase launch event recordings and link from homepage ([#547](https://github.com/Choice-of-Law-Dataverse/cold-web-app/issues/547)) ([d27b5d1](https://github.com/Choice-of-Law-Dataverse/cold-web-app/commit/d27b5d104080087c990c332ae6d47ad1e41c5680))
+
 ## [1.2.0](https://github.com/Choice-of-Law-Dataverse/cold-web-app/compare/backend-v1.1.1...backend-v1.2.0) (2026-09-05)
 
 
