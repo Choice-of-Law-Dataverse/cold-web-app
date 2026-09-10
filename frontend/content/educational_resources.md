@@ -4,14 +4,14 @@ title: Open Educational Resources — CoLD
 
 ## ‌Choice of Law in International Commercial Contracts
 
-  This
-  <a href="https://global.oup.com/academic/product/choice-of-law-in-international-commercial-contracts-9780198840107?cc=ch&lang=en" target="_blank">book<img
+This
+<a href="https://global.oup.com/academic/product/choice-of-law-in-international-commercial-contracts-9780198840107?cc=ch&lang=en" target="_blank">book<img
     src="https://assets.cold.global/assets/external_link.svg"
     alt="external link"
     class="external-link-icon"
   /></a>
-  is the main output of the previous research project,
-  <a href="https://data.snf.ch/grants/grant/179515" target="_blank">"The Hague Principles and Beyond"<img
+is the main output of the previous research project,
+<a href="https://data.snf.ch/grants/grant/179515" target="_blank">"The Hague Principles and Beyond"<img
     src="https://assets.cold.global/assets/external_link.svg"
     alt="external link"
     class="external-link-icon"
