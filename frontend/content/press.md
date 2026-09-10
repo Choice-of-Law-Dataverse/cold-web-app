@@ -58,7 +58,7 @@ The Swiss Academies of Arts and Sciences (a+) have awarded the Faculty of Law’
 
 ---
 
-## HCCH 2015 Principles on Choice of Law: Update 
+## HCCH 2015 Principles on Choice of Law: Update
 
 January, 2025
 
