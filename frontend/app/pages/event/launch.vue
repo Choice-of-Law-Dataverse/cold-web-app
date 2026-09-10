@@ -131,6 +131,9 @@
             </p>
             <template #recording>
               <EventRecording
+                v-bind="LAUNCH_EVENT_RECORDINGS.pilResearchTovar"
+              />
+              <EventRecording
                 v-bind="LAUNCH_EVENT_RECORDINGS.pilResearchPartOne"
               />
               <EventRecording

@@ -24,6 +24,10 @@ export const LAUNCH_EVENT_RECORDINGS = {
     videoId: "hxMn9UXxraM",
     title: "From Promise to Practice: CoLD Assessment",
   },
+  pilResearchTovar: {
+    videoId: "qLTDr6wlv7w",
+    title: "Using the Dataverse for Advancing PIL Research (Rorick Tovar)",
+  },
   pilResearchPartOne: {
     videoId: "SyijtyskG3Y",
     title: "Using the Dataverse for Advancing PIL Research (part 1)",
