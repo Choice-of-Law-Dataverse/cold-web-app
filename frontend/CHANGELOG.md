@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.4.0](https://github.com/Choice-of-Law-Dataverse/cold-web-app/compare/frontend-v1.3.0...frontend-v1.4.0) (2026-09-10)
+
+
+### Features
+
+* add press entries for CoLD project ([#549](https://github.com/Choice-of-Law-Dataverse/cold-web-app/issues/549)) ([f508632](https://github.com/Choice-of-Law-Dataverse/cold-web-app/commit/f50863295fd62381b5f99fde030449254a163a3b))
+* revise educational resources to Open Educational Resources ([#545](https://github.com/Choice-of-Law-Dataverse/cold-web-app/issues/545)) ([af1772a](https://github.com/Choice-of-Law-Dataverse/cold-web-app/commit/af1772a87777e64feffb0453c7cb787fbb228a70))
+
 ## [1.3.0](https://github.com/Choice-of-Law-Dataverse/cold-web-app/compare/frontend-v1.2.0...frontend-v1.3.0) (2026-09-06)
 
 
