@@ -52,6 +52,10 @@
       </div>
     </div>
 
+    <div class="animate-fade-up animate-delay-1 col-span-12">
+      <LaunchRecordingsBanner />
+    </div>
+
     <!-- Explore Data Stats Strip -->
     <div class="animate-fade-up animate-delay-1 col-span-12">
       <div class="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-3">
@@ -304,6 +308,7 @@ import ConnectCard from "@/components/landing-page/ConnectCard.vue";
 import NumberCard from "@/components/landing-page/NumberCard.vue";
 import CompareJurisdictionsCard from "@/components/landing-page/CompareJurisdictionsCard.vue";
 import StayConnectedCard from "@/components/landing-page/StayConnectedCard.vue";
+import LaunchRecordingsBanner from "@/components/landing-page/LaunchRecordingsBanner.vue";
 import { useHead, useRuntimeConfig, useSeoMeta } from "#imports";
 import { buildDataset, buildJsonLdGraph } from "@/utils/structuredData";
 import { useEntityCounts } from "@/composables/useEntityCounts";

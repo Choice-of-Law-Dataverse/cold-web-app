@@ -2,7 +2,8 @@
   <div
     class="border-cold-gray grid grid-cols-[100px_1fr] gap-x-8 border-b py-6"
     :class="{
-      'border-b-0 pb-1': last,
+      'border-b-0': last,
+      'pb-1': last && !$slots.recording,
       'pt-1': first,
     }"
   >
@@ -25,6 +26,7 @@
       <div class="text-cold-charcoal text-sm leading-relaxed font-light">
         <slot />
       </div>
+      <slot name="recording" />
     </div>
   </div>
 </template>

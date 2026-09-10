@@ -7,7 +7,14 @@
     },
     "backend": {
       "release-type": "python",
-      "component": "backend"
+      "component": "backend",
+      "extra-files": [
+        {
+          "type": "toml",
+          "path": "uv.lock",
+          "jsonpath": "$.package[?(@.name == 'backend')].version"
+        }
+      ]
     }
   }
 }
