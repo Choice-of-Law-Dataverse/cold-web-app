@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.1](https://github.com/Choice-of-Law-Dataverse/cold-web-app/compare/frontend-v1.4.0...frontend-v1.4.1) (2026-09-11)
+
+
+### Bug Fixes
+
+* **content:** restore open educational resources page content ([#551](https://github.com/Choice-of-Law-Dataverse/cold-web-app/issues/551)) ([2ed0482](https://github.com/Choice-of-Law-Dataverse/cold-web-app/commit/2ed048228ccf75cdc5fa6eeb2f9392fb038eb544))
+
 ## [1.4.0](https://github.com/Choice-of-Law-Dataverse/cold-web-app/compare/frontend-v1.3.0...frontend-v1.4.0) (2026-09-10)
 
 
