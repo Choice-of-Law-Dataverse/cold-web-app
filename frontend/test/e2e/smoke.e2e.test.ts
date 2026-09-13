@@ -161,16 +161,34 @@ describe("canonical URLs collapse duplicates", () => {
 });
 
 describe("missing records are not soft 404s", () => {
-  it.each(["/court-decision/CD-DOES-NOT-EXIST", "/literature/DOES-NOT-EXIST"])(
-    "%s responds 404",
-    async (path) => {
-      const response = await fetch(new URL(path, host), {
-        headers: { accept: "text/html" },
-      });
+  it.each([
+    "/court-decision/CD-DOES-NOT-EXIST",
+    "/literature/DOES-NOT-EXIST",
+    "/international-instrument/II-Pri-1/invalid",
+    "/international-instrument/II-Pri-1/edit/extra",
+  ])("%s responds 404", async (path) => {
+    const response = await fetch(new URL(path, host), {
+      headers: { accept: "text/html" },
+    });
 
-      expect(response.status).toBe(404);
-    },
-  );
+    expect(response.status).toBe(404);
+  });
+});
+
+describe("workflow pages are not indexable", () => {
+  it("marks the confirmation page noindex", async () => {
+    const response = await fetch(
+      new URL("/confirmation?message=Thanks", host),
+      {
+        headers: { accept: "text/html" },
+      },
+    );
+    const html = await response.text();
+
+    expect(response.status).toBe(200);
+    expect(html).toMatch(/<meta name="robots"[^>]*content="noindex, nofollow"/);
+    expect(response.headers.get("x-robots-tag")).toContain("noindex");
+  });
 });
 
 describe("thin question answers stay out of the index", () => {
@@ -270,5 +288,11 @@ describe("sitemap", () => {
     for (const path of ["/search", "/moderation", "/new", "/edit"]) {
       expect(xml).not.toContain(`${path}</loc>`);
     }
+  });
+
+  it("publishes public event pages", async () => {
+    const xml = await $fetch<string>("/__sitemap__/pages.xml");
+
+    expect(xml).toContain("/event/launch</loc>");
   });
 });

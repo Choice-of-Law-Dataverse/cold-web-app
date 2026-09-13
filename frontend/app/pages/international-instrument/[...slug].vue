@@ -134,6 +134,15 @@ import CancelModal from "@/components/ui/CancelModal.vue";
 import { format, parseISO } from "date-fns";
 import { tooltips } from "@/config/tooltips";
 
+definePageMeta({
+  // The single-segment detail route owns normal instrument pages. This
+  // catch-all is only for `/international-instrument/{coldId}/edit`.
+  validate: (route) => {
+    const slug = route.params.slug;
+    return Array.isArray(slug) && slug.length === 2 && slug[1] === "edit";
+  },
+});
+
 const tooltipInternationalInstrumentSpecialist = tooltips.specialists ?? "";
 const tooltipInternationalInstrumentDate = tooltips.date ?? "";
 const tooltipInternationalInstrumentLink =

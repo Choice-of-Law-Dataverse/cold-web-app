@@ -16,11 +16,14 @@
 
 <script setup lang="ts">
 import { useRoute } from "vue-router";
-import { useHead } from "#imports";
+import { useHead, useRobotsRule } from "#imports";
 
 useHead({
   title: "Confirmed — CoLD",
 });
+
+// This is a one-off workflow result, not a page that belongs in search.
+useRobotsRule({ noindex: true, nofollow: true });
 
 interface ConfirmationLink {
   text: string;
