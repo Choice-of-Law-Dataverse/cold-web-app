@@ -6,7 +6,8 @@ const NON_PUBLIC_PATHS = ["/search", "/moderation", "*/new", "*/edit"];
 
 /**
  * Routes kept out of every sitemap: gated pages, single-use flows and the
- * section stubs that only redirect.
+ * section stubs that only redirect. Public event pages remain indexable and
+ * are therefore picked up by the pages sitemap.
  *
  * `/question/**` is not listed here — the `questions` source publishes the 60
  * comparative question pages. The ~15k jurisdiction-specific answers under the
@@ -19,7 +20,8 @@ const SITEMAP_EXCLUDE = [
   "/**/edit",
   "/confirmation",
   "/court-decision/my-analyses",
-  "/event/**",
+  // These section entry points are 301 stubs; their canonical child pages
+  // are included in the pages sitemap instead.
   "/about",
   "/learn",
 ];
