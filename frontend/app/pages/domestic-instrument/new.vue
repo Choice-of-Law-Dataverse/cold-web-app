@@ -300,18 +300,18 @@ onMounted(loadJurisdictions);
 const formSchema = z.object({
   jurisdiction_link: z
     .string()
-    .min(1, { message: "Selected jurisdiction is required" }),
+    .min(1, { error: "Selected jurisdiction is required" }),
   official_title: z
     .string()
-    .min(1, { message: "Official title is required" })
-    .min(3, { message: "Official title must be at least 3 characters long" }),
+    .min(1, { error: "Official title is required" })
+    .min(3, { error: "Official title must be at least 3 characters long" }),
   title_en: z
     .string()
-    .min(1, { message: "English title is required" })
-    .min(3, { message: "English title must be at least 3 characters long" }),
-  entry_into_force: z.date({ required_error: "Entry into force is required" }),
-  source_url: z.string().url({
-    message: 'Source link must be a valid URL starting with "https://"',
+    .min(1, { error: "English title is required" })
+    .min(3, { error: "English title must be at least 3 characters long" }),
+  entry_into_force: z.date({ error: "Entry into force is required" }),
+  source_url: z.url({
+    error: 'Source link must be a valid URL starting with "https://"',
   }),
 });
 
@@ -342,7 +342,7 @@ function validateForm() {
   } catch (error) {
     if (error instanceof z.ZodError) {
       errors.value = {};
-      for (const err of error.errors) {
+      for (const err of error.issues) {
         const field = String(err.path[0]);
         errors.value[field] = err.message;
       }
