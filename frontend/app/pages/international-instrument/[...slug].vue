@@ -177,12 +177,11 @@ const instrumentApiId = ref<string | null>(null);
 const formSchema = z.object({
   name: z
     .string()
-    .min(1, { message: "Name is required" })
-    .min(3, { message: "Name must be at least 3 characters long" }),
+    .min(1, { error: "Name is required" })
+    .min(3, { error: "Name must be at least 3 characters long" }),
   specialists: z.array(z.string()).optional(),
   link: z
-    .string()
-    .url({ message: 'Link must be a valid URL. It must start with "https://"' })
+    .url({ error: 'Link must be a valid URL. It must start with "https://"' })
     .optional()
     .or(z.literal("")),
 });
@@ -200,7 +199,7 @@ function validateForm() {
   } catch (zodError) {
     if (zodError instanceof z.ZodError) {
       errors.value = {};
-      zodError.errors.forEach((err) => {
+      zodError.issues.forEach((err) => {
         const key = String(err.path[0]);
         errors.value[key] = err.message;
       });

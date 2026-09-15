@@ -116,8 +116,8 @@ const comments = ref("");
 const formSchema = z.object({
   abbreviation: z
     .string()
-    .min(1, { message: "Abbreviation is required" })
-    .min(3, { message: "Abbreviation must be at least 3 characters long" }),
+    .min(1, { error: "Abbreviation is required" })
+    .min(3, { error: "Abbreviation must be at least 3 characters long" }),
 });
 
 const errors = ref<Record<string, string>>({});
@@ -142,7 +142,7 @@ function validateForm() {
   } catch (error) {
     if (error instanceof z.ZodError) {
       errors.value = {};
-      for (const err of error.errors) {
+      for (const err of error.issues) {
         const field = String(err.path[0]);
         errors.value[field] = err.message;
       }
