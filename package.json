@@ -3,7 +3,7 @@
   "private": true,
   "packageManager": "pnpm@11.22.0",
   "engines": {
-    "node": "^22.18"
+    "node": "^26"
   },
   "scripts": {
     "prepare": "husky",
