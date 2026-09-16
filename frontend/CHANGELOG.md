@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.2](https://github.com/Choice-of-Law-Dataverse/cold-web-app/compare/frontend-v1.4.1...frontend-v1.4.2) (2026-09-16)
+
+
+### Bug Fixes
+
+* **seo:** tighten indexability rules ([#553](https://github.com/Choice-of-Law-Dataverse/cold-web-app/issues/553)) ([96e61e9](https://github.com/Choice-of-Law-Dataverse/cold-web-app/commit/96e61e97a3956cf12e2ccdc357c8275f8ff11efd))
+
 ## [1.4.1](https://github.com/Choice-of-Law-Dataverse/cold-web-app/compare/frontend-v1.4.0...frontend-v1.4.1) (2026-09-11)
 
 
