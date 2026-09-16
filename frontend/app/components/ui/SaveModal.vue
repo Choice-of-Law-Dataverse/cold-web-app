@@ -147,7 +147,7 @@ function validateSaveModal() {
   } catch (error) {
     if (error instanceof z.ZodError) {
       const errors: Record<string, string> = {};
-      error.errors.forEach((err) => {
+      error.issues.forEach((err) => {
         const key = err.path[0];
         if (key !== undefined) {
           errors[String(key)] = err.message;
