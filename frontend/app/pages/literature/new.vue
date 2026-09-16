@@ -223,15 +223,15 @@ onMounted(loadJurisdictions);
 const formSchema = z.object({
   author: z
     .string()
-    .min(1, { message: "Author is required" })
-    .min(3, { message: "Author must be at least 3 characters long" }),
+    .min(1, { error: "Author is required" })
+    .min(3, { error: "Author must be at least 3 characters long" }),
   title: z
     .string()
-    .min(1, { message: "Title is required" })
-    .min(3, { message: "Title must be at least 3 characters long" }),
+    .min(1, { error: "Title is required" })
+    .min(3, { error: "Title must be at least 3 characters long" }),
   publication_year: z
     .string()
-    .regex(/^\d{4}$/u, { message: "Year must be 4 digits (e.g., 2024)" }),
+    .regex(/^\d{4}$/u, { error: "Year must be 4 digits (e.g., 2024)" }),
 });
 
 const errors = ref<Record<string, string>>({});
@@ -256,7 +256,7 @@ function validateForm() {
   } catch (error) {
     if (error instanceof z.ZodError) {
       errors.value = {};
-      for (const err of error.errors) {
+      for (const err of error.issues) {
         const field = String(err.path[0]);
         errors.value[field] = err.message;
       }

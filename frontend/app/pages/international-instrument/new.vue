@@ -111,13 +111,10 @@ const comments = ref("");
 const formSchema = z.object({
   name: z
     .string()
-    .min(1, { message: "Title is required" })
-    .min(3, { message: "Title must be at least 3 characters long" }),
-  link: z
-    .string()
-    .min(1, { message: "URL is required" })
-    .url({ message: 'URL must be valid and start with "https://"' }),
-  instrument_date: z.date({ required_error: "Date is required" }),
+    .min(1, { error: "Title is required" })
+    .min(3, { error: "Title must be at least 3 characters long" }),
+  link: z.url({ error: 'URL must be valid and start with "https://"' }),
+  instrument_date: z.date({ error: "Date is required" }),
 });
 
 const errors = ref<Record<string, string>>({});
@@ -143,7 +140,7 @@ function validateForm() {
   } catch (error) {
     if (error instanceof z.ZodError) {
       errors.value = {};
-      for (const err of error.errors) {
+      for (const err of error.issues) {
         const field = String(err.path[0]);
         errors.value[field] = err.message;
       }
