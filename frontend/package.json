@@ -86,8 +86,8 @@
     "@types/geojson": "^7946.0.16",
     "@types/node": "^22.20.2",
     "@vitejs/plugin-vue": "^6.0.9",
-    "@vitest/coverage-v8": "^4.1.11",
-    "@vitest/ui": "^4.1.11",
+    "@vitest/coverage-v8": "^5.0.1",
+    "@vitest/ui": "^5.0.1",
     "@vue/test-utils": "^2.5.0",
     "eslint": "^10.10.0",
     "eslint-plugin-perfectionist": "^5.11.0",
@@ -100,7 +100,7 @@
     "prettier-plugin-tailwindcss": "^0.8.1",
     "tailwindcss": "^4.3.3",
     "typescript": "^5.9.3",
-    "vitest": "^4.1.11",
+    "vitest": "^5.0.1",
     "vue-tsc": "^3.3.11"
   }
 }
