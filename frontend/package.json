@@ -10,7 +10,7 @@
   "type": "module",
   "packageManager": "pnpm@11.22.0",
   "engines": {
-    "node": "^26"
+    "node": "24.x"
   },
   "scripts": {
     "build": "nuxt build --log-level silent",
@@ -84,7 +84,7 @@
     "@tailwindcss/vite": "^4.3.3",
     "@tanstack/vue-query-devtools": "^6.1.48",
     "@types/geojson": "^7946.0.16",
-    "@types/node": "^26.5.1",
+    "@types/node": "24.13.4",
     "@vitejs/plugin-vue": "^6.0.9",
     "@vitest/coverage-v8": "^5.0.1",
     "@vitest/ui": "^5.0.1",

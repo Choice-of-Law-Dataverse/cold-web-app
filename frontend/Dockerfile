@@ -1,7 +1,7 @@
 # ============================================
 # Build Stage
 # ============================================
-FROM node:26.8-alpine AS builder
+FROM node:24.21-alpine AS builder
 
 # Public site URL is needed at build time by sitemap/robots
 ARG NUXT_SITE_URL
@@ -30,7 +30,7 @@ RUN NODE_OPTIONS="--max_old_space_size=4096" pnpm run build
 # ============================================
 # Production Stage - No secrets, only output
 # ============================================
-FROM node:26.8-alpine
+FROM node:24.21-alpine
 
 WORKDIR /app
 
