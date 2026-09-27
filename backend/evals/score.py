@@ -20,6 +20,12 @@ JUDGE_QUESTION = noul_question(
 )
 
 
+def excerpt_recall(sections: list[str], excerpt: str) -> float:
+    """How much of the curated excerpt the extracted sections contain, from 0 to 1."""
+    extracted = normalize(" ".join(sections))
+    return fuzz.partial_ratio(normalize(excerpt), extracted) / 100 if extracted else 0.0
+
+
 def normalize(text: str) -> str:
     return re.sub(r"\s+", " ", text).casefold().strip()
 
@@ -56,11 +62,11 @@ async def score(step: str, output: dict[str, Any], gold: dict[str, Any]) -> dict
             curated = gold.get("jurisdiction_codes") or [gold["jurisdiction_code"].upper()]
             return {"accuracy": float(output.get("jurisdiction_code", "").upper() in curated)}
         case "col_section":
-            extracted = normalize(" ".join(output.get("col_sections", [])))
+            sections = output.get("col_sections", [])
             excerpt = normalize(gold["col_excerpt"])
             return {
-                "excerpt_recall": fuzz.partial_ratio(excerpt, extracted) / 100 if extracted else 0.0,
-                "length_ratio": len(extracted) / len(excerpt) if excerpt else 0.0,
+                "excerpt_recall": excerpt_recall(sections, gold["col_excerpt"]),
+                "length_ratio": len(normalize(" ".join(sections))) / len(excerpt) if excerpt else 0.0,
             }
         case "themes":
             predicted = [t for t in output.get("themes", []) if t != "NA"]

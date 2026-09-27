@@ -31,6 +31,7 @@ from app.case_analyzer.jev import answered_by_jev, jev_reasoning
 from app.case_analyzer.service import detect_jurisdiction
 from app.case_analyzer.tools import (
     classify_themes,
+    col_extractor,
     extract_abstract,
     extract_case_citation,
     extract_col_issue,
@@ -43,6 +44,7 @@ from app.case_analyzer.tools import (
     theme_classifier,
 )
 from app.case_analyzer.tools.document_nav import DocumentContext
+from app.case_analyzer.tools.hybrid_retrieval import retrieve_choice_of_law_candidates
 from app.case_analyzer.tools.jurisdiction_detector import detect_legal_system_by_jurisdiction
 from app.case_analyzer.tools.models import (
     ColIssueOutput,
@@ -57,11 +59,12 @@ from app.config import config
 
 from . import corpus
 from .budget import Budget, configure_logfire
-from .score import score
+from .score import excerpt_recall, score
 
 JEV_ENABLED = True
 JEV_ONLY = False
 GATE_THRESHOLDS = (0.5, 0.6, 0.7, 0.8, 0.9, 0.95)
+PRUNING_THRESHOLDS = (0.1, 0.3, 0.5, 0.7, 0.9)
 RUNS_DIR = corpus.EVAL_DIR / "runs"
 CACHE_DIR = corpus.EVAL_DIR / "cache"
 ANALYZER_DIR = Path(__file__).resolve().parent.parent / "app" / "case_analyzer"
@@ -107,7 +110,12 @@ STEPS: dict[str, Step] = {
         ("service.py", "tools/jurisdiction_classifier.py", "tools/jurisdiction_detector.py"),
         ("legal_system",),
     ),
-    "col_section": Step("col_section", ("col_excerpt",), lambda doc, up: extract_col_section(doc), ("tools/col_extractor.py",)),
+    "col_section": Step(
+        "col_section",
+        ("col_excerpt",),
+        lambda doc, up: extract_col_section(doc),
+        ("tools/col_extractor.py", "tools/hybrid_retrieval.py"),
+    ),
     "themes": Step(
         "themes",
         ("col_excerpt", "themes"),
@@ -183,9 +191,24 @@ async def _jev_themes(_doc: DocumentContext, up: Upstream) -> dict[str, Any]:
     }
 
 
+async def _jev_col_section(doc: DocumentContext, _up: Upstream) -> dict[str, Any]:
+    """Jev's relevance for every paragraph, the paragraphs retrieval would offer the audit, and Jev's pick at 0.5."""
+    probabilities = await col_extractor.jev_paragraph_probabilities(doc.paragraphs)
+    if all(p is None for p in probabilities):
+        raise RuntimeError("Jev gave no paragraph answers; see the logged request error")
+    retrieval = await retrieve_choice_of_law_candidates(doc)
+    return {
+        "col_sections": [text for text, p in zip(doc.paragraphs, probabilities, strict=True) if p is not None and p >= 0.5],
+        "paragraph_probabilities": probabilities,
+        "candidate_paragraphs": sorted({number for c in retrieval.candidates for number in c.paragraph_numbers}),
+        "reasoning": jev_reasoning(config.JEV_MODEL, "paragraph relevance"),
+    }
+
+
 JEV_ONLY_RUNS: dict[str, Callable[[DocumentContext, Upstream], Awaitable[Any]]] = {
     "jurisdiction": _jev_jurisdiction,
     "themes": _jev_themes,
+    "col_section": _jev_col_section,
 }
 GATE_SCORES = {"jurisdiction": "accuracy", "themes": "exact"}
 
@@ -351,6 +374,43 @@ def theme_errors(report: EvaluationReport[Any, Any, Any]) -> dict[str, dict[str,
     return dict(sorted(counts.items(), key=lambda item: -item[1]["curated"]))
 
 
+def pruning_table(report: EvaluationReport[Any, Any, Any]) -> list[tuple[str, float | None, float, float]]:
+    """Per variant and threshold: mean share of the curated excerpt kept, and mean share of the text kept."""
+
+    def row(variant: str, threshold: float | None, keep: Callable[[int, float | None, set[int]], bool]) -> tuple:
+        recalls, shares = [], []
+        for case in report.cases:
+            paragraphs = DocumentContext(draft_id=0, text=case.inputs["text"]).paragraphs
+            candidates = set(case.output["candidate_paragraphs"])
+            probabilities = case.output["paragraph_probabilities"]
+            kept = [
+                text
+                for number, (text, p) in enumerate(zip(paragraphs, probabilities, strict=True), start=1)
+                if keep(number, p, candidates)
+            ]
+            recalls.append(excerpt_recall(kept, case.inputs["gold"]["col_excerpt"]))
+            shares.append(sum(map(len, kept)) / max(1, sum(map(len, paragraphs))))
+        return variant, threshold, sum(recalls) / len(recalls), sum(shares) / len(shares)
+
+    if not report.cases:
+        return []
+    rows = [
+        row("full text (ceiling)", None, lambda _n, _p, _c: True),
+        row("retrieval candidates, no Jev", None, lambda number, _p, candidates: number in candidates),
+    ]
+    for threshold in PRUNING_THRESHOLDS:
+        rows.append(row("Jev, all paragraphs", threshold, lambda _n, p, _c, t=threshold: p is not None and p >= t))
+    for threshold in PRUNING_THRESHOLDS:
+        rows.append(
+            row(
+                "Jev, within retrieval candidates",
+                threshold,
+                lambda number, p, candidates, t=threshold: number in candidates and p is not None and p >= t,
+            )
+        )
+    return rows
+
+
 def gate_table(report: EvaluationReport[Any, Any, Any], score_name: str) -> list[tuple[float, int, int, float | None]]:
     """Per threshold: cases Jev would answer, cases scored, and the mean score on the answered ones."""
     cases = [case for case in report.cases if score_name in case.scores]
@@ -429,6 +489,12 @@ async def main() -> None:
             print("  Per theme (curated / predicted / false positives / false negatives):")
             for theme, row in theme_errors(report).items():
                 print(f"    {theme}: {row['curated']} / {row['predicted']} / {row['false_positive']} / {row['false_negative']}")
+        if JEV_ONLY and name == "col_section":
+            print("  Pruning (mean share of the curated excerpt kept / mean share of the text kept):")
+            for variant, threshold, recall, share in pruning_table(report):
+                at = f" >= {threshold:.1f}" if threshold is not None else ""
+                print(f"    {variant}{at}: excerpt {recall:.0%}, text {share:.0%}")
+            continue
         if JEV_ONLY:
             print(f"  Jev answers by confidence threshold ({GATE_SCORES[name]} on the answered cases):")
             for threshold, accepted, scored, mean in gate_table(report, GATE_SCORES[name]):

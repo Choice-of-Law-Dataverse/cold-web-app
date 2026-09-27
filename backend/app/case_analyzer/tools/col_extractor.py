@@ -1,10 +1,13 @@
+import asyncio
 import logging
+from collections.abc import Sequence
 
 import logfire
 from agents import Agent, Runner
 from agents.models.openai_responses import OpenAIResponsesModel
 
 from ..config import get_model, get_openai_client
+from ..jev import JEV_STATE_MAX_CHARS, NoulAnswer, ask_jev, noul_question
 from ..prompts.col_section import COL_CANDIDATE_AUDIT_PROMPT, COL_RETRIEVAL_QUERY_PROMPT
 from ..runner import run_agent
 from ..utils import generate_system_prompt
@@ -16,6 +19,27 @@ from .models import ColCandidateAuditOutput, ColRetrievalQueryPlan, ColSectionOu
 logger = logging.getLogger(__name__)
 
 _PLANNER_EXCERPT_CHARS = 6000
+_JEV_PARAGRAPH_CONCURRENCY = 16
+
+COL_PARAGRAPH_QUESTION = noul_question(
+    {
+        "question": "Is this paragraph part of the court's own choice-of-law analysis?",
+        "focus": "The court's determination of which law governs the dispute, and its reasoning for it.",
+    },
+    true={
+        "what": "The court states, applies or reasons about which law governs: a choice-of-law clause or agreement, "
+        "a conflict-of-laws rule, connecting factors, or an exception such as public policy or overriding "
+        "mandatory rules.",
+        "examples": [
+            "The parties validly chose Swiss law.",
+            "Absent a choice, the contract is governed by the law of the seller's habitual residence.",
+        ],
+    },
+    false={
+        "what": "Facts, procedure, the court's own jurisdiction, costs, the merits decided under the governing law, "
+        "or a party's argument the court does not adopt.",
+    },
+)
 
 
 def _responses_model(task: str) -> OpenAIResponsesModel:
@@ -41,6 +65,19 @@ async def _generate_case_specific_queries(doc_ctx: DocumentContext) -> list[str]
         logger.warning("Case-specific retrieval query planning failed: %s", type(exc).__name__)
         return []
     return list(dict.fromkeys(query.strip() for query in result.final_output.queries if query.strip()))[:6]
+
+
+async def jev_paragraph_probabilities(paragraphs: Sequence[str]) -> list[float | None]:
+    """Jev's probability that each paragraph belongs to the court's choice-of-law analysis; None where it gave none."""
+    semaphore = asyncio.Semaphore(_JEV_PARAGRAPH_CONCURRENCY)
+
+    async def ask(paragraph: str) -> float | None:
+        async with semaphore:
+            response = await ask_jev("col_paragraph", paragraph[:JEV_STATE_MAX_CHARS], {"relevant": COL_PARAGRAPH_QUESTION})
+        answer = response.answers.get("relevant") if response else None
+        return answer.noul if isinstance(answer, NoulAnswer) else None
+
+    return list(await asyncio.gather(*(ask(paragraph) for paragraph in paragraphs)))
 
 
 def _format_candidates(candidates: list[CandidatePassage], doc_ctx: DocumentContext) -> str:
