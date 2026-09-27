@@ -9,7 +9,7 @@ from agents.models.openai_responses import OpenAIResponsesModel
 from ..config import get_model, get_openai_client
 from ..jev import JEV_STATE_MAX_CHARS, NoulAnswer, ask_jev, noul_question
 from ..prompts.col_section import COL_CANDIDATE_AUDIT_PROMPT, COL_RETRIEVAL_QUERY_PROMPT
-from ..runner import run_agent
+from ..runner import OutputValidationError, run_agent
 from ..utils import generate_system_prompt
 from ..validation import validate_col_candidate_audit
 from .document_nav import NAV_TOOLS, DocumentContext
@@ -243,21 +243,31 @@ async def extract_col_section(
         if not candidates:
             raise ValueError("No choice-of-law retrieval candidates were found")
 
-        agent = Agent[DocumentContext](
-            name="ColSectionExtractor",
-            instructions=generate_system_prompt(),
-            output_type=ColCandidateAuditOutput,
-            tools=NAV_TOOLS,
-            model=_responses_model("col_section"),
-        )
+        audit_input = f"{COL_CANDIDATE_AUDIT_PROMPT}\n\nCANDIDATES:\n{_format_candidates(candidates, doc_ctx)}"
 
-        try:
-            audit_step = await run_agent(
+        async def audit(task: str) -> StepResult[ColCandidateAuditOutput]:
+            agent = Agent[DocumentContext](
+                name="ColSectionExtractor",
+                instructions=generate_system_prompt(),
+                output_type=ColCandidateAuditOutput,
+                tools=NAV_TOOLS,
+                model=_responses_model(task),
+            )
+            return await run_agent(
                 agent,
-                input=f"{COL_CANDIDATE_AUDIT_PROMPT}\n\nCANDIDATES:\n{_format_candidates(candidates, doc_ctx)}",
+                input=audit_input,
                 context=doc_ctx,
                 validate=lambda output, _tools: validate_col_candidate_audit(output, candidates),
             )
+
+        try:
+            audit_model = get_model("col_section")
+            try:
+                audit_step = await audit("col_section")
+            except OutputValidationError as e:
+                logger.warning("CoL audit with %s failed validation, retrying with the fallback model: %s", audit_model, e)
+                audit_model = get_model("col_section_fallback")
+                audit_step = await audit("col_section_fallback")
             output, section_provenance = _assemble_output(audit_step.output, candidates, doc_ctx)
             included_paragraphs: list[int] = []
             for section in section_provenance:
@@ -278,6 +288,7 @@ async def extract_col_section(
                 tool_names=audit_step.tool_names,
                 evidence={
                     "retrieval": retrieval_evidence,
+                    "audit_model": audit_model,
                     "candidates": [
                         {
                             "candidate_id": candidate.candidate_id,

@@ -115,6 +115,7 @@ STEPS: dict[str, Step] = {
         ("col_excerpt",),
         lambda doc, up: extract_col_section(doc),
         ("tools/col_extractor.py", "tools/hybrid_retrieval.py"),
+        ("col_section_fallback",),
     ),
     "themes": Step(
         "themes",

@@ -1,15 +1,19 @@
 """Tests for audited Choice of Law output assembly."""
 
 import asyncio
+from typing import Any
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
+from app.case_analyzer.config import get_model
 from app.case_analyzer.jev import NoulAnswer, SystemOneResponse
+from app.case_analyzer.runner import OutputValidationError
 from app.case_analyzer.tools import col_extractor
 from app.case_analyzer.tools.col_extractor import _assemble_output, _retrieval_evidence, jev_candidates
 from app.case_analyzer.tools.document_nav import DocumentContext
 from app.case_analyzer.tools.hybrid_retrieval import MAX_MERGED_PARAGRAPHS, CandidatePassage, RetrievalResult
-from app.case_analyzer.tools.models import ColCandidateAuditOutput, ColCandidateDecision
+from app.case_analyzer.tools.models import ColCandidateAuditOutput, ColCandidateDecision, StepResult
 
 
 def test_output_is_reconstructed_verbatim_with_paragraph_provenance() -> None:
@@ -108,3 +112,27 @@ async def test_paragraphs_unanswered_by_the_timeout_are_none(monkeypatch: pytest
 
     monkeypatch.setattr(col_extractor, "ask_jev", slow_for_second)
     assert await col_extractor.jev_paragraph_probabilities(["fast", "slow"], timeout=0.2) == [0.9, None]
+
+
+@pytest.mark.asyncio
+async def test_audit_falls_back_to_the_stronger_model(monkeypatch: pytest.MonkeyPatch) -> None:
+    doc = DocumentContext(draft_id=1, text="Background.\n\nThe court holds that Swiss law governs the contract.")
+    monkeypatch.setattr(col_extractor, "jev_paragraph_probabilities", AsyncMock(return_value=[0.1, 0.9]))
+    models: list[str] = []
+    decision = ColCandidateDecision(
+        candidate_id="C001", disposition="include", reason="Holding.", role="court_holding", selected_paragraphs=[2]
+    )
+
+    async def fake_run_agent(agent: Any, **_kwargs: Any) -> StepResult[ColCandidateAuditOutput]:
+        models.append(agent.model.model)
+        if len(models) == 1:
+            raise OutputValidationError("No candidate was included.")
+        return StepResult(ColCandidateAuditOutput(decisions=[decision], confidence="high", reasoning="ok"))
+
+    monkeypatch.setattr(col_extractor, "run_agent", fake_run_agent)
+    monkeypatch.setattr(col_extractor, "get_openai_client", MagicMock())
+    step = await col_extractor.extract_col_section(doc)
+
+    assert models == [get_model("col_section"), get_model("col_section_fallback")]
+    assert step.evidence["audit_model"] == get_model("col_section_fallback")
+    assert step.output.col_sections == ["The court holds that Swiss law governs the contract."]
