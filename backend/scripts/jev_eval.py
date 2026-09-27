@@ -9,7 +9,7 @@ Pulls every court decision from the public CoLD API and runs two experiments:
 
 Writes corpus.jsonl, per-item predictions and report.md to --out.
 
-    TYPESAFE_API_KEY=... uv run python scripts/jev_eval.py --limit 100
+    OPENROUTER_API_KEY=... uv run python scripts/jev_eval.py --limit 100
 """
 
 import argparse

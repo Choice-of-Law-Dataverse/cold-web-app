@@ -35,13 +35,13 @@ jobs:
       run:
         working-directory: backend
     steps:
-      - name: Check for TypeSafe API key
+      - name: Check for OpenRouter API key
         env:
-          TYPESAFE_API_KEY: ${{ secrets.TYPESAFE_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
         working-directory: .
         run: |
-          if [ -z "$TYPESAFE_API_KEY" ]; then
-            echo "::error::Add the TYPESAFE_API_KEY repository secret (Settings → Secrets and variables → Actions)."
+          if [ -z "$OPENROUTER_API_KEY" ]; then
+            echo "::error::Add the OPENROUTER_API_KEY repository secret (Settings → Secrets and variables → Actions)."
             exit 1
           fi
 
@@ -63,7 +63,7 @@ jobs:
 
       - name: Run evaluation
         env:
-          TYPESAFE_API_KEY: ${{ secrets.TYPESAFE_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           LOGFIRE_SEND_TO_LOGFIRE: "false"
           LIMIT: ${{ inputs.limit || '200' }}
           EXPERIMENTS: ${{ inputs.experiments || 'themes,paragraphs' }}

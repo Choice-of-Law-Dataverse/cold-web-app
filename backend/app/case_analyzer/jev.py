@@ -3,7 +3,8 @@
 Jev is a System One model: it answers typed questions (choice, yes/no) with calibrated
 probabilities instead of generating text. Callers ask Jev first and fall back to their
 OpenAI agent whenever this returns None or the answer's confidence is below
-JEV_MIN_CONFIDENCE. API reference: https://docs.typesafe.ai/api
+JEV_MIN_CONFIDENCE. Served through OpenRouter's System One API, which
+speaks TypeSafe's protocol: https://docs.typesafe.ai/api
 """
 
 import logging
@@ -59,12 +60,12 @@ _client: httpx2.AsyncClient | None = None
 def _get_client() -> httpx2.AsyncClient | None:
     """Singleton HTTP client, or None when Jev is not configured."""
     global _client
-    if not config.TYPESAFE_API_KEY:
+    if not config.OPENROUTER_API_KEY:
         return None
     if _client is None:
         _client = httpx2.AsyncClient(
-            base_url=config.TYPESAFE_BASE_URL,
-            headers={"Authorization": f"Bearer {config.TYPESAFE_API_KEY}"},
+            base_url=config.JEV_BASE_URL,
+            headers={"Authorization": f"Bearer {config.OPENROUTER_API_KEY}"},
             timeout=_TIMEOUT_SECONDS,
         )
     return _client
@@ -79,12 +80,13 @@ async def ask_jev(
     client = _get_client()
     if client is None:
         return None
+    body = {"state": state, "model": config.JEV_MODEL, "questions": dict(questions)}
     with logfire.span("jev", step=step):
         try:
-            response = await client.post(
-                _SYSTEM_ONE_PATH,
-                json={"state": state, "model": config.TYPESAFE_MODEL, "questions": dict(questions)},
-            )
+            try:
+                response = await client.post(_SYSTEM_ONE_PATH, json=body)
+            except httpx2.TimeoutException:
+                response = await client.post(_SYSTEM_ONE_PATH, json=body)
             response.raise_for_status()
             return SystemOneResponse.model_validate_json(response.content)
         except (httpx2.HTTPError, ValidationError) as e:

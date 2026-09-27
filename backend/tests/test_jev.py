@@ -36,7 +36,7 @@ def _respond(
 
 @pytest.fixture
 def use_jev(monkeypatch: pytest.MonkeyPatch) -> Callable[[Callable[[httpx2.Request], httpx2.Response]], None]:
-    monkeypatch.setattr(config, "TYPESAFE_API_KEY", "test-key")
+    monkeypatch.setattr(config, "OPENROUTER_API_KEY", "test-key")
 
     def install(handler: Callable[[httpx2.Request], httpx2.Response]) -> None:
         client = httpx2.AsyncClient(base_url="https://jev.test", transport=httpx2.MockTransport(handler))
@@ -47,7 +47,7 @@ def use_jev(monkeypatch: pytest.MonkeyPatch) -> Callable[[Callable[[httpx2.Reque
 
 @pytest.mark.asyncio
 async def test_ask_jev_is_disabled_without_api_key(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setattr(config, "TYPESAFE_API_KEY", None)
+    monkeypatch.setattr(config, "OPENROUTER_API_KEY", None)
     assert await jev.ask_jev("step", "text", {"q": jev.noul_question("?")}) is None
 
 
@@ -68,7 +68,7 @@ async def test_legal_system_uses_confident_jev_answer(use_jev) -> None:
     assert result == "Common-law jurisdiction"
     runner.assert_not_awaited()
     body = requests[0]
-    assert body["model"] == config.TYPESAFE_MODEL
+    assert body["model"] == config.JEV_MODEL
     assert body["state"]["jurisdiction"] == "Atlantis"
     assert set(body["questions"]["legal_system"]["criteria"]) == {
         "Civil-law jurisdiction",
@@ -154,3 +154,20 @@ async def test_themes_fall_back_to_agent(use_jev, probabilities: dict[str, float
 
     agent.assert_awaited_once()
     assert step is fallback
+
+
+@pytest.mark.asyncio
+async def test_ask_jev_retries_once_on_timeout(use_jev) -> None:
+    calls: list[int] = []
+
+    def handler(request: httpx2.Request) -> httpx2.Response:
+        calls.append(1)
+        if len(calls) == 1:
+            raise httpx2.ReadTimeout("slow", request=request)
+        return _respond({"q": {"type": "noul", "noul": 0.9}})(request)
+
+    use_jev(handler)
+    response = await jev.ask_jev("step", "text", {"q": jev.noul_question("?")})
+
+    assert response is not None
+    assert len(calls) == 2

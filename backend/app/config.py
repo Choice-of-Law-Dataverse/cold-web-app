@@ -13,10 +13,10 @@ class Config(BaseSettings):
 
     SQL_CONN_STRING: str | None = None
     OPENAI_API_KEY: str | None = None
-    # TypeSafe Jev: case analyzer classification steps use it when the key is set
-    TYPESAFE_API_KEY: str | None = None
-    TYPESAFE_BASE_URL: str = "https://api.typesafe.ai"
-    TYPESAFE_MODEL: str = "jev-latest"
+    # TypeSafe Jev via OpenRouter: case analyzer classification steps use it when the key is set
+    OPENROUTER_API_KEY: str | None = None
+    JEV_BASE_URL: str = "https://openrouter.ai/api"
+    JEV_MODEL: str = "typesafe/jev-1.13"
     TEST: str | None = None
     # Logging configuration
     LOG_LEVEL: str = "INFO"
