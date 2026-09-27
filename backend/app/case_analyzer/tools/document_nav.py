@@ -13,11 +13,14 @@ from dataclasses import dataclass, field
 from agents import RunContextWrapper, Tool, function_tool
 from rapidfuzz import fuzz
 
-from .semantic_index import EmbedFunction, SemanticHit, SemanticIndex
+from .semantic_index import CHUNK_MAX_CHARS, EmbedFunction, SemanticHit, SemanticIndex
 
 logger = logging.getLogger(__name__)
 
 MAX_CHARS = 4000
+MAX_PARAGRAPH_CHARS = CHUNK_MAX_CHARS
+_PARAGRAPH_SEPARATORS = (re.compile(r"\n"), re.compile(r"(?<=[.!?])\s+"), re.compile(r"\s+"))
+_PARAGRAPH_JOINERS = ("\n", " ", " ")
 _MARKDOWN_HEADING_RE = re.compile(r"^#{1,6}\s+.+")
 _LINE_BREAK_HYPHEN_RE = re.compile(r"(?<=\w)-[ \t]*\r?\n[ \t]*(?=\w)")
 _ALL_CAPS_HEADING_PUNCTUATION = frozenset(" -–—:;,.()[]/§0123456789")
@@ -81,6 +84,32 @@ class LexicalHit:
     method: str
 
 
+def split_oversized_paragraph(text: str, max_chars: int = MAX_PARAGRAPH_CHARS, level: int = 0) -> list[str]:
+    """Split text longer than max_chars at line breaks, then sentence ends, then spaces, packing pieces greedily.
+
+    Extracted text without blank lines otherwise becomes one paragraph the size of the document, which no
+    embedding request, Jev question or paragraph-level selection can handle.
+    """
+    if len(text) <= max_chars:
+        return [text]
+    if level == len(_PARAGRAPH_SEPARATORS):
+        return [text[start : start + max_chars] for start in range(0, len(text), max_chars)]
+    pieces = [piece for piece in _PARAGRAPH_SEPARATORS[level].split(text) if piece.strip()]
+    if len(pieces) == 1:
+        return split_oversized_paragraph(text, max_chars, level + 1)
+    joiner = _PARAGRAPH_JOINERS[level]
+    packed: list[str] = []
+    current = ""
+    for piece in pieces:
+        if current and len(current) + len(joiner) + len(piece) > max_chars:
+            packed.append(current)
+            current = piece
+        else:
+            current = f"{current}{joiner}{piece}" if current else piece
+    packed.append(current)
+    return [part for chunk in packed for part in split_oversized_paragraph(chunk, max_chars, level + 1)]
+
+
 @dataclass
 class DocumentContext:
     draft_id: int
@@ -98,7 +127,7 @@ class DocumentContext:
     semantic_unavailable_reason: str | None = field(default=None, init=False)
 
     def __post_init__(self) -> None:
-        self.paragraphs = [p for p in re.split(r"\n\s*\n", self.text) if p.strip()]
+        self.paragraphs = [part for p in re.split(r"\n\s*\n", self.text) if p.strip() for part in split_oversized_paragraph(p)]
         self.headings = _detect_headings(self.paragraphs)
         self.normalized_paragraphs = [_normalize_search_text(paragraph) for paragraph in self.paragraphs]
 

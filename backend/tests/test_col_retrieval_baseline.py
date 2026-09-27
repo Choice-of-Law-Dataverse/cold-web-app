@@ -45,7 +45,7 @@ async def test_annotated_candidate_recall_and_direct_holding_coverage() -> None:
     irrelevant_retrieved = 0
 
     for draft_id, fixture in enumerate(fixtures, start=1):
-        paragraphs: list[str] = [paragraph + (" Procedural chronology." * 120) for paragraph in fixture["paragraphs"]]
+        paragraphs: list[str] = [paragraph + (" Procedural chronology." * 98) for paragraph in fixture["paragraphs"]]
         relevant = set(fixture["relevant_paragraphs"])
         holdings = set(fixture["direct_holding_paragraphs"])
         doc = DocumentContext(draft_id=draft_id, text="\n\n".join(paragraphs), semantic_embedder=_embed)

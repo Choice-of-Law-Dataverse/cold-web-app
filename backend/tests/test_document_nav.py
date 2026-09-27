@@ -9,6 +9,7 @@ from agents.tool_context import ToolContext
 from agents.usage import Usage
 
 from app.case_analyzer.tools.document_nav import (
+    MAX_PARAGRAPH_CHARS,
     NAV_TOOLS,
     DocumentContext,
     _detect_headings,
@@ -21,6 +22,7 @@ from app.case_analyzer.tools.document_nav import (
     read_tail,
     read_window,
     search,
+    split_oversized_paragraph,
 )
 
 FIXTURE_TEXT = """# Introduction
@@ -360,3 +362,25 @@ class TestNavToolsRoster:
             source = path.read_text()
             assert "tools=NAV_TOOLS" in source, f"{path.name} does not use NAV_TOOLS"
             assert "tools=[" not in source, f"{path.name} still hardcodes a tool list"
+
+
+class TestOversizedParagraphs:
+    def test_long_paragraph_splits_at_line_breaks(self) -> None:
+        lines = [f"Line {n} " + "x" * 90 for n in range(60)]
+        ctx = DocumentContext(draft_id=1, text="\n".join(lines))
+        assert len(ctx.paragraphs) > 1
+        assert all(len(p) <= MAX_PARAGRAPH_CHARS for p in ctx.paragraphs)
+        assert "\n".join(ctx.paragraphs) == "\n".join(lines)
+
+    def test_single_line_splits_at_sentence_ends(self) -> None:
+        text = " ".join(f"Sentence {n} states a rule." for n in range(200))
+        parts = split_oversized_paragraph(text, max_chars=500)
+        assert all(len(p) <= 500 for p in parts)
+        assert all(p.endswith(".") for p in parts)
+        assert " ".join(parts) == text
+
+    def test_text_without_whitespace_is_cut_to_size(self) -> None:
+        assert split_oversized_paragraph("x" * 1050, max_chars=500) == ["x" * 500, "x" * 500, "x" * 50]
+
+    def test_short_paragraphs_are_unchanged(self) -> None:
+        assert DocumentContext(draft_id=1, text="One.\n\nTwo.").paragraphs == ["One.", "Two."]
