@@ -21,6 +21,7 @@ logger = logging.getLogger(__name__)
 
 JEV_MIN_CONFIDENCE = 0.8
 JEV_STATE_MAX_CHARS = 5000
+JEV_REASONING_PREFIX = "Classified by Jev"
 
 _SYSTEM_ONE_PATH = "/v1/systemone"
 _TIMEOUT_SECONDS = 10.0
@@ -38,16 +39,27 @@ class NoulAnswer(BaseModel):
     noul: float = Field(description="Probability of a yes answer, from 0 to 1")
 
 
+class Usage(BaseModel):
+    input_tokens: int = 0
+    output_tokens: int = 0
+    cost: float | None = Field(default=None, description="USD, reported by OpenRouter")
+
+
 class SystemOneResponse(BaseModel):
     model: str
     answers: dict[str, Annotated[ChoiceAnswer | NoulAnswer, Field(discriminator="type")]]
+    usage: Usage = Usage()
 
 
 def choice_question(instructions: str, criteria: Mapping[str, str | None]) -> dict[str, Any]:
     return {"type": "choice", "instructions": instructions, "criteria": dict(criteria)}
 
 
-def noul_question(instructions: str, true: str | None = None, false: str | None = None) -> dict[str, Any]:
+type Entry = str | dict[str, Any] | list[Any]
+"""System One accepts plain text or JSON structure for instructions and criteria."""
+
+
+def noul_question(instructions: Entry, true: Entry | None = None, false: Entry | None = None) -> dict[str, Any]:
     """A yes/no question; OpenRouter rejects criteria unless both outcomes are described."""
     question: dict[str, Any] = {"type": "noul", "instructions": instructions}
     if true is not None and false is not None:
@@ -82,20 +94,44 @@ async def ask_jev(
     if client is None:
         return None
     body = {"state": state, "model": config.JEV_MODEL, "questions": dict(questions)}
-    with logfire.span("jev", step=step):
+    with logfire.span("jev", step=step) as span:
         try:
             try:
                 response = await client.post(_SYSTEM_ONE_PATH, json=body)
             except httpx2.TimeoutException:
                 response = await client.post(_SYSTEM_ONE_PATH, json=body)
             response.raise_for_status()
-            return SystemOneResponse.model_validate_json(response.content)
+            result = SystemOneResponse.model_validate_json(response.content)
+            span.set_attributes(_usage_attributes(result))
+            return result
         except httpx2.HTTPStatusError as e:
             logger.warning("Jev %s request failed, falling back to OpenAI: %s %s", step, e, e.response.text[:4000])
             return None
         except (httpx2.HTTPError, ValidationError) as e:
             logger.warning("Jev %s request failed, falling back to OpenAI: %s", step, e)
             return None
+
+
+def _usage_attributes(response: SystemOneResponse) -> dict[str, Any]:
+    """GenAI span attributes, so Logfire and pydantic-evals count Jev's tokens and cost like OpenAI's."""
+    attributes: dict[str, Any] = {
+        "gen_ai.request.model": config.JEV_MODEL,
+        "gen_ai.response.model": response.model,
+        "gen_ai.usage.input_tokens": response.usage.input_tokens,
+        "gen_ai.usage.output_tokens": response.usage.output_tokens,
+    }
+    if response.usage.cost is not None:
+        attributes["operation.cost"] = response.usage.cost
+    return attributes
+
+
+def jev_reasoning(model: str, detail: str) -> str:
+    """Reasoning text for an answer Jev gave; answered_by_jev recognises it."""
+    return f"{JEV_REASONING_PREFIX} ({model}): {detail}"
+
+
+def answered_by_jev(reasoning: str) -> bool:
+    return reasoning.startswith(JEV_REASONING_PREFIX)
 
 
 def confident_choice(response: SystemOneResponse, name: str) -> ChoiceAnswer | None:
