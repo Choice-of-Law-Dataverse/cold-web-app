@@ -1,8 +1,8 @@
 """Tests for audited Choice of Law output assembly."""
 
-from app.case_analyzer.tools.col_extractor import _assemble_output, _retrieval_evidence
+from app.case_analyzer.tools.col_extractor import _assemble_output, _retrieval_evidence, jev_candidates
 from app.case_analyzer.tools.document_nav import DocumentContext
-from app.case_analyzer.tools.hybrid_retrieval import CandidatePassage, RetrievalResult
+from app.case_analyzer.tools.hybrid_retrieval import MAX_MERGED_PARAGRAPHS, CandidatePassage, RetrievalResult
 from app.case_analyzer.tools.models import ColCandidateAuditOutput, ColCandidateDecision
 
 
@@ -63,3 +63,25 @@ def test_retrieval_evidence_contains_no_vectors_or_judgment_text() -> None:
     assert evidence["lexical_fallback"] is True
     assert "vectors" not in evidence
     assert "text" not in evidence
+
+
+def test_jev_candidates_group_relevant_runs_and_keep_unanswered_paragraphs() -> None:
+    paragraphs = [f"Paragraph {n}." for n in range(1, 8)]
+    doc = DocumentContext(draft_id=1, text="\n\n".join(paragraphs))
+    candidates = jev_candidates(doc, [0.1, 0.9, 0.6, 0.05, None, 0.2, 0.4], threshold=0.3)
+    assert [(c.start_paragraph, c.end_paragraph) for c in candidates] == [(2, 3), (5, 5), (7, 7)]
+    assert [c.candidate_id for c in candidates] == ["C001", "C002", "C003"]
+    assert candidates[0].text == "Paragraph 2.\n\nParagraph 3."
+    assert candidates[0].retrieval_methods == ("jev",)
+
+
+def test_jev_candidates_split_long_runs() -> None:
+    doc = DocumentContext(draft_id=1, text="\n\n".join(f"P{n}." for n in range(1, 26)))
+    candidates = jev_candidates(doc, [0.9] * 25)
+    assert all(len(c.paragraph_numbers) <= MAX_MERGED_PARAGRAPHS for c in candidates)
+    assert sorted(n for c in candidates for n in c.paragraph_numbers) == list(range(1, 26))
+
+
+def test_jev_candidates_empty_when_nothing_is_relevant() -> None:
+    doc = DocumentContext(draft_id=1, text="One.\n\nTwo.")
+    assert jev_candidates(doc, [0.1, 0.2]) == []

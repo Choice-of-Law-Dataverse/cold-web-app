@@ -13,13 +13,24 @@ from ..runner import run_agent
 from ..utils import generate_system_prompt
 from ..validation import validate_col_candidate_audit
 from .document_nav import NAV_TOOLS, DocumentContext
-from .hybrid_retrieval import CandidatePassage, RetrievalResult, retrieve_choice_of_law_candidates
+from .hybrid_retrieval import (
+    DEFAULT_MAX_CANDIDATE_CHARS,
+    DEFAULT_MAX_CANDIDATES,
+    MAX_MERGED_PARAGRAPHS,
+    CandidatePassage,
+    RetrievalResult,
+    retrieve_choice_of_law_candidates,
+)
 from .models import ColCandidateAuditOutput, ColRetrievalQueryPlan, ColSectionOutput, StepResult
 
 logger = logging.getLogger(__name__)
 
 _PLANNER_EXCERPT_CHARS = 6000
 _JEV_PARAGRAPH_CONCURRENCY = 16
+_JEV_PRUNING_TIMEOUT_SECONDS = 8.0
+JEV_PARAGRAPH_THRESHOLD = 0.3
+"""Paragraphs Jev rates at or above this are offered to the audit; at 0.3 they kept ~95% of the recoverable
+curated excerpt from 38-51% of the text in the analyzer evals."""
 
 COL_PARAGRAPH_QUESTION = noul_question(
     {
@@ -78,6 +89,64 @@ async def jev_paragraph_probabilities(paragraphs: Sequence[str]) -> list[float |
         return answer.noul if isinstance(answer, NoulAnswer) else None
 
     return list(await asyncio.gather(*(ask(paragraph) for paragraph in paragraphs)))
+
+
+def jev_candidates(
+    doc_ctx: DocumentContext,
+    probabilities: Sequence[float | None],
+    threshold: float = JEV_PARAGRAPH_THRESHOLD,
+) -> list[CandidatePassage]:
+    """Runs of consecutive paragraphs Jev rates relevant, within the audit's candidate and size limits.
+
+    A paragraph Jev gave no answer for is kept, so a failed request never hides text from the audit.
+    """
+    runs: list[tuple[int, int, float]] = []
+    for number, probability in enumerate(probabilities, start=1):
+        if probability is not None and probability < threshold:
+            continue
+        score = 1.0 if probability is None else probability
+        if runs and runs[-1][1] == number - 1 and number - runs[-1][0] < MAX_MERGED_PARAGRAPHS:
+            start, _end, best = runs[-1]
+            runs[-1] = (start, number, max(best, score))
+        else:
+            runs.append((number, number, score))
+
+    selected: list[tuple[int, int, float]] = []
+    selected_chars = 0
+    for start, end, score in sorted(runs, key=lambda run: (-run[2], run[0])):
+        run_chars = sum(len(paragraph) for paragraph in doc_ctx.paragraphs[start - 1 : end])
+        if selected and selected_chars + run_chars > DEFAULT_MAX_CANDIDATE_CHARS:
+            continue
+        selected.append((start, end, score))
+        selected_chars += run_chars
+        if len(selected) == DEFAULT_MAX_CANDIDATES:
+            break
+    return [
+        CandidatePassage(
+            candidate_id=f"C{index:03d}",
+            start_paragraph=start,
+            end_paragraph=end,
+            text="\n\n".join(doc_ctx.paragraphs[start - 1 : end]),
+            concepts=("jev_relevance",),
+            retrieval_methods=("jev",),
+            reciprocal_rank_score=score,
+        )
+        for index, (start, end, score) in enumerate(sorted(selected), start=1)
+    ]
+
+
+async def _retrieve_with_jev(doc_ctx: DocumentContext) -> list[CandidatePassage]:
+    """Jev-selected candidates, or none when Jev is unavailable, too slow, or finds nothing relevant."""
+    try:
+        probabilities = await asyncio.wait_for(
+            jev_paragraph_probabilities(doc_ctx.paragraphs), timeout=_JEV_PRUNING_TIMEOUT_SECONDS
+        )
+    except TimeoutError:
+        logger.warning("Jev paragraph relevance timed out; falling back to hybrid retrieval")
+        return []
+    if all(probability is None for probability in probabilities):
+        return []
+    return jev_candidates(doc_ctx, probabilities)
 
 
 def _format_candidates(candidates: list[CandidatePassage], doc_ctx: DocumentContext) -> str:
@@ -153,9 +222,19 @@ async def extract_col_section(
     doc_ctx: DocumentContext,
 ) -> StepResult[ColSectionOutput]:
     with logfire.span("col_section"):
-        generated_queries = await _generate_case_specific_queries(doc_ctx)
-        retrieval = await retrieve_choice_of_law_candidates(doc_ctx, generated_queries)
-        if not retrieval.candidates:
+        candidates = await _retrieve_with_jev(doc_ctx)
+        if candidates:
+            retrieval_evidence: dict[str, object] = {
+                "method": "jev",
+                "threshold": JEV_PARAGRAPH_THRESHOLD,
+                "candidate_paragraph_count": sum(len(c.paragraph_numbers) for c in candidates),
+            }
+        else:
+            generated_queries = await _generate_case_specific_queries(doc_ctx)
+            retrieval = await retrieve_choice_of_law_candidates(doc_ctx, generated_queries)
+            candidates = retrieval.candidates
+            retrieval_evidence = {"method": "hybrid", **_retrieval_evidence(retrieval)}
+        if not candidates:
             raise ValueError("No choice-of-law retrieval candidates were found")
 
         agent = Agent[DocumentContext](
@@ -169,11 +248,11 @@ async def extract_col_section(
         try:
             audit_step = await run_agent(
                 agent,
-                input=f"{COL_CANDIDATE_AUDIT_PROMPT}\n\nCANDIDATES:\n{_format_candidates(retrieval.candidates, doc_ctx)}",
+                input=f"{COL_CANDIDATE_AUDIT_PROMPT}\n\nCANDIDATES:\n{_format_candidates(candidates, doc_ctx)}",
                 context=doc_ctx,
-                validate=lambda output, _tools: validate_col_candidate_audit(output, retrieval.candidates),
+                validate=lambda output, _tools: validate_col_candidate_audit(output, candidates),
             )
-            output, section_provenance = _assemble_output(audit_step.output, retrieval.candidates, doc_ctx)
+            output, section_provenance = _assemble_output(audit_step.output, candidates, doc_ctx)
             included_paragraphs: list[int] = []
             for section in section_provenance:
                 paragraph_numbers = section.get("paragraphs")
@@ -192,7 +271,7 @@ async def extract_col_section(
                 response_id=audit_step.response_id,
                 tool_names=audit_step.tool_names,
                 evidence={
-                    "retrieval": _retrieval_evidence(retrieval),
+                    "retrieval": retrieval_evidence,
                     "candidates": [
                         {
                             "candidate_id": candidate.candidate_id,
@@ -203,7 +282,7 @@ async def extract_col_section(
                             "reciprocal_rank_score": candidate.reciprocal_rank_score,
                             "semantic_score": candidate.semantic_score,
                         }
-                        for candidate in retrieval.candidates
+                        for candidate in candidates
                     ],
                     "candidate_dispositions": [decision.model_dump() for decision in audit_step.output.decisions],
                     "col_sections": section_provenance,

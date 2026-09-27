@@ -221,7 +221,7 @@ def disable_jev_in_analyzer() -> None:
     async def unavailable(*_args: Any, **_kwargs: Any) -> None:
         return None
 
-    for module in (jurisdiction_classifier, jurisdiction_detector, theme_classifier):
+    for module in (col_extractor, jurisdiction_classifier, jurisdiction_detector, theme_classifier):
         module.ask_jev = unavailable  # type: ignore[attr-defined]
 
 
