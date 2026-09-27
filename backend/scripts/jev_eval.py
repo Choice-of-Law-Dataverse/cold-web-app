@@ -138,14 +138,32 @@ def _prf(tp: int, fp: int, fn: int) -> tuple[float, float, float]:
 
 
 def coverage_report(corpus: list[dict[str, Any]]) -> str:
-    lines = ["### Corpus fields", "", "| Field | Filled |", "|---|---|"]
-    for name in COVERAGE_FIELDS:
+    lines = [
+        "### Corpus fields",
+        "",
+        "| Field | Filled | Usable text | + any curated theme | + analyzer theme |",
+        "|---|---|---|---|---|",
+    ]
+    for name in COVERAGE_FIELDS + ("relevantfacts", "officialsourcepdf", "officialsourceurl"):
         filled = sum(1 for r in corpus if r.get(name) not in (None, "", [], {}))
-        lines.append(f"| `{name}` | {filled}/{len(corpus)} |")
-    sample = next((r["themes"] for r in corpus if r.get("themes")), None)
-    lines += ["", f"Sample `themes` value: `{json.dumps(sample, ensure_ascii=False, default=str)[:200]}`"]
-    keys = sorted({k for r in corpus for k in r})
-    lines += ["", f"All fields: {', '.join(f'`{k}`' for k in keys)}"]
+        usable = [r for r in corpus if _field(r, name)]
+        any_theme = sum(1 for r in usable if any(gold_themes(r)))
+        known_theme = sum(1 for r in usable if gold_themes(r)[0])
+        lines.append(f"| `{name}` | {filled} | {len(usable)} | {any_theme} | {known_theme} |")
+    lines += ["", f"{len(corpus)} decisions in total."]
+
+    counts: dict[str, int] = {}
+    for record in corpus:
+        for theme in gold_themes(record)[1]:
+            counts[theme] = counts.get(theme, 0) + 1
+    if counts:
+        ranked = sorted(counts.items(), key=lambda item: -item[1])
+        lines += ["", "Curated themes outside the analyzer's 12: " + ", ".join(f"{t} ({n})" for t, n in ranked)]
+    samples = {
+        name: json.dumps(next((r[name] for r in corpus if r.get(name)), None), ensure_ascii=False, default=str)[:150]
+        for name in ("themes", "originaltext", "officialsourcepdf")
+    }
+    lines += ["", *(f"Sample `{name}`: `{value}`" for name, value in samples.items())]
     return "\n".join(lines)
 
 
