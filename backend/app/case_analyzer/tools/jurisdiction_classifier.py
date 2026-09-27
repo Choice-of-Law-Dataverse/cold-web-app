@@ -12,8 +12,10 @@ from agents import Agent, Runner
 from agents.models.openai_responses import OpenAIResponsesModel
 
 from ..config import get_model, get_openai_client
+from ..jev import JEV_STATE_MAX_CHARS, ask_jev, choice_question, confidence_level, confident_choice
 from ..prompts import PRECISE_JURISDICTION_DETECTION_PROMPT
 from .jurisdiction_detector import (
+    LEGAL_SYSTEM_CRITERIA,
     detect_legal_system_by_jurisdiction,
     detect_legal_system_type,
 )
@@ -61,6 +63,42 @@ def create_jurisdiction_list() -> str:
     return "\n".join(jurisdiction_list)
 
 
+async def _detect_with_jev(text: str) -> JurisdictionOutput | None:
+    """Classify jurisdiction and legal system in one Jev request; None when not confident."""
+    codes = {j["name"]: j["code"] for j in load_jurisdictions()}
+    response = await ask_jev(
+        "jurisdiction_classification",
+        text[:JEV_STATE_MAX_CHARS],
+        {
+            "jurisdiction": choice_question(
+                "In which jurisdiction was this court decision issued? Use court names, cited statutes, "
+                "geographic references, language and citation format.",
+                dict.fromkeys(codes),
+            ),
+            "legal_system": choice_question(
+                "Which legal tradition does the deciding court belong to?",
+                LEGAL_SYSTEM_CRITERIA,
+            ),
+        },
+    )
+    if response is None:
+        return None
+    jurisdiction = confident_choice(response, "jurisdiction")
+    legal_system = confident_choice(response, "legal_system")
+    if jurisdiction is None or legal_system is None or jurisdiction.choice not in codes:
+        return None
+    return JurisdictionOutput(
+        precise_jurisdiction=jurisdiction.choice,
+        legal_system_type=legal_system.choice,
+        jurisdiction_code=codes[jurisdiction.choice],
+        confidence=confidence_level(min(jurisdiction.confidence, legal_system.confidence)),
+        reasoning=(
+            f"Classified by {response.model}: {jurisdiction.choice} ({jurisdiction.confidence:.2f}), "
+            f"{legal_system.choice} ({legal_system.confidence:.2f})"
+        ),
+    )
+
+
 async def detect_precise_jurisdiction_with_confidence(text: str) -> JurisdictionOutput:
     """
     Uses an LLM to identify the precise jurisdiction from court decision text with confidence.
@@ -75,6 +113,10 @@ async def detect_precise_jurisdiction_with_confidence(text: str) -> Jurisdiction
                 confidence="low",
                 reasoning="Text too short for analysis",
             )
+
+        jev_result = await _detect_with_jev(text)
+        if jev_result is not None:
+            return jev_result
 
         jurisdiction_list = create_jurisdiction_list()
 

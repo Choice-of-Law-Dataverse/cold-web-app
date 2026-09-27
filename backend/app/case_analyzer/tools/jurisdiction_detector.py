@@ -10,6 +10,7 @@ from agents import Agent, Runner
 from agents.models.openai_responses import OpenAIResponsesModel
 
 from ..config import get_model, get_openai_client
+from ..jev import JEV_STATE_MAX_CHARS, ask_jev, choice_question, confident_choice
 from ..prompts import LEGAL_SYSTEM_TYPE_DETECTION_PROMPT
 
 logger = logging.getLogger(__name__)
@@ -156,6 +157,19 @@ _JURISDICTION_LEGAL_SYSTEM_MAP: dict[str, str] = {j.lower(): "Civil-law jurisdic
 }
 
 
+LEGAL_SYSTEM_CRITERIA: dict[str, str] = {
+    "Civil-law jurisdiction": (
+        "Legal systems based on comprehensive written codes (Romano-Germanic tradition): "
+        "the court applies codified statutes and articles rather than binding precedent."
+    ),
+    "Common-law jurisdiction": (
+        "Legal systems based on judicial precedent and case law (Anglo-American tradition): "
+        "the court reasons from prior decisions under stare decisis."
+    ),
+    "No court decision": "The text is not a judicial decision or cannot be classified.",
+}
+
+
 def get_jurisdiction_legal_system_mapping() -> dict[str, str]:
     """Return the pre-computed jurisdiction-to-legal-system mapping."""
     return _JURISDICTION_LEGAL_SYSTEM_MAP
@@ -199,6 +213,21 @@ async def detect_legal_system_type(jurisdiction_name: str, text: str) -> str:
             logger.debug("Jurisdiction-based classification: %s -> %s", jurisdiction_name, jurisdiction_based_result)
             logfire.info("Legal system detected from mapping", jurisdiction=jurisdiction_name, result=jurisdiction_based_result)
             return jurisdiction_based_result
+
+        response = await ask_jev(
+            "legal_system",
+            {"jurisdiction": jurisdiction_name, "text": text[:JEV_STATE_MAX_CHARS]},
+            {
+                "legal_system": choice_question(
+                    "Which legal tradition does this court decision come from? The stated jurisdiction is highly reliable.",
+                    LEGAL_SYSTEM_CRITERIA,
+                )
+            },
+        )
+        answer = confident_choice(response, "legal_system") if response else None
+        if answer:
+            logfire.info("Legal system detected from Jev", jurisdiction=jurisdiction_name, result=answer.choice)
+            return answer.choice
 
         prompt = LEGAL_SYSTEM_TYPE_DETECTION_PROMPT.format(jurisdiction_name=jurisdiction_name, text=text)
         logger.debug("Using LLM analysis for jurisdiction: %s", jurisdiction_name)
