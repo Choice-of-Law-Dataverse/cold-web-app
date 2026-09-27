@@ -78,8 +78,11 @@ async def _generate_case_specific_queries(doc_ctx: DocumentContext) -> list[str]
     return list(dict.fromkeys(query.strip() for query in result.final_output.queries if query.strip()))[:6]
 
 
-async def jev_paragraph_probabilities(paragraphs: Sequence[str]) -> list[float | None]:
-    """Jev's probability that each paragraph belongs to the court's choice-of-law analysis; None where it gave none."""
+async def jev_paragraph_probabilities(paragraphs: Sequence[str], timeout: float | None = None) -> list[float | None]:
+    """Jev's probability that each paragraph belongs to the court's choice-of-law analysis.
+
+    None where Jev gave no answer, including every paragraph still unanswered when the timeout passes.
+    """
     semaphore = asyncio.Semaphore(_JEV_PARAGRAPH_CONCURRENCY)
 
     async def ask(paragraph: str) -> float | None:
@@ -88,7 +91,15 @@ async def jev_paragraph_probabilities(paragraphs: Sequence[str]) -> list[float |
         answer = response.answers.get("relevant") if response else None
         return answer.noul if isinstance(answer, NoulAnswer) else None
 
-    return list(await asyncio.gather(*(ask(paragraph) for paragraph in paragraphs)))
+    tasks = [asyncio.create_task(ask(paragraph)) for paragraph in paragraphs]
+    if not tasks:
+        return []
+    done, pending = await asyncio.wait(tasks, timeout=timeout)
+    for task in pending:
+        task.cancel()
+    if pending:
+        logger.warning("Jev answered %d of %d paragraphs before the timeout", len(done), len(tasks))
+    return [task.result() if task in done else None for task in tasks]
 
 
 def jev_candidates(
@@ -98,13 +109,14 @@ def jev_candidates(
 ) -> list[CandidatePassage]:
     """Runs of consecutive paragraphs Jev rates relevant, within the audit's candidate and size limits.
 
-    A paragraph Jev gave no answer for is kept, so a failed request never hides text from the audit.
+    A paragraph Jev gave no answer for is kept, ranked with the least relevant, so a failed or late request
+    never hides text from the audit but never crowds out paragraphs Jev rated relevant either.
     """
     runs: list[tuple[int, int, float]] = []
     for number, probability in enumerate(probabilities, start=1):
         if probability is not None and probability < threshold:
             continue
-        score = 1.0 if probability is None else probability
+        score = threshold if probability is None else probability
         if runs and runs[-1][1] == number - 1 and number - runs[-1][0] < MAX_MERGED_PARAGRAPHS:
             start, _end, best = runs[-1]
             runs[-1] = (start, number, max(best, score))
@@ -136,14 +148,8 @@ def jev_candidates(
 
 
 async def _retrieve_with_jev(doc_ctx: DocumentContext) -> list[CandidatePassage]:
-    """Jev-selected candidates, or none when Jev is unavailable, too slow, or finds nothing relevant."""
-    try:
-        probabilities = await asyncio.wait_for(
-            jev_paragraph_probabilities(doc_ctx.paragraphs), timeout=_JEV_PRUNING_TIMEOUT_SECONDS
-        )
-    except TimeoutError:
-        logger.warning("Jev paragraph relevance timed out; falling back to hybrid retrieval")
-        return []
+    """Jev-selected candidates, or none when Jev is unavailable, answers nothing in time, or finds nothing relevant."""
+    probabilities = await jev_paragraph_probabilities(doc_ctx.paragraphs, timeout=_JEV_PRUNING_TIMEOUT_SECONDS)
     if all(probability is None for probability in probabilities):
         return []
     return jev_candidates(doc_ctx, probabilities)

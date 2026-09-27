@@ -1,5 +1,11 @@
 """Tests for audited Choice of Law output assembly."""
 
+import asyncio
+
+import pytest
+
+from app.case_analyzer.jev import NoulAnswer, SystemOneResponse
+from app.case_analyzer.tools import col_extractor
 from app.case_analyzer.tools.col_extractor import _assemble_output, _retrieval_evidence, jev_candidates
 from app.case_analyzer.tools.document_nav import DocumentContext
 from app.case_analyzer.tools.hybrid_retrieval import MAX_MERGED_PARAGRAPHS, CandidatePassage, RetrievalResult
@@ -85,3 +91,20 @@ def test_jev_candidates_split_long_runs() -> None:
 def test_jev_candidates_empty_when_nothing_is_relevant() -> None:
     doc = DocumentContext(draft_id=1, text="One.\n\nTwo.")
     assert jev_candidates(doc, [0.1, 0.2]) == []
+
+
+def test_unanswered_paragraphs_rank_below_relevant_ones() -> None:
+    doc = DocumentContext(draft_id=1, text="\n\n".join(f"{n} " + "x" * 2300 for n in range(20)))
+    candidates = jev_candidates(doc, [None] * 10 + [0.9] * 10)
+    assert [c.start_paragraph for c in candidates] == [11]
+
+
+@pytest.mark.asyncio
+async def test_paragraphs_unanswered_by_the_timeout_are_none(monkeypatch: pytest.MonkeyPatch) -> None:
+    async def slow_for_second(step: str, state: str, questions: dict) -> SystemOneResponse:
+        if state == "slow":
+            await asyncio.sleep(5)
+        return SystemOneResponse(model="jev-1", answers={"relevant": NoulAnswer(type="noul", noul=0.9)})
+
+    monkeypatch.setattr(col_extractor, "ask_jev", slow_for_second)
+    assert await col_extractor.jev_paragraph_probabilities(["fast", "slow"], timeout=0.2) == [0.9, None]
