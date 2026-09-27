@@ -50,6 +50,7 @@ PARAGRAPH_MATCH_SCORE = 85
 PARAGRAPH_QUESTION = noul_question(
     "Does this paragraph contain the court's reasoning or holding on which law governs the dispute (choice of law)?",
     true="The paragraph states, applies or reasons about the applicable law, a choice-of-law clause, or a conflict-of-laws rule.",
+    false="The paragraph covers facts, procedure, costs or substantive issues without addressing which law applies.",
 )
 
 
@@ -92,6 +93,19 @@ def gold_themes(record: dict[str, Any]) -> tuple[set[str], set[str]]:
         theme = THEME_BY_KEY.get(name.casefold())
         (known if theme else unknown).add(theme or name)
     return known, unknown
+
+
+def _normalize(text: str) -> str:
+    return re.sub(r"\s+", " ", text).casefold().strip()
+
+
+def _paragraph_source(record: dict[str, Any]) -> tuple[str, str] | None:
+    """Full text and its curated CoL excerpt, in the original language or else in English."""
+    for full_field, excerpt_field in (("originaltext", "quote"), ("englishtranslation", "translatedexcerpt")):
+        full_text, excerpt = _field(record, full_field), _field(record, excerpt_field)
+        if full_text and excerpt:
+            return full_text, excerpt
+    return None
 
 
 def split_paragraphs(text: str) -> list[str]:
@@ -201,14 +215,17 @@ async def evaluate_themes(
 async def evaluate_paragraphs(
     corpus: list[dict[str, Any]], limit: int | None, concurrency: int
 ) -> tuple[list[dict[str, Any]], str]:
-    usable = [r for r in corpus if _field(r, "quote") and _field(r, "originaltext")]
     items = []
-    for record in usable[:limit] if limit else usable:
-        excerpt = _field(record, "quote")
-        original = _field(record, "originaltext")
-        for index, paragraph in enumerate(split_paragraphs(original)):
-            relevant = fuzz.partial_ratio(paragraph, excerpt) >= PARAGRAPH_MATCH_SCORE
-            items.append({"id": record.get("id"), "index": index, "relevant": relevant, "text": paragraph})
+    best_scores: list[float] = []
+    usable = [(r, source) for r in corpus if (source := _paragraph_source(r))]
+    for record, (full_text, excerpt) in usable[:limit] if limit else usable:
+        excerpt_key = _normalize(excerpt)
+        paragraphs = split_paragraphs(full_text)
+        scores = [fuzz.partial_ratio(_normalize(p), excerpt_key) for p in paragraphs]
+        best_scores.append(max(scores, default=0.0))
+        for index, (paragraph, score) in enumerate(zip(paragraphs, scores, strict=True)):
+            relevant = score >= PARAGRAPH_MATCH_SCORE
+            items.append({"id": record.get("id"), "index": index, "relevant": relevant, "match": score, "text": paragraph})
 
     async def predict(item: dict[str, Any]) -> dict[str, Any]:
         response = await ask_jev("paragraph_relevance", item["text"], {"relevant": PARAGRAPH_QUESTION})
@@ -221,6 +238,13 @@ async def evaluate_paragraphs(
     positives = sum(r["relevant"] for r in scored)
 
     lines = ["### Paragraph relevance", ""]
+    if best_scores:
+        ordered = sorted(best_scores)
+        lines.append(
+            f"Best paragraph-to-excerpt match per decision: median {ordered[len(ordered) // 2]:.0f}, "
+            f"min {ordered[0]:.0f}, max {ordered[-1]:.0f} (relevant at ≥ {PARAGRAPH_MATCH_SCORE})."
+        )
+        lines.append("")
     lines.append(
         f"{len(rows)} paragraphs from {len(decisions)} decisions ({positives} overlap the curated excerpt); "
         f"{len(rows) - len(scored)} Jev failures."
@@ -265,6 +289,12 @@ async def main() -> None:
     parser.add_argument("--out", type=Path, default=Path("jev-eval"))
     args = parser.parse_args()
     experiments = set(args.experiments.split(","))
+
+    probe = await ask_jev(
+        "probe", "I was charged twice for my subscription.", {"refund": noul_question("Is the customer asking for money back?")}
+    )
+    if probe is None:
+        raise SystemExit("Jev probe request failed; see the warning above for OpenRouter's error.")
 
     args.out.mkdir(parents=True, exist_ok=True)
     corpus = await fetch_corpus(args.api_base)

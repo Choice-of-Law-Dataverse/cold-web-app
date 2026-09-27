@@ -29,6 +29,7 @@ async def jev_theme_probabilities(col_section: str) -> tuple[str, dict[Theme, fl
             theme: noul_question(
                 f"Does the court's choice-of-law reasoning address the private international law theme '{theme}'?",
                 true=definitions.get(theme),
+                false="The court's reasoning does not engage with this theme.",
             )
             for theme in themes
         },

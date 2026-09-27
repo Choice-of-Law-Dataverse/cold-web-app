@@ -47,10 +47,11 @@ def choice_question(instructions: str, criteria: Mapping[str, str | None]) -> di
     return {"type": "choice", "instructions": instructions, "criteria": dict(criteria)}
 
 
-def noul_question(instructions: str, true: str | None = None) -> dict[str, Any]:
+def noul_question(instructions: str, true: str | None = None, false: str | None = None) -> dict[str, Any]:
+    """A yes/no question; OpenRouter rejects criteria unless both outcomes are described."""
     question: dict[str, Any] = {"type": "noul", "instructions": instructions}
-    if true is not None:
-        question["criteria"] = {"true": true}
+    if true is not None and false is not None:
+        question["criteria"] = {"true": true, "false": false}
     return question
 
 
@@ -90,7 +91,7 @@ async def ask_jev(
             response.raise_for_status()
             return SystemOneResponse.model_validate_json(response.content)
         except httpx2.HTTPStatusError as e:
-            logger.warning("Jev %s request failed, falling back to OpenAI: %s %s", step, e, e.response.text[:500])
+            logger.warning("Jev %s request failed, falling back to OpenAI: %s %s", step, e, e.response.text[:4000])
             return None
         except (httpx2.HTTPError, ValidationError) as e:
             logger.warning("Jev %s request failed, falling back to OpenAI: %s", step, e)
