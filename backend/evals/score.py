@@ -31,12 +31,14 @@ def normalize(text: str) -> str:
 
 
 def set_scores(predicted: list[str], gold: list[str], exact: bool = False) -> dict[str, float]:
-    """Precision/recall/F1, matching items exactly or by fuzzy token overlap."""
+    """Precision/recall/F1, matching items exactly or by fuzzy token overlap.
+
+    Provisions and citations differ mainly in their numbers, so fuzzy matches also need identical numbers.
+    """
 
     def matches(a: str, b: str) -> bool:
         if exact:
             return a == b
-        # Provisions and citations differ mainly in their numbers, which must agree exactly.
         numbers_agree = re.findall(r"\d+", a) == re.findall(r"\d+", b)
         return numbers_agree and fuzz.token_set_ratio(normalize(a), normalize(b)) >= MATCH_SCORE
 

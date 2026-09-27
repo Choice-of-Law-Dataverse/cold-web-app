@@ -9,7 +9,7 @@ from agents.models.openai_responses import OpenAIResponsesModel
 from ..config import get_model, get_openai_client
 from ..jev import JEV_STATE_MAX_CHARS, NoulAnswer, ask_jev, noul_question
 from ..prompts.col_section import COL_CANDIDATE_AUDIT_PROMPT, COL_RETRIEVAL_QUERY_PROMPT
-from ..runner import OutputValidationError, run_agent
+from ..runner import run_agent
 from ..utils import generate_system_prompt
 from ..validation import validate_col_candidate_audit
 from .document_nav import NAV_TOOLS, DocumentContext
@@ -28,6 +28,7 @@ logger = logging.getLogger(__name__)
 _PLANNER_EXCERPT_CHARS = 6000
 _JEV_PARAGRAPH_CONCURRENCY = 64
 _JEV_PRUNING_TIMEOUT_SECONDS = 8.0
+_JEV_MAX_UNANSWERED_SHARE = 0.1
 JEV_PARAGRAPH_THRESHOLD = 0.3
 """Paragraphs Jev rates at or above this are offered to the audit; at 0.3 they kept ~95% of the recoverable
 curated excerpt from 38-51% of the text in the analyzer evals."""
@@ -148,11 +149,38 @@ def jev_candidates(
 
 
 async def _retrieve_with_jev(doc_ctx: DocumentContext) -> list[CandidatePassage]:
-    """Jev-selected candidates, or none when Jev is unavailable, answers nothing in time, or finds nothing relevant."""
+    """Jev-selected candidates, or none when Jev is unavailable, leaves over a tenth of the paragraphs unanswered,
+    or finds nothing relevant. Unanswered paragraphs can only be ranked by position, so beyond a few of them hybrid
+    retrieval chooses better."""
     probabilities = await jev_paragraph_probabilities(doc_ctx.paragraphs, timeout=_JEV_PRUNING_TIMEOUT_SECONDS)
-    if all(probability is None for probability in probabilities):
+    unanswered = sum(probability is None for probability in probabilities)
+    if not probabilities or unanswered > _JEV_MAX_UNANSWERED_SHARE * len(probabilities):
         return []
     return jev_candidates(doc_ctx, probabilities)
+
+
+async def _hybrid_candidates(doc_ctx: DocumentContext) -> tuple[list[CandidatePassage], dict[str, object]]:
+    generated_queries = await _generate_case_specific_queries(doc_ctx)
+    retrieval = await retrieve_choice_of_law_candidates(doc_ctx, generated_queries)
+    return retrieval.candidates, {"method": "hybrid", **_retrieval_evidence(retrieval)}
+
+
+async def _audit(
+    doc_ctx: DocumentContext, candidates: list[CandidatePassage], task: str
+) -> StepResult[ColCandidateAuditOutput]:
+    agent = Agent[DocumentContext](
+        name="ColSectionExtractor",
+        instructions=generate_system_prompt(),
+        output_type=ColCandidateAuditOutput,
+        tools=NAV_TOOLS,
+        model=_responses_model(task),
+    )
+    return await run_agent(
+        agent,
+        input=f"{COL_CANDIDATE_AUDIT_PROMPT}\n\nCANDIDATES:\n{_format_candidates(candidates, doc_ctx)}",
+        context=doc_ctx,
+        validate=lambda output, _tools: validate_col_candidate_audit(output, candidates),
+    )
 
 
 def _format_candidates(candidates: list[CandidatePassage], doc_ctx: DocumentContext) -> str:
@@ -228,49 +256,34 @@ async def extract_col_section(
     doc_ctx: DocumentContext,
 ) -> StepResult[ColSectionOutput]:
     with logfire.span("col_section"):
+        audit_step: StepResult[ColCandidateAuditOutput] | None = None
         candidates = await _retrieve_with_jev(doc_ctx)
+        jev_failure: str | None = None
+        audit_task = "col_section" if candidates else "col_section_fallback"
         if candidates:
+            try:
+                audit_step = await _audit(doc_ctx, candidates, audit_task)
+            except Exception as e:
+                logger.warning("CoL audit of Jev's candidates failed, falling back to hybrid retrieval: %s", e)
+                jev_failure = f"{type(e).__name__}: {e}"[:300]
+        if audit_step is not None:
             retrieval_evidence: dict[str, object] = {
                 "method": "jev",
                 "threshold": JEV_PARAGRAPH_THRESHOLD,
                 "candidate_paragraph_count": sum(len(c.paragraph_numbers) for c in candidates),
             }
         else:
-            generated_queries = await _generate_case_specific_queries(doc_ctx)
-            retrieval = await retrieve_choice_of_law_candidates(doc_ctx, generated_queries)
-            candidates = retrieval.candidates
-            retrieval_evidence = {"method": "hybrid", **_retrieval_evidence(retrieval)}
-        if not candidates:
-            raise ValueError("No choice-of-law retrieval candidates were found")
-
-        audit_input = f"{COL_CANDIDATE_AUDIT_PROMPT}\n\nCANDIDATES:\n{_format_candidates(candidates, doc_ctx)}"
-
-        async def audit(task: str) -> StepResult[ColCandidateAuditOutput]:
-            agent = Agent[DocumentContext](
-                name="ColSectionExtractor",
-                instructions=generate_system_prompt(),
-                output_type=ColCandidateAuditOutput,
-                tools=NAV_TOOLS,
-                model=_responses_model(task),
-            )
-            return await run_agent(
-                agent,
-                input=audit_input,
-                context=doc_ctx,
-                validate=lambda output, _tools: validate_col_candidate_audit(output, candidates),
-            )
+            candidates, retrieval_evidence = await _hybrid_candidates(doc_ctx)
+            if jev_failure:
+                retrieval_evidence["jev_audit_failure"] = jev_failure
+            if not candidates:
+                raise ValueError("No choice-of-law retrieval candidates were found")
+            audit_task = "col_section_fallback"
+        audit_model = get_model(audit_task)
 
         try:
-            audit_task = "col_section" if retrieval_evidence["method"] == "jev" else "col_section_fallback"
-            audit_model = get_model(audit_task)
-            try:
-                audit_step = await audit(audit_task)
-            except OutputValidationError as e:
-                if audit_task == "col_section_fallback":
-                    raise
-                logger.warning("CoL audit with %s failed validation, retrying with the fallback model: %s", audit_model, e)
-                audit_model = get_model("col_section_fallback")
-                audit_step = await audit("col_section_fallback")
+            if audit_step is None:
+                audit_step = await _audit(doc_ctx, candidates, audit_task)
             output, section_provenance = _assemble_output(audit_step.output, candidates, doc_ctx)
             included_paragraphs: list[int] = []
             for section in section_provenance:

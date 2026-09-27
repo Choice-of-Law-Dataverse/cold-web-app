@@ -122,28 +122,59 @@ async def test_paragraphs_unanswered_by_the_timeout_are_none(monkeypatch: pytest
     assert await col_extractor.jev_paragraph_probabilities(["fast", "slow"], timeout=0.2) == [0.9, None]
 
 
-@pytest.mark.asyncio
-async def test_audit_falls_back_to_the_stronger_model(monkeypatch: pytest.MonkeyPatch) -> None:
-    doc = DocumentContext(draft_id=1, text=f"{_long('Background.')}\n\n{_HOLDING}")
-    monkeypatch.setattr(col_extractor, "jev_paragraph_probabilities", AsyncMock(return_value=[0.1, 0.9]))
-    models: list[str] = []
-    decision = ColCandidateDecision(
-        candidate_id="C001", disposition="include", reason="Holding.", role="court_holding", selected_paragraphs=[2]
+def _hybrid(doc: DocumentContext) -> tuple[list[CandidatePassage], dict[str, object]]:
+    candidate = CandidatePassage(
+        candidate_id="C001",
+        start_paragraph=2,
+        end_paragraph=2,
+        text=doc.paragraphs[1],
+        concepts=("applicable_law",),
+        retrieval_methods=("exact",),
+        reciprocal_rank_score=0.2,
     )
+    return [candidate], {"method": "hybrid"}
 
-    async def fake_run_agent(agent: Any, **_kwargs: Any) -> StepResult[ColCandidateAuditOutput]:
-        models.append(agent.model.model)
-        if len(models) == 1:
-            raise OutputValidationError("No candidate was included.")
-        return StepResult(ColCandidateAuditOutput(decisions=[decision], confidence="high", reasoning="ok"))
 
-    monkeypatch.setattr(col_extractor, "run_agent", fake_run_agent)
-    monkeypatch.setattr(col_extractor, "get_openai_client", MagicMock())
+_DECISION = ColCandidateDecision(
+    candidate_id="C001", disposition="include", reason="Holding.", role="court_holding", selected_paragraphs=[2]
+)
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "error", [OutputValidationError("No candidate was included."), RuntimeError("model loop")], ids=["invalid", "error"]
+)
+async def test_failed_audit_of_jev_candidates_falls_back_to_hybrid_retrieval(
+    monkeypatch: pytest.MonkeyPatch, error: Exception
+) -> None:
+    doc = DocumentContext(draft_id=1, text=f"{_long('Background.')}\n\n{_HOLDING}")
+    monkeypatch.setattr(col_extractor, "jev_paragraph_probabilities", AsyncMock(return_value=[0.9, 0.1]))
+    monkeypatch.setattr(col_extractor, "_hybrid_candidates", AsyncMock(return_value=_hybrid(doc)))
+    audits: list[tuple[str, int]] = []
+
+    async def fake_audit(_doc: Any, candidates: list[CandidatePassage], task: str) -> StepResult[ColCandidateAuditOutput]:
+        audits.append((task, candidates[0].start_paragraph))
+        if task == "col_section":
+            raise error
+        return StepResult(ColCandidateAuditOutput(decisions=[_DECISION], confidence="high", reasoning="ok"))
+
+    monkeypatch.setattr(col_extractor, "_audit", fake_audit)
     step = await col_extractor.extract_col_section(doc)
 
-    assert models == [get_model("col_section"), get_model("col_section_fallback")]
+    assert audits == [("col_section", 1), ("col_section_fallback", 2)]
+    assert step.evidence["retrieval"]["method"] == "hybrid"
+    assert type(error).__name__ in step.evidence["retrieval"]["jev_audit_failure"]
     assert step.evidence["audit_model"] == get_model("col_section_fallback")
     assert step.output.col_sections == [_HOLDING]
+
+
+@pytest.mark.asyncio
+async def test_many_unanswered_paragraphs_use_hybrid_retrieval(monkeypatch: pytest.MonkeyPatch) -> None:
+    doc = DocumentContext(draft_id=1, text="\n\n".join(_long(f"P{n}.") for n in range(10)))
+    monkeypatch.setattr(col_extractor, "jev_paragraph_probabilities", AsyncMock(return_value=[0.9] * 8 + [None] * 2))
+    assert await col_extractor._retrieve_with_jev(doc) == []
+    monkeypatch.setattr(col_extractor, "jev_paragraph_probabilities", AsyncMock(return_value=[0.9] * 9 + [None]))
+    assert await col_extractor._retrieve_with_jev(doc) != []
 
 
 @pytest.mark.asyncio

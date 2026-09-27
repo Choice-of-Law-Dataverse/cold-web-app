@@ -5,6 +5,7 @@ Identifies the precise jurisdiction from court decision text using the jurisdict
 
 import csv
 import logging
+from functools import cache
 from pathlib import Path
 
 import logfire
@@ -60,6 +61,7 @@ def create_jurisdiction_list() -> str:
     return "\n".join(jurisdiction_list)
 
 
+@cache
 def jurisdiction_codes() -> dict[str, str]:
     """Alpha-3 code by jurisdiction name, from jurisdictions.csv."""
     return {j["name"]: j["code"] for j in load_jurisdictions()}
@@ -105,14 +107,15 @@ async def _detect_with_jev(text: str) -> JurisdictionOutput | None:
 async def detect_precise_jurisdiction_with_confidence(text: str) -> JurisdictionOutput:
     """
     Identifies the precise jurisdiction (Jev first, then an LLM agent), then its legal system with
-    detect_legal_system_type: the jurisdiction mapping first, then Jev, then an LLM agent.
+    detect_legal_system_type: the curated legal family first, then Jev, then the jurisdiction agent's own answer,
+    then an LLM agent.
     """
     with logfire.span("jurisdiction_classification"):
         result = await _detect_jurisdiction(text)
         if result.precise_jurisdiction == "Unknown":
             return result
         try:
-            legal_system = await detect_legal_system_type(result.precise_jurisdiction, text)
+            legal_system = await detect_legal_system_type(result.precise_jurisdiction, text, fallback=result.legal_system_type)
         except Exception as e:
             logger.error("Error in legal system detection: %s", e)
             return result

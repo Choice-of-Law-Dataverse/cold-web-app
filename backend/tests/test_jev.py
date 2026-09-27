@@ -258,3 +258,23 @@ def test_curated_family_decides_known_jurisdictions() -> None:
     assert detect_legal_system_by_jurisdiction("Quebec (Canada)") == "Civil-law jurisdiction"
     assert detect_legal_system_by_jurisdiction("Canada") == "Common-law jurisdiction"
     assert detect_legal_system_by_jurisdiction("South Africa") is None
+
+
+@pytest.mark.asyncio
+async def test_ask_jev_returns_none_on_unexpected_errors(use_jev) -> None:
+    def handler(_request: httpx2.Request) -> httpx2.Response:
+        raise RuntimeError("client closed")
+
+    use_jev(handler)
+    assert await jev.ask_jev("step", "text", {"q": jev.noul_question("?")}) is None
+
+
+@pytest.mark.asyncio
+async def test_legal_system_uses_the_jurisdiction_step_answer_before_the_llm(use_jev) -> None:
+    use_jev(_respond({"legal_system": _choice("Civil-law jurisdiction", 0.5)}))
+
+    with patch("app.case_analyzer.tools.jurisdiction_detector.Runner.run", new=AsyncMock()) as runner:
+        result = await detect_legal_system_type("Atlantis", DECISION_TEXT, fallback="Common-law jurisdiction")
+
+    assert result == "Common-law jurisdiction"
+    runner.assert_not_awaited()

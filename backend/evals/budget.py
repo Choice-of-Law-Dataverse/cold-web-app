@@ -30,7 +30,11 @@ class Budget:
 
 
 def configure_logfire() -> None:
-    """Instrument like production so model calls are traced and priced; send only if a token is set."""
+    """Instrument like production so model calls are traced and priced; send only if a token is set.
+
+    Logfire's instrumentation does not use the Agents SDK's trace processors, so clearing them stops the SDK from
+    exporting eval traces to OpenAI.
+    """
     logfire.configure(
         service_name="analyzer-evals",
         token=config.LOGFIRE_TOKEN,
@@ -38,5 +42,4 @@ def configure_logfire() -> None:
         console=False,
     )
     logfire.instrument_openai_agents()
-    # Logfire's instrumentation does not use the SDK's processors; dropping them stops exporting eval traces to OpenAI.
     set_trace_processors([])

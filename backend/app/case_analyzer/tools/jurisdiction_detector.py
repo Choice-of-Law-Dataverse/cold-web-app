@@ -61,9 +61,10 @@ def detect_legal_system_by_jurisdiction(jurisdiction_name: str) -> str | None:
     return legal_system_from_family(_legal_families().get(jurisdiction_name.strip().casefold(), ""))
 
 
-async def detect_legal_system_type(jurisdiction_name: str, text: str) -> str:
+async def detect_legal_system_type(jurisdiction_name: str, text: str, fallback: str | None = None) -> str:
     """
-    Uses the jurisdiction's curated legal family first, then Jev, then LLM analysis to classify the input text as:
+    Uses the jurisdiction's curated legal family first, then Jev, then the fallback (the jurisdiction step's own
+    answer, when it gave one), then LLM analysis on the start of the text, to classify the input text as:
     - 'Civil-law jurisdiction'
     - 'Common-law jurisdiction'
     - 'No court decision'
@@ -93,7 +94,11 @@ async def detect_legal_system_type(jurisdiction_name: str, text: str) -> str:
             logfire.info("Legal system detected from Jev", jurisdiction=jurisdiction_name, result=answer.choice)
             return answer.choice
 
-        prompt = LEGAL_SYSTEM_TYPE_DETECTION_PROMPT.format(jurisdiction_name=jurisdiction_name, text=text)
+        if fallback in LEGAL_SYSTEM_CRITERIA and fallback != "No court decision":
+            logfire.info("Legal system taken from jurisdiction detection", jurisdiction=jurisdiction_name, result=fallback)
+            return fallback
+
+        prompt = LEGAL_SYSTEM_TYPE_DETECTION_PROMPT.format(jurisdiction_name=jurisdiction_name, text=text[:JEV_STATE_MAX_CHARS])
         logger.debug("Using LLM analysis for jurisdiction: %s", jurisdiction_name)
         logger.debug("Prompting LLM with: %s", prompt)
 

@@ -110,6 +110,9 @@ async def ask_jev(
         except (httpx2.HTTPError, ValidationError) as e:
             logger.warning("Jev %s request failed, falling back to OpenAI: %s", step, e)
             return None
+        except Exception as e:
+            logger.warning("Jev %s request raised %s, falling back to OpenAI: %s", step, type(e).__name__, e)
+            return None
 
 
 def _usage_attributes(response: SystemOneResponse) -> dict[str, Any]:
