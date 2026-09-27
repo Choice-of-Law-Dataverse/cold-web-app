@@ -204,3 +204,6 @@ backend/*.csv
 
 # Jev evaluation output
 jev-eval/
+
+# Analyzer eval corpus, cache and runs
+analyzer-eval/
