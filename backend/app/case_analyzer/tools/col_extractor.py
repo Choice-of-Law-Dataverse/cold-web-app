@@ -26,7 +26,7 @@ from .models import ColCandidateAuditOutput, ColRetrievalQueryPlan, ColSectionOu
 logger = logging.getLogger(__name__)
 
 _PLANNER_EXCERPT_CHARS = 6000
-_JEV_PARAGRAPH_CONCURRENCY = 16
+_JEV_PARAGRAPH_CONCURRENCY = 64
 _JEV_PRUNING_TIMEOUT_SECONDS = 8.0
 JEV_PARAGRAPH_THRESHOLD = 0.3
 """Paragraphs Jev rates at or above this are offered to the audit; at 0.3 they kept ~95% of the recoverable
