@@ -19,6 +19,7 @@ logger = logging.getLogger(__name__)
 
 MAX_CHARS = 4000
 MAX_PARAGRAPH_CHARS = CHUNK_MAX_CHARS
+MIN_PARAGRAPH_CHARS = 200
 _PARAGRAPH_SEPARATORS = (re.compile(r"\n"), re.compile(r"(?<=[.!?])\s+"), re.compile(r"\s+"))
 _PARAGRAPH_JOINERS = ("\n", " ", " ")
 _MARKDOWN_HEADING_RE = re.compile(r"^#{1,6}\s+.+")
@@ -56,20 +57,47 @@ def _normalize_search_text(text: str) -> str:
     return " ".join(normalized.split())
 
 
+def _heading_line(paragraph: str) -> str | None:
+    """The paragraph's first line when it is a markdown or all-caps heading."""
+    first_line = paragraph.strip().splitlines()[0] if paragraph.strip() else ""
+    letters = [character for character in first_line if character.isalpha()]
+    is_all_caps_heading = (
+        len(first_line) >= 5
+        and bool(letters)
+        and all(character.isupper() for character in letters)
+        and all(character.isalpha() or character in _ALL_CAPS_HEADING_PUNCTUATION for character in first_line)
+    )
+    return first_line.strip() if _MARKDOWN_HEADING_RE.match(first_line) or is_all_caps_heading else None
+
+
 def _detect_headings(paragraphs: list[str]) -> list[tuple[str, int]]:
-    result: list[tuple[str, int]] = []
-    for i, para in enumerate(paragraphs):
-        first_line = para.strip().splitlines()[0] if para.strip() else ""
-        letters = [character for character in first_line if character.isalpha()]
-        is_all_caps_heading = (
-            len(first_line) >= 5
-            and bool(letters)
-            and all(character.isupper() for character in letters)
-            and all(character.isalpha() or character in _ALL_CAPS_HEADING_PUNCTUATION for character in first_line)
-        )
-        if _MARKDOWN_HEADING_RE.match(first_line) or is_all_caps_heading:
-            result.append((first_line.strip(), i))
-    return result
+    return [(heading, i) for i, para in enumerate(paragraphs) if (heading := _heading_line(para)) is not None]
+
+
+def merge_fragments(paragraphs: list[str], min_chars: int = MIN_PARAGRAPH_CHARS) -> list[str]:
+    """Prepend paragraphs shorter than min_chars (headings, page numbers, stray lines) to the paragraph after them.
+
+    A heading always starts the paragraph it is merged into, so heading detection still finds it; nothing is merged
+    past MAX_PARAGRAPH_CHARS, and trailing fragments join the paragraph before them.
+    """
+    merged: list[str] = []
+    pending: list[str] = []
+    for paragraph in paragraphs:
+        if pending and (_heading_line(paragraph) is not None or len("\n\n".join([*pending, paragraph])) > MAX_PARAGRAPH_CHARS):
+            merged.append("\n\n".join(pending))
+            pending = []
+        if len(paragraph) < min_chars:
+            pending.append(paragraph)
+            continue
+        merged.append("\n\n".join([*pending, paragraph]))
+        pending = []
+    if pending:
+        tail = "\n\n".join(pending)
+        if merged and _heading_line(tail) is None and len(merged[-1]) + 2 + len(tail) <= MAX_PARAGRAPH_CHARS:
+            merged[-1] = f"{merged[-1]}\n\n{tail}"
+        else:
+            merged.append(tail)
+    return merged
 
 
 def _format_paragraph(paragraph_index: int, text: str) -> str:
@@ -127,7 +155,9 @@ class DocumentContext:
     semantic_unavailable_reason: str | None = field(default=None, init=False)
 
     def __post_init__(self) -> None:
-        self.paragraphs = [part for p in re.split(r"\n\s*\n", self.text) if p.strip() for part in split_oversized_paragraph(p)]
+        self.paragraphs = merge_fragments(
+            [part for p in re.split(r"\n\s*\n", self.text) if p.strip() for part in split_oversized_paragraph(p)]
+        )
         self.headings = _detect_headings(self.paragraphs)
         self.normalized_paragraphs = [_normalize_search_text(paragraph) for paragraph in self.paragraphs]
 

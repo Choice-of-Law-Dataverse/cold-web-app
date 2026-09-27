@@ -16,8 +16,16 @@ from app.case_analyzer.tools.hybrid_retrieval import MAX_MERGED_PARAGRAPHS, Cand
 from app.case_analyzer.tools.models import ColCandidateAuditOutput, ColCandidateDecision, StepResult
 
 
+def _long(text: str) -> str:
+    """A paragraph long enough that DocumentContext keeps it on its own."""
+    return f"{text} " + "The court sets out further reasoning on this point. " * 5
+
+
+_HOLDING = _long("The court holds that Swiss law governs the contract.")
+
+
 def test_output_is_reconstructed_verbatim_with_paragraph_provenance() -> None:
-    paragraphs = ["Background.", "The court reasons that Swiss law governs.", "Swiss law therefore applies."]
+    paragraphs = [_long("Background."), _long("The court reasons that Swiss law governs."), _long("Swiss law applies.")]
     doc = DocumentContext(draft_id=1, text="\n\n".join(paragraphs))
     candidate = CandidatePassage(
         candidate_id="C001",
@@ -76,24 +84,24 @@ def test_retrieval_evidence_contains_no_vectors_or_judgment_text() -> None:
 
 
 def test_jev_candidates_group_relevant_runs_and_keep_unanswered_paragraphs() -> None:
-    paragraphs = [f"Paragraph {n}." for n in range(1, 8)]
+    paragraphs = [_long(f"Paragraph {n}.") for n in range(1, 8)]
     doc = DocumentContext(draft_id=1, text="\n\n".join(paragraphs))
     candidates = jev_candidates(doc, [0.1, 0.9, 0.6, 0.05, None, 0.2, 0.4], threshold=0.3)
     assert [(c.start_paragraph, c.end_paragraph) for c in candidates] == [(2, 3), (5, 5), (7, 7)]
     assert [c.candidate_id for c in candidates] == ["C001", "C002", "C003"]
-    assert candidates[0].text == "Paragraph 2.\n\nParagraph 3."
+    assert candidates[0].text == f"{paragraphs[1]}\n\n{paragraphs[2]}"
     assert candidates[0].retrieval_methods == ("jev",)
 
 
 def test_jev_candidates_split_long_runs() -> None:
-    doc = DocumentContext(draft_id=1, text="\n\n".join(f"P{n}." for n in range(1, 26)))
+    doc = DocumentContext(draft_id=1, text="\n\n".join(_long(f"P{n}.") for n in range(1, 26)))
     candidates = jev_candidates(doc, [0.9] * 25)
     assert all(len(c.paragraph_numbers) <= MAX_MERGED_PARAGRAPHS for c in candidates)
     assert sorted(n for c in candidates for n in c.paragraph_numbers) == list(range(1, 26))
 
 
 def test_jev_candidates_empty_when_nothing_is_relevant() -> None:
-    doc = DocumentContext(draft_id=1, text="One.\n\nTwo.")
+    doc = DocumentContext(draft_id=1, text=f"{_long('One.')}\n\n{_long('Two.')}")
     assert jev_candidates(doc, [0.1, 0.2]) == []
 
 
@@ -116,7 +124,7 @@ async def test_paragraphs_unanswered_by_the_timeout_are_none(monkeypatch: pytest
 
 @pytest.mark.asyncio
 async def test_audit_falls_back_to_the_stronger_model(monkeypatch: pytest.MonkeyPatch) -> None:
-    doc = DocumentContext(draft_id=1, text="Background.\n\nThe court holds that Swiss law governs the contract.")
+    doc = DocumentContext(draft_id=1, text=f"{_long('Background.')}\n\n{_HOLDING}")
     monkeypatch.setattr(col_extractor, "jev_paragraph_probabilities", AsyncMock(return_value=[0.1, 0.9]))
     models: list[str] = []
     decision = ColCandidateDecision(
@@ -135,12 +143,12 @@ async def test_audit_falls_back_to_the_stronger_model(monkeypatch: pytest.Monkey
 
     assert models == [get_model("col_section"), get_model("col_section_fallback")]
     assert step.evidence["audit_model"] == get_model("col_section_fallback")
-    assert step.output.col_sections == ["The court holds that Swiss law governs the contract."]
+    assert step.output.col_sections == [_HOLDING]
 
 
 @pytest.mark.asyncio
 async def test_hybrid_retrieval_candidates_are_audited_by_the_stronger_model(monkeypatch: pytest.MonkeyPatch) -> None:
-    doc = DocumentContext(draft_id=1, text="Background.\n\nThe court holds that Swiss law governs the contract.")
+    doc = DocumentContext(draft_id=1, text=f"{_long('Background.')}\n\n{_HOLDING}")
     monkeypatch.setattr(col_extractor, "jev_paragraph_probabilities", AsyncMock(return_value=[0.05, 0.1]))
     monkeypatch.setattr(col_extractor, "_generate_case_specific_queries", AsyncMock(return_value=[]))
     candidate = CandidatePassage(

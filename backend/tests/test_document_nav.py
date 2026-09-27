@@ -16,6 +16,7 @@ from app.case_analyzer.tools.document_nav import (
     _truncate,
     get_paragraph_containing,
     list_headings,
+    merge_fragments,
     read_head,
     read_paragraphs,
     read_section,
@@ -93,7 +94,7 @@ class TestDocumentContext:
         assert doc.draft_id == 42
 
     def test_empty_paragraphs_filtered(self) -> None:
-        text = "Para one\n\n\n\n\nPara two"
+        text = "Para one " + "x" * 200 + "\n\n\n\n\nPara two " + "y" * 200
         ctx = DocumentContext(draft_id=1, text=text)
         assert len(ctx.paragraphs) == 2
 
@@ -382,5 +383,21 @@ class TestOversizedParagraphs:
     def test_text_without_whitespace_is_cut_to_size(self) -> None:
         assert split_oversized_paragraph("x" * 1050, max_chars=500) == ["x" * 500, "x" * 500, "x" * 50]
 
-    def test_short_paragraphs_are_unchanged(self) -> None:
-        assert DocumentContext(draft_id=1, text="One.\n\nTwo.").paragraphs == ["One.", "Two."]
+
+class TestFragmentMerging:
+    body = "The court finds that the parties chose Swiss law for their contract. " * 4
+
+    def test_fragments_join_the_paragraph_after_them(self) -> None:
+        assert merge_fragments(["Page 3", "1.", self.body]) == [f"Page 3\n\n1.\n\n{self.body}"]
+
+    def test_heading_starts_its_merged_paragraph_and_is_still_detected(self) -> None:
+        ctx = DocumentContext(draft_id=1, text=f"Page 3\n\n## Applicable law\n\n{self.body}")
+        assert ctx.paragraphs == ["Page 3", f"## Applicable law\n\n{self.body}"]
+        assert ctx.headings == [("## Applicable law", 1)]
+
+    def test_trailing_fragments_join_the_paragraph_before_them(self) -> None:
+        assert merge_fragments([self.body, "Signed.", "Judge X"]) == [f"{self.body}\n\nSigned.\n\nJudge X"]
+
+    def test_merging_never_exceeds_the_paragraph_limit(self) -> None:
+        long_body = "y" * (MAX_PARAGRAPH_CHARS - 10)
+        assert merge_fragments(["z" * 150, long_body]) == ["z" * 150, long_body]
