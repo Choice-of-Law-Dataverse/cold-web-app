@@ -1,0 +1,254 @@
+"""Evaluate Jev against curated CoLD court decisions.
+
+Pulls every court decision from the public CoLD API and runs two experiments:
+
+- themes: Jev's per-theme probabilities (the exact questions the analyzer asks) against the
+  curated themes, once per input text (the CoL excerpt, and the original text).
+- paragraphs: Jev's yes/no "is this paragraph choice-of-law reasoning?" for every paragraph
+  of the original text, labelled relevant when the paragraph overlaps the curated CoL excerpt.
+
+Writes corpus.jsonl, per-item predictions and report.md to --out.
+
+    TYPESAFE_API_KEY=... uv run python scripts/jev_eval.py --limit 100
+"""
+
+import argparse
+import asyncio
+import json
+import re
+from collections.abc import Awaitable, Callable, Iterable
+from pathlib import Path
+from typing import Any, get_args
+
+import httpx2
+from rapidfuzz import fuzz
+
+from app.case_analyzer.jev import JEV_MIN_CONFIDENCE, NoulAnswer, ask_jev, noul_question
+from app.case_analyzer.tools.models import Theme
+from app.case_analyzer.tools.theme_classifier import jev_theme_probabilities
+
+THEMES: tuple[Theme, ...] = get_args(Theme)
+THEME_BY_KEY = {theme.casefold(): theme for theme in THEMES}
+THEME_TEXT_FIELDS = {"excerpt": ("quote",), "original_text": ("originaltext",)}
+THRESHOLDS = (0.3, 0.5, 0.7, 0.9)
+PARAGRAPH_MIN_CHARS = 40
+PARAGRAPH_MATCH_SCORE = 85
+PARAGRAPH_QUESTION = noul_question(
+    "Does this paragraph contain the court's reasoning or holding on which law governs the dispute (choice of law)?",
+    true="The paragraph states, applies or reasons about the applicable law, a choice-of-law clause, or a conflict-of-laws rule.",
+)
+
+
+def _key(name: str) -> str:
+    return re.sub(r"[^a-z0-9]", "", name.casefold())
+
+
+def normalize_record(record: dict[str, Any]) -> dict[str, Any]:
+    return {_key(name): value for name, value in record.items()}
+
+
+def _text(record: dict[str, Any], *fields: str) -> str:
+    for name in fields:
+        value = record.get(name)
+        if isinstance(value, str) and value.strip() and value.strip().casefold() not in {"na", "n/a", "not found"}:
+            return value.strip()
+    return ""
+
+
+def gold_themes(record: dict[str, Any]) -> tuple[set[str], set[str]]:
+    """Curated themes the analyzer knows, and any it does not."""
+    raw = record.get("themes") or []
+    names = raw if isinstance(raw, list) else re.split(r"[,;]", str(raw))
+    known: set[str] = set()
+    unknown: set[str] = set()
+    for name in (str(n).strip() for n in names):
+        if not name:
+            continue
+        theme = THEME_BY_KEY.get(name.casefold())
+        (known if theme else unknown).add(theme or name)
+    return known, unknown
+
+
+def split_paragraphs(text: str) -> list[str]:
+    parts = re.split(r"\n\s*\n", text) if "\n\n" in text else text.split("\n")
+    return [p.strip() for p in parts if len(p.strip()) >= PARAGRAPH_MIN_CHARS]
+
+
+async def fetch_corpus(api_base: str) -> list[dict[str, Any]]:
+    async with httpx2.AsyncClient(timeout=120.0) as client:
+        response = await client.get(f"{api_base}/api/v1/search/full_table", params={"table": "Court Decisions"})
+        response.raise_for_status()
+        return [normalize_record(r) for r in response.json()]
+
+
+async def gather_limited[T](jobs: Iterable[Callable[[], Awaitable[T]]], concurrency: int) -> list[T]:
+    semaphore = asyncio.Semaphore(concurrency)
+
+    async def run(job: Callable[[], Awaitable[T]]) -> T:
+        async with semaphore:
+            return await job()
+
+    return await asyncio.gather(*(run(job) for job in jobs))
+
+
+def _prf(tp: int, fp: int, fn: int) -> tuple[float, float, float]:
+    precision = tp / (tp + fp) if tp + fp else 0.0
+    recall = tp / (tp + fn) if tp + fn else 0.0
+    f1 = 2 * precision * recall / (precision + recall) if precision + recall else 0.0
+    return precision, recall, f1
+
+
+async def evaluate_themes(corpus: list[dict[str, Any]], variant: str, concurrency: int) -> tuple[list[dict[str, Any]], str]:
+    items = []
+    for record in corpus:
+        known, unknown = gold_themes(record)
+        text = _text(record, *THEME_TEXT_FIELDS[variant])
+        if known and text:
+            items.append({"id": record.get("id"), "gold": sorted(known), "unmapped_gold": sorted(unknown), "text": text})
+
+    async def predict(item: dict[str, Any]) -> dict[str, Any]:
+        result = await jev_theme_probabilities(item["text"])
+        return {**item, "probabilities": result[1] if result else None}
+
+    rows = await gather_limited([lambda item=item: predict(item) for item in items], concurrency)
+    scored = [r for r in rows if r["probabilities"] is not None]
+
+    lines = [f"### Themes — input: `{variant}`", ""]
+    lines.append(f"{len(items)} decisions with curated themes and text; {len(items) - len(scored)} Jev failures.")
+    if not scored:
+        return rows, "\n".join(lines)
+
+    lines += ["", "| Threshold | Precision | Recall | F1 | Exact match |", "|---|---|---|---|---|"]
+    for threshold in THRESHOLDS:
+        tp = fp = fn = exact = 0
+        for row in scored:
+            predicted = {t for t, p in row["probabilities"].items() if p >= threshold}
+            gold = set(row["gold"])
+            tp += len(predicted & gold)
+            fp += len(predicted - gold)
+            fn += len(gold - predicted)
+            exact += predicted == gold
+        p, r, f = _prf(tp, fp, fn)
+        lines.append(f"| {threshold} | {p:.2f} | {r:.2f} | {f:.2f} | {exact / len(scored):.0%} |")
+
+    lines += ["", "| Theme | Support | Precision | Recall | F1 |", "|---|---|---|---|---|"]
+    for theme in THEMES:
+        tp = sum(1 for r in scored if r["probabilities"][theme] >= 0.5 and theme in r["gold"])
+        fp = sum(1 for r in scored if r["probabilities"][theme] >= 0.5 and theme not in r["gold"])
+        fn = sum(1 for r in scored if r["probabilities"][theme] < 0.5 and theme in r["gold"])
+        p, r, f = _prf(tp, fp, fn)
+        lines.append(f"| {theme} | {tp + fn} | {p:.2f} | {r:.2f} | {f:.2f} |")
+
+    lines += ["", "Analyzer gate (all themes decisive, at least one yes):", ""]
+    lines += ["| Gate | Accepted | Exact match on accepted |", "|---|---|---|"]
+    for gate in (0.6, 0.7, JEV_MIN_CONFIDENCE, 0.9):
+        accepted = [
+            r
+            for r in scored
+            if min(max(p, 1 - p) for p in r["probabilities"].values()) >= gate
+            and any(p >= 0.5 for p in r["probabilities"].values())
+        ]
+        exact = sum({t for t, p in r["probabilities"].items() if p >= 0.5} == set(r["gold"]) for r in accepted)
+        rate = f"{exact / len(accepted):.0%}" if accepted else "–"
+        lines.append(f"| {gate} | {len(accepted)}/{len(scored)} ({len(accepted) / len(scored):.0%}) | {rate} |")
+
+    unmapped = sorted({t for r in rows for t in r["unmapped_gold"]})
+    if unmapped:
+        lines += ["", f"Curated themes the analyzer does not model (ignored): {', '.join(unmapped)}"]
+    return rows, "\n".join(lines)
+
+
+async def evaluate_paragraphs(corpus: list[dict[str, Any]], concurrency: int) -> tuple[list[dict[str, Any]], str]:
+    items = []
+    for record in corpus:
+        excerpt = _text(record, "quote")
+        original = _text(record, "originaltext")
+        if not excerpt or not original:
+            continue
+        for index, paragraph in enumerate(split_paragraphs(original)):
+            relevant = fuzz.partial_ratio(paragraph, excerpt) >= PARAGRAPH_MATCH_SCORE
+            items.append({"id": record.get("id"), "index": index, "relevant": relevant, "text": paragraph})
+
+    async def predict(item: dict[str, Any]) -> dict[str, Any]:
+        response = await ask_jev("paragraph_relevance", item["text"], {"relevant": PARAGRAPH_QUESTION})
+        answer = response.answers.get("relevant") if response else None
+        return {**item, "probability": answer.noul if isinstance(answer, NoulAnswer) else None}
+
+    rows = await gather_limited([lambda item=item: predict(item) for item in items], concurrency)
+    scored = [r for r in rows if r["probability"] is not None]
+    decisions = {r["id"] for r in rows}
+    positives = sum(r["relevant"] for r in scored)
+
+    lines = ["### Paragraph relevance", ""]
+    lines.append(
+        f"{len(rows)} paragraphs from {len(decisions)} decisions ({positives} overlap the curated excerpt); "
+        f"{len(rows) - len(scored)} Jev failures."
+    )
+    if not scored:
+        return rows, "\n".join(lines)
+    lines += ["", "| Threshold | Precision | Recall | F1 | Paragraphs flagged |", "|---|---|---|---|---|"]
+    for threshold in THRESHOLDS:
+        tp = sum(1 for r in scored if r["probability"] >= threshold and r["relevant"])
+        fp = sum(1 for r in scored if r["probability"] >= threshold and not r["relevant"])
+        fn = sum(1 for r in scored if r["probability"] < threshold and r["relevant"])
+        p, r, f = _prf(tp, fp, fn)
+        lines.append(f"| {threshold} | {p:.2f} | {r:.2f} | {f:.2f} | {(tp + fp) / len(scored):.0%} |")
+
+    hits = 0
+    ranked_decisions = 0
+    for decision in decisions:
+        paragraphs = [r for r in scored if r["id"] == decision]
+        if not any(r["relevant"] for r in paragraphs):
+            continue
+        ranked_decisions += 1
+        top = sorted(paragraphs, key=lambda r: r["probability"], reverse=True)[:3]
+        hits += any(r["relevant"] for r in top)
+    if ranked_decisions:
+        lines += [
+            "",
+            f"A relevant paragraph is in Jev's top 3 for {hits}/{ranked_decisions} decisions ({hits / ranked_decisions:.0%}).",
+        ]
+    return rows, "\n".join(lines)
+
+
+def write_jsonl(path: Path, rows: Iterable[dict[str, Any]]) -> None:
+    path.write_text("".join(json.dumps(row, ensure_ascii=False, default=str) + "\n" for row in rows))
+
+
+async def main() -> None:
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument("--api-base", default="https://api.cold.global")
+    parser.add_argument("--experiments", default="themes,paragraphs")
+    parser.add_argument("--limit", type=int, default=None, help="Evaluate at most this many decisions")
+    parser.add_argument("--concurrency", type=int, default=8)
+    parser.add_argument("--out", type=Path, default=Path("jev-eval"))
+    args = parser.parse_args()
+    experiments = set(args.experiments.split(","))
+
+    args.out.mkdir(parents=True, exist_ok=True)
+    corpus = await fetch_corpus(args.api_base)
+    write_jsonl(args.out / "corpus.jsonl", corpus)
+    sample = corpus[: args.limit] if args.limit else corpus
+
+    sections = [
+        "## Jev evaluation",
+        "",
+        f"{len(corpus)} court decisions fetched from {args.api_base}; {len(sample)} evaluated.",
+    ]
+    if "themes" in experiments:
+        for variant in THEME_TEXT_FIELDS:
+            rows, report = await evaluate_themes(sample, variant, args.concurrency)
+            write_jsonl(args.out / f"themes_{variant}.jsonl", rows)
+            sections += ["", report]
+    if "paragraphs" in experiments:
+        rows, report = await evaluate_paragraphs(sample, args.concurrency)
+        write_jsonl(args.out / "paragraphs.jsonl", rows)
+        sections += ["", report]
+
+    report_text = "\n".join(sections) + "\n"
+    (args.out / "report.md").write_text(report_text)
+    print(report_text)
+
+
+if __name__ == "__main__":
+    asyncio.run(main())

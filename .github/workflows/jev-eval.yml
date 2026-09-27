@@ -1,0 +1,80 @@
+name: Jev Evaluation
+
+on:
+  workflow_dispatch:
+    inputs:
+      limit:
+        description: "Evaluate at most this many court decisions (empty = all)"
+        required: false
+        default: "200"
+      experiments:
+        description: "Comma-separated: themes, paragraphs"
+        required: false
+        default: "themes,paragraphs"
+  push:
+    branches:
+      - "claude/jev-**"
+    paths:
+      - ".github/workflows/jev-eval.yml"
+      - "backend/scripts/jev_eval.py"
+      - "backend/app/case_analyzer/jev.py"
+      - "backend/app/case_analyzer/tools/theme_classifier.py"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  evaluate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - name: Check for TypeSafe API key
+        env:
+          TYPESAFE_API_KEY: ${{ secrets.TYPESAFE_API_KEY }}
+        working-directory: .
+        run: |
+          if [ -z "$TYPESAFE_API_KEY" ]; then
+            echo "::error::Add the TYPESAFE_API_KEY repository secret (Settings → Secrets and variables → Actions)."
+            exit 1
+          fi
+
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v10.0.1
+        with:
+          enable-cache: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version-file: backend/.python-version
+
+      - name: Install dependencies
+        run: uv sync --all-extras --all-packages
+
+      - name: Run evaluation
+        env:
+          TYPESAFE_API_KEY: ${{ secrets.TYPESAFE_API_KEY }}
+          LOGFIRE_SEND_TO_LOGFIRE: "false"
+          LIMIT: ${{ inputs.limit || '200' }}
+          EXPERIMENTS: ${{ inputs.experiments || 'themes,paragraphs' }}
+        run: |
+          uv run python scripts/jev_eval.py --out jev-eval --experiments "$EXPERIMENTS" ${LIMIT:+--limit "$LIMIT"}
+          cat jev-eval/report.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload corpus and predictions
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: jev-eval
+          path: backend/jev-eval/
+          if-no-files-found: ignore

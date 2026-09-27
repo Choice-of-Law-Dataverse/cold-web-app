@@ -1,5 +1,5 @@
 import logging
-from typing import get_args
+from typing import cast, get_args
 
 import logfire
 from agents import Agent
@@ -18,11 +18,8 @@ from .models import StepResult, Theme, ThemeClassificationOutput, ThemeWithNA
 logger = logging.getLogger(__name__)
 
 
-async def _classify_with_jev(col_section: str) -> StepResult[ThemeClassificationOutput] | None:
-    """One yes/no question per theme; None unless every theme is decisive and at least one applies.
-
-    An all-negative result falls back to the agent, which must navigate the decision before returning 'NA'.
-    """
+async def jev_theme_probabilities(col_section: str) -> tuple[str, dict[Theme, float]] | None:
+    """Jev's yes-probability for every theme, with the answering model; None when Jev is unavailable."""
     definitions = get_themes_dict()
     themes: tuple[Theme, ...] = get_args(Theme)
     response = await ask_jev(
@@ -38,21 +35,33 @@ async def _classify_with_jev(col_section: str) -> StepResult[ThemeClassification
     )
     if response is None:
         return None
-    probabilities: dict[str, float] = {}
+    probabilities: dict[Theme, float] = {}
     for theme in themes:
         answer = response.answers.get(theme)
         if not isinstance(answer, NoulAnswer):
             return None
         probabilities[theme] = answer.noul
+    return response.model, probabilities
+
+
+async def _classify_with_jev(col_section: str) -> StepResult[ThemeClassificationOutput] | None:
+    """Use Jev's themes only when every theme is decisive and at least one applies.
+
+    An all-negative result falls back to the agent, which must navigate the decision before returning 'NA'.
+    """
+    result = await jev_theme_probabilities(col_section)
+    if result is None:
+        return None
+    model, probabilities = result
     decisiveness = min(max(p, 1 - p) for p in probabilities.values())
-    selected: list[ThemeWithNA] = [theme for theme in themes if probabilities[theme] >= 0.5]
+    selected = cast(list[ThemeWithNA], [theme for theme, p in probabilities.items() if p >= 0.5])
     if decisiveness < JEV_MIN_CONFIDENCE or not selected:
         return None
     output = ThemeClassificationOutput(
         themes=selected,
         confidence=confidence_level(decisiveness),
-        reasoning=f"Classified by {response.model}: "
-        + ", ".join(f"{theme} ({probabilities[theme]:.2f})" for theme in selected),
+        reasoning=f"Classified by {model}: "
+        + ", ".join(f"{theme} ({p:.2f})" for theme, p in probabilities.items() if p >= 0.5),
     )
     return StepResult(output=output, evidence={"jev_probabilities": probabilities})
 

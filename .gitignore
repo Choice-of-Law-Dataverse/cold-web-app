@@ -201,3 +201,6 @@ backend/*.csv
 .playwright-mcp
 .desloppify/
 .claude-octopus/
+
+# Jev evaluation output
+jev-eval/
