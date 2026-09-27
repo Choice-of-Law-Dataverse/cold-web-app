@@ -29,7 +29,21 @@ from app.case_analyzer.tools.theme_classifier import jev_theme_probabilities
 
 THEMES: tuple[Theme, ...] = get_args(Theme)
 THEME_BY_KEY = {theme.casefold(): theme for theme in THEMES}
-THEME_TEXT_FIELDS = {"excerpt": ("quote",), "original_text": ("originaltext",)}
+THEME_TEXT_FIELDS = {
+    "excerpt": ("quote",),
+    "issue_and_position": ("choiceoflawissue", "courtsposition"),
+    "original_text": ("originaltext",),
+}
+COVERAGE_FIELDS = (
+    "themes",
+    "quote",
+    "translatedexcerpt",
+    "choiceoflawissue",
+    "courtsposition",
+    "originaltext",
+    "englishtranslation",
+    "abstract",
+)
 THRESHOLDS = (0.3, 0.5, 0.7, 0.9)
 PARAGRAPH_MIN_CHARS = 40
 PARAGRAPH_MATCH_SCORE = 85
@@ -47,12 +61,23 @@ def normalize_record(record: dict[str, Any]) -> dict[str, Any]:
     return {_key(name): value for name, value in record.items()}
 
 
-def _text(record: dict[str, Any], *fields: str) -> str:
-    for name in fields:
-        value = record.get(name)
-        if isinstance(value, str) and value.strip() and value.strip().casefold() not in {"na", "n/a", "not found"}:
-            return value.strip()
+def _field(record: dict[str, Any], name: str) -> str:
+    value = record.get(name)
+    if isinstance(value, str) and value.strip() and value.strip().casefold() not in {"na", "n/a", "not found"}:
+        return value.strip()
     return ""
+
+
+def _text(record: dict[str, Any], *fields: str) -> str:
+    return "\n\n".join(text for name in fields if (text := _field(record, name)))
+
+
+def _theme_name(value: Any) -> str:
+    if isinstance(value, dict):
+        for name in ("theme", "title", "name", "value"):
+            if isinstance(value.get(name), str):
+                return value[name]
+    return str(value)
 
 
 def gold_themes(record: dict[str, Any]) -> tuple[set[str], set[str]]:
@@ -61,7 +86,7 @@ def gold_themes(record: dict[str, Any]) -> tuple[set[str], set[str]]:
     names = raw if isinstance(raw, list) else re.split(r"[,;]", str(raw))
     known: set[str] = set()
     unknown: set[str] = set()
-    for name in (str(n).strip() for n in names):
+    for name in (_theme_name(n).strip() for n in names):
         if not name:
             continue
         theme = THEME_BY_KEY.get(name.casefold())
@@ -98,13 +123,28 @@ def _prf(tp: int, fp: int, fn: int) -> tuple[float, float, float]:
     return precision, recall, f1
 
 
-async def evaluate_themes(corpus: list[dict[str, Any]], variant: str, concurrency: int) -> tuple[list[dict[str, Any]], str]:
+def coverage_report(corpus: list[dict[str, Any]]) -> str:
+    lines = ["### Corpus fields", "", "| Field | Filled |", "|---|---|"]
+    for name in COVERAGE_FIELDS:
+        filled = sum(1 for r in corpus if r.get(name) not in (None, "", [], {}))
+        lines.append(f"| `{name}` | {filled}/{len(corpus)} |")
+    sample = next((r["themes"] for r in corpus if r.get("themes")), None)
+    lines += ["", f"Sample `themes` value: `{json.dumps(sample, ensure_ascii=False, default=str)[:200]}`"]
+    keys = sorted({k for r in corpus for k in r})
+    lines += ["", f"All fields: {', '.join(f'`{k}`' for k in keys)}"]
+    return "\n".join(lines)
+
+
+async def evaluate_themes(
+    corpus: list[dict[str, Any]], variant: str, limit: int | None, concurrency: int
+) -> tuple[list[dict[str, Any]], str]:
     items = []
     for record in corpus:
         known, unknown = gold_themes(record)
         text = _text(record, *THEME_TEXT_FIELDS[variant])
         if known and text:
             items.append({"id": record.get("id"), "gold": sorted(known), "unmapped_gold": sorted(unknown), "text": text})
+    items = items[:limit] if limit else items
 
     async def predict(item: dict[str, Any]) -> dict[str, Any]:
         result = await jev_theme_probabilities(item["text"])
@@ -158,13 +198,14 @@ async def evaluate_themes(corpus: list[dict[str, Any]], variant: str, concurrenc
     return rows, "\n".join(lines)
 
 
-async def evaluate_paragraphs(corpus: list[dict[str, Any]], concurrency: int) -> tuple[list[dict[str, Any]], str]:
+async def evaluate_paragraphs(
+    corpus: list[dict[str, Any]], limit: int | None, concurrency: int
+) -> tuple[list[dict[str, Any]], str]:
+    usable = [r for r in corpus if _field(r, "quote") and _field(r, "originaltext")]
     items = []
-    for record in corpus:
-        excerpt = _text(record, "quote")
-        original = _text(record, "originaltext")
-        if not excerpt or not original:
-            continue
+    for record in usable[:limit] if limit else usable:
+        excerpt = _field(record, "quote")
+        original = _field(record, "originaltext")
         for index, paragraph in enumerate(split_paragraphs(original)):
             relevant = fuzz.partial_ratio(paragraph, excerpt) >= PARAGRAPH_MATCH_SCORE
             items.append({"id": record.get("id"), "index": index, "relevant": relevant, "text": paragraph})
@@ -228,20 +269,22 @@ async def main() -> None:
     args.out.mkdir(parents=True, exist_ok=True)
     corpus = await fetch_corpus(args.api_base)
     write_jsonl(args.out / "corpus.jsonl", corpus)
-    sample = corpus[: args.limit] if args.limit else corpus
 
     sections = [
         "## Jev evaluation",
         "",
-        f"{len(corpus)} court decisions fetched from {args.api_base}; {len(sample)} evaluated.",
+        f"{len(corpus)} court decisions fetched from {args.api_base}; "
+        f"up to {args.limit or 'all'} usable decisions evaluated per experiment.",
+        "",
+        coverage_report(corpus),
     ]
     if "themes" in experiments:
         for variant in THEME_TEXT_FIELDS:
-            rows, report = await evaluate_themes(sample, variant, args.concurrency)
+            rows, report = await evaluate_themes(corpus, variant, args.limit, args.concurrency)
             write_jsonl(args.out / f"themes_{variant}.jsonl", rows)
             sections += ["", report]
     if "paragraphs" in experiments:
-        rows, report = await evaluate_paragraphs(sample, args.concurrency)
+        rows, report = await evaluate_paragraphs(corpus, args.limit, args.concurrency)
         write_jsonl(args.out / "paragraphs.jsonl", rows)
         sections += ["", report]
 

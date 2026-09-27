@@ -89,6 +89,9 @@ async def ask_jev(
                 response = await client.post(_SYSTEM_ONE_PATH, json=body)
             response.raise_for_status()
             return SystemOneResponse.model_validate_json(response.content)
+        except httpx2.HTTPStatusError as e:
+            logger.warning("Jev %s request failed, falling back to OpenAI: %s %s", step, e, e.response.text[:500])
+            return None
         except (httpx2.HTTPError, ValidationError) as e:
             logger.warning("Jev %s request failed, falling back to OpenAI: %s", step, e)
             return None
