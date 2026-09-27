@@ -15,15 +15,6 @@ on:
         description: "Comma-separated: themes, paragraphs"
         required: false
         default: "themes,paragraphs"
-  push:
-    branches:
-      - "claude/jev-**"
-    paths:
-      - ".github/workflows/jev-eval.yml"
-      - "backend/scripts/jev_eval.py"
-      - "backend/scripts/extract_court_decision_texts.py"
-      - "backend/app/case_analyzer/jev.py"
-      - "backend/app/case_analyzer/tools/theme_classifier.py"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
