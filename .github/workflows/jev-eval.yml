@@ -7,6 +7,10 @@ on:
         description: "Evaluate at most this many court decisions (empty = all)"
         required: false
         default: "200"
+      extract_pdfs:
+        description: "Download official PDFs and extract their text first"
+        type: boolean
+        default: false
       experiments:
         description: "Comma-separated: themes, paragraphs"
         required: false
@@ -63,6 +67,7 @@ jobs:
         run: uv sync --all-extras --all-packages
 
       - name: Extract text from official PDFs
+        if: ${{ inputs.extract_pdfs }}
         env:
           LOGFIRE_SEND_TO_LOGFIRE: "false"
         run: |
@@ -76,7 +81,7 @@ jobs:
           LIMIT: ${{ inputs.limit || '200' }}
           EXPERIMENTS: ${{ inputs.experiments || 'themes,paragraphs' }}
         run: |
-          uv run python scripts/jev_eval.py --out jev-eval --texts jev-eval/texts.jsonl --experiments "$EXPERIMENTS" ${LIMIT:+--limit "$LIMIT"}
+          uv run python scripts/jev_eval.py --out jev-eval $([ -f jev-eval/texts.jsonl ] && echo --texts jev-eval/texts.jsonl) --experiments "$EXPERIMENTS" ${LIMIT:+--limit "$LIMIT"}
           cat jev-eval/report.md >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload corpus and predictions
