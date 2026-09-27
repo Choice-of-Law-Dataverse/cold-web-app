@@ -1,12 +1,12 @@
-"""Run analyzer steps over the eval corpus and score them against curated values.
+"""Run analyzer steps over the eval corpus as pydantic-evals experiments.
 
 Each step is run in isolation: its upstream inputs (CoL section, themes, CoL issue, ...) are
 the curated values, so testing one step never pays for the steps before it, and a weak
 upstream step cannot drag a downstream score down. Step outputs are cached on disk by step,
-model, analyzer source and input, so re-runs only pay for what changed.
+model, analyzer source and input, so re-runs only pay for what changed. Cost per case comes
+from Logfire's pricing of each model call; cached cases report the cost recorded when they ran.
 
-    uv run python -m evals.run --split dev --steps themes,col_issue --name baseline \\
-        --prices evals/prices.json --max-cost 2
+    uv run python -m evals.run --split dev --steps themes,col_issue --name baseline --max-cost 2
     uv run python -m evals.run --split dev --steps themes --name mini \\
         --models '{"themes": "gpt-5.4-mini"}' --baseline baseline
 """
@@ -15,14 +15,15 @@ import argparse
 import asyncio
 import hashlib
 import json
-import time
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from agents import set_tracing_disabled
 from pydantic import BaseModel
+from pydantic_evals import Case, Dataset, increment_eval_metric, set_eval_attribute
+from pydantic_evals.evaluators import Evaluator, EvaluatorContext, EvaluatorOutput
+from pydantic_evals.reporting import EvaluationReport, EvaluationReportAdapter
 
 from app.case_analyzer.config import TASK_MODELS, get_model
 from app.case_analyzer.service import detect_jurisdiction
@@ -52,13 +53,15 @@ from app.case_analyzer.tools.models import (
 )
 from app.config import config
 
-from . import corpus, report, usage
+from . import corpus
+from .budget import Budget, configure_logfire
 from .score import score
 
 JEV_ENABLED = True
 RUNS_DIR = corpus.EVAL_DIR / "runs"
 CACHE_DIR = corpus.EVAL_DIR / "cache"
 ANALYZER_DIR = Path(__file__).resolve().parent.parent / "app" / "case_analyzer"
+METRICS = ("cost", "input_tokens", "output_tokens", "requests")
 
 
 class Upstream:
@@ -177,45 +180,96 @@ def _dump(output: Any) -> dict[str, Any]:
     return result.model_dump() if isinstance(result, BaseModel) else {"value": result}
 
 
-async def run_one(name: str, step: Step, entry: dict[str, Any], tracker: usage.UsageTracker) -> dict[str, Any]:
-    cache_path = CACHE_DIR / f"{_cache_key(name, step, entry)}.json"
-    row: dict[str, Any] = {"id": entry["id"], "step": name, "model": get_model(step.task)}
-    if cache_path.exists():
-        cached = json.loads(cache_path.read_text())
-        row.update(output=cached["output"], seconds=cached["seconds"], usage=cached.get("usage", {}), cached=True)
-    else:
-        tracker.check_budget()
-        usage.current_step.set(name)
-        row_usage = usage.StepUsage()
-        usage.current_row.set(row_usage)
-        started = time.monotonic()
-        try:
-            output = await step.run(DocumentContext(draft_id=0, text=entry["text"]), Upstream(entry["gold"]))
-        except usage.BudgetExceeded:
-            raise
-        except Exception as e:
-            row.update(error=f"{type(e).__name__}: {e}"[:500])
-            return row
-        row_usage.unpriced_models = sorted(row_usage.unpriced_models)  # type: ignore[assignment]
-        row.update(output=_dump(output), seconds=round(time.monotonic() - started, 1), usage=vars(row_usage), cached=False)
+def _cache_path(name: str, step: Step, entry: dict[str, Any]) -> Path:
+    return CACHE_DIR / f"{_cache_key(name, step, entry)}.json"
+
+
+def make_task(name: str, step: Step, budget: Budget) -> Callable[[dict[str, Any]], Awaitable[dict[str, Any]]]:
+    async def task(entry: dict[str, Any]) -> dict[str, Any]:
+        path = _cache_path(name, step, entry)
+        if path.exists():
+            cached = json.loads(path.read_text())
+            set_eval_attribute("cached", True)
+            for metric, value in cached.get("metrics", {}).items():
+                increment_eval_metric(metric, value)
+            return cached["output"]
+        budget.check()
+        set_eval_attribute("cached", False)
+        output = _dump(await step.run(DocumentContext(draft_id=0, text=entry["text"]), Upstream(entry["gold"])))
         CACHE_DIR.mkdir(parents=True, exist_ok=True)
-        cached = {"output": row["output"], "seconds": row["seconds"], "usage": row["usage"]}
-        cache_path.write_text(json.dumps(cached, ensure_ascii=False))
-    row["scores"] = await score(name, row["output"], entry["gold"])
-    return row
+        path.write_text(json.dumps({"output": output}, ensure_ascii=False))
+        return output
+
+    return task
+
+
+@dataclass
+class CuratedMatch(Evaluator[dict[str, Any], dict[str, Any], dict[str, Any]]):
+    """Scores the step output against the curated value (see evals.score)."""
+
+    step: str
+
+    async def evaluate(self, ctx: EvaluatorContext[dict[str, Any], dict[str, Any], dict[str, Any]]) -> EvaluatorOutput:
+        return await score(self.step, ctx.output, ctx.inputs["gold"])
+
+
+@dataclass
+class SpendTracker(Evaluator[dict[str, Any], dict[str, Any], dict[str, Any]]):
+    """Adds each new case's Logfire-priced cost to the budget and stores it with the cached output."""
+
+    step: Step
+    name: str
+    budget: Budget
+
+    def evaluate(self, ctx: EvaluatorContext[dict[str, Any], dict[str, Any], dict[str, Any]]) -> EvaluatorOutput:
+        if ctx.attributes.get("cached"):
+            return {}
+        metrics = {metric: ctx.metrics[metric] for metric in METRICS if metric in ctx.metrics}
+        self.budget.spent += metrics.get("cost", 0.0)
+        if metrics.get("requests") and "cost" not in metrics:
+            self.budget.unpriced_calls += int(metrics["requests"])
+        path = _cache_path(self.name, self.step, ctx.inputs)
+        if path.exists():
+            path.write_text(json.dumps({"output": ctx.output, "metrics": metrics}, ensure_ascii=False))
+        return {}
+
+
+def build_dataset(name: str, step: Step, entries: list[dict[str, Any]], budget: Budget) -> Dataset[Any, Any, Any]:
+    cases = [
+        Case(
+            name=str(entry["id"]),
+            inputs=entry,
+            metadata={"added_by": entry.get("added_by"), "jurisdiction": entry["gold"]["jurisdiction_code"]},
+        )
+        for entry in entries
+        if all(entry["gold"][key] for key in step.requires)
+    ]
+    return Dataset(name=name, cases=cases, evaluators=[CuratedMatch(name), SpendTracker(step, name, budget)])
+
+
+def _report_path(run_name: str, step: str) -> Path:
+    return RUNS_DIR / f"{run_name}.{step}.json"
+
+
+def load_report(run_name: str, step: str) -> EvaluationReport[Any, Any, Any] | None:
+    path = _report_path(run_name, step)
+    return EvaluationReportAdapter.validate_json(path.read_bytes()) if path.exists() else None
+
+
+def total_cost(report: EvaluationReport[Any, Any, Any]) -> float:
+    return sum(case.metrics.get("cost", 0.0) for case in report.cases)
 
 
 async def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--split", default="dev", choices=["dev", "test"])
     parser.add_argument("--steps", default=",".join(STEPS), help=f"Comma-separated, from: {', '.join(STEPS)}")
-    parser.add_argument("--name", required=True, help="Run name; results go to analyzer-eval/runs/<name>.json")
+    parser.add_argument("--name", required=True, help="Run name; reports go to analyzer-eval/runs/<name>.<step>.json")
     parser.add_argument("--models", default="{}", help='JSON overrides of TASK_MODELS, e.g. {"themes": "gpt-5.4-mini"}')
     parser.add_argument("--no-jev", action="store_true", help="Disable Jev in the analyzer steps (it still judges)")
     parser.add_argument("--limit", type=int, default=None)
     parser.add_argument("--concurrency", type=int, default=4)
-    parser.add_argument("--prices", type=Path, default=Path("evals/prices.json"))
-    parser.add_argument("--max-cost", type=float, default=None, help="Stop starting new OpenAI calls above this USD")
+    parser.add_argument("--max-cost", type=float, default=None, help="Stop starting new OpenAI calls at this USD spend")
     parser.add_argument("--baseline", default=None, help="Name of an earlier run to compare against")
     args = parser.parse_args()
 
@@ -223,61 +277,35 @@ async def main() -> None:
         raise SystemExit("Set OPENAI_API_KEY in backend/.env; the analyzer steps call OpenAI.")
     steps = {name: STEPS[name] for name in args.steps.split(",")}
     TASK_MODELS.update(json.loads(args.models))
-    set_tracing_disabled(True)
-    tracker = usage.UsageTracker(usage.load_prices(args.prices if args.prices.exists() else None), args.max_cost)
-    usage.install(tracker)
     if args.no_jev:
         disable_jev_in_analyzer()
+    configure_logfire()
 
-    entries = corpus.load(args.split)[: args.limit] if args.limit else corpus.load(args.split)
-    jobs = [
-        (name, step, entry)
-        for name, step in steps.items()
-        for entry in entries
-        if all(entry["gold"][key] for key in step.requires)
-    ]
-    print(
-        f"{len(jobs)} step runs over {len(entries)} {args.split} decisions; models: "
-        + ", ".join(f"{name}={get_model(step.task)}" for name, step in steps.items())
-    )
-
-    semaphore = asyncio.Semaphore(args.concurrency)
-    rows: list[dict[str, Any]] = []
-    stopped: str | None = None
-
-    async def worker(name: str, step: Step, entry: dict[str, Any]) -> None:
-        nonlocal stopped
-        if stopped:
-            return
-        async with semaphore:
-            if stopped:
-                return
-            try:
-                rows.append(await run_one(name, step, entry, tracker))
-            except usage.BudgetExceeded as e:
-                stopped = str(e)
-
-    await asyncio.gather(*(worker(*job) for job in jobs))
-
-    run = {
-        "name": args.name,
-        "split": args.split,
-        "models": {name: get_model(step.task) for name, step in steps.items()},
-        "jev": not args.no_jev,
-        "stopped": stopped,
-        "usage": {
-            name: vars(step_usage) | {"unpriced_models": sorted(step_usage.unpriced_models)}
-            for name, step_usage in tracker.steps.items()
-        },
-        "rows": rows,
-    }
+    entries = corpus.load(args.split)
+    entries = entries[: args.limit] if args.limit else entries
+    budget = Budget(args.max_cost)
     RUNS_DIR.mkdir(parents=True, exist_ok=True)
-    (RUNS_DIR / f"{args.name}.json").write_text(json.dumps(run, ensure_ascii=False, indent=1, default=str))
 
-    baseline = json.loads((RUNS_DIR / f"{args.baseline}.json").read_text()) if args.baseline else None
-    text = report.render(run, baseline)
-    (RUNS_DIR / f"{args.name}.md").write_text(text)
-    print(text)
+    for name, step in steps.items():
+        dataset = build_dataset(name, step, entries, budget)
+        report = await dataset.evaluate(
+            make_task(name, step, budget),
+            name=f"{args.name}: {name}",
+            max_concurrency=args.concurrency,
+            metadata={"split": args.split, "model": get_model(step.task), "jev": JEV_ENABLED},
+        )
+        _report_path(args.name, name).write_bytes(EvaluationReportAdapter.dump_json(report, indent=1))
+        baseline = load_report(args.baseline, name) if args.baseline else None
+        report.print(baseline=baseline, include_input=False, include_output=False, include_averages=True)
+        stopped = sum(1 for failure in report.failures if "budget" in failure.error_message)
+        line = f"{name} ({get_model(step.task)}): configuration cost ${total_cost(report):.3f} over {len(report.cases)} cases"
+        if baseline:
+            line += f" (baseline ${total_cost(baseline):.3f})"
+        print(line + (f"; {stopped} cases not run: budget reached" if stopped else ""))
+
+    print(f"New OpenAI spend this run: ${budget.spent:.3f}")
+    if budget.unpriced_calls:
+        print(f"{budget.unpriced_calls} model calls had no price in genai-prices; their cost is missing above.")
 
 
 if __name__ == "__main__":

@@ -1,20 +1,18 @@
 # Case analyzer evals
 
-A local harness for measuring each case analyzer step against the curated values in the CoLD
+A local harness, built on [pydantic-evals](https://pydantic.dev/docs/ai/evals/evals/), for measuring each case analyzer step against the curated values in the CoLD
 database, so prompt and model changes (including OpenAI upgrades and Jev) are decided on numbers.
 
 ## Setup
 
 `backend/.env` needs `OPENAI_API_KEY` (the steps) and `OPENROUTER_API_KEY` (Jev, used in the
 steps and as the judge for free-text answers). Everything is written to `backend/analyzer-eval/`,
-which git ignores.
+which git ignores; reports are saved as `runs/<name>.<step>.json` for later baselines.
 
-Create `evals/prices.json` with current OpenAI prices in USD per million tokens. Models without
-a price are reported as unpriced, and `--max-cost` cannot stop them:
-
-```json
-{ "gpt-5.4-nano": { "input": 0.0, "cached_input": 0.0, "output": 0.0 } }
-```
+Cost needs no configuration: Logfire's OpenAI Agents instrumentation prices every model call
+from `genai-prices`, and pydantic-evals reports it as each case's `cost` metric. With
+`LOGFIRE_TOKEN` set, every run also appears in Logfire as an experiment you can compare there.
+A model too new for the installed `genai-prices` shows tokens but no cost; the run says so.
 
 ## Build the corpus
 
@@ -30,7 +28,7 @@ excluded; they would reward the current models for matching their own output.
 ## Run
 
 ```bash
-# Baseline on the dev set, capped at $2 of new OpenAI spend
+# Baseline on the dev set, capped at $2 of new OpenAI spend (one experiment per step)
 uv run python -m evals.run --split dev --name baseline --max-cost 2
 
 # One step with a different model, compared with the baseline
@@ -45,9 +43,9 @@ Keeping cost down:
 
 - **Isolated steps.** Each step gets the curated upstream values as input (CoL excerpt, themes,
   CoL issue, …), so evaluating `col_issue` never re-runs CoL extraction.
-- **Cache.** Outputs are cached by step, model, analyzer source, input and Jev setting. Re-runs
-  only pay for what changed; the report shows both the configuration's full cost and what was
-  actually spent.
+- **Cache.** Outputs are cached by step, model, analyzer source, input and Jev setting, together
+  with the cost they had. Re-runs only pay for what changed, while each report still shows the
+  configuration's full cost; the run ends with what was actually spent.
 - **Budget.** `--max-cost` stops starting new calls once the run's new spend passes the limit.
 - **Dev first.** Iterate on `dev` (30 decisions); run `test` only to confirm a decision.
 

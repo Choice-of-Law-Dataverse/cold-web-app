@@ -47,6 +47,7 @@ dev = [
     "ruff>=0.16.7",
     "pyright>=1.1.414",
     "vulture>=2.16",
+    "pydantic-evals>=2.51.0",
 ]
 
 [tool.uv]

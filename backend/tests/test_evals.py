@@ -1,12 +1,13 @@
 """Tests for the local analyzer eval harness: corpus parsing, scoring, cost accounting and caching."""
 
+import json
 from pathlib import Path
 from typing import Any
 
 import pytest
 
 from app.case_analyzer.tools.models import StepResult, ThemeClassificationOutput
-from evals import corpus, run, score, usage
+from evals import budget, corpus, run, score
 
 
 def _gold(**overrides: Any) -> dict[str, Any]:
@@ -50,38 +51,16 @@ async def test_col_section_scores_excerpt_recall() -> None:
     assert scores["excerpt_recall"] == 1.0
 
 
-def test_usage_tracker_prices_dated_snapshots_and_cached_input() -> None:
-    tracker = usage.UsageTracker({"gpt-5.4-nano": {"input": 1.0, "cached_input": 0.1, "output": 4.0}})
-    row = usage.StepUsage()
-    token = usage.current_row.set(row)
-    step_token = usage.current_step.set("themes")
-    try:
-        tracker.record(
-            "gpt-5.4-nano-2026-08-01",
-            {"input_tokens": 1_000_000, "input_tokens_details": {"cached_tokens": 500_000}, "output_tokens": 250_000},
-        )
-    finally:
-        usage.current_row.reset(token)
-        usage.current_step.reset(step_token)
-    assert row.cost == pytest.approx(0.5 + 0.05 + 1.0)
-    assert tracker.steps["themes"].cost == pytest.approx(row.cost)
-
-
-def test_usage_tracker_flags_unpriced_models_and_enforces_budget() -> None:
-    tracker = usage.UsageTracker({"gpt-5.4-nano": {"input": 100.0}}, max_cost=0.5)
-    token = usage.current_step.set("pil_provisions")
-    try:
-        tracker.record("gpt-9", {"input_tokens": 10})
-        tracker.record("gpt-5.4-nano", {"input_tokens": 10_000})
-    finally:
-        usage.current_step.reset(token)
-    assert "gpt-9" in tracker.steps["pil_provisions"].unpriced_models
-    with pytest.raises(usage.BudgetExceeded):
-        tracker.check_budget()
+def test_budget_stops_new_calls_at_the_limit() -> None:
+    spend = budget.Budget(max_cost=1.0, spent=0.99)
+    spend.check()
+    spend.spent = 1.0
+    with pytest.raises(budget.BudgetExceeded):
+        spend.check()
 
 
 @pytest.mark.asyncio
-async def test_run_one_caches_step_output(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+async def test_experiment_caches_outputs_and_replays_their_cost(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(run, "CACHE_DIR", tmp_path)
     calls: list[str] = []
 
@@ -90,13 +69,23 @@ async def test_run_one_caches_step_output(tmp_path: Path, monkeypatch: pytest.Mo
         return StepResult(ThemeClassificationOutput(themes=["Party autonomy"], confidence="high", reasoning="ok"))
 
     step = run.Step("themes", ("col_excerpt", "themes"), fake_themes, "theme_classifier")
-    entry = {"id": "CD-CHE-1", "text": "Decision text", "gold": _gold()}
-    tracker = usage.UsageTracker({})
+    entries = [
+        {"id": "CD-CHE-1", "text": "Decision text", "gold": _gold()},
+        {"id": "CD-CHE-2", "text": "", "gold": _gold(themes=[])},
+    ]
+    spend = budget.Budget()
 
-    first = await run.run_one("themes", step, entry, tracker)
-    second = await run.run_one("themes", step, entry, tracker)
+    first = await run.build_dataset("themes", step, entries, spend).evaluate(
+        run.make_task("themes", step, spend), progress=False
+    )
+    cache_file = next(tmp_path.iterdir())
+    cache_file.write_text(json.dumps(json.loads(cache_file.read_text()) | {"metrics": {"cost": 0.25}}))
+    second = await run.build_dataset("themes", step, entries, spend).evaluate(
+        run.make_task("themes", step, spend), progress=False
+    )
 
     assert calls == ["Civil-law jurisdiction"]
-    assert first["scores"]["f1"] == 1.0
-    assert second["cached"] is True
-    assert second["scores"] == first["scores"]
+    assert [case.name for case in first.cases] == ["CD-CHE-1"]
+    assert first.cases[0].scores["f1"].value == 1.0
+    assert second.cases[0].attributes["cached"] is True
+    assert run.total_cost(second) == 0.25
