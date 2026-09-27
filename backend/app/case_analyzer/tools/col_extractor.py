@@ -261,10 +261,13 @@ async def extract_col_section(
             )
 
         try:
-            audit_model = get_model("col_section")
+            audit_task = "col_section" if retrieval_evidence["method"] == "jev" else "col_section_fallback"
+            audit_model = get_model(audit_task)
             try:
-                audit_step = await audit("col_section")
+                audit_step = await audit(audit_task)
             except OutputValidationError as e:
+                if audit_task == "col_section_fallback":
+                    raise
                 logger.warning("CoL audit with %s failed validation, retrying with the fallback model: %s", audit_model, e)
                 audit_model = get_model("col_section_fallback")
                 audit_step = await audit("col_section_fallback")

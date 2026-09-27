@@ -136,3 +136,46 @@ async def test_audit_falls_back_to_the_stronger_model(monkeypatch: pytest.Monkey
     assert models == [get_model("col_section"), get_model("col_section_fallback")]
     assert step.evidence["audit_model"] == get_model("col_section_fallback")
     assert step.output.col_sections == ["The court holds that Swiss law governs the contract."]
+
+
+@pytest.mark.asyncio
+async def test_hybrid_retrieval_candidates_are_audited_by_the_stronger_model(monkeypatch: pytest.MonkeyPatch) -> None:
+    doc = DocumentContext(draft_id=1, text="Background.\n\nThe court holds that Swiss law governs the contract.")
+    monkeypatch.setattr(col_extractor, "jev_paragraph_probabilities", AsyncMock(return_value=[0.05, 0.1]))
+    monkeypatch.setattr(col_extractor, "_generate_case_specific_queries", AsyncMock(return_value=[]))
+    candidate = CandidatePassage(
+        candidate_id="C001",
+        start_paragraph=2,
+        end_paragraph=2,
+        text=doc.paragraphs[1],
+        concepts=("applicable_law",),
+        retrieval_methods=("exact",),
+        reciprocal_rank_score=0.2,
+    )
+    retrieval = RetrievalResult(
+        candidates=[candidate],
+        query_count=1,
+        semantic_available=True,
+        semantic_unavailable_reason=None,
+        semantic_embedding_tokens=0,
+        semantic_chunk_count=1,
+        lexical_hit_count=1,
+        semantic_hit_count=0,
+        overlap_count=0,
+    )
+    monkeypatch.setattr(col_extractor, "retrieve_choice_of_law_candidates", AsyncMock(return_value=retrieval))
+    models: list[str] = []
+    decision = ColCandidateDecision(
+        candidate_id="C001", disposition="include", reason="Holding.", role="court_holding", selected_paragraphs=[2]
+    )
+
+    async def fake_run_agent(agent: Any, **_kwargs: Any) -> StepResult[ColCandidateAuditOutput]:
+        models.append(agent.model.model)
+        return StepResult(ColCandidateAuditOutput(decisions=[decision], confidence="high", reasoning="ok"))
+
+    monkeypatch.setattr(col_extractor, "run_agent", fake_run_agent)
+    monkeypatch.setattr(col_extractor, "get_openai_client", MagicMock())
+    step = await col_extractor.extract_col_section(doc)
+
+    assert models == [get_model("col_section_fallback")]
+    assert step.evidence["retrieval"]["method"] == "hybrid"
