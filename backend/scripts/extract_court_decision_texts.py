@@ -1,7 +1,8 @@
 """Extract court decision text from the official source PDFs.
 
 Downloads every court decision's official PDF from the public CoLD API data and extracts its
-text with the case analyzer's PDF handler. Writes one JSON line per decision to --out:
+text with the case analyzer's PDF handler. The stored attachment URLs point at private storage,
+so each PDF is fetched through the site's storage proxy, which signs the request. Writes one JSON line per decision to --out:
 {"id", "pdf_url", "chars", "text", "error"}. It never writes to the database; backfilling
 Original_Text from this file is a separate, reviewed step.
 
@@ -13,6 +14,7 @@ import asyncio
 import json
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlparse
 
 import httpx2
 from jev_eval import fetch_corpus
@@ -42,8 +44,15 @@ def pdf_url(value: Any) -> str | None:
     return None
 
 
-async def extract(client: httpx2.AsyncClient, record: dict[str, Any]) -> dict[str, Any]:
+def proxied(url: str, site: str) -> str:
+    """The storage proxy URL for an attachment in private storage; other URLs unchanged."""
+    path = urlparse(url).path.lstrip("/")
+    return f"{site.rstrip('/')}/api/storage/{path}" if path.startswith("nc/uploads/") else url
+
+
+async def extract(client: httpx2.AsyncClient, record: dict[str, Any], site: str) -> dict[str, Any]:
     url = pdf_url(record.get("officialsourcepdf"))
+    url = proxied(url, site) if url else None
     row: dict[str, Any] = {"id": record.get("id"), "pdf_url": url, "chars": 0, "text": "", "error": None}
     if url is None:
         row["error"] = "no PDF URL"
@@ -67,6 +76,7 @@ async def extract(client: httpx2.AsyncClient, record: dict[str, Any]) -> dict[st
 async def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--api-base", default="https://api.cold.global")
+    parser.add_argument("--site", default="https://cold.global", help="Site whose /api/storage proxy serves the PDFs")
     parser.add_argument("--out", type=Path, default=Path("jev-eval/texts.jsonl"))
     parser.add_argument("--limit", type=int, default=None, help="Extract at most this many PDFs")
     parser.add_argument("--concurrency", type=int, default=6)
@@ -81,7 +91,7 @@ async def main() -> None:
 
         async def run(record: dict[str, Any]) -> dict[str, Any]:
             async with semaphore:
-                return await extract(client, record)
+                return await extract(client, record, args.site)
 
         rows = await asyncio.gather(*(run(r) for r in records))
 
