@@ -53,7 +53,8 @@ async def judge(candidate: str, reference: str) -> dict[str, float]:
 async def score(step: str, output: dict[str, Any], gold: dict[str, Any]) -> dict[str, float]:
     match step:
         case "jurisdiction":
-            return {"accuracy": float(output.get("jurisdiction_code", "").upper() == gold["jurisdiction_code"].upper())}
+            curated = gold.get("jurisdiction_codes") or [gold["jurisdiction_code"].upper()]
+            return {"accuracy": float(output.get("jurisdiction_code", "").upper() in curated)}
         case "col_section":
             extracted = normalize(" ".join(output.get("col_sections", [])))
             excerpt = normalize(gold["col_excerpt"])
@@ -63,7 +64,7 @@ async def score(step: str, output: dict[str, Any], gold: dict[str, Any]) -> dict
             }
         case "themes":
             predicted = [t for t in output.get("themes", []) if t != "NA"]
-            return set_scores(predicted, gold["themes"], exact=True)
+            return set_scores(predicted, gold["themes"], exact=True) | {"exact": float(set(predicted) == set(gold["themes"]))}
         case "pil_provisions":
             return set_scores(output.get("pil_provisions", []), gold["pil_provisions"])
         case "case_citation":

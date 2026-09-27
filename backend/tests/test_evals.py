@@ -1,11 +1,13 @@
 """Tests for the local analyzer eval harness: corpus parsing, scoring, cost accounting and caching."""
 
 import json
+from dataclasses import replace
 from pathlib import Path
 from typing import Any
 
 import pytest
 
+from app.case_analyzer.jev import jev_reasoning
 from app.case_analyzer.tools.models import StepResult, ThemeClassificationOutput
 from evals import budget, corpus, run, score
 
@@ -30,12 +32,36 @@ def test_curated_themes_split_on_pipes_and_map_aliases() -> None:
     assert corpus.curated_themes(value) == ["Freedom of Choice", "Mandatory rules", "Party autonomy"]
 
 
-def test_to_entry_requires_full_text_and_curated_col_analysis() -> None:
+def test_to_entry_requires_full_text_and_a_curated_value() -> None:
     record = {"id": "CD-CHE-1", "originaltext": "Full text", "quote": "", "choiceoflawissue": "NA"}
     assert corpus.to_entry(record) is None
     entry = corpus.to_entry(record | {"quote": "Swiss law applies.", "pilprovisions": "Art. 116 PILA; Art. 117 PILA"})
     assert entry is not None
     assert entry["gold"]["pil_provisions"] == ["Art. 116 PILA", "Art. 117 PILA"]
+
+
+def test_to_entry_falls_back_to_pdf_text() -> None:
+    record = {"id": "CD-ABW-1", "originaltext": "", "jurisdictionsalpha3code": "ABW"}
+    assert corpus.to_entry(record) is None
+    entry = corpus.to_entry(record, pdf_text="Extracted decision text")
+    assert entry is not None
+    assert (entry["text"], entry["text_source"]) == ("Extracted decision text", "pdf")
+    assert entry["gold"]["jurisdiction_code"] == "ABW"
+
+
+def test_split_depends_only_on_the_decision_id() -> None:
+    splits = {entry_id: corpus.split_of(entry_id, 0.5) for entry_id in (f"CD-{n}" for n in range(200))}
+    assert set(splits.values()) == {"dev", "test"}
+    assert all(corpus.split_of(entry_id, 0.5) == split for entry_id, split in splits.items())
+    assert corpus.split_of("CD-1", 0.0) == "test"
+    assert corpus.split_of("CD-1", 1.0) == "dev"
+
+
+def test_jurisdiction_cache_covers_legal_system_sources() -> None:
+    sources = run.STEPS["jurisdiction"].sources
+    assert "tools/jurisdiction_detector.py" in sources
+    assert "service.py" in sources
+    assert run.STEPS["jurisdiction"].extra_tasks == ("legal_system",)
 
 
 def test_set_scores_match_fuzzily() -> None:
@@ -68,7 +94,7 @@ async def test_experiment_caches_outputs_and_replays_their_cost(tmp_path: Path, 
         calls.append(up.legal_system)
         return StepResult(ThemeClassificationOutput(themes=["Party autonomy"], confidence="high", reasoning="ok"))
 
-    step = run.Step("themes", ("col_excerpt", "themes"), fake_themes, "theme_classifier")
+    step = run.Step("themes", ("col_excerpt", "themes"), fake_themes, ("tools/theme_classifier.py",))
     entries = [
         {"id": "CD-CHE-1", "text": "Decision text", "gold": _gold()},
         {"id": "CD-CHE-2", "text": "", "gold": _gold(themes=[])},
@@ -89,3 +115,66 @@ async def test_experiment_caches_outputs_and_replays_their_cost(tmp_path: Path, 
     assert first.cases[0].scores["f1"].value == 1.0
     assert second.cases[0].attributes["cached"] is True
     assert run.total_cost(second) == 0.25
+    assert second.cases[0].attributes["answered_by"] == "openai"
+
+
+@pytest.mark.asyncio
+async def test_scores_are_grouped_by_answerer(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(run, "CACHE_DIR", tmp_path)
+
+    async def fake_themes(doc: Any, up: run.Upstream) -> StepResult[ThemeClassificationOutput]:
+        by_jev = doc.text == "jev"
+        reasoning = jev_reasoning("jev-1", "Party autonomy (0.97)") if by_jev else "Agent reasoning"
+        themes: list[Any] = ["Party autonomy"] if by_jev else ["Public policy"]
+        return StepResult(ThemeClassificationOutput(themes=themes, confidence="high", reasoning=reasoning))
+
+    step = run.Step("themes", ("col_excerpt", "themes"), fake_themes, ("tools/theme_classifier.py",))
+    entries = [{"id": f"CD-{text}", "text": text, "gold": _gold()} for text in ("jev", "agent")]
+    spend = budget.Budget()
+    report = await run.build_dataset("themes", step, entries, spend).evaluate(
+        run.make_task("themes", step, spend), progress=False
+    )
+
+    summary = run.scores_by_answerer(report)
+    assert summary["jev"]["cases"] == 1
+    assert summary["jev"]["f1"] == 1.0
+    assert summary["openai"]["f1"] == 0.0
+
+
+@pytest.mark.asyncio
+async def test_jev_only_themes_report_answers_by_threshold(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(run, "CACHE_DIR", tmp_path)
+    answers = {
+        "confident": {"Party autonomy": 0.97, "Public policy": 0.03},
+        "unsure": {"Party autonomy": 0.7, "Public policy": 0.1},
+        "none": {"Party autonomy": 0.02, "Public policy": 0.01},
+    }
+
+    async def fake_probabilities(col_section: str) -> tuple[str, dict[str, float]]:
+        return "jev-1", answers[col_section]
+
+    monkeypatch.setattr(run.theme_classifier, "jev_theme_probabilities", fake_probabilities)
+    step = replace(run.STEPS["themes"], run=run.JEV_ONLY_RUNS["themes"])
+    entries = [{"id": f"CD-{key}", "text": "", "gold": _gold(col_excerpt=key)} for key in answers]
+    spend = budget.Budget()
+    report = await run.build_dataset("themes", step, entries, spend).evaluate(
+        run.make_task("themes", step, spend), progress=False
+    )
+
+    outputs = {case.name: case.output for case in report.cases}
+    assert outputs["CD-confident"]["themes"] == ["Party autonomy"]
+    assert outputs["CD-none"]["jev_confidence"] == 0.0
+    assert all(case.attributes["answered_by"] == "jev" for case in report.cases)
+    rows = {threshold: (accepted, scored, mean) for threshold, accepted, scored, mean in run.gate_table(report, "exact")}
+    assert rows[0.5] == (2, 3, 1.0)
+    assert rows[0.8] == (1, 3, 1.0)
+
+
+@pytest.mark.asyncio
+async def test_jurisdiction_accepts_any_curated_jurisdiction() -> None:
+    record = {"jurisdictions": "European Union | Netherlands", "jurisdictionsalpha3code": "EUR"}
+    codes = corpus.curated_jurisdiction_codes(record)
+    assert codes == ["EUR", "NLD"]
+    gold = _gold(jurisdiction_code="EUR", jurisdiction_codes=codes)
+    assert (await score.score("jurisdiction", {"jurisdiction_code": "NLD"}, gold))["accuracy"] == 1.0
+    assert (await score.score("jurisdiction", {"jurisdiction_code": "BEL"}, gold))["accuracy"] == 0.0

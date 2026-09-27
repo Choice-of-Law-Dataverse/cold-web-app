@@ -9,21 +9,31 @@ database, so prompt and model changes (including OpenAI upgrades and Jev) are de
 steps and as the judge for free-text answers). Everything is written to `backend/analyzer-eval/`,
 which git ignores; reports are saved as `runs/<name>.<step>.json` for later baselines.
 
-Cost needs no configuration: Logfire's OpenAI Agents instrumentation prices every model call
-from `genai-prices`, and pydantic-evals reports it as each case's `cost` metric. With
+Cost needs no configuration: Logfire's OpenAI Agents instrumentation prices every OpenAI call
+from `genai-prices`, the Jev client records the cost OpenRouter reports for each Jev call, and
+pydantic-evals reports their sum as each case's `cost` metric. Jev's cost as a judge is not part
+of a step's cost. With
 `LOGFIRE_TOKEN` set, every run also appears in Logfire as an experiment you can compare there.
 A model too new for the installed `genai-prices` shows tokens but no cost; the run says so.
 
 ## Build the corpus
 
 ```bash
-uv run python -m evals.corpus --dev-size 30
+# Optional: text from the official PDFs, for decisions with no Original_Text (slow; read-only)
+uv run python scripts/extract_court_decision_texts.py --out analyzer-eval/texts.jsonl
+
+uv run python -m evals.corpus --texts analyzer-eval/texts.jsonl
 ```
 
-Takes every court decision with full text and a curated CoL analysis from the public API and
-splits them deterministically: a small `dev` set for iterating and a held-out `test` set for
-model decisions. `added_by` is kept so decisions entered through the analyzer itself can be
-excluded; they would reward the current models for matching their own output.
+Takes every court decision with full text (Original_Text, the English translation, or the PDF
+text) and at least one curated value from the public API. Each step runs only on the decisions
+that have its curated values, so PDF text mainly grows the `jurisdiction` step. A hash of each
+decision's ID puts it in `dev` (iterating) or the held-out `test` set (model decisions), half
+each by default (`--dev-share`); adding decisions never moves one between sets.
+
+The public API does not expose who entered a decision, so decisions entered through the
+analyzer itself cannot be excluded yet. Their curated values may be edited analyzer output,
+which favours the current OpenAI setup.
 
 ## Run
 
@@ -39,6 +49,21 @@ uv run python -m evals.run --split dev --steps themes --models '{"themes": "gpt-
 uv run python -m evals.run --split dev --steps themes --no-jev --name themes-no-jev --baseline baseline
 ```
 
+Validate Jev on its own first; it costs a fraction of a cent per decision and needs no OpenAI key:
+
+```bash
+uv run python -m evals.run --split dev --steps jurisdiction,themes --jev-only --name jev
+```
+
+`--jev-only` asks Jev every case with no confidence gate and no OpenAI fallback, and prints,
+per confidence threshold, how many cases Jev would answer and its accuracy on them (for themes,
+exact matches of the curated set). That shows whether the analyzer's 0.8 gate is worth keeping
+before paying OpenAI for the cases Jev leaves.
+
+Every case records whether Jev or OpenAI answered it (the `answered_by` attribute). For the
+Jev-first steps (`jurisdiction`, `themes`) the run prints the scores of each group, which is the
+number the confidence gate is set by: compare Jev's group with the same cases in a `--no-jev` run.
+
 Keeping cost down:
 
 - **Isolated steps.** Each step gets the curated upstream values as input (CoL excerpt, themes,
@@ -47,13 +72,13 @@ Keeping cost down:
   with the cost they had. Re-runs only pay for what changed, while each report still shows the
   configuration's full cost; the run ends with what was actually spent.
 - **Budget.** `--max-cost` stops starting new calls once the run's new spend passes the limit.
-- **Dev first.** Iterate on `dev` (30 decisions); run `test` only to confirm a decision.
+- **Dev first.** Iterate on `dev`; run `test` only to confirm a decision.
 
 ## Scores
 
 | Step | Score |
 |---|---|
-| jurisdiction | Alpha-3 code accuracy |
+| jurisdiction | Alpha-3 code accuracy (the step also classifies the legal system, which is not curated) |
 | col_section | How much of the curated excerpt is recovered, and output length relative to it |
 | themes | Precision / recall / F1 against the curated themes |
 | pil_provisions | Fuzzy precision / recall / F1 |

@@ -1,8 +1,9 @@
-"""OpenAI spend tracking for eval runs.
+"""Model spend tracking for eval runs.
 
-Cost comes from Logfire: its OpenAI Agents instrumentation prices every model call
-(`operation.cost`) and pydantic-evals sums that into each case's `cost` metric. This module
-only keeps a running total so a run can stop starting new calls past a budget.
+Cost comes from span attributes (`operation.cost`) that pydantic-evals sums into each case's
+`cost` metric: Logfire's OpenAI Agents instrumentation prices every OpenAI call, and the Jev
+client records the cost OpenRouter reports. This module only keeps a running total so a run
+can stop starting new calls past a budget.
 """
 
 from dataclasses import dataclass
