@@ -28,12 +28,17 @@ from app.case_analyzer.tools.models import Theme
 from app.case_analyzer.tools.theme_classifier import jev_theme_probabilities
 
 THEMES: tuple[Theme, ...] = get_args(Theme)
-THEME_BY_KEY = {theme.casefold(): theme for theme in THEMES}
+THEME_ALIASES: dict[str, Theme] = {"overriding mandatory rules": "Mandatory rules"}
+THEME_BY_KEY: dict[str, Theme] = dict(THEME_ALIASES)
+for _theme in THEMES:
+    THEME_BY_KEY[_theme.casefold()] = _theme
 THEME_TEXT_FIELDS = {
     "excerpt": ("quote",),
     "issue_and_position": ("choiceoflawissue", "courtsposition"),
-    "original_text": ("originaltext",),
+    "original_text": ("originaltext", "pdftext"),
+    "relevant_paragraphs": ("originaltext", "pdftext"),
 }
+RELEVANT_PARAGRAPHS_MAX = 6
 COVERAGE_FIELDS = (
     "themes",
     "quote",
@@ -84,7 +89,7 @@ def _theme_name(value: Any) -> str:
 def gold_themes(record: dict[str, Any]) -> tuple[set[str], set[str]]:
     """Curated themes the analyzer knows, and any it does not."""
     raw = record.get("themes") or []
-    names = raw if isinstance(raw, list) else re.split(r"[,;]", str(raw))
+    names = raw if isinstance(raw, list) else re.split(r"[|,;]", str(raw))
     known: set[str] = set()
     unknown: set[str] = set()
     for name in (_theme_name(n).strip() for n in names):
@@ -101,7 +106,8 @@ def _normalize(text: str) -> str:
 
 def _paragraph_source(record: dict[str, Any]) -> tuple[str, str] | None:
     """Full text and its curated CoL excerpt, in the original language or else in English."""
-    for full_field, excerpt_field in (("originaltext", "quote"), ("englishtranslation", "translatedexcerpt")):
+    pairs = (("originaltext", "quote"), ("pdftext", "quote"), ("englishtranslation", "translatedexcerpt"))
+    for full_field, excerpt_field in pairs:
         full_text, excerpt = _field(record, full_field), _field(record, excerpt_field)
         if full_text and excerpt:
             return full_text, excerpt
@@ -144,7 +150,7 @@ def coverage_report(corpus: list[dict[str, Any]]) -> str:
         "| Field | Filled | Usable text | + any curated theme | + analyzer theme |",
         "|---|---|---|---|---|",
     ]
-    for name in COVERAGE_FIELDS + ("relevantfacts", "officialsourcepdf", "officialsourceurl"):
+    for name in COVERAGE_FIELDS + ("pdftext", "relevantfacts", "officialsourcepdf", "officialsourceurl"):
         filled = sum(1 for r in corpus if r.get(name) not in (None, "", [], {}))
         usable = [r for r in corpus if _field(r, name)]
         any_theme = sum(1 for r in usable if any(gold_themes(r)))
@@ -167,6 +173,27 @@ def coverage_report(corpus: list[dict[str, Any]]) -> str:
     return "\n".join(lines)
 
 
+_paragraph_semaphore = asyncio.Semaphore(16)
+
+
+async def paragraph_probability(paragraph: str) -> float | None:
+    async with _paragraph_semaphore:
+        response = await ask_jev("paragraph_relevance", paragraph, {"relevant": PARAGRAPH_QUESTION})
+    answer = response.answers.get("relevant") if response else None
+    return answer.noul if isinstance(answer, NoulAnswer) else None
+
+
+async def relevant_paragraphs(text: str) -> str:
+    """The paragraphs Jev rates as choice-of-law reasoning, in document order."""
+    paragraphs = split_paragraphs(text)
+    probabilities = await asyncio.gather(*(paragraph_probability(p) for p in paragraphs))
+    ranked = sorted(
+        ((p, i) for i, p in enumerate(probabilities) if p is not None and p >= 0.5),
+        reverse=True,
+    )[:RELEVANT_PARAGRAPHS_MAX]
+    return "\n\n".join(paragraphs[i] for _, i in sorted(ranked, key=lambda item: item[1]))
+
+
 async def evaluate_themes(
     corpus: list[dict[str, Any]], variant: str, limit: int | None, concurrency: int
 ) -> tuple[list[dict[str, Any]], str]:
@@ -179,7 +206,11 @@ async def evaluate_themes(
     items = items[:limit] if limit else items
 
     async def predict(item: dict[str, Any]) -> dict[str, Any]:
-        result = await jev_theme_probabilities(item["text"])
+        text = item["text"]
+        if variant == "relevant_paragraphs":
+            text = await relevant_paragraphs(text)
+            item = {**item, "text": text}
+        result = await jev_theme_probabilities(text) if text else None
         return {**item, "probabilities": result[1] if result else None}
 
     rows = await gather_limited([lambda item=item: predict(item) for item in items], concurrency)
@@ -305,6 +336,7 @@ async def main() -> None:
     parser.add_argument("--limit", type=int, default=None, help="Evaluate at most this many decisions")
     parser.add_argument("--concurrency", type=int, default=8)
     parser.add_argument("--out", type=Path, default=Path("jev-eval"))
+    parser.add_argument("--texts", type=Path, default=None, help="JSONL from extract_court_decision_texts.py")
     args = parser.parse_args()
     experiments = set(args.experiments.split(","))
 
@@ -316,6 +348,11 @@ async def main() -> None:
 
     args.out.mkdir(parents=True, exist_ok=True)
     corpus = await fetch_corpus(args.api_base)
+    if args.texts and args.texts.exists():
+        extracted = {row["id"]: row["text"] for row in map(json.loads, args.texts.read_text().splitlines()) if row["text"]}
+        for record in corpus:
+            if record.get("id") in extracted and not _field(record, "originaltext"):
+                record["pdftext"] = extracted[record["id"]]
     write_jsonl(args.out / "corpus.jsonl", corpus)
 
     sections = [

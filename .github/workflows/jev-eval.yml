@@ -17,6 +17,7 @@ on:
     paths:
       - ".github/workflows/jev-eval.yml"
       - "backend/scripts/jev_eval.py"
+      - "backend/scripts/extract_court_decision_texts.py"
       - "backend/app/case_analyzer/jev.py"
       - "backend/app/case_analyzer/tools/theme_classifier.py"
 
@@ -61,6 +62,13 @@ jobs:
       - name: Install dependencies
         run: uv sync --all-extras --all-packages
 
+      - name: Extract text from official PDFs
+        env:
+          LOGFIRE_SEND_TO_LOGFIRE: "false"
+        run: |
+          uv run python scripts/extract_court_decision_texts.py --out jev-eval/texts.jsonl
+          cat jev-eval/extraction.md >> "$GITHUB_STEP_SUMMARY"
+
       - name: Run evaluation
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_KEY }}
@@ -68,7 +76,7 @@ jobs:
           LIMIT: ${{ inputs.limit || '200' }}
           EXPERIMENTS: ${{ inputs.experiments || 'themes,paragraphs' }}
         run: |
-          uv run python scripts/jev_eval.py --out jev-eval --experiments "$EXPERIMENTS" ${LIMIT:+--limit "$LIMIT"}
+          uv run python scripts/jev_eval.py --out jev-eval --texts jev-eval/texts.jsonl --experiments "$EXPERIMENTS" ${LIMIT:+--limit "$LIMIT"}
           cat jev-eval/report.md >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload corpus and predictions
