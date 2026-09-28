@@ -58,12 +58,24 @@ The Swiss Academies of Arts and Sciences (a+) have awarded the Faculty of Law’
 
 ---
 
+## Auszeichnung für LUMACSS-Alumnus
+
+November 20, 2025
+
+Simon Weigold, Absolvent des Lucerne Master in Computational Social Sciences (LUMACSS), gewinnt den Preis als «NextGen Hero» des Digital Economy Award 2025. Sein Open-Source-Projekt demokratisiert juristisches Wissen, indem es mit Hilfe von KI komplexe Rechtsfragen in leicht verständliche Antworten übersetzt. <a href="https://www.unilu.ch/fakultaeten/ksf/institute/politikwissenschaftliches-seminar/news/auszeichnung-fuer-lumacss-alumnus-9914/" target="_blank">Read more<img
+    src="https://assets.cold.global/assets/external_link.svg"
+    alt="external link"
+    class="external-link-icon"
+  /></a>
+
+---
+
 ## Digitalisierung und internationales Privatrecht – Lokale Verbindungen in grenzenlosen Räumen
 
 November 1st, 2025
 
 Im letzten Vortrag des Tages stellte Agatha Brandão de Oliveira (Universität Luzern) die Ergebnisse ihrer empirischen Studie zur Treffsicherheit von Large Language Models bei der Analyse schweizerischer Gerichtsentscheidungen auf dem Gebiet des internationalen Privatrechts vor. Das für die Studie verwendete Large Language Model OpenAI GPT-4o sei in 92 % der Fälle in der Lage gewe-
-sen, ein Gerichtsurteil zutreffend zusammenzufassen, die für die IPR-Fragen relevanten Normen herauszuarbeiten, die zentralen kollisionsrechtlichen Fragen des Urteils zu nennen und die Gerichtsentscheidung hierzu zu erläutern. Hierbei unterstrich sie, dass bei der Arbeit mit Gerichtsentscheidungen Large Language Models ein vielversprechendes Werkzeug seien, sie aber möglichst präzise Eingaben erforderten (in Köln, IPRax 2025, 641). <a href="https://www.unilu.ch/en/news/open-research-data-award-for-legal-database-9949/" target="_blank">Read more<img
+sen, ein Gerichtsurteil zutreffend zusammenzufassen, die für die IPR-Fragen relevanten Normen herauszuarbeiten, die zentralen kollisionsrechtlichen Fragen des Urteils zu nennen und die Gerichtsentscheidung hierzu zu erläutern. Hierbei unterstrich sie, dass bei der Arbeit mit Gerichtsentscheidungen Large Language Models ein vielversprechendes Werkzeug seien, sie aber möglichst präzise Eingaben erforderten (in Köln, IPRax 2025, 641). <a href="https://www.iprax.de/de/inhalte/fruehere-hefte/2025-Heft-06.php/" target="_blank">Read more<img
     src="https://assets.cold.global/assets/external_link.svg"
     alt="external link"
     class="external-link-icon"
