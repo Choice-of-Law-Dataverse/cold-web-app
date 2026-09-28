@@ -58,6 +58,19 @@ The Swiss Academies of Arts and Sciences (a+) have awarded the Faculty of Law’
 
 ---
 
+## Digitalisierung und internationales Privatrecht – Lokale Verbindungen in grenzenlosen Räumen
+
+November 1st, 2025
+
+Im letzten Vortrag des Tages stellte Agatha Brandão de Oliveira (Universität Luzern) die Ergebnisse ihrer empirischen Studie zur Treffsicherheit von Large Language Models bei der Analyse schweizerischer Gerichtsentscheidungen auf dem Gebiet des internationalen Privatrechts vor. Das für die Studie verwendete Large Language Model OpenAI GPT-4o sei in 92 % der Fälle in der Lage gewe-
+sen, ein Gerichtsurteil zutreffend zusammenzufassen, die für die IPR-Fragen relevanten Normen herauszuarbeiten, die zentralen kollisionsrechtlichen Fragen des Urteils zu nennen und die Gerichtsentscheidung hierzu zu erläutern. Hierbei unterstrich sie, dass bei der Arbeit mit Gerichtsentscheidungen Large Language Models ein vielversprechendes Werkzeug seien, sie aber möglichst präzise Eingaben erforderten (in Köln, IPRax 2025, 641). <a href="https://www.unilu.ch/en/news/open-research-data-award-for-legal-database-9949/" target="_blank">Read more<img
+    src="https://assets.cold.global/assets/external_link.svg"
+    alt="external link"
+    class="external-link-icon"
+  /></a>
+
+---
+
 ## HCCH 2015 Principles on Choice of Law: Update
 
 January, 2025
