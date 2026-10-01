@@ -4,16 +4,6 @@ title: Team — CoLD
 
 ## Core Team
 
-<img src="https://www.unilu.ch/fileadmin/_processed_/a/b/csm_Girsberger_Daniel_Q_d862e28b53.jpg" alt="Daniel Girsberger" style="width: 150px"/>
-
-**Daniel Girsberger** Senior Advisor
-
-<a href="https://www.unilu.ch/en/faculties/faculty-of-law/professorships/girsberger-daniel/" target="_blank">Daniel<img
-    src="https://assets.cold.global/assets/external_link.svg"
-    alt="external link"
-    class="external-link-icon"
-  /></a> was the grant holder of the SNSF project and led it through its funded phase. He remains on board as Senior Advisor and continues to steer the Scientific Board, composed of legal experts from all continents.
-
 <img src="https://www.unilu.ch/fileadmin/_processed_/b/2/csm_Brandao_de_Oliveira_Agatha-1452-20230619_f5c03e5ebb.jpg" alt="Agatha Brandão" style="width: 150px"/>
 
 **Agatha Brandão** Project Lead
@@ -22,7 +12,27 @@ title: Team — CoLD
     src="https://assets.cold.global/assets/external_link.svg"
     alt="external link"
     class="external-link-icon"
-  /></a> leads the current phase of the Dataverse, focused on expanding its scope, building new partnerships, and establishing CoLD as an independent organization.
+  /></a> builds collaborations and promotes CoLD through publications and events.
+  
+<img src="https://www.unilu.ch/fileadmin/_processed_/a/b/csm_Girsberger_Daniel_Q_d862e28b53.jpg" alt="Daniel Girsberger" style="width: 150px"/>
+
+**Daniel Girsberger** Senior Advisor
+
+<a href="https://krlaw.ch/en/team/prof-dr-iur-daniel-girsberger" target="_blank">Daniel<img
+    src="https://assets.cold.global/assets/external_link.svg"
+    alt="external link"
+    class="external-link-icon"
+  /></a> was the grant holder of the SNSF project and continues to lead the Scientific Board, composed of legal experts from every continent.
+  
+<img src="https://www.unilu.ch/fileadmin/_processed_/2/9/csm_Rodrigo_Rodriguez_Skype-4867_8d67f58b46.jpg" alt="Rodrigo Rodriguez" style="width: 150px"/>
+
+**Rodrigo Rodriguez** Institutional Lead
+
+<a href="https://www.unilu.ch/fakultaeten/rf/professuren/rodriguez-rodrigo/mitarbeitende/prof-dr-rodrigo-rodriguez/#tab=c52075" target="_blank">Rodrigo<img
+    src="https://assets.cold.global/assets/external_link.svg"
+    alt="external link"
+    class="external-link-icon"
+  /></a> oversees the project's administrative continuity and supports its research activities at the University of Lucerne.
 
 ## International Network
 
