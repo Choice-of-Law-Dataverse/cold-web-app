@@ -10,7 +10,7 @@ import pytest
 
 from app.case_analyzer import jev
 from app.case_analyzer.tools.document_nav import DocumentContext
-from app.case_analyzer.tools.jurisdiction_classifier import detect_precise_jurisdiction_with_confidence
+from app.case_analyzer.tools.jurisdiction_classifier import detect_precise_jurisdiction_with_confidence, jurisdiction_codes
 from app.case_analyzer.tools.jurisdiction_detector import (
     detect_legal_system_by_jurisdiction,
     detect_legal_system_type,
@@ -278,3 +278,12 @@ async def test_legal_system_uses_the_jurisdiction_step_answer_before_the_llm(use
 
     assert result == "Common-law jurisdiction"
     runner.assert_not_awaited()
+
+
+def test_jurisdictions_fit_in_one_jev_choice() -> None:
+    assert len(jurisdiction_codes()) <= jev.MAX_CHOICE_OPTIONS
+
+
+def test_choice_question_rejects_too_many_options() -> None:
+    with pytest.raises(ValueError, match="at most 255"):
+        jev.choice_question("?", dict.fromkeys(str(n) for n in range(256)))

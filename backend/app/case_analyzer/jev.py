@@ -22,6 +22,7 @@ logger = logging.getLogger(__name__)
 JEV_MIN_CONFIDENCE = 0.8
 JEV_STATE_MAX_CHARS = 5000
 JEV_REASONING_PREFIX = "Classified by Jev"
+MAX_CHOICE_OPTIONS = 255
 
 _SYSTEM_ONE_PATH = "/v1/systemone"
 _TIMEOUT_SECONDS = 10.0
@@ -52,6 +53,9 @@ class SystemOneResponse(BaseModel):
 
 
 def choice_question(instructions: str, criteria: Mapping[str, str | None]) -> dict[str, Any]:
+    """A choice question; System One rejects one with more than MAX_CHOICE_OPTIONS options."""
+    if len(criteria) > MAX_CHOICE_OPTIONS:
+        raise ValueError(f"A Jev choice takes at most {MAX_CHOICE_OPTIONS} options, not {len(criteria)}")
     return {"type": "choice", "instructions": instructions, "criteria": dict(criteria)}
 
 
