@@ -3,6 +3,7 @@
 import json
 from dataclasses import replace
 from pathlib import Path
+from types import SimpleNamespace
 from typing import Any
 
 import pytest
@@ -178,3 +179,36 @@ async def test_jurisdiction_accepts_any_curated_jurisdiction() -> None:
     gold = _gold(jurisdiction_code="EUR", jurisdiction_codes=codes)
     assert (await score.score("jurisdiction", {"jurisdiction_code": "NLD"}, gold))["accuracy"] == 1.0
     assert (await score.score("jurisdiction", {"jurisdiction_code": "BEL"}, gold))["accuracy"] == 0.0
+
+
+def _report(cases: list[dict[str, Any]]) -> Any:
+    return SimpleNamespace(cases=[SimpleNamespace(**case) for case in cases])
+
+
+def test_theme_comparison_scores_both_runs_on_jevs_decisive_cases() -> None:
+    gold = {"themes": ["Tacit choice"]}
+    jev_report = _report(
+        [
+            {"name": "a", "inputs": {"gold": gold}, "output": {"probabilities": {"Tacit choice": 0.95}}},
+            {"name": "b", "inputs": {"gold": gold}, "output": {"probabilities": {"Tacit choice": 0.6}}},
+            {"name": "c", "inputs": {"gold": gold}, "output": {"probabilities": {"Tacit choice": 0.05}}},
+            {"name": "unmatched", "inputs": {"gold": gold}, "output": {"probabilities": {"Tacit choice": 0.95}}},
+        ]
+    )
+    openai_report = _report(
+        [
+            {"name": "a", "output": {"themes": ["NA"]}},
+            {"name": "b", "output": {"themes": ["Tacit choice"]}},
+            {"name": "c", "output": {"themes": ["Tacit choice"]}},
+        ]
+    )
+
+    row = run.theme_comparison(jev_report, openai_report)["Tacit choice"]
+
+    assert row == {
+        "cases": 3,
+        "decisive": 2,
+        "jev_accuracy": 0.5,
+        "openai_accuracy_on_decisive": 0.5,
+        "openai_accuracy": 2 / 3,
+    }

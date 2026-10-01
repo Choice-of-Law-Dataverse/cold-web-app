@@ -19,7 +19,7 @@ import json
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass, replace
 from pathlib import Path
-from typing import Any
+from typing import Any, get_args
 
 from pydantic import BaseModel
 from pydantic_evals import Case, Dataset, increment_eval_metric, set_eval_attribute
@@ -27,7 +27,7 @@ from pydantic_evals.evaluators import Evaluator, EvaluatorContext, EvaluatorOutp
 from pydantic_evals.reporting import EvaluationReport, EvaluationReportAdapter
 
 from app.case_analyzer.config import TASK_MODELS, get_model
-from app.case_analyzer.jev import answered_by_jev, jev_reasoning
+from app.case_analyzer.jev import JEV_MIN_CONFIDENCE, answered_by_jev, jev_reasoning
 from app.case_analyzer.service import detect_jurisdiction
 from app.case_analyzer.tools import (
     classify_themes,
@@ -53,6 +53,7 @@ from app.case_analyzer.tools.models import (
     PILProvisionsOutput,
     RelevantFactsOutput,
     StepResult,
+    Theme,
     ThemeClassificationOutput,
 )
 from app.config import config
@@ -375,6 +376,43 @@ def theme_errors(report: EvaluationReport[Any, Any, Any]) -> dict[str, dict[str,
     return dict(sorted(counts.items(), key=lambda item: -item[1]["curated"]))
 
 
+def theme_comparison(
+    jev_report: EvaluationReport[Any, Any, Any],
+    openai_report: EvaluationReport[Any, Any, Any],
+    threshold: float = JEV_MIN_CONFIDENCE,
+) -> dict[str, dict[str, float | None]]:
+    """Per theme, over the cases both runs scored: how often Jev is decisive, and on those cases Jev's accuracy
+    next to OpenAI's, plus OpenAI's accuracy on every case. Decides which themes Jev can answer on its own."""
+    openai_themes = {case.name: set(case.output.get("themes", [])) - {"NA"} for case in openai_report.cases}
+    rows: dict[str, dict[str, float | None]] = {}
+    for theme in get_args(Theme):
+        cases = decisive = jev_right = openai_right_decisive = openai_right = 0
+        for case in jev_report.cases:
+            probability = case.output.get("probabilities", {}).get(theme)
+            if probability is None or case.name not in openai_themes:
+                continue
+            curated = theme in case.inputs["gold"]["themes"]
+            openai_correct = (theme in openai_themes[case.name]) == curated
+            cases += 1
+            openai_right += openai_correct
+            if max(probability, 1 - probability) >= threshold:
+                decisive += 1
+                jev_right += (probability >= 0.5) == curated
+                openai_right_decisive += openai_correct
+        rows[theme] = {
+            "cases": cases,
+            "decisive": decisive,
+            "jev_accuracy": jev_right / decisive if decisive else None,
+            "openai_accuracy_on_decisive": openai_right_decisive / decisive if decisive else None,
+            "openai_accuracy": openai_right / cases if cases else None,
+        }
+    return rows
+
+
+def _share(value: float | None) -> str:
+    return "-" if value is None else f"{value:.0%}"
+
+
 def pruning_table(report: EvaluationReport[Any, Any, Any]) -> list[tuple[str, float | None, float, float]]:
     """Per variant and threshold: mean share of the curated excerpt kept, and mean share of the text kept."""
 
@@ -490,6 +528,14 @@ async def main() -> None:
             print("  Per theme (curated / predicted / false positives / false negatives):")
             for theme, row in theme_errors(report).items():
                 print(f"    {theme}: {row['curated']} / {row['predicted']} / {row['false_positive']} / {row['false_negative']}")
+            if JEV_ONLY and baseline:
+                print(f"  Per theme, Jev decisive (>= {JEV_MIN_CONFIDENCE}) vs the baseline on the same cases:")
+                for theme, row in theme_comparison(report, baseline).items():
+                    print(
+                        f"    {theme}: decisive {row['decisive']}/{row['cases']}, Jev {_share(row['jev_accuracy'])}"
+                        f" vs baseline {_share(row['openai_accuracy_on_decisive'])};"
+                        f" baseline on all {_share(row['openai_accuracy'])}"
+                    )
         if JEV_ONLY and name == "col_section":
             print("  Pruning (mean share of the curated excerpt kept / mean share of the text kept):")
             for variant, threshold, recall, share in pruning_table(report):
