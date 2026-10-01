@@ -41,6 +41,7 @@ def _respond(
 @pytest.fixture
 def use_jev(monkeypatch: pytest.MonkeyPatch) -> Callable[[Callable[[httpx2.Request], httpx2.Response]], None]:
     monkeypatch.setattr(config, "OPENROUTER_API_KEY", "test-key")
+    monkeypatch.setattr(jev, "_backoff_seconds", lambda _attempt, _retry_after: 0.0)
 
     def install(handler: Callable[[httpx2.Request], httpx2.Response]) -> None:
         client = httpx2.AsyncClient(base_url="https://jev.test", transport=httpx2.MockTransport(handler))
@@ -287,3 +288,49 @@ def test_jurisdictions_fit_in_one_jev_choice() -> None:
 def test_choice_question_rejects_too_many_options() -> None:
     with pytest.raises(ValueError, match="at most 255"):
         jev.choice_question("?", dict.fromkeys(str(n) for n in range(256)))
+
+
+def _statuses_then_answer(statuses: list[int], calls: list[int]) -> Callable[[httpx2.Request], httpx2.Response]:
+    def handler(request: httpx2.Request) -> httpx2.Response:
+        calls.append(1)
+        if len(calls) <= len(statuses):
+            return httpx2.Response(statuses[len(calls) - 1], json={"detail": "busy"})
+        return _respond({"q": {"type": "noul", "noul": 0.9}})(request)
+
+    return handler
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("status", [429, 529])
+async def test_ask_jev_retries_rate_limits_and_overload(use_jev, status: int) -> None:
+    calls: list[int] = []
+    use_jev(_statuses_then_answer([status], calls))
+
+    assert await jev.ask_jev("step", "text", {"q": jev.noul_question("?")}) is not None
+    assert len(calls) == 2
+
+
+@pytest.mark.asyncio
+async def test_ask_jev_gives_up_after_three_rate_limited_attempts(use_jev) -> None:
+    calls: list[int] = []
+    use_jev(_statuses_then_answer([429, 429, 429], calls))
+
+    assert await jev.ask_jev("step", "text", {"q": jev.noul_question("?")}) is None
+    assert len(calls) == 3
+
+
+@pytest.mark.asyncio
+async def test_ask_jev_does_not_retry_a_rejected_request(use_jev) -> None:
+    calls: list[int] = []
+    use_jev(_statuses_then_answer([422], calls))
+
+    assert await jev.ask_jev("step", "text", {"q": jev.noul_question("?")}) is None
+    assert len(calls) == 1
+
+
+@pytest.mark.parametrize(
+    ("retry_after", "ceiling"),
+    [(None, 0.75), ("1", 1.25), ("60", 2.25), ("Wed, 21 Oct 2026 07:28:00 GMT", 0.75)],
+)
+def test_backoff_honours_retry_after_up_to_a_cap(retry_after: str | None, ceiling: float) -> None:
+    assert jev._backoff_seconds(0, retry_after) <= ceiling

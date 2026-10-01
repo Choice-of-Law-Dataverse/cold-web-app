@@ -7,7 +7,9 @@ JEV_MIN_CONFIDENCE. Served through OpenRouter's System One API, which
 speaks TypeSafe's protocol: https://docs.typesafe.ai/api
 """
 
+import asyncio
 import logging
+import random
 from collections.abc import Mapping
 from typing import Annotated, Any, Literal
 
@@ -26,6 +28,10 @@ MAX_CHOICE_OPTIONS = 255
 
 _SYSTEM_ONE_PATH = "/v1/systemone"
 _TIMEOUT_SECONDS = 10.0
+_MAX_ATTEMPTS = 3
+_RETRY_STATUSES = frozenset({429, 502, 503, 529})
+_BACKOFF_BASE_SECONDS = 0.5
+_BACKOFF_MAX_SECONDS = 2.0
 
 
 class ChoiceAnswer(BaseModel):
@@ -100,10 +106,7 @@ async def ask_jev(
     body = {"state": state, "model": config.JEV_MODEL, "questions": dict(questions)}
     with logfire.span("jev", step=step) as span:
         try:
-            try:
-                response = await client.post(_SYSTEM_ONE_PATH, json=body)
-            except httpx2.TimeoutException:
-                response = await client.post(_SYSTEM_ONE_PATH, json=body)
+            response = await _post_with_retries(client, body)
             response.raise_for_status()
             result = SystemOneResponse.model_validate_json(response.content)
             span.set_attributes(_usage_attributes(result))
@@ -117,6 +120,28 @@ async def ask_jev(
         except Exception as e:
             logger.warning("Jev %s request raised %s, falling back to OpenAI: %s", step, type(e).__name__, e)
             return None
+
+
+async def _post_with_retries(client: httpx2.AsyncClient, body: dict[str, Any]) -> httpx2.Response:
+    """POST, retrying timeouts, rate limits and overload with capped exponential backoff, as System One asks."""
+    for attempt in range(_MAX_ATTEMPTS - 1):
+        try:
+            response = await client.post(_SYSTEM_ONE_PATH, json=body)
+        except httpx2.TimeoutException:
+            await asyncio.sleep(_backoff_seconds(attempt, None))
+            continue
+        if response.status_code not in _RETRY_STATUSES:
+            return response
+        await asyncio.sleep(_backoff_seconds(attempt, response.headers.get("Retry-After")))
+    return await client.post(_SYSTEM_ONE_PATH, json=body)
+
+
+def _backoff_seconds(attempt: int, retry_after: str | None) -> float:
+    try:
+        delay = float(retry_after) if retry_after else _BACKOFF_BASE_SECONDS * 2**attempt
+    except ValueError:
+        delay = _BACKOFF_BASE_SECONDS * 2**attempt
+    return min(delay, _BACKOFF_MAX_SECONDS) + random.uniform(0, _BACKOFF_BASE_SECONDS / 2)
 
 
 def _usage_attributes(response: SystemOneResponse) -> dict[str, Any]:
