@@ -95,7 +95,7 @@ async def test_experiment_caches_outputs_and_replays_their_cost(tmp_path: Path, 
         calls.append(up.legal_system)
         return StepResult(ThemeClassificationOutput(themes=["Party autonomy"], confidence="high", reasoning="ok"))
 
-    step = run.Step("themes", ("col_excerpt", "themes"), fake_themes, ("tools/theme_classifier.py",))
+    step = replace(run.STEPS["themes"], run=fake_themes)
     entries = [
         {"id": "CD-CHE-1", "text": "Decision text", "gold": _gold()},
         {"id": "CD-CHE-2", "text": "", "gold": _gold(themes=[])},
@@ -129,7 +129,7 @@ async def test_scores_are_grouped_by_answerer(tmp_path: Path, monkeypatch: pytes
         themes: list[Any] = ["Party autonomy"] if by_jev else ["Public policy"]
         return StepResult(ThemeClassificationOutput(themes=themes, confidence="high", reasoning=reasoning))
 
-    step = run.Step("themes", ("col_excerpt", "themes"), fake_themes, ("tools/theme_classifier.py",))
+    step = replace(run.STEPS["themes"], run=fake_themes)
     entries = [{"id": f"CD-{text}", "text": text, "gold": _gold()} for text in ("jev", "agent")]
     spend = budget.Budget()
     report = await run.build_dataset("themes", step, entries, spend).evaluate(
@@ -189,10 +189,10 @@ def test_theme_comparison_scores_both_runs_on_jevs_decisive_cases() -> None:
     gold = {"themes": ["Tacit choice"]}
     jev_report = _report(
         [
-            {"name": "a", "inputs": {"gold": gold}, "output": {"probabilities": {"Tacit choice": 0.95}}},
-            {"name": "b", "inputs": {"gold": gold}, "output": {"probabilities": {"Tacit choice": 0.6}}},
-            {"name": "c", "inputs": {"gold": gold}, "output": {"probabilities": {"Tacit choice": 0.05}}},
-            {"name": "unmatched", "inputs": {"gold": gold}, "output": {"probabilities": {"Tacit choice": 0.95}}},
+            {"name": "a", "expected_output": gold, "output": {"probabilities": {"Tacit choice": 0.95}}},
+            {"name": "b", "expected_output": gold, "output": {"probabilities": {"Tacit choice": 0.6}}},
+            {"name": "c", "expected_output": gold, "output": {"probabilities": {"Tacit choice": 0.05}}},
+            {"name": "unmatched", "expected_output": gold, "output": {"probabilities": {"Tacit choice": 0.95}}},
         ]
     )
     openai_report = _report(
@@ -212,3 +212,35 @@ def test_theme_comparison_scores_both_runs_on_jevs_decisive_cases() -> None:
         "openai_accuracy_on_decisive": 0.5,
         "openai_accuracy": 2 / 3,
     }
+
+
+@pytest.mark.parametrize("name", list(run.STEPS))
+def test_task_inputs_never_contain_the_scored_answer_or_the_decision_id(name: str) -> None:
+    step = run.STEPS[name]
+    entry = {"id": "CD-CHE-1", "text": "Decision text", "text_source": "pdf", "gold": _gold(jurisdiction_codes=["CHE"])}
+    inputs = run.case_inputs(step, entry)
+
+    assert set(inputs) == {"text", "upstream"}
+    assert set(inputs["upstream"]).isdisjoint(step.target)
+    assert "CD-CHE-1" not in json.dumps(inputs)
+    if name == "jurisdiction":
+        assert inputs["upstream"] == {}
+        assert "CHE" not in json.dumps(inputs)
+
+
+@pytest.mark.asyncio
+async def test_a_step_cannot_read_a_curated_value_it_does_not_declare(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(run, "CACHE_DIR", tmp_path)
+
+    async def peeking(_doc: Any, up: run.Upstream) -> dict[str, Any]:
+        return {"themes": up.themes.themes}
+
+    step = replace(run.STEPS["themes"], run=peeking)
+    entries = [{"id": "CD-CHE-1", "text": "Decision text", "gold": _gold()}]
+    spend = budget.Budget()
+    report = await run.build_dataset("themes", step, entries, spend).evaluate(
+        run.make_task("themes", step, spend), progress=False
+    )
+
+    assert not report.cases
+    assert "KeyError" in report.failures[0].error_message

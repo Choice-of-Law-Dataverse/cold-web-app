@@ -74,6 +74,19 @@ Keeping cost down:
 - **Budget.** `--max-cost` stops starting new calls once the run's new spend passes the limit.
 - **Dev first.** Iterate on `dev`; run `test` only to confirm a decision.
 
+## What a step sees
+
+A case's `inputs` hold only the decision text and the curated values the step is designed to take as input
+(`Step.uses`, plus the curated jurisdiction for jurisdiction-specific prompts). The value it is scored against
+(`Step.target`) is the case's `expected_output`, which pydantic-evals passes to the evaluators but never to the
+task; a step that reads a curated value it does not declare fails with `KeyError`. The jurisdiction step gets the
+text alone. Cases are named by decision ID (for example `CD-ARE-1138`, which contains the country code) so results
+can be traced back, but the task never receives the name or the metadata. The texts contain no decision IDs; many
+do name their court or country in the header, as real uploads do.
+
+Reports saved before this split hold the curated values under `inputs.gold`; `--baseline` still compares them,
+but the per-theme tables need reports from the current harness.
+
 ## Scores
 
 | Step | Score |

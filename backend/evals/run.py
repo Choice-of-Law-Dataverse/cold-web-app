@@ -73,30 +73,70 @@ METRICS = ("cost", "input_tokens", "output_tokens", "requests")
 
 
 class Upstream:
-    """Curated values in the shapes the analyzer steps take as inputs."""
+    """The curated values a step takes as input, in the shapes the analyzer steps expect.
 
-    def __init__(self, gold: dict[str, Any]) -> None:
-        self.gold = gold
-        self.jurisdiction = gold["jurisdiction"] or None
-        curated = [detect_legal_system_by_jurisdiction(name) for name in corpus.split_list(gold["jurisdiction"])]
-        self.legal_system = next((system for system in curated if system), "Civil-law jurisdiction")
-        self.col = ColSectionOutput(col_sections=[gold["col_excerpt"]], confidence="high", reasoning="Curated")
-        self.themes = ThemeClassificationOutput(themes=gold["themes"] or ["NA"], confidence="high", reasoning="Curated")
-        self.facts = RelevantFactsOutput(relevant_facts=gold["relevant_facts"], confidence="high", reasoning="Curated")
-        self.provisions = PILProvisionsOutput(pil_provisions=gold["pil_provisions"], confidence="high", reasoning="Curated")
-        self.issue = ColIssueOutput(col_issue=gold["col_issue"], confidence="high", reasoning="Curated")
-        self.position = CourtsPositionOutput(courts_position=gold["courts_position"], confidence="high", reasoning="Curated")
+    Built only from the case's inputs, which hold just the values the step declares in Step.uses and Step.context;
+    reading any other value raises KeyError, so a step can never see the value it is scored against.
+    """
+
+    def __init__(self, values: dict[str, Any]) -> None:
+        self.values = values
+
+    @property
+    def jurisdiction(self) -> str | None:
+        return self.values["jurisdiction"] or None
+
+    @property
+    def legal_system(self) -> str:
+        curated = [detect_legal_system_by_jurisdiction(name) for name in corpus.split_list(self.values["jurisdiction"])]
+        return next((system for system in curated if system), "Civil-law jurisdiction")
+
+    @property
+    def col_excerpt(self) -> str:
+        return self.values["col_excerpt"]
+
+    @property
+    def col(self) -> ColSectionOutput:
+        return ColSectionOutput(col_sections=[self.values["col_excerpt"]], confidence="high", reasoning="Curated")
+
+    @property
+    def themes(self) -> ThemeClassificationOutput:
+        return ThemeClassificationOutput(themes=self.values["themes"] or ["NA"], confidence="high", reasoning="Curated")
+
+    @property
+    def facts(self) -> RelevantFactsOutput:
+        return RelevantFactsOutput(relevant_facts=self.values["relevant_facts"], confidence="high", reasoning="Curated")
+
+    @property
+    def provisions(self) -> PILProvisionsOutput:
+        return PILProvisionsOutput(pil_provisions=self.values["pil_provisions"], confidence="high", reasoning="Curated")
+
+    @property
+    def issue(self) -> ColIssueOutput:
+        return ColIssueOutput(col_issue=self.values["col_issue"], confidence="high", reasoning="Curated")
+
+    @property
+    def position(self) -> CourtsPositionOutput:
+        return CourtsPositionOutput(courts_position=self.values["courts_position"], confidence="high", reasoning="Curated")
 
 
 @dataclass(frozen=True)
 class Step:
-    """An analyzer step; sources (relative to app/case_analyzer) and tasks key its cache."""
+    """An analyzer step.
+
+    uses: curated values the step takes as input, which a case must have.
+    target: curated values the step is scored against; they go to the evaluators only, never to the task.
+    context: curated values passed when present (the jurisdiction, for jurisdiction-specific prompts).
+    sources (relative to app/case_analyzer) and tasks key the step's cache.
+    """
 
     task: str
-    requires: tuple[str, ...]
+    uses: tuple[str, ...]
+    target: tuple[str, ...]
     run: Callable[[DocumentContext, Upstream], Awaitable[Any]]
     sources: tuple[str, ...]
     extra_tasks: tuple[str, ...] = ()
+    context: tuple[str, ...] = ("jurisdiction",)
 
 
 async def _jurisdiction(doc: DocumentContext, _up: Upstream) -> Any:
@@ -106,57 +146,68 @@ async def _jurisdiction(doc: DocumentContext, _up: Upstream) -> Any:
 STEPS: dict[str, Step] = {
     "jurisdiction": Step(
         "jurisdiction_classification",
-        ("jurisdiction_code",),
+        (),
+        ("jurisdiction_code", "jurisdiction_codes"),
         _jurisdiction,
         ("service.py", "tools/jurisdiction_classifier.py", "tools/jurisdiction_detector.py"),
         ("legal_system",),
+        context=(),
     ),
     "col_section": Step(
         "col_section",
+        (),
         ("col_excerpt",),
         lambda doc, up: extract_col_section(doc),
         ("tools/col_extractor.py", "tools/hybrid_retrieval.py"),
         ("col_section_fallback",),
+        context=(),
     ),
     "themes": Step(
         "themes",
-        ("col_excerpt", "themes"),
-        lambda doc, up: classify_themes(doc, up.gold["col_excerpt"], up.legal_system, up.jurisdiction),
+        ("col_excerpt",),
+        ("themes",),
+        lambda doc, up: classify_themes(doc, up.col_excerpt, up.legal_system, up.jurisdiction),
         ("tools/theme_classifier.py",),
     ),
     "case_citation": Step(
         "case_citation",
+        (),
         ("case_citation",),
         lambda doc, up: extract_case_citation(doc, up.legal_system, up.jurisdiction or ""),
         ("tools/case_citation_extractor.py",),
     ),
     "pil_provisions": Step(
         "pil_provisions",
-        ("col_excerpt", "pil_provisions"),
+        ("col_excerpt",),
+        ("pil_provisions",),
         lambda doc, up: extract_pil_provisions(doc, up.col, up.legal_system, up.jurisdiction),
         ("tools/pil_provisions_extractor.py",),
     ),
     "relevant_facts": Step(
         "relevant_facts",
-        ("col_excerpt", "relevant_facts"),
+        ("col_excerpt",),
+        ("relevant_facts",),
         lambda doc, up: extract_relevant_facts(doc, up.col, up.legal_system, up.jurisdiction),
         ("tools/relevant_facts_extractor.py",),
     ),
     "col_issue": Step(
         "col_issue",
-        ("col_excerpt", "themes", "col_issue"),
+        ("col_excerpt", "themes"),
+        ("col_issue",),
         lambda doc, up: extract_col_issue(doc, up.col, up.legal_system, up.jurisdiction, up.themes),
         ("tools/col_issue_extractor.py",),
     ),
     "courts_position": Step(
         "courts_position",
-        ("col_excerpt", "themes", "col_issue", "courts_position"),
+        ("col_excerpt", "themes", "col_issue"),
+        ("courts_position",),
         lambda doc, up: extract_courts_position(doc, up.col, up.legal_system, up.jurisdiction, up.themes, up.issue),
         ("tools/courts_position_extractor.py",),
     ),
     "abstract": Step(
         "abstract",
-        ("themes", "relevant_facts", "pil_provisions", "col_issue", "courts_position", "abstract"),
+        ("themes", "relevant_facts", "pil_provisions", "col_issue", "courts_position"),
+        ("abstract",),
         lambda doc, up: extract_abstract(
             doc, up.legal_system, up.jurisdiction, up.themes, up.facts, up.provisions, up.issue, up.position
         ),
@@ -179,7 +230,7 @@ async def _jev_jurisdiction(doc: DocumentContext, _up: Upstream) -> dict[str, An
 
 async def _jev_themes(_doc: DocumentContext, up: Upstream) -> dict[str, Any]:
     """Jev's themes; confidence 0 when no theme applies, since the analyzer never accepts that answer from Jev."""
-    result = await theme_classifier.jev_theme_probabilities(up.gold["col_excerpt"])
+    result = await theme_classifier.jev_theme_probabilities(up.col_excerpt)
     if result is None:
         raise RuntimeError("Jev gave no theme answers; see the logged request error")
     model, probabilities = result
@@ -239,15 +290,15 @@ def _source_hash(step: Step) -> str:
     return digest.hexdigest()[:16]
 
 
-def _cache_key(name: str, step: Step, entry: dict[str, Any]) -> str:
+def _cache_key(name: str, step: Step, inputs: dict[str, Any]) -> str:
     payload = {
         "step": name,
         "model": [get_model(task) for task in (step.task, *step.extra_tasks)],
         "jev": JEV_ENABLED and bool(config.OPENROUTER_API_KEY) and config.JEV_MODEL,
         "jev_only": JEV_ONLY,
         "source": _source_hash(step),
-        "text": entry["text"],
-        "upstream": {key: entry["gold"][key] for key in step.requires},
+        "text": inputs["text"],
+        "upstream": inputs["upstream"],
     }
     return hashlib.sha256(json.dumps(payload, sort_keys=True).encode()).hexdigest()
 
@@ -259,8 +310,8 @@ def _dump(output: Any) -> dict[str, Any]:
     return result.model_dump() if isinstance(result, BaseModel) else {"value": result}
 
 
-def _cache_path(name: str, step: Step, entry: dict[str, Any]) -> Path:
-    return CACHE_DIR / f"{_cache_key(name, step, entry)}.json"
+def _cache_path(name: str, step: Step, inputs: dict[str, Any]) -> Path:
+    return CACHE_DIR / f"{_cache_key(name, step, inputs)}.json"
 
 
 def _answered_by(output: dict[str, Any]) -> str:
@@ -268,8 +319,8 @@ def _answered_by(output: dict[str, Any]) -> str:
 
 
 def make_task(name: str, step: Step, budget: Budget) -> Callable[[dict[str, Any]], Awaitable[dict[str, Any]]]:
-    async def task(entry: dict[str, Any]) -> dict[str, Any]:
-        path = _cache_path(name, step, entry)
+    async def task(inputs: dict[str, Any]) -> dict[str, Any]:
+        path = _cache_path(name, step, inputs)
         if path.exists():
             cached = json.loads(path.read_text())
             set_eval_attribute("cached", True)
@@ -279,7 +330,7 @@ def make_task(name: str, step: Step, budget: Budget) -> Callable[[dict[str, Any]
             return cached["output"]
         budget.check()
         set_eval_attribute("cached", False)
-        output = _dump(await step.run(DocumentContext(draft_id=0, text=entry["text"]), Upstream(entry["gold"])))
+        output = _dump(await step.run(DocumentContext(draft_id=0, text=inputs["text"]), Upstream(inputs["upstream"])))
         set_eval_attribute("answered_by", _answered_by(output))
         CACHE_DIR.mkdir(parents=True, exist_ok=True)
         path.write_text(json.dumps({"output": output}, ensure_ascii=False))
@@ -295,7 +346,7 @@ class CuratedMatch(Evaluator[dict[str, Any], dict[str, Any], dict[str, Any]]):
     step: str
 
     async def evaluate(self, ctx: EvaluatorContext[dict[str, Any], dict[str, Any], dict[str, Any]]) -> EvaluatorOutput:
-        return await score(self.step, ctx.output, ctx.inputs["gold"])
+        return await score(self.step, ctx.output, ctx.expected_output or {})
 
 
 @dataclass
@@ -319,15 +370,24 @@ class SpendTracker(Evaluator[dict[str, Any], dict[str, Any], dict[str, Any]]):
         return {}
 
 
+def case_inputs(step: Step, entry: dict[str, Any]) -> dict[str, Any]:
+    """What the task may see: the decision text and the curated values the step takes as input, nothing else."""
+    gold = entry["gold"]
+    return {"text": entry["text"], "upstream": {key: gold[key] for key in (*step.uses, *step.context) if key in gold}}
+
+
 def build_dataset(name: str, step: Step, entries: list[dict[str, Any]], budget: Budget) -> Dataset[Any, Any, Any]:
+    """Cases keep the decision ID as their name so results can be traced back; the task never receives the name,
+    the metadata or the expected output, only case_inputs."""
     cases = [
         Case(
             name=str(entry["id"]),
-            inputs=entry,
-            metadata={"added_by": entry.get("added_by"), "jurisdiction": entry["gold"]["jurisdiction_code"]},
+            inputs=case_inputs(step, entry),
+            expected_output={key: entry["gold"][key] for key in step.target},
+            metadata={"text_source": entry.get("text_source")},
         )
         for entry in entries
-        if all(entry["gold"][key] for key in step.requires)
+        if all(entry["gold"][key] for key in (*step.uses, *step.target))
     ]
     return Dataset(name=name, cases=cases, evaluators=[CuratedMatch(name), SpendTracker(step, name, budget)])
 
@@ -362,11 +422,15 @@ def scores_by_answerer(report: EvaluationReport[Any, Any, Any]) -> dict[str, dic
     return summary
 
 
+def _expected(case: Any) -> dict[str, Any]:
+    return case.expected_output or {}
+
+
 def theme_errors(report: EvaluationReport[Any, Any, Any]) -> dict[str, dict[str, int]]:
     """Per theme: curated count, predicted count, false positives and false negatives."""
     counts: dict[str, dict[str, int]] = {}
     for case in report.cases:
-        gold, predicted = set(case.inputs["gold"]["themes"]), set(case.output.get("themes", [])) - {"NA"}
+        gold, predicted = set(_expected(case)["themes"]), set(case.output.get("themes", [])) - {"NA"}
         for theme in gold | predicted:
             row = counts.setdefault(theme, {"curated": 0, "predicted": 0, "false_positive": 0, "false_negative": 0})
             row["curated"] += theme in gold
@@ -391,7 +455,7 @@ def theme_comparison(
             probability = case.output.get("probabilities", {}).get(theme)
             if probability is None or case.name not in openai_themes:
                 continue
-            curated = theme in case.inputs["gold"]["themes"]
+            curated = theme in _expected(case)["themes"]
             openai_correct = (theme in openai_themes[case.name]) == curated
             cases += 1
             openai_right += openai_correct
@@ -427,7 +491,7 @@ def pruning_table(report: EvaluationReport[Any, Any, Any]) -> list[tuple[str, fl
                 for number, (text, p) in enumerate(zip(paragraphs, probabilities, strict=True), start=1)
                 if keep(number, p, candidates)
             ]
-            recalls.append(excerpt_recall(kept, case.inputs["gold"]["col_excerpt"]))
+            recalls.append(excerpt_recall(kept, _expected(case)["col_excerpt"]))
             shares.append(sum(map(len, kept)) / max(1, sum(map(len, paragraphs))))
         return variant, threshold, sum(recalls) / len(recalls), sum(shares) / len(shares)
 
