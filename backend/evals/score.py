@@ -26,6 +26,13 @@ def excerpt_recall(sections: list[str], excerpt: str) -> float:
     return fuzz.partial_ratio(normalize(excerpt), extracted) / 100 if extracted else 0.0
 
 
+def identifier_match(identifier: str, reference: str) -> float:
+    """Whether the curated citation contains the identifier's numbers in the same order, whatever language or court
+    naming either side uses."""
+    numbers = re.findall(r"\d+", identifier)
+    return float(bool(numbers) and "".join(numbers) in "".join(re.findall(r"\d+", reference)))
+
+
 def normalize(text: str) -> str:
     return re.sub(r"\s+", " ", text).casefold().strip()
 
@@ -77,7 +84,11 @@ async def score(step: str, output: dict[str, Any], gold: dict[str, Any]) -> dict
             return set_scores(output.get("pil_provisions", []), gold["pil_provisions"])
         case "case_citation":
             predicted, reference = normalize(output.get("case_citation", "")), normalize(gold["case_citation"])
-            return {"match": float(bool(predicted) and fuzz.token_set_ratio(predicted, reference) >= 90)}
+            return {
+                "match": float(bool(predicted) and fuzz.token_set_ratio(predicted, reference) >= 90),
+                "identifier_match": identifier_match(output.get("identifier") or output.get("case_citation", ""), reference),
+                "has_year": float(bool(re.search(r"\b(1[89]|20)\d\d\b", predicted))),
+            }
         case "relevant_facts" | "col_issue" | "courts_position" | "abstract":
             return await judge(str(output.get(step, "")), gold[step])
     raise ValueError(f"No scorer for step {step}")
