@@ -454,3 +454,25 @@ class TestCleanDocumentText:
             f"<!-- Start of picture text -->{scanned}<!-- End of picture text -->"
         )
         assert text == scanned.strip()
+
+
+class TestPageBreaks:
+    header = "ESTADO DO RIO GRANDE DO SUL PODER JUDICIÁRIO TRIBUNAL DE JUSTIÇA"
+    filler = "\n\n".join(f"Paragraph {n} of the reasons." for n in range(12))
+
+    def test_page_number_mid_sentence_joins_a_capitalised_continuation(self) -> None:
+        text = clean_document_text("Its members include China, Japan and South-East\n\n20\n\nAsia, among others.")
+        assert text == "Its members include China, Japan and South-East Asia, among others."
+
+    def test_footnotes_between_the_halves_move_after_the_sentence(self) -> None:
+        text = clean_document_text(
+            "the set of rules gathered in\n\n> 15 BROWNLIE, Principles, p. 6.\n\n21\n\nprinciples and usages."
+        )
+        assert text == "the set of rules gathered in principles and usages.\n\n> 15 BROWNLIE, Principles, p. 6."
+
+    def test_bare_number_next_to_a_running_header_goes(self) -> None:
+        pages = "\n\n".join(f"Sentence {n} ends here.\n\n{n}\n\n{self.header}\n\nUGS" for n in range(1, 6))
+        text = clean_document_text(f"{pages}\n\n{self.filler}")
+        assert text.count(self.header) == 1
+        assert text.count("UGS") == 1
+        assert "\n\n3\n\n" not in text

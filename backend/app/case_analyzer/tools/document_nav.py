@@ -33,6 +33,7 @@ _PAGE_MARKER_RE = re.compile(
 _BARE_NUMBER_RE = re.compile(r"^\d{1,4}\.?$")
 FURNITURE_MIN_SPREAD = 0.25
 MIN_FURNITURE_LETTERS = 8
+_FOOTNOTE_RE = re.compile(r"^>\s*\d{1,3}\s+\S")
 _NUMBERED_BLOCK_RE = re.compile(r"^[-–—>#*\s\[]*(?:note:?\s*)?\d", re.I)
 _EMPHASIS_RE = re.compile(r"(?<![\w*])(?:\*{1,3}|_{1,2})(?=\S)|(?<=\S)(?:\*{1,3}|_{1,2})(?![\w*])")
 _SUPERSCRIPT_RE = re.compile(r"<sup>\s*([0-9]+)\s*</sup>", re.I)
@@ -153,21 +154,28 @@ def _strip_emphasis(line: str) -> str:
 
 def _strip_inline_markup(text: str) -> str:
     text = _PICTURE_TEXT_RE.sub(_picture_text, text)
-    text = _SUPERSCRIPT_RE.sub(lambda match: match.group(1).translate(_SUPERSCRIPT_DIGITS), text)
-    text = _HTML_TAG_RE.sub("", text)
     lines = (line if line.lstrip().startswith("#") else _strip_emphasis(line) for line in text.split("\n"))
-    return _SPACE_BEFORE_PUNCTUATION_RE.sub("", "\n".join(lines))
+    text = _SUPERSCRIPT_RE.sub(lambda match: match.group(1).translate(_SUPERSCRIPT_DIGITS), "\n".join(lines))
+    return _SPACE_BEFORE_PUNCTUATION_RE.sub("", _HTML_TAG_RE.sub("", text))
 
 
-def _continues(previous: str, block: str) -> bool:
-    """Whether block continues the sentence previous was cut off in, as at a page break."""
+def _is_open(block: str) -> bool:
+    """Whether block stops mid-sentence."""
+    return not block.rstrip().endswith(_SENTENCE_END) and _heading_line(block) is None
+
+
+def _continues(previous: str, block: str, after_page_break: bool = False) -> bool:
+    """Whether block continues the sentence previous was cut off in.
+
+    Across a blank line only a lowercase start shows that; across a removed page number any text block does.
+    """
     first = block.lstrip()[:1]
     return (
         bool(first)
-        and first.islower()
+        and (first.islower() or (after_page_break and first.isalnum()))
         and not block.lstrip().startswith(("http", "www."))
-        and not previous.rstrip().endswith(_SENTENCE_END)
-        and _heading_line(previous) is None
+        and _heading_line(block) is None
+        and _is_open(previous)
     )
 
 
@@ -177,7 +185,7 @@ def _is_sentence(block: str) -> bool:
 
 
 def _furniture_keys(blocks: list[str]) -> set[str]:
-    """Running headers and footers: short blocks with at least MIN_FURNITURE_LETTERS letters, repeated
+    """Running headers and footers: short blocks (with at least MIN_FURNITURE_LETTERS letters if they contain digits) repeated
     MIN_FURNITURE_REPEATS times or more across at least FURNITURE_MIN_SPREAD of the document, digits ignored.
 
     The spread rule spares repeated table cells. The letter rule and skipping blocks that start with a number spare
@@ -187,7 +195,10 @@ def _furniture_keys(blocks: list[str]) -> set[str]:
     for index, block in enumerate(blocks):
         if (
             len(block) <= MAX_FURNITURE_CHARS
-            and sum(character.isalpha() for character in block) >= MIN_FURNITURE_LETTERS
+            and (
+                not any(character.isdigit() for character in block)
+                or sum(character.isalpha() for character in block) >= MIN_FURNITURE_LETTERS
+            )
             and not _NUMBERED_BLOCK_RE.match(block)
             and not _is_sentence(block)
         ):
@@ -201,37 +212,55 @@ def clean_document_text(text: str) -> str:
 
     Running headers and footers (see _furniture_keys) keep only their first occurrence, so an identifier printed in
     every header is still there once; short blocks that nearly match one (an OCR-garbled copy) go too. Page markers
-    such as "- 2 -", "Page 4" or "3/12" go; a bare number goes only inside a sentence a page break split, since it is
-    otherwise often a paragraph number. Short OCR'd picture text (logos, seals), inline markdown emphasis and HTML tags
+    such as "- 2 -", "Page 4" or "3/12" go; a bare number goes only next to removed furniture or inside a sentence a
+    page break split, since it is otherwise often a paragraph number. Footnotes printed between the two halves of a split sentence move after it.
+    Short OCR'd picture text (logos, seals), inline markdown emphasis and HTML tags
     are removed (footnote markers become superscript digits), and a block that ends mid-sentence is joined with the
     next when it continues in lowercase.
     """
     blocks = [block.strip() for block in _BLOCK_SEPARATOR_RE.split(_strip_inline_markup(text)) if block.strip()]
     furniture = _furniture_keys(blocks)
     seen: set[str] = set()
-    content: list[str] = []
+    removed: list[bool] = []
     for block in blocks:
-        if _PAGE_MARKER_RE.match(block.lstrip("# ")):
-            continue
-        if len(block) <= MAX_FURNITURE_CHARS:
+        drop = bool(_PAGE_MARKER_RE.match(block.lstrip("# ")))
+        if not drop and len(block) <= MAX_FURNITURE_CHARS:
             key = _furniture_key(block)
             if key in furniture:
-                if key in seen:
-                    continue
+                drop = key in seen
                 seen.add(key)
-            elif any(fuzz.ratio(key, header) >= FURNITURE_SIMILARITY for header in furniture):
-                continue
-        content.append(block)
+            else:
+                drop = any(fuzz.ratio(key, header) >= FURNITURE_SIMILARITY for header in furniture)
+        removed.append(drop)
+    content = [
+        block
+        for index, block in enumerate(blocks)
+        if not removed[index]
+        and not (
+            _BARE_NUMBER_RE.match(block)
+            and ((index > 0 and removed[index - 1]) or (index + 1 < len(blocks) and removed[index + 1]))
+        )
+    ]
 
     kept: list[str] = []
-    for index, block in enumerate(content):
-        following = content[index + 1] if index + 1 < len(content) else ""
-        if _BARE_NUMBER_RE.match(block) and kept and _continues(kept[-1], following):
+    notes: list[str] = []
+    after_page_break = False
+    for block in content:
+        open_sentence = bool(kept) and _is_open(kept[-1])
+        if open_sentence and _FOOTNOTE_RE.match(block):
+            notes.append(block)
             continue
-        if kept and _continues(kept[-1], block):
+        if open_sentence and _BARE_NUMBER_RE.match(block):
+            after_page_break = True
+            continue
+        if kept and _continues(kept[-1], block, after_page_break):
             kept[-1] = f"{kept[-1]} {block}"
         else:
+            kept.extend(notes)
+            notes.clear()
             kept.append(block)
+        after_page_break = False
+    kept.extend(notes)
     return "\n\n".join(kept)
 
 
