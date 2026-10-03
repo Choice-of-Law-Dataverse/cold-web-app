@@ -43,8 +43,12 @@ _SPACE_BEFORE_PUNCTUATION_RE = re.compile(r"(?<=\w) +(?=[,;])")
 FURNITURE_SIMILARITY = 85
 _SUPERSCRIPT_DIGITS = str.maketrans("0123456789", "⁰¹²³⁴⁵⁶⁷⁸⁹")
 _SENTENCE_END = tuple(".:;?!)]}\"'»”’…")
-_PARAGRAPH_SEPARATORS = (re.compile(r"\n"), re.compile(r"(?<=[.!?])\s+"), re.compile(r"\s+"))
-_PARAGRAPH_JOINERS = ("\n", " ", " ")
+_PARAGRAPH_SEPARATORS = (
+    re.compile(r"(?<=[.!?…»”\"’)])\s+(?=[\"“«(\[¿¡]?[A-ZÀ-ÖØ-ÞĀ-ſА-Я0-9])"),
+    re.compile(r"\n"),
+    re.compile(r"\s+"),
+)
+_PARAGRAPH_JOINERS = (" ", "\n", " ")
 _MARKDOWN_HEADING_RE = re.compile(r"^#{1,6}\s+.+")
 _LINE_BREAK_HYPHEN_RE = re.compile(r"(?<=\w)-[ \t]*\r?\n[ \t]*(?=\w)")
 _ALL_CAPS_HEADING_PUNCTUATION = frozenset(" -–—:;,.()[]/§0123456789")
@@ -265,7 +269,9 @@ def clean_document_text(text: str) -> str:
 
 
 def split_oversized_paragraph(text: str, max_chars: int = MAX_PARAGRAPH_CHARS, level: int = 0) -> list[str]:
-    """Split text longer than max_chars at line breaks, then sentence ends, then spaces, packing pieces greedily.
+    """Split text longer than max_chars at sentence ends, then line breaks, then spaces, packing pieces greedily.
+
+    Sentence ends come first because extracted text often has a line break at every wrapped line.
 
     Extracted text without blank lines otherwise becomes one paragraph the size of the document, which no
     embedding request, Jev question or paragraph-level selection can handle.
