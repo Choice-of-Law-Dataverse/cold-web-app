@@ -1,13 +1,31 @@
 """Tests for audited Choice of Law output assembly."""
 
-from app.case_analyzer.tools.col_extractor import _assemble_output, _retrieval_evidence
+import asyncio
+from typing import Any
+from unittest.mock import AsyncMock, MagicMock
+
+import pytest
+
+from app.case_analyzer.config import get_model
+from app.case_analyzer.jev import NoulAnswer, SystemOneResponse
+from app.case_analyzer.runner import OutputValidationError
+from app.case_analyzer.tools import col_extractor
+from app.case_analyzer.tools.col_extractor import _assemble_output, _retrieval_evidence, jev_candidates
 from app.case_analyzer.tools.document_nav import DocumentContext
-from app.case_analyzer.tools.hybrid_retrieval import CandidatePassage, RetrievalResult
-from app.case_analyzer.tools.models import ColCandidateAuditOutput, ColCandidateDecision
+from app.case_analyzer.tools.hybrid_retrieval import MAX_MERGED_PARAGRAPHS, CandidatePassage, RetrievalResult
+from app.case_analyzer.tools.models import ColCandidateAuditOutput, ColCandidateDecision, StepResult
+
+
+def _long(text: str) -> str:
+    """A paragraph long enough that DocumentContext keeps it on its own."""
+    return (f"{text} " + "The court sets out further reasoning on this point. " * 5).rstrip()
+
+
+_HOLDING = _long("The court holds that Swiss law governs the contract.")
 
 
 def test_output_is_reconstructed_verbatim_with_paragraph_provenance() -> None:
-    paragraphs = ["Background.", "The court reasons that Swiss law governs.", "Swiss law therefore applies."]
+    paragraphs = [_long("Background."), _long("The court reasons that Swiss law governs."), _long("Swiss law applies.")]
     doc = DocumentContext(draft_id=1, text="\n\n".join(paragraphs))
     candidate = CandidatePassage(
         candidate_id="C001",
@@ -63,3 +81,140 @@ def test_retrieval_evidence_contains_no_vectors_or_judgment_text() -> None:
     assert evidence["lexical_fallback"] is True
     assert "vectors" not in evidence
     assert "text" not in evidence
+
+
+def test_jev_candidates_group_relevant_runs_and_keep_unanswered_paragraphs() -> None:
+    paragraphs = [_long(f"Paragraph {n}.") for n in range(1, 8)]
+    doc = DocumentContext(draft_id=1, text="\n\n".join(paragraphs))
+    candidates = jev_candidates(doc, [0.1, 0.9, 0.6, 0.05, None, 0.2, 0.4], threshold=0.3)
+    assert [(c.start_paragraph, c.end_paragraph) for c in candidates] == [(2, 3), (5, 5), (7, 7)]
+    assert [c.candidate_id for c in candidates] == ["C001", "C002", "C003"]
+    assert candidates[0].text == f"{paragraphs[1]}\n\n{paragraphs[2]}"
+    assert candidates[0].retrieval_methods == ("jev",)
+
+
+def test_jev_candidates_split_long_runs() -> None:
+    doc = DocumentContext(draft_id=1, text="\n\n".join(_long(f"P{n}.") for n in range(1, 26)))
+    candidates = jev_candidates(doc, [0.9] * 25)
+    assert all(len(c.paragraph_numbers) <= MAX_MERGED_PARAGRAPHS for c in candidates)
+    assert sorted(n for c in candidates for n in c.paragraph_numbers) == list(range(1, 26))
+
+
+def test_jev_candidates_empty_when_nothing_is_relevant() -> None:
+    doc = DocumentContext(draft_id=1, text=f"{_long('One.')}\n\n{_long('Two.')}")
+    assert jev_candidates(doc, [0.1, 0.2]) == []
+
+
+def test_unanswered_paragraphs_rank_below_relevant_ones() -> None:
+    doc = DocumentContext(draft_id=1, text="\n\n".join(f"{n} " + "x" * 2300 for n in range(20)))
+    candidates = jev_candidates(doc, [None] * 10 + [0.9] * 10)
+    assert [c.start_paragraph for c in candidates] == [11]
+
+
+@pytest.mark.asyncio
+async def test_paragraphs_unanswered_by_the_timeout_are_none(monkeypatch: pytest.MonkeyPatch) -> None:
+    async def slow_for_second(step: str, state: str, questions: dict) -> SystemOneResponse:
+        if state == "slow":
+            await asyncio.sleep(5)
+        return SystemOneResponse(model="jev-1", answers={"relevant": NoulAnswer(type="noul", noul=0.9)})
+
+    monkeypatch.setattr(col_extractor, "ask_jev", slow_for_second)
+    assert await col_extractor.jev_paragraph_probabilities(["fast", "slow"], timeout=0.2) == [0.9, None]
+
+
+def _hybrid(doc: DocumentContext) -> tuple[list[CandidatePassage], dict[str, object]]:
+    candidate = CandidatePassage(
+        candidate_id="C001",
+        start_paragraph=2,
+        end_paragraph=2,
+        text=doc.paragraphs[1],
+        concepts=("applicable_law",),
+        retrieval_methods=("exact",),
+        reciprocal_rank_score=0.2,
+    )
+    return [candidate], {"method": "hybrid"}
+
+
+_DECISION = ColCandidateDecision(
+    candidate_id="C001", disposition="include", reason="Holding.", role="court_holding", selected_paragraphs=[2]
+)
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "error", [OutputValidationError("No candidate was included."), RuntimeError("model loop")], ids=["invalid", "error"]
+)
+async def test_failed_audit_of_jev_candidates_falls_back_to_hybrid_retrieval(
+    monkeypatch: pytest.MonkeyPatch, error: Exception
+) -> None:
+    doc = DocumentContext(draft_id=1, text=f"{_long('Background.')}\n\n{_HOLDING}")
+    monkeypatch.setattr(col_extractor, "jev_paragraph_probabilities", AsyncMock(return_value=[0.9, 0.1]))
+    monkeypatch.setattr(col_extractor, "_hybrid_candidates", AsyncMock(return_value=_hybrid(doc)))
+    audits: list[tuple[str, int]] = []
+
+    async def fake_audit(_doc: Any, candidates: list[CandidatePassage], task: str) -> StepResult[ColCandidateAuditOutput]:
+        audits.append((task, candidates[0].start_paragraph))
+        if task == "col_section":
+            raise error
+        return StepResult(ColCandidateAuditOutput(decisions=[_DECISION], confidence="high", reasoning="ok"))
+
+    monkeypatch.setattr(col_extractor, "_audit", fake_audit)
+    step = await col_extractor.extract_col_section(doc)
+
+    assert audits == [("col_section", 1), ("col_section_fallback", 2)]
+    assert step.evidence["retrieval"]["method"] == "hybrid"
+    assert type(error).__name__ in step.evidence["retrieval"]["jev_audit_failure"]
+    assert step.evidence["audit_model"] == get_model("col_section_fallback")
+    assert step.output.col_sections == [_HOLDING]
+
+
+@pytest.mark.asyncio
+async def test_many_unanswered_paragraphs_use_hybrid_retrieval(monkeypatch: pytest.MonkeyPatch) -> None:
+    doc = DocumentContext(draft_id=1, text="\n\n".join(_long(f"P{n}.") for n in range(10)))
+    monkeypatch.setattr(col_extractor, "jev_paragraph_probabilities", AsyncMock(return_value=[0.9] * 8 + [None] * 2))
+    assert await col_extractor._retrieve_with_jev(doc) == []
+    monkeypatch.setattr(col_extractor, "jev_paragraph_probabilities", AsyncMock(return_value=[0.9] * 9 + [None]))
+    assert await col_extractor._retrieve_with_jev(doc) != []
+
+
+@pytest.mark.asyncio
+async def test_hybrid_retrieval_candidates_are_audited_by_the_stronger_model(monkeypatch: pytest.MonkeyPatch) -> None:
+    doc = DocumentContext(draft_id=1, text=f"{_long('Background.')}\n\n{_HOLDING}")
+    monkeypatch.setattr(col_extractor, "jev_paragraph_probabilities", AsyncMock(return_value=[0.05, 0.1]))
+    monkeypatch.setattr(col_extractor, "_generate_case_specific_queries", AsyncMock(return_value=[]))
+    candidate = CandidatePassage(
+        candidate_id="C001",
+        start_paragraph=2,
+        end_paragraph=2,
+        text=doc.paragraphs[1],
+        concepts=("applicable_law",),
+        retrieval_methods=("exact",),
+        reciprocal_rank_score=0.2,
+    )
+    retrieval = RetrievalResult(
+        candidates=[candidate],
+        query_count=1,
+        semantic_available=True,
+        semantic_unavailable_reason=None,
+        semantic_embedding_tokens=0,
+        semantic_chunk_count=1,
+        lexical_hit_count=1,
+        semantic_hit_count=0,
+        overlap_count=0,
+    )
+    monkeypatch.setattr(col_extractor, "retrieve_choice_of_law_candidates", AsyncMock(return_value=retrieval))
+    models: list[str] = []
+    decision = ColCandidateDecision(
+        candidate_id="C001", disposition="include", reason="Holding.", role="court_holding", selected_paragraphs=[2]
+    )
+
+    async def fake_run_agent(agent: Any, **_kwargs: Any) -> StepResult[ColCandidateAuditOutput]:
+        models.append(agent.model.model)
+        return StepResult(ColCandidateAuditOutput(decisions=[decision], confidence="high", reasoning="ok"))
+
+    monkeypatch.setattr(col_extractor, "run_agent", fake_run_agent)
+    monkeypatch.setattr(col_extractor, "get_openai_client", MagicMock())
+    step = await col_extractor.extract_col_section(doc)
+
+    assert models == [get_model("col_section_fallback")]
+    assert step.evidence["retrieval"]["method"] == "hybrid"

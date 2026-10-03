@@ -13,11 +13,42 @@ from dataclasses import dataclass, field
 from agents import RunContextWrapper, Tool, function_tool
 from rapidfuzz import fuzz
 
-from .semantic_index import EmbedFunction, SemanticHit, SemanticIndex
+from .semantic_index import CHUNK_MAX_CHARS, EmbedFunction, SemanticHit, SemanticIndex
 
 logger = logging.getLogger(__name__)
 
 MAX_CHARS = 4000
+MAX_PARAGRAPH_CHARS = CHUNK_MAX_CHARS
+MIN_PARAGRAPH_CHARS = 200
+MAX_FURNITURE_CHARS = 150
+MIN_FURNITURE_REPEATS = 3
+_BLOCK_SEPARATOR_RE = re.compile(r"\n[ \t]*\n")
+_PAGE_MARKER_RE = re.compile(
+    r"^(?:[-–—]\s*\d{1,4}\s*[-–—]"
+    r"|(?:page|p\.|pág\.?|página|seite|pagina)\s*\d{1,4}(?:\s*(?:/|of|de|von|di)\s*\d{1,4})?"
+    r"|\d{1,4}\s*(?:/|of|de|von)\s*\d{1,4}"
+    r"|(?:\.\s*){3,}\d{1,4})$",
+    re.I,
+)
+_BARE_NUMBER_RE = re.compile(r"^\d{1,4}\.?$")
+FURNITURE_MIN_SPREAD = 0.25
+MIN_FURNITURE_LETTERS = 8
+_FOOTNOTE_RE = re.compile(r"^>\s*\d{1,3}\s+\S")
+_NUMBERED_BLOCK_RE = re.compile(r"^[-–—>#*\s\[]*(?:note:?\s*)?\d", re.I)
+_EMPHASIS_RE = re.compile(r"(?<![\w*])(?:\*{1,3}|_{1,2})(?=\S)|(?<=\S)(?:\*{1,3}|_{1,2})(?![\w*])")
+_SUPERSCRIPT_RE = re.compile(r"<sup>\s*([0-9]+)\s*</sup>", re.I)
+_HTML_TAG_RE = re.compile(r"</?(?:sup|sub|u|b|i|em|strong|span|br|mark)\b[^>]*>", re.I)
+_PICTURE_TEXT_RE = re.compile(r"<!--\s*Start of picture text\s*-->(.*?)<!--\s*End of picture text\s*-->", re.S)
+_SPACE_BEFORE_PUNCTUATION_RE = re.compile(r"(?<=\w) +(?=[,;])")
+FURNITURE_SIMILARITY = 85
+_SUPERSCRIPT_DIGITS = str.maketrans("0123456789", "⁰¹²³⁴⁵⁶⁷⁸⁹")
+_SENTENCE_END = tuple(".:;?!)]}\"'»”’…")
+_PARAGRAPH_SEPARATORS = (
+    re.compile(r"(?<=[.!?…»”\"’)])\s+(?=[\"“«(\[¿¡]?[A-ZÀ-ÖØ-ÞĀ-ſА-Я0-9])"),
+    re.compile(r"\n"),
+    re.compile(r"\s+"),
+)
+_PARAGRAPH_JOINERS = (" ", "\n", " ")
 _MARKDOWN_HEADING_RE = re.compile(r"^#{1,6}\s+.+")
 _LINE_BREAK_HYPHEN_RE = re.compile(r"(?<=\w)-[ \t]*\r?\n[ \t]*(?=\w)")
 _ALL_CAPS_HEADING_PUNCTUATION = frozenset(" -–—:;,.()[]/§0123456789")
@@ -53,20 +84,47 @@ def _normalize_search_text(text: str) -> str:
     return " ".join(normalized.split())
 
 
+def _heading_line(paragraph: str) -> str | None:
+    """The paragraph's first line when it is a markdown or all-caps heading."""
+    first_line = paragraph.strip().splitlines()[0] if paragraph.strip() else ""
+    letters = [character for character in first_line if character.isalpha()]
+    is_all_caps_heading = (
+        len(first_line) >= 5
+        and bool(letters)
+        and all(character.isupper() for character in letters)
+        and all(character.isalpha() or character in _ALL_CAPS_HEADING_PUNCTUATION for character in first_line)
+    )
+    return first_line.strip() if _MARKDOWN_HEADING_RE.match(first_line) or is_all_caps_heading else None
+
+
 def _detect_headings(paragraphs: list[str]) -> list[tuple[str, int]]:
-    result: list[tuple[str, int]] = []
-    for i, para in enumerate(paragraphs):
-        first_line = para.strip().splitlines()[0] if para.strip() else ""
-        letters = [character for character in first_line if character.isalpha()]
-        is_all_caps_heading = (
-            len(first_line) >= 5
-            and bool(letters)
-            and all(character.isupper() for character in letters)
-            and all(character.isalpha() or character in _ALL_CAPS_HEADING_PUNCTUATION for character in first_line)
-        )
-        if _MARKDOWN_HEADING_RE.match(first_line) or is_all_caps_heading:
-            result.append((first_line.strip(), i))
-    return result
+    return [(heading, i) for i, para in enumerate(paragraphs) if (heading := _heading_line(para)) is not None]
+
+
+def merge_fragments(paragraphs: list[str], min_chars: int = MIN_PARAGRAPH_CHARS) -> list[str]:
+    """Prepend paragraphs shorter than min_chars (headings, page numbers, stray lines) to the paragraph after them.
+
+    A heading always starts the paragraph it is merged into, so heading detection still finds it; nothing is merged
+    past MAX_PARAGRAPH_CHARS, and trailing fragments join the paragraph before them.
+    """
+    merged: list[str] = []
+    pending: list[str] = []
+    for paragraph in paragraphs:
+        if pending and (_heading_line(paragraph) is not None or len("\n\n".join([*pending, paragraph])) > MAX_PARAGRAPH_CHARS):
+            merged.append("\n\n".join(pending))
+            pending = []
+        if len(paragraph) < min_chars:
+            pending.append(paragraph)
+            continue
+        merged.append("\n\n".join([*pending, paragraph]))
+        pending = []
+    if pending:
+        tail = "\n\n".join(pending)
+        if merged and _heading_line(tail) is None and len(merged[-1]) + 2 + len(tail) <= MAX_PARAGRAPH_CHARS:
+            merged[-1] = f"{merged[-1]}\n\n{tail}"
+        else:
+            merged.append(tail)
+    return merged
 
 
 def _format_paragraph(paragraph_index: int, text: str) -> str:
@@ -79,6 +137,163 @@ class LexicalHit:
     text: str
     score: float
     method: str
+
+
+def _furniture_key(block: str) -> str:
+    return re.sub(r"\d+", "#", " ".join(block.split()).casefold())
+
+
+def _picture_text(match: re.Match[str]) -> str:
+    """OCR text found inside an image: logos and seals are short noise, a scanned page is the decision itself."""
+    inner = match.group(1).strip()
+    return inner if len(inner) > MAX_FURNITURE_CHARS else ""
+
+
+def _strip_emphasis(line: str) -> str:
+    """Remove markdown emphasis markers, repeating for nested ones such as **_1-_**."""
+    while (stripped := _EMPHASIS_RE.sub("", line)) != line:
+        line = stripped
+    return line
+
+
+def _strip_inline_markup(text: str) -> str:
+    text = _PICTURE_TEXT_RE.sub(_picture_text, text)
+    lines = (line if line.lstrip().startswith("#") else _strip_emphasis(line) for line in text.split("\n"))
+    text = _SUPERSCRIPT_RE.sub(lambda match: match.group(1).translate(_SUPERSCRIPT_DIGITS), "\n".join(lines))
+    return _SPACE_BEFORE_PUNCTUATION_RE.sub("", _HTML_TAG_RE.sub("", text))
+
+
+def _is_open(block: str) -> bool:
+    """Whether block stops mid-sentence."""
+    return not block.rstrip().endswith(_SENTENCE_END) and _heading_line(block) is None
+
+
+def _continues(previous: str, block: str, after_page_break: bool = False) -> bool:
+    """Whether block continues the sentence previous was cut off in.
+
+    Across a blank line only a lowercase start shows that; across a removed page number any text block does.
+    """
+    first = block.lstrip()[:1]
+    return (
+        bool(first)
+        and (first.islower() or (after_page_break and first.isalnum()))
+        and not block.lstrip().startswith(("http", "www."))
+        and _heading_line(block) is None
+        and _is_open(previous)
+    )
+
+
+def _is_sentence(block: str) -> bool:
+    """A full sentence, such as one a court quotes several times, rather than a header."""
+    return block.rstrip().endswith((".", ";")) and len(block.split()) >= 6
+
+
+def _furniture_keys(blocks: list[str]) -> set[str]:
+    """Running headers and footers: short blocks (with at least MIN_FURNITURE_LETTERS letters if they contain digits) repeated
+    MIN_FURNITURE_REPEATS times or more across at least FURNITURE_MIN_SPREAD of the document, digits ignored.
+
+    The spread rule spares repeated table cells. The letter rule and skipping blocks that start with a number spare
+    footnotes and numbered paragraph headings, which look alike once their digits are ignored; full sentences a court
+    quotes more than once are spared too."""
+    positions: dict[str, list[int]] = {}
+    for index, block in enumerate(blocks):
+        if (
+            len(block) <= MAX_FURNITURE_CHARS
+            and (
+                not any(character.isdigit() for character in block)
+                or sum(character.isalpha() for character in block) >= MIN_FURNITURE_LETTERS
+            )
+            and not _NUMBERED_BLOCK_RE.match(block)
+            and not _is_sentence(block)
+        ):
+            positions.setdefault(_furniture_key(block), []).append(index)
+    span = FURNITURE_MIN_SPREAD * len(blocks)
+    return {key for key, found in positions.items() if len(found) >= MIN_FURNITURE_REPEATS and found[-1] - found[0] >= span}
+
+
+def clean_document_text(text: str) -> str:
+    """Remove PDF page furniture and rejoin sentences that a page break split.
+
+    Running headers and footers (see _furniture_keys) keep only their first occurrence, so an identifier printed in
+    every header is still there once; short blocks that nearly match one (an OCR-garbled copy) go too. Page markers
+    such as "- 2 -", "Page 4" or "3/12" go; a bare number goes only next to removed furniture or inside a sentence a
+    page break split, since it is otherwise often a paragraph number. Footnotes printed between the two halves of a split sentence move after it.
+    Short OCR'd picture text (logos, seals), inline markdown emphasis and HTML tags
+    are removed (footnote markers become superscript digits), and a block that ends mid-sentence is joined with the
+    next when it continues in lowercase.
+    """
+    blocks = [block.strip() for block in _BLOCK_SEPARATOR_RE.split(_strip_inline_markup(text)) if block.strip()]
+    furniture = _furniture_keys(blocks)
+    seen: set[str] = set()
+    removed: list[bool] = []
+    for block in blocks:
+        drop = bool(_PAGE_MARKER_RE.match(block.lstrip("# ")))
+        if not drop and len(block) <= MAX_FURNITURE_CHARS:
+            key = _furniture_key(block)
+            if key in furniture:
+                drop = key in seen
+                seen.add(key)
+            else:
+                drop = any(fuzz.ratio(key, header) >= FURNITURE_SIMILARITY for header in furniture)
+        removed.append(drop)
+    content = [
+        block
+        for index, block in enumerate(blocks)
+        if not removed[index]
+        and not (
+            _BARE_NUMBER_RE.match(block)
+            and ((index > 0 and removed[index - 1]) or (index + 1 < len(blocks) and removed[index + 1]))
+        )
+    ]
+
+    kept: list[str] = []
+    notes: list[str] = []
+    after_page_break = False
+    for block in content:
+        open_sentence = bool(kept) and _is_open(kept[-1])
+        if open_sentence and _FOOTNOTE_RE.match(block):
+            notes.append(block)
+            continue
+        if open_sentence and _BARE_NUMBER_RE.match(block):
+            after_page_break = True
+            continue
+        if kept and _continues(kept[-1], block, after_page_break):
+            kept[-1] = f"{kept[-1]} {block}"
+        else:
+            kept.extend(notes)
+            notes.clear()
+            kept.append(block)
+        after_page_break = False
+    kept.extend(notes)
+    return "\n\n".join(kept)
+
+
+def split_oversized_paragraph(text: str, max_chars: int = MAX_PARAGRAPH_CHARS, level: int = 0) -> list[str]:
+    """Split text longer than max_chars at sentence ends, then line breaks, then spaces, packing pieces greedily.
+
+    Sentence ends come first because extracted text often has a line break at every wrapped line.
+
+    Extracted text without blank lines otherwise becomes one paragraph the size of the document, which no
+    embedding request, Jev question or paragraph-level selection can handle.
+    """
+    if len(text) <= max_chars:
+        return [text]
+    if level == len(_PARAGRAPH_SEPARATORS):
+        return [text[start : start + max_chars] for start in range(0, len(text), max_chars)]
+    pieces = [piece for piece in _PARAGRAPH_SEPARATORS[level].split(text) if piece.strip()]
+    if len(pieces) == 1:
+        return split_oversized_paragraph(text, max_chars, level + 1)
+    joiner = _PARAGRAPH_JOINERS[level]
+    packed: list[str] = []
+    current = ""
+    for piece in pieces:
+        if current and len(current) + len(joiner) + len(piece) > max_chars:
+            packed.append(current)
+            current = piece
+        else:
+            current = f"{current}{joiner}{piece}" if current else piece
+    packed.append(current)
+    return [part for chunk in packed for part in split_oversized_paragraph(chunk, max_chars, level + 1)]
 
 
 @dataclass
@@ -98,7 +313,10 @@ class DocumentContext:
     semantic_unavailable_reason: str | None = field(default=None, init=False)
 
     def __post_init__(self) -> None:
-        self.paragraphs = [p for p in re.split(r"\n\s*\n", self.text) if p.strip()]
+        self.text = clean_document_text(self.text)
+        self.paragraphs = merge_fragments(
+            [part for p in re.split(r"\n\s*\n", self.text) if p.strip() for part in split_oversized_paragraph(p)]
+        )
         self.headings = _detect_headings(self.paragraphs)
         self.normalized_paragraphs = [_normalize_search_text(paragraph) for paragraph in self.paragraphs]
 

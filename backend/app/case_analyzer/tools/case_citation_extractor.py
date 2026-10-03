@@ -8,9 +8,10 @@ from agents.models.openai_responses import OpenAIResponsesModel
 
 from ..config import get_model, get_openai_client
 from ..runner import run_agent
+from ..utils.legal_system import requires_common_law_steps
 from ..validation import has_navigation_evidence, is_placeholder_text, validate_case_citation
 from .document_nav import NAV_TOOLS, DocumentContext
-from .models import CaseCitationOutput, StepResult
+from .models import CaseCitationEvidence, CaseCitationOutput, StepResult
 
 logger = logging.getLogger(__name__)
 
@@ -73,9 +74,45 @@ def _citation_copies_descriptive_filename(file_name: str | None, citation: str) 
     )
 
 
+def _as_written(text: str) -> str:
+    return " ".join(text.split())
+
+
+def compose_case_citation(
+    evidence: CaseCitationEvidence, legal_system: str, jurisdiction: str, text: str
+) -> CaseCitationOutput:
+    """Build the citation in CoLD's house style from parts copied verbatim from the decision.
+
+    Common law: parties followed by the neutral or report citation. Civil law: court, identifier, decision date. The
+    court, parties and date are optional: one that is not written in the decision is dropped rather than failing the
+    step, and one already contained in the identifier is not repeated.
+    """
+    identifier = evidence.case_citation.strip()
+    document = _as_written(text).casefold()
+
+    def verified(part: str | None) -> str | None:
+        if part is None or is_placeholder_text(part) or _as_written(part).casefold() not in document:
+            return None
+        return part.strip()
+
+    parts = {name: verified(getattr(evidence, name)) for name in ("court", "case_name", "decision_date")}
+    output = CaseCitationOutput.model_validate(evidence.model_dump() | parts | {"identifier": identifier})
+    if is_placeholder_text(identifier):
+        return output
+
+    def new(part: str | None) -> str | None:
+        return part if part and _as_written(part).casefold() not in _as_written(identifier).casefold() else None
+
+    if requires_common_law_steps(legal_system, jurisdiction):
+        citation = " ".join(part for part in (new(parts["case_name"]), identifier) if part)
+    else:
+        citation = ", ".join(part for part in (new(parts["court"]), identifier, new(parts["decision_date"])) if part)
+    return output.model_copy(update={"case_citation": citation})
+
+
 def _validate_citation_against_document(
     doc_ctx: DocumentContext,
-    output: CaseCitationOutput,
+    output: CaseCitationEvidence,
     tool_names: frozenset[str],
 ) -> str | None:
     """Require every positive citation to be traceable to verbatim document text."""
@@ -189,12 +226,21 @@ async def extract_case_citation(
             "low confidence — do not infer or fabricate — and return null for source_text, source_location, and "
             "identifier_type. When navigation tools are available, use them before returning 'NA'. "
             "The reasoning must be one short sentence describing only where the identifier was found and, when relevant, "
-            "whether the filename and document agree. Never discuss the decision's facts, legal issues, or merits."
+            "whether the filename and document agree. Never discuss the decision's facts, legal issues, or merits. "
+            "Separately from the identifier, also return the deciding court's name (court), the parties (case_name, the "
+            "first-named party on each side as the decision joins them, such as 'Foster v Driscoll') and the date the "
+            "decision was given (decision_date), each copied exactly as written in the decision, in its language, "
+            "without translating, expanding or reformatting. Take them from this decision's own header or signature, "
+            "never from authorities it cites. Copy only the value: the date without labels such as 'DATE OF JUDGMENT:', "
+            "and the court's name without 'IN THE', place of sitting, division or list. For case_name, prefer a short "
+            "title the decision gives itself ('CASE MAY BE CITED AS', a short title or the italicised case name) over "
+            "the full caption; whenever the decision names parties, return them. Return null for any the decision does "
+            "not state."
         )
         initial_agent = Agent[DocumentContext](
             name="CaseCitationExtractor",
             instructions=instructions,
-            output_type=CaseCitationOutput,
+            output_type=CaseCitationEvidence,
             tools=NAV_TOOLS[:0],
             model=OpenAIResponsesModel(
                 model=get_model("case_citation"),
@@ -208,23 +254,35 @@ async def extract_case_citation(
         )
         initial_error = _validate_citation_against_document(doc_ctx, initial_step.output, frozenset())
         if initial_error is None and not is_placeholder_text(initial_step.output.case_citation):
-            return initial_step
+            return _composed(initial_step, legal_system, jurisdiction, doc_ctx.text)
 
         fallback_reason = initial_error or "No citation was identified from the filename and supplied excerpts."
         logger.info("Citation evidence pass requires navigation fallback: %s", fallback_reason)
         navigation_agent = Agent[DocumentContext](
             name="CaseCitationNavigationExtractor",
             instructions=instructions,
-            output_type=CaseCitationOutput,
+            output_type=CaseCitationEvidence,
             tools=NAV_TOOLS,
             model=OpenAIResponsesModel(
                 model=get_model("case_citation"),
                 openai_client=get_openai_client(),
             ),
         )
-        return await run_agent(
+        navigation_step = await run_agent(
             navigation_agent,
             input=_citation_prompt(doc_ctx, legal_system, jurisdiction, fallback_reason),
             context=doc_ctx,
             validate=lambda output, tool_names: _validate_citation_against_document(doc_ctx, output, tool_names),
         )
+        return _composed(navigation_step, legal_system, jurisdiction, doc_ctx.text)
+
+
+def _composed(
+    step: StepResult[CaseCitationEvidence], legal_system: str, jurisdiction: str, text: str
+) -> StepResult[CaseCitationOutput]:
+    return StepResult(
+        output=compose_case_citation(step.output, legal_system, jurisdiction, text),
+        response_id=step.response_id,
+        tool_names=step.tool_names,
+        evidence=step.evidence,
+    )

@@ -7,7 +7,7 @@ from .tools.document_nav import NAV_TOOLS
 from .tools.hybrid_retrieval import CandidatePassage
 from .tools.models import (
     AbstractOutput,
-    CaseCitationOutput,
+    CaseCitationEvidence,
     ColCandidateAuditOutput,
     ColIssueOutput,
     ColSectionOutput,
@@ -201,7 +201,7 @@ def validate_col_section_provenance(
     return None
 
 
-def validate_case_citation(output: CaseCitationOutput, tool_names: frozenset[str]) -> str | None:
+def validate_case_citation(output: CaseCitationEvidence, tool_names: frozenset[str]) -> str | None:
     if not output.case_citation.strip():
         return "The case citation is empty. Re-examine the decision and return its citation or 'NA'."
     if is_placeholder_text(output.case_citation):
@@ -225,7 +225,8 @@ def validate_case_citation(output: CaseCitationOutput, tool_names: frozenset[str
     uses_filename_evidence = (
         output.source_location is not None and output.source_location.strip().casefold() == "original filename"
     )
-    if output.case_citation not in output.source_text and not uses_filename_evidence:
+    identifier = getattr(output, "identifier", None) or output.case_citation
+    if identifier not in output.source_text and not uses_filename_evidence:
         return "The case citation is not present verbatim in source_text. Copy both values exactly from the decision."
     if not output.source_location or not output.source_location.strip():
         return "The case citation has no source_location. Identify where its source_text was found."

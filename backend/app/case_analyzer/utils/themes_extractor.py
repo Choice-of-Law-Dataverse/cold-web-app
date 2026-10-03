@@ -55,7 +55,7 @@ def filter_themes_by_list(themes_list: list[ThemeWithNA]) -> str:
     if not themes_list:
         return "No themes specified."
 
-    all_themes = _get_themes_dict()
+    all_themes = get_themes_dict()
     if not all_themes:
         return "No themes available."
 
@@ -67,7 +67,7 @@ _themes_cache: dict[str, str] | None = None
 _themes_str_cache: str | None = None
 
 
-def _get_themes_dict() -> dict[str, str]:
+def get_themes_dict() -> dict[str, str]:
     global _themes_cache
     if _themes_cache is None:
         _themes_cache = load_themes_table()
@@ -77,7 +77,7 @@ def _get_themes_dict() -> dict[str, str]:
 def _get_themes_str() -> str:
     global _themes_str_cache
     if _themes_str_cache is None:
-        _themes_str_cache = format_themes_table(_get_themes_dict())
+        _themes_str_cache = format_themes_table(get_themes_dict())
     return _themes_str_cache
 
 

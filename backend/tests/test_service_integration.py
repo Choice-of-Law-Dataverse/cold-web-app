@@ -86,7 +86,7 @@ def _valid_cached_col() -> dict[str, object]:
         "reasoning": "Cached holding.",
         "_evidence": {
             "navigation_tools": [],
-            "policy_version": 9,
+            "policy_version": 10,
             "candidates": [{"candidate_id": "C001"}],
             "candidate_dispositions": [{"candidate_id": "C001", "disposition": "include", "reason": "Direct holding."}],
             "col_sections": [{"section_index": 0, "paragraphs": [1], "role": "court_holding"}],
@@ -283,7 +283,7 @@ class TestResumeFromCache:
                 "identifier_type": None,
                 "confidence": "low",
                 "reasoning": "Not found",
-                "_evidence": {"navigation_tools": ["search"], "policy_version": 9},
+                "_evidence": {"navigation_tools": ["search"], "policy_version": 10},
             },
         }
         citation_mock = AsyncMock(return_value=_step(CITATION))
@@ -344,7 +344,7 @@ class TestResumeFromCache:
         citation_event = next(event for event in events if event["step"] == "case_citation" and event["status"] == "completed")
         assert citation_event["data"]["_evidence"] == {
             "navigation_tools": ["read_head", "search"],
-            "policy_version": 9,
+            "policy_version": 10,
         }
         assert citation_event["data"]["case_citation"] == CITATION.case_citation
         assert citation_event["data"]["source_text"] == CITATION.source_text

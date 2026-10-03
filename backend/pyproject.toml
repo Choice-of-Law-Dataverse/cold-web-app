@@ -11,6 +11,7 @@ dependencies = [
     "email-validator==2.2.0",
     "fastapi==0.115.6",
     "griffe>=1.15.0,<2",
+    "httpx2>=2.13.0",
     "logfire[fastapi,httpx,psycopg2,requests,sqlalchemy]>=5.1.0",
     "openai>=3.14.0",
     "openai-agents>=0.22.2",
@@ -46,6 +47,7 @@ dev = [
     "ruff>=0.16.7",
     "pyright>=1.1.414",
     "vulture>=2.16",
+    "pydantic-evals>=2.51.0",
 ]
 
 [tool.uv]

@@ -6,6 +6,7 @@ import pytest
 
 from app.case_analyzer.tools.case_citation_extractor import (
     _validate_citation_against_document,
+    compose_case_citation,
     extract_case_citation,
 )
 from app.case_analyzer.tools.document_nav import DocumentContext
@@ -59,7 +60,8 @@ async def test_extractor_receives_document_head_and_tail() -> None:
     assert omitted_marker not in prompt_text
     assert "validate" not in run_call.kwargs
     assert _validate_citation_against_document(doc_ctx, expected.output, frozenset()) is None
-    assert result == expected
+    assert result.output.case_citation == expected.output.case_citation
+    assert result.response_id == expected.response_id
 
 
 @pytest.mark.asyncio
@@ -90,7 +92,8 @@ async def test_missing_citation_uses_navigation_model_fallback() -> None:
     ):
         result = await extract_case_citation(doc_ctx, "Civil-law jurisdiction", "Switzerland")
 
-    assert result == expected
+    assert result.output.case_citation == expected.output.case_citation
+    assert result.response_id == expected.response_id
     assert run_agent.await_count == 2
     first_call, second_call = run_agent.await_args_list
     assert "validate" not in first_call.kwargs
@@ -134,7 +137,8 @@ async def test_filename_and_excerpts_are_supplied_to_one_model_pass() -> None:
     assert decision_text in prompt_text
     assert "validate" not in run_call.kwargs
     assert result.tool_names == ()
-    assert result == expected
+    assert result.output.case_citation == expected.output.case_citation
+    assert result.response_id == expected.response_id
 
 
 @pytest.mark.asyncio
@@ -177,7 +181,8 @@ async def test_descriptive_legifrance_title_falls_back_to_ecli() -> None:
     ):
         result = await extract_case_citation(doc_ctx, "Civil-law jurisdiction", "France")
 
-    assert result == expected
+    assert result.output.case_citation == expected.output.case_citation
+    assert result.response_id == expected.response_id
     assert run_agent.await_count == 2
     first_call, second_call = run_agent.await_args_list
     assert "validate" not in first_call.kwargs
@@ -301,3 +306,65 @@ def test_validator_rejects_verbose_or_issue_focused_reasoning() -> None:
     )
 
     assert _validate_citation_against_document(doc_ctx, output, frozenset()) is not None
+
+
+_HEADER = (
+    "TRIBUNAL DE JUSTIÇA DO RIO GRANDE DO SUL\n\nAPELAÇÃO CÍVEL Apelação Cível Nº 70072362940\n\n"
+    "Tribunal de Justiça do Rio Grande do Sul, 14 de fevereiro de 2017. Foster v Driscoll [1929] 1 KB 470. "
+    "StGH 7.6.2000, StGH 2000/1"
+)
+
+
+def _evidence(**parts: str | None) -> CaseCitationOutput:
+    identifier = parts.pop("identifier", None) or "Apelação Cível Nº 70072362940"
+    return CaseCitationOutput(
+        case_citation=identifier,
+        source_text=f"APELAÇÃO CÍVEL {identifier}",
+        source_location="document beginning",
+        identifier_type="docket number",
+        confidence="high",
+        reasoning="Found in the header.",
+        **parts,
+    )
+
+
+def test_civil_law_citation_is_court_identifier_and_date_as_written() -> None:
+    evidence = _evidence(court="Tribunal de Justiça do Rio Grande do Sul", decision_date="14 de fevereiro de 2017")
+    output = compose_case_citation(evidence, "Civil-law jurisdiction", "Brazil", _HEADER)
+    assert output.case_citation == (
+        "Tribunal de Justiça do Rio Grande do Sul, Apelação Cível Nº 70072362940, 14 de fevereiro de 2017"
+    )
+    assert output.identifier == "Apelação Cível Nº 70072362940"
+
+
+def test_common_law_citation_is_parties_then_report_citation_without_court_or_date() -> None:
+    evidence = _evidence(
+        identifier="[1929] 1 KB 470", case_name="Foster v Driscoll", court="Tribunal de Justiça do Rio Grande do Sul"
+    )
+    output = compose_case_citation(evidence, "Common-law jurisdiction", "United Kingdom", _HEADER)
+    assert output.case_citation == "Foster v Driscoll [1929] 1 KB 470"
+    with_parties = _evidence(identifier="Foster v Driscoll [1929] 1 KB 470", case_name="Foster v Driscoll")
+    assert compose_case_citation(with_parties, "Common-law jurisdiction", "United Kingdom", _HEADER).case_citation == (
+        "Foster v Driscoll [1929] 1 KB 470"
+    )
+
+
+def test_parts_already_in_the_identifier_are_not_repeated() -> None:
+    evidence = _evidence(identifier="StGH 7.6.2000, StGH 2000/1", court="StGH", decision_date="7.6.2000")
+    assert compose_case_citation(evidence, "Civil-law jurisdiction", "Liechtenstein", _HEADER).case_citation == (
+        "StGH 7.6.2000, StGH 2000/1"
+    )
+
+
+def test_parts_not_written_in_the_decision_are_dropped() -> None:
+    evidence = _evidence(court="Court of Appeal of Rio Grande do Sul", decision_date="14 February 2017")
+    output = compose_case_citation(evidence, "Civil-law jurisdiction", "Brazil", _HEADER)
+    assert output.case_citation == "Apelação Cível Nº 70072362940"
+    assert output.court is None and output.decision_date is None
+
+
+def test_missing_citation_stays_na() -> None:
+    evidence = CaseCitationOutput(
+        case_citation="NA", source_text=None, source_location=None, identifier_type=None, confidence="low", reasoning="x"
+    )
+    assert compose_case_citation(evidence, "Civil-law jurisdiction", "Brazil", _HEADER).case_citation == "NA"
