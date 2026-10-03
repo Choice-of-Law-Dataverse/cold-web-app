@@ -14,6 +14,7 @@ from app.case_analyzer.tools.document_nav import (
     DocumentContext,
     _detect_headings,
     _truncate,
+    clean_document_text,
     get_paragraph_containing,
     list_headings,
     merge_fragments,
@@ -391,8 +392,8 @@ class TestFragmentMerging:
         assert merge_fragments(["Page 3", "1.", self.body]) == [f"Page 3\n\n1.\n\n{self.body}"]
 
     def test_heading_starts_its_merged_paragraph_and_is_still_detected(self) -> None:
-        ctx = DocumentContext(draft_id=1, text=f"Page 3\n\n## Applicable law\n\n{self.body}")
-        assert ctx.paragraphs == ["Page 3", f"## Applicable law\n\n{self.body}"]
+        ctx = DocumentContext(draft_id=1, text=f"Judgment of 3 May\n\n## Applicable law\n\n{self.body}")
+        assert ctx.paragraphs == ["Judgment of 3 May", f"## Applicable law\n\n{self.body.strip()}"]
         assert ctx.headings == [("## Applicable law", 1)]
 
     def test_trailing_fragments_join_the_paragraph_before_them(self) -> None:
@@ -401,3 +402,55 @@ class TestFragmentMerging:
     def test_merging_never_exceeds_the_paragraph_limit(self) -> None:
         long_body = "y" * (MAX_PARAGRAPH_CHARS - 10)
         assert merge_fragments(["z" * 150, long_body]) == ["z" * 150, long_body]
+
+
+class TestCleanDocumentText:
+    header = "ESTADO DO RIO GRANDE DO SUL PODER JUDICIÁRIO TRIBUNAL DE JUSTIÇA"
+
+    def _pages(self, bodies: list[str]) -> str:
+        return "\n\n".join(f"{body}\n\n{number}\n\n{self.header}" for number, body in enumerate(bodies, start=1))
+
+    def test_running_header_keeps_its_first_occurrence(self) -> None:
+        text = clean_document_text(self._pages([f"Paragraph {n} ends here." for n in range(6)]))
+        assert text.count(self.header) == 1
+
+    def test_sentence_split_by_a_page_break_is_rejoined(self) -> None:
+        bodies = ["Filler sentence one.", "Filler two.", "Basta que uma das", "partes seja domiciliada.", "End.", "Done."]
+        text = clean_document_text(self._pages(bodies))
+        assert "Basta que uma das partes seja domiciliada." in text
+
+    def test_bare_number_inside_a_sentence_goes_but_a_paragraph_number_stays(self) -> None:
+        assert clean_document_text("The court held that the\n\n16\n\ncontract was valid.") == (
+            "The court held that the contract was valid."
+        )
+        assert clean_document_text("Introduction.\n\n49.\n\nThe parties chose Swiss law.") == (
+            "Introduction.\n\n49.\n\nThe parties chose Swiss law."
+        )
+
+    def test_page_markers_go(self) -> None:
+        for marker in ("- 12 -", "Page 4", "Página 25 de 69", "36/58", "#### - 20 -"):
+            assert clean_document_text(f"First.\n\n{marker}\n\nSecond.") == "First.\n\nSecond."
+
+    def test_repeated_table_cells_footnotes_and_quoted_sentences_stay(self) -> None:
+        cells = "\n\n".join(["Date", "$10 million", "12 April", "$10 million", "13 April", "$10 million"])
+        footnotes = "\n\n".join(
+            f"- {n} Mercantile Mutual Insurance v Neilson (2004) 28 WAR 206 at {200 + n}." for n in range(5)
+        )
+        quote = "The contract is governed by the law of the seller's habitual residence."
+        filler = "\n\n".join(f"Paragraph {n} of the reasons." for n in range(20))
+        text = clean_document_text(f"{cells}\n\n{filler}\n\n{footnotes}\n\n{quote}\n\n{filler}\n\n{quote}\n\n{quote}")
+        assert text.count("$10 million") == 3
+        assert text.count("Mercantile Mutual") == 5
+        assert text.count(quote) == 3
+
+    def test_inline_markup_is_removed_but_identifiers_keep_underscores(self) -> None:
+        text = clean_document_text("**_1-_** _contrato internacional_ , em outro._<sup>6</sup> BGer 4A_543/2018")
+        assert text == "1- contrato internacional, em outro.⁶ BGer 4A_543/2018"
+
+    def test_short_picture_text_goes_and_long_picture_text_stays(self) -> None:
+        scanned = "The court finds that the parties chose the law of Brazil for the contract. " * 3
+        text = clean_document_text(
+            "<!-- Start of picture text -->esUDic, .Ss %<!-- End of picture text -->\n\n"
+            f"<!-- Start of picture text -->{scanned}<!-- End of picture text -->"
+        )
+        assert text == scanned.strip()

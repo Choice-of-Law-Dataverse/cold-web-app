@@ -18,7 +18,7 @@ from app.case_analyzer.tools.models import ColCandidateAuditOutput, ColCandidate
 
 def _long(text: str) -> str:
     """A paragraph long enough that DocumentContext keeps it on its own."""
-    return f"{text} " + "The court sets out further reasoning on this point. " * 5
+    return (f"{text} " + "The court sets out further reasoning on this point. " * 5).rstrip()
 
 
 _HOLDING = _long("The court holds that Swiss law governs the contract.")
