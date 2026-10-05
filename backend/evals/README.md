@@ -12,7 +12,8 @@ which git ignores; reports are saved as `runs/<name>.<step>.json` for later base
 Cost needs no configuration: Logfire's OpenAI Agents instrumentation prices every OpenAI call
 from `genai-prices`, the Jev client records the cost OpenRouter reports for each Jev call, and
 pydantic-evals reports their sum as each case's `cost` metric. Jev's cost as a judge is not part
-of a step's cost. With
+of a step's cost: the judge runs in the evaluator, outside the case, so its cost is totalled
+separately from what OpenRouter reports and printed apart at the end of the run. With
 `LOGFIRE_TOKEN` set, every run also appears in Logfire as an experiment you can compare there.
 A model too new for the installed `genai-prices` shows tokens but no cost; the run says so.
 
@@ -26,7 +27,10 @@ uv run python -m evals.corpus --texts analyzer-eval/texts.jsonl
 ```
 
 Takes every court decision with full text (Original_Text, the English translation, or the PDF
-text) and at least one curated value from the public API. Each step runs only on the decisions
+text) and at least one curated value from the public API. The text is chosen to be in the curated
+excerpt's language: Original_Text with the curated quote, the English translation with the
+translated excerpt, and the PDF text (the original) over the English translation when the quote is
+the only excerpt. Each step runs only on the decisions
 that have its curated values, so PDF text mainly grows the `jurisdiction` step. A hash of each
 decision's ID puts it in `dev` (iterating) or the held-out `test` set (model decisions), half
 each by default (`--dev-share`); adding decisions never moves one between sets.
@@ -70,8 +74,12 @@ Keeping cost down:
   CoL issue, …), so evaluating `col_issue` never re-runs CoL extraction.
 - **Cache.** Outputs are cached by step, model, analyzer source, input and Jev setting, together
   with the cost they had. Re-runs only pay for what changed, while each report still shows the
-  configuration's full cost; the run ends with what was actually spent.
-- **Budget.** `--max-cost` stops starting new calls once the run's new spend passes the limit.
+  configuration's full cost; the run ends with what was actually spent, the steps' and the
+  judge's apart. Judgements are not cached: `relevant_facts`, `col_issue`, `courts_position` and
+  `abstract` ask Jev to judge every case on every run, cached or not.
+- **Budget.** `--max-cost` stops starting new calls, the judge's included, once the run's new
+  spend (steps plus judge) passes the limit. Cases it keeps from running are reported as not run;
+  cases it keeps from being judged are reported as not judged and have no score.
 - **Dev first.** Iterate on `dev`; run `test` only to confirm a decision.
 
 ## What a step sees
@@ -80,7 +88,10 @@ A case's `inputs` hold only the decision text and the curated values the step is
 (`Step.uses`, plus the curated jurisdiction for jurisdiction-specific prompts). The value it is scored against
 (`Step.target`) is the case's `expected_output`, which pydantic-evals passes to the evaluators but never to the
 task; a step that reads a curated value it does not declare fails with `KeyError`. The jurisdiction step gets the
-text alone. Cases are named by decision ID (for example `CD-ARE-1138`, which contains the country code) so results
+text alone. Steps given the curated jurisdiction get the legal system its curated legal family names; where the
+family decides nothing (Roman-Dutch South Africa, mixed systems), the task asks production's
+`detect_legal_system_type` once, includes its cost in the case and caches its answer with the output (the
+`legal_system` and `legal_system_detected` attributes). Cases are named by decision ID (for example `CD-ARE-1138`, which contains the country code) so results
 can be traced back, but the task never receives the name or the metadata. The texts contain no decision IDs; many
 do name their court or country in the header, as real uploads do.
 

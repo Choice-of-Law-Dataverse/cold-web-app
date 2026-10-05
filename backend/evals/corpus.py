@@ -65,14 +65,34 @@ def curated_jurisdiction_codes(record: dict[str, Any]) -> list[str]:
     return sorted({code for code in codes if code})
 
 
+def text_and_excerpt(record: dict[str, Any], pdf_text: str = "") -> tuple[str | None, str, str]:
+    """The full text's source, the full text and the curated CoL excerpt, in the same language where possible.
+
+    The curated quote is in the decision's original language and the translated excerpt in English, so the scorer's
+    fuzzy comparison only means something when the text is in the excerpt's language. Original_Text pairs with the
+    quote; the English translation pairs with the translated excerpt; when the only excerpt is the quote, the PDF
+    text (the original) is taken over the English translation. Otherwise the first available text and excerpt.
+    """
+    texts = {"originaltext": field(record, "originaltext"), "englishtranslation": field(record, "englishtranslation")}
+    texts["pdf"] = pdf_text.strip()
+    quote, translated = field(record, "quote"), field(record, "translatedexcerpt")
+    if texts["originaltext"]:
+        return "originaltext", texts["originaltext"], quote or translated
+    if texts["englishtranslation"] and translated:
+        return "englishtranslation", texts["englishtranslation"], translated
+    if texts["pdf"] and quote:
+        return "pdf", texts["pdf"], quote
+    text_source = next((name for name, text in texts.items() if text), None)
+    return text_source, texts[text_source] if text_source else "", quote or translated
+
+
 def to_entry(record: dict[str, Any], pdf_text: str = "") -> dict[str, Any] | None:
     """A corpus entry, or None when the decision has no full text or no curated value at all.
 
     Each step only runs on the entries that have its curated values, so an entry with just a
-    curated jurisdiction still counts towards the jurisdiction step.
+    curated jurisdiction still counts towards the jurisdiction step. See text_and_excerpt for which text is used.
     """
-    texts = {name: field(record, name) for name in ("originaltext", "englishtranslation")} | {"pdf": pdf_text.strip()}
-    text_source = next((name for name, text in texts.items() if text), None)
+    text_source, text, col_excerpt = text_and_excerpt(record, pdf_text)
     if text_source is None:
         return None
     jurisdictions = record.get("jurisdictions")
@@ -80,7 +100,7 @@ def to_entry(record: dict[str, Any], pdf_text: str = "") -> dict[str, Any] | Non
         "jurisdiction_code": field(record, "jurisdictionsalpha3code"),
         "jurisdiction_codes": curated_jurisdiction_codes(record),
         "jurisdiction": jurisdictions if isinstance(jurisdictions, str) else "",
-        "col_excerpt": field(record, "quote") or field(record, "translatedexcerpt"),
+        "col_excerpt": col_excerpt,
         "themes": curated_themes(field(record, "themes")),
         "case_citation": field(record, "casecitation"),
         "pil_provisions": split_list(field(record, "pilprovisions")),
@@ -93,7 +113,7 @@ def to_entry(record: dict[str, Any], pdf_text: str = "") -> dict[str, Any] | Non
         return None
     return {
         "id": record.get("id"),
-        "text": texts[text_source],
+        "text": text,
         "text_source": text_source,
         "added_by": record.get("addedbyemail") or record.get("createdbyemail"),
         "gold": gold,

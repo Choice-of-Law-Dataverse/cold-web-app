@@ -37,7 +37,8 @@ _FOOTNOTE_RE = re.compile(r"^>\s*\d{1,3}\s+\S")
 _NUMBERED_BLOCK_RE = re.compile(r"^[-–—>#*\s\[]*(?:note:?\s*)?\d", re.I)
 _EMPHASIS_RE = re.compile(r"(?<![\w*])(?:\*{1,3}|_{1,2})(?=\S)|(?<=\S)(?:\*{1,3}|_{1,2})(?![\w*])")
 _SUPERSCRIPT_RE = re.compile(r"<sup>\s*([0-9]+)\s*</sup>", re.I)
-_HTML_TAG_RE = re.compile(r"</?(?:sup|sub|u|b|i|em|strong|span|br|mark)\b[^>]*>", re.I)
+_LINE_BREAK_TAG_RE = re.compile(r"[ \t]*</?br\b[^>]*>[ \t]*", re.I)
+_HTML_TAG_RE = re.compile(r"</?(?:sup|sub|u|b|i|em|strong|span|mark)\b[^>]*>", re.I)
 _PICTURE_TEXT_RE = re.compile(r"<!--\s*Start of picture text\s*-->(.*?)<!--\s*End of picture text\s*-->", re.S)
 _SPACE_BEFORE_PUNCTUATION_RE = re.compile(r"(?<=\w) +(?=[,;])")
 FURNITURE_SIMILARITY = 85
@@ -48,7 +49,7 @@ _PARAGRAPH_SEPARATORS = (
     re.compile(r"\n"),
     re.compile(r"\s+"),
 )
-_PARAGRAPH_JOINERS = (" ", "\n", " ")
+_PARAGRAPH_BREAK_RE = re.compile(r"\n\s*\n")
 _MARKDOWN_HEADING_RE = re.compile(r"^#{1,6}\s+.+")
 _LINE_BREAK_HYPHEN_RE = re.compile(r"(?<=\w)-[ \t]*\r?\n[ \t]*(?=\w)")
 _ALL_CAPS_HEADING_PUNCTUATION = frozenset(" -–—:;,.()[]/§0123456789")
@@ -101,29 +102,48 @@ def _detect_headings(paragraphs: list[str]) -> list[tuple[str, int]]:
     return [(heading, i) for i, para in enumerate(paragraphs) if (heading := _heading_line(para)) is not None]
 
 
+type Span = tuple[int, int]
+"""A paragraph as start and end offsets into the document text, so it is always a verbatim slice of it."""
+
+
 def merge_fragments(paragraphs: list[str], min_chars: int = MIN_PARAGRAPH_CHARS) -> list[str]:
     """Prepend paragraphs shorter than min_chars (headings, page numbers, stray lines) to the paragraph after them.
 
-    A heading always starts the paragraph it is merged into, so heading detection still finds it; nothing is merged
-    past MAX_PARAGRAPH_CHARS, and trailing fragments join the paragraph before them.
+    The paragraphs are taken as consecutive blocks separated by a blank line; see _merge_spans.
     """
-    merged: list[str] = []
-    pending: list[str] = []
+    text = "\n\n".join(paragraphs)
+    spans: list[Span] = []
+    offset = 0
     for paragraph in paragraphs:
-        if pending and (_heading_line(paragraph) is not None or len("\n\n".join([*pending, paragraph])) > MAX_PARAGRAPH_CHARS):
-            merged.append("\n\n".join(pending))
-            pending = []
-        if len(paragraph) < min_chars:
-            pending.append(paragraph)
+        spans.append((offset, offset + len(paragraph)))
+        offset += len(paragraph) + 2
+    return [text[start:end] for start, end in _merge_spans(text, spans, min_chars)]
+
+
+def _merge_spans(text: str, spans: list[Span], min_chars: int = MIN_PARAGRAPH_CHARS) -> list[Span]:
+    """Merge spans shorter than min_chars into the span after them, keeping the original text between them.
+
+    A heading always starts the paragraph it is merged into, so heading detection still finds it; nothing is merged
+    past MAX_PARAGRAPH_CHARS, and trailing fragments join the paragraph before them. A merged paragraph runs from the
+    first span's start to the last one's end, so it keeps the blank lines between them exactly as the text has them.
+    """
+    merged: list[Span] = []
+    pending: Span | None = None
+    for start, end in spans:
+        if pending and (_heading_line(text[start:end]) is not None or end - pending[0] > MAX_PARAGRAPH_CHARS):
+            merged.append(pending)
+            pending = None
+        if end - start < min_chars:
+            pending = (pending[0] if pending else start, end)
             continue
-        merged.append("\n\n".join([*pending, paragraph]))
-        pending = []
+        merged.append((pending[0] if pending else start, end))
+        pending = None
     if pending:
-        tail = "\n\n".join(pending)
-        if merged and _heading_line(tail) is None and len(merged[-1]) + 2 + len(tail) <= MAX_PARAGRAPH_CHARS:
-            merged[-1] = f"{merged[-1]}\n\n{tail}"
+        tail_start, tail_end = pending
+        if merged and _heading_line(text[tail_start:tail_end]) is None and tail_end - merged[-1][0] <= MAX_PARAGRAPH_CHARS:
+            merged[-1] = (merged[-1][0], tail_end)
         else:
-            merged.append(tail)
+            merged.append(pending)
     return merged
 
 
@@ -157,10 +177,16 @@ def _strip_emphasis(line: str) -> str:
 
 
 def _strip_inline_markup(text: str) -> str:
+    """Remove picture noise, emphasis and inline HTML tags.
+
+    A <br> becomes a space rather than nothing, since it separates words ("BANK OF INDIA<br>and"), and not a line
+    break, since it sits inside a single line such as a markdown table row.
+    """
     text = _PICTURE_TEXT_RE.sub(_picture_text, text)
     lines = (line if line.lstrip().startswith("#") else _strip_emphasis(line) for line in text.split("\n"))
     text = _SUPERSCRIPT_RE.sub(lambda match: match.group(1).translate(_SUPERSCRIPT_DIGITS), "\n".join(lines))
-    return _SPACE_BEFORE_PUNCTUATION_RE.sub("", _HTML_TAG_RE.sub("", text))
+    text = _HTML_TAG_RE.sub("", _LINE_BREAK_TAG_RE.sub(" ", text))
+    return _SPACE_BEFORE_PUNCTUATION_RE.sub("", text)
 
 
 def _is_open(block: str) -> bool:
@@ -269,31 +295,56 @@ def clean_document_text(text: str) -> str:
 
 
 def split_oversized_paragraph(text: str, max_chars: int = MAX_PARAGRAPH_CHARS, level: int = 0) -> list[str]:
-    """Split text longer than max_chars at sentence ends, then line breaks, then spaces, packing pieces greedily.
+    """Split text longer than max_chars at sentence ends, then line breaks, then spaces; see _split_span."""
+    return [text[start:end] for start, end in _split_span(text, (0, len(text)), max_chars, level)]
+
+
+def _split_span(text: str, span: Span, max_chars: int = MAX_PARAGRAPH_CHARS, level: int = 0) -> list[Span]:
+    """Split a span longer than max_chars at sentence ends, then line breaks, then spaces, packing pieces greedily.
 
     Sentence ends come first because extracted text often has a line break at every wrapped line.
 
     Extracted text without blank lines otherwise becomes one paragraph the size of the document, which no
     embedding request, Jev question or paragraph-level selection can handle.
+
+    Pieces are cut at the separators and packed by offset, so a packed piece keeps the whitespace between its parts
+    exactly as the text has it: a citation quoted from a paragraph is then always found in the document text.
     """
-    if len(text) <= max_chars:
-        return [text]
+    start, end = span
+    if end - start <= max_chars:
+        return [span]
     if level == len(_PARAGRAPH_SEPARATORS):
-        return [text[start : start + max_chars] for start in range(0, len(text), max_chars)]
-    pieces = [piece for piece in _PARAGRAPH_SEPARATORS[level].split(text) if piece.strip()]
+        return [(cut, min(cut + max_chars, end)) for cut in range(start, end, max_chars)]
+    pieces: list[Span] = []
+    piece_start = start
+    for match in _PARAGRAPH_SEPARATORS[level].finditer(text, start, end):
+        pieces.append((piece_start, match.start()))
+        piece_start = match.end()
+    pieces.append((piece_start, end))
+    pieces = [(piece_start, piece_end) for piece_start, piece_end in pieces if text[piece_start:piece_end].strip()]
     if len(pieces) == 1:
-        return split_oversized_paragraph(text, max_chars, level + 1)
-    joiner = _PARAGRAPH_JOINERS[level]
-    packed: list[str] = []
-    current = ""
-    for piece in pieces:
-        if current and len(current) + len(joiner) + len(piece) > max_chars:
-            packed.append(current)
-            current = piece
-        else:
-            current = f"{current}{joiner}{piece}" if current else piece
-    packed.append(current)
-    return [part for chunk in packed for part in split_oversized_paragraph(chunk, max_chars, level + 1)]
+        return _split_span(text, span, max_chars, level + 1)
+    packed: list[Span] = []
+    current_start, current_end = pieces[0]
+    for piece_start, piece_end in pieces[1:]:
+        if piece_end - current_start > max_chars:
+            packed.append((current_start, current_end))
+            current_start = piece_start
+        current_end = piece_end
+    packed.append((current_start, current_end))
+    return [part for chunk in packed for part in _split_span(text, chunk, max_chars, level + 1)]
+
+
+def _paragraph_spans(text: str) -> list[Span]:
+    """The text's blank-line separated blocks, oversized ones split, as offsets into the text, before merging."""
+    spans: list[Span] = []
+    start = 0
+    for match in [*_PARAGRAPH_BREAK_RE.finditer(text), None]:
+        end = match.start() if match else len(text)
+        if text[start:end].strip():
+            spans.extend(_split_span(text, (start, end)))
+        start = match.end() if match else end
+    return spans
 
 
 @dataclass
@@ -314,9 +365,7 @@ class DocumentContext:
 
     def __post_init__(self) -> None:
         self.text = clean_document_text(self.text)
-        self.paragraphs = merge_fragments(
-            [part for p in re.split(r"\n\s*\n", self.text) if p.strip() for part in split_oversized_paragraph(p)]
-        )
+        self.paragraphs = [self.text[start:end] for start, end in _merge_spans(self.text, _paragraph_spans(self.text))]
         self.headings = _detect_headings(self.paragraphs)
         self.normalized_paragraphs = [_normalize_search_text(paragraph) for paragraph in self.paragraphs]
 

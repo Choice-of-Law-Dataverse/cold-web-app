@@ -1,5 +1,6 @@
 """Integration tests for analyze_case_streaming event sequence and SSE contract."""
 
+import asyncio
 from unittest.mock import AsyncMock, patch
 
 import pytest
@@ -441,3 +442,35 @@ class TestEmptyColSections:
         by_step = _by_step(events)
         assert "error" in by_step["col_extraction"]
         assert "analysis_complete" not in by_step
+
+
+class TestCancellation:
+    @pytest.mark.asyncio
+    async def test_cancelling_during_jurisdiction_detection_cancels_col_extraction(self) -> None:
+        col_started = asyncio.Event()
+        col_cancelled = asyncio.Event()
+
+        async def blocked_detection(_text: str) -> JurisdictionOutput:
+            await asyncio.sleep(60)
+            return _CIVIL_JURISDICTION
+
+        async def blocked_col(_doc: object) -> StepResult:
+            col_started.set()
+            try:
+                await asyncio.sleep(60)
+            except asyncio.CancelledError:
+                col_cancelled.set()
+                raise
+            return _step(COL)
+
+        async def consume() -> None:
+            async for _event in analyze_case_streaming("decision text " * 10, None, draft_id=1):
+                pass
+
+        with patch.multiple(_SERVICE, detect_jurisdiction=blocked_detection, extract_col_section=blocked_col):
+            stream = asyncio.create_task(consume())
+            await asyncio.wait_for(col_started.wait(), timeout=1)
+            stream.cancel()
+            with pytest.raises(asyncio.CancelledError):
+                await stream
+            await asyncio.wait_for(col_cancelled.wait(), timeout=1)

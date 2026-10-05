@@ -45,7 +45,7 @@ from app.case_analyzer.tools import (
 )
 from app.case_analyzer.tools.document_nav import DocumentContext
 from app.case_analyzer.tools.hybrid_retrieval import retrieve_choice_of_law_candidates
-from app.case_analyzer.tools.jurisdiction_detector import detect_legal_system_by_jurisdiction
+from app.case_analyzer.tools.jurisdiction_detector import detect_legal_system_by_jurisdiction, detect_legal_system_type
 from app.case_analyzer.tools.models import (
     ColIssueOutput,
     ColSectionOutput,
@@ -59,7 +59,7 @@ from app.case_analyzer.tools.models import (
 from app.config import config
 
 from . import corpus
-from .budget import Budget, configure_logfire
+from .budget import Budget, BudgetExceeded, configure_logfire
 from .score import excerpt_recall, score
 
 JEV_ENABLED = True
@@ -81,15 +81,35 @@ class Upstream:
 
     def __init__(self, values: dict[str, Any]) -> None:
         self.values = values
+        self._legal_system: str | None = None
 
     @property
     def jurisdiction(self) -> str | None:
         return self.values["jurisdiction"] or None
 
     @property
+    def curated_legal_system(self) -> str | None:
+        """The legal system the curated jurisdictions' legal family decides, or None when no family decides it."""
+        curated = (detect_legal_system_by_jurisdiction(name) for name in corpus.split_list(self.values["jurisdiction"]))
+        return next((system for system in curated if system), None)
+
+    async def resolve_legal_system(self, text: str) -> str:
+        """The legal system, from the curated legal family when it decides, else asked as production asks it.
+
+        Roman-Dutch and mixed families (South Africa above all) decide nothing, and production then asks
+        detect_legal_system_type, so the step gets the prompts and citation style a real upload would get rather
+        than an assumed civil law.
+        """
+        if self._legal_system is None:
+            jurisdiction = next(iter(corpus.split_list(self.values["jurisdiction"])), "")
+            self._legal_system = self.curated_legal_system or await detect_legal_system_type(jurisdiction, text)
+        return self._legal_system
+
+    @property
     def legal_system(self) -> str:
-        curated = [detect_legal_system_by_jurisdiction(name) for name in corpus.split_list(self.values["jurisdiction"])]
-        return next((system for system in curated if system), "Civil-law jurisdiction")
+        if self._legal_system is None:
+            raise RuntimeError("Resolve the legal system first; the step must set Step.uses_legal_system")
+        return self._legal_system
 
     @property
     def col_excerpt(self) -> str:
@@ -128,6 +148,7 @@ class Step:
     target: curated values the step is scored against; they go to the evaluators only, never to the task.
     context: curated values passed when present (the jurisdiction, for jurisdiction-specific prompts).
     sources (relative to app/case_analyzer) and tasks key the step's cache.
+    uses_legal_system: whether run reads Upstream.legal_system, which the task resolves before running it.
     """
 
     task: str
@@ -137,6 +158,7 @@ class Step:
     sources: tuple[str, ...]
     extra_tasks: tuple[str, ...] = ()
     context: tuple[str, ...] = ("jurisdiction",)
+    uses_legal_system: bool = True
 
 
 async def _jurisdiction(doc: DocumentContext, _up: Upstream) -> Any:
@@ -152,6 +174,7 @@ STEPS: dict[str, Step] = {
         ("service.py", "tools/jurisdiction_classifier.py", "tools/jurisdiction_detector.py"),
         ("legal_system",),
         context=(),
+        uses_legal_system=False,
     ),
     "col_section": Step(
         "col_section",
@@ -159,8 +182,9 @@ STEPS: dict[str, Step] = {
         ("col_excerpt",),
         lambda doc, up: extract_col_section(doc),
         ("tools/col_extractor.py", "tools/hybrid_retrieval.py"),
-        ("col_section_fallback",),
+        ("col_section_fallback", "col_retrieval"),
         context=(),
+        uses_legal_system=False,
     ),
     "themes": Step(
         "themes",
@@ -278,16 +302,41 @@ def disable_jev_in_analyzer() -> None:
         module.ask_jev = unavailable  # type: ignore[attr-defined]
 
 
-def _source_hash(step: Step) -> str:
-    """Hash of the step's sources plus everything every step shares (prompts, utils, data, runner, models, Jev)."""
-    shared = ("config.py", "runner.py", "validation.py", "jev.py", "tools/document_nav.py", "tools/models.py")
-    shared_dirs = sorted(path for folder in ("prompts", "utils", "data") for path in (ANALYZER_DIR / folder).rglob("*"))
-    files = [ANALYZER_DIR / name for name in (*step.sources, *shared)]
-    files += [path for path in shared_dirs if path.is_file() and "__pycache__" not in path.parts]
+SHARED_SOURCES = (
+    "config.py",
+    "runner.py",
+    "validation.py",
+    "jev.py",
+    "tools/document_nav.py",
+    "tools/semantic_index.py",
+    "tools/models.py",
+)
+"""Sources every step depends on; document_nav.py sizes paragraphs by semantic_index.py's chunk limit."""
+LEGAL_SYSTEM_SOURCES = ("tools/jurisdiction_detector.py",)
+
+
+def _hash_files(names: tuple[str, ...], shared: bool = True) -> str:
+    files = [ANALYZER_DIR / name for name in names]
+    if shared:
+        shared_dirs = sorted(path for folder in ("prompts", "utils", "data") for path in (ANALYZER_DIR / folder).rglob("*"))
+        files += [ANALYZER_DIR / name for name in SHARED_SOURCES]
+        files += [path for path in shared_dirs if path.is_file() and "__pycache__" not in path.parts]
     digest = hashlib.sha256()
     for path in files:
         digest.update(path.read_bytes())
     return digest.hexdigest()[:16]
+
+
+def _source_hash(step: Step) -> str:
+    """Hash of the step's sources plus everything every step shares (prompts, utils, data, runner, models, Jev)."""
+    return _hash_files(step.sources)
+
+
+def _legal_system_dependency(step: Step, inputs: dict[str, Any]) -> list[str] | None:
+    """The model and source that resolve the case's legal system, when the curated legal family does not decide it."""
+    if not step.uses_legal_system or Upstream(inputs["upstream"]).curated_legal_system:
+        return None
+    return [get_model("legal_system"), _hash_files(LEGAL_SYSTEM_SOURCES, shared=False)]
 
 
 def _cache_key(name: str, step: Step, inputs: dict[str, Any]) -> str:
@@ -300,6 +349,8 @@ def _cache_key(name: str, step: Step, inputs: dict[str, Any]) -> str:
         "text": inputs["text"],
         "upstream": inputs["upstream"],
     }
+    if legal_system := _legal_system_dependency(step, inputs):
+        payload["legal_system"] = legal_system
     return hashlib.sha256(json.dumps(payload, sort_keys=True).encode()).hexdigest()
 
 
@@ -318,22 +369,42 @@ def _answered_by(output: dict[str, Any]) -> str:
     return "jev" if answered_by_jev(str(output.get("reasoning", ""))) else "openai"
 
 
+def _set_legal_system_attributes(legal_system: str | None, detected: bool) -> None:
+    if legal_system is not None:
+        set_eval_attribute("legal_system", legal_system)
+        set_eval_attribute("legal_system_detected", detected)
+
+
 def make_task(name: str, step: Step, budget: Budget) -> Callable[[dict[str, Any]], Awaitable[dict[str, Any]]]:
+    """The experiment task: the cached output when there is one, else the step's output, cached.
+
+    A legal system the curated family leaves open is resolved inside the task, so the case's cost includes it, and is
+    cached with the output, so a replay neither asks for it again nor loses which system the step was given.
+    """
+
     async def task(inputs: dict[str, Any]) -> dict[str, Any]:
         path = _cache_path(name, step, inputs)
         if path.exists():
             cached = json.loads(path.read_text())
             set_eval_attribute("cached", True)
             set_eval_attribute("answered_by", _answered_by(cached["output"]))
+            _set_legal_system_attributes(cached.get("legal_system"), bool(cached.get("legal_system_detected")))
             for metric, value in cached.get("metrics", {}).items():
                 increment_eval_metric(metric, value)
             return cached["output"]
         budget.check()
         set_eval_attribute("cached", False)
-        output = _dump(await step.run(DocumentContext(draft_id=0, text=inputs["text"]), Upstream(inputs["upstream"])))
+        upstream = Upstream(inputs["upstream"])
+        legal_system = await upstream.resolve_legal_system(inputs["text"]) if step.uses_legal_system else None
+        detected = legal_system is not None and upstream.curated_legal_system is None
+        _set_legal_system_attributes(legal_system, detected)
+        output = _dump(await step.run(DocumentContext(draft_id=0, text=inputs["text"]), upstream))
         set_eval_attribute("answered_by", _answered_by(output))
         CACHE_DIR.mkdir(parents=True, exist_ok=True)
-        path.write_text(json.dumps({"output": output}, ensure_ascii=False))
+        entry: dict[str, Any] = {"output": output}
+        if legal_system is not None:
+            entry |= {"legal_system": legal_system, "legal_system_detected": detected}
+        path.write_text(json.dumps(entry, ensure_ascii=False))
         return output
 
     return task
@@ -341,12 +412,17 @@ def make_task(name: str, step: Step, budget: Budget) -> Callable[[dict[str, Any]
 
 @dataclass
 class CuratedMatch(Evaluator[dict[str, Any], dict[str, Any], dict[str, Any]]):
-    """Scores the step output against the curated value (see evals.score)."""
+    """Scores the step output against the curated value (see evals.score).
+
+    Judged steps make a paid Jev call here even for cached cases, so the budget is checked first and the judge's
+    cost added to it; past the budget the case is left unscored, recorded as an evaluator failure.
+    """
 
     step: str
+    budget: Budget
 
     async def evaluate(self, ctx: EvaluatorContext[dict[str, Any], dict[str, Any], dict[str, Any]]) -> EvaluatorOutput:
-        return await score(self.step, ctx.output, ctx.expected_output or {})
+        return await score(self.step, ctx.output, ctx.expected_output or {}, self.budget)
 
 
 @dataclass
@@ -366,7 +442,8 @@ class SpendTracker(Evaluator[dict[str, Any], dict[str, Any], dict[str, Any]]):
             self.budget.unpriced_calls += int(metrics["requests"])
         path = _cache_path(self.name, self.step, ctx.inputs)
         if path.exists():
-            path.write_text(json.dumps({"output": ctx.output, "metrics": metrics}, ensure_ascii=False))
+            entry = json.loads(path.read_text()) | {"output": ctx.output, "metrics": metrics}
+            path.write_text(json.dumps(entry, ensure_ascii=False))
         return {}
 
 
@@ -389,7 +466,7 @@ def build_dataset(name: str, step: Step, entries: list[dict[str, Any]], budget: 
         for entry in entries
         if all(entry["gold"][key] for key in (*step.uses, *step.target))
     ]
-    return Dataset(name=name, cases=cases, evaluators=[CuratedMatch(name), SpendTracker(step, name, budget)])
+    return Dataset(name=name, cases=cases, evaluators=[CuratedMatch(name, budget), SpendTracker(step, name, budget)])
 
 
 def _report_path(run_name: str, step: str) -> Path:
@@ -403,6 +480,17 @@ def load_report(run_name: str, step: str) -> EvaluationReport[Any, Any, Any] | N
 
 def total_cost(report: EvaluationReport[Any, Any, Any]) -> float:
     return sum(case.metrics.get("cost", 0.0) for case in report.cases)
+
+
+def budget_stopped(report: EvaluationReport[Any, Any, Any]) -> tuple[int, int]:
+    """Cases the budget kept from running, and run cases it kept from being judged."""
+    not_run = sum(1 for failure in report.failures if BudgetExceeded.__name__ in failure.error_message)
+    not_judged = sum(
+        1
+        for case in report.cases
+        if any(BudgetExceeded.__name__ in failure.error_message for failure in case.evaluator_failures)
+    )
+    return not_run, not_judged
 
 
 def scores_by_answerer(report: EvaluationReport[Any, Any, Any]) -> dict[str, dict[str, float]]:
@@ -551,7 +639,7 @@ async def main() -> None:
             raise SystemExit("Set OPENROUTER_API_KEY in backend/.env; --jev-only calls Jev.")
         if unsupported := [name for name in names if name not in JEV_ONLY_RUNS]:
             raise SystemExit(f"--jev-only supports {', '.join(JEV_ONLY_RUNS)}, not {', '.join(unsupported)}")
-        steps = {name: replace(STEPS[name], run=JEV_ONLY_RUNS[name]) for name in names}
+        steps = {name: replace(STEPS[name], run=JEV_ONLY_RUNS[name], uses_legal_system=False) for name in names}
     elif not config.OPENAI_API_KEY:
         raise SystemExit("Set OPENAI_API_KEY in backend/.env; the analyzer steps call OpenAI.")
     else:
@@ -582,12 +670,13 @@ async def main() -> None:
         _report_path(args.name, name).write_bytes(EvaluationReportAdapter.dump_json(report, indent=1))
         baseline = load_report(args.baseline, name) if args.baseline else None
         report.print(baseline=baseline, include_input=False, include_output=False, include_averages=True)
-        stopped = sum(1 for failure in report.failures if "budget" in failure.error_message)
+        not_run, not_judged = budget_stopped(report)
         model = config.JEV_MODEL if JEV_ONLY else get_model(step.task)
         line = f"{name} ({model}): configuration cost ${total_cost(report):.3f} over {len(report.cases)} cases"
         if baseline:
             line += f" (baseline ${total_cost(baseline):.3f})"
-        print(line + (f"; {stopped} cases not run: budget reached" if stopped else ""))
+        line += f"; {not_run} cases not run: budget reached" if not_run else ""
+        print(line + (f"; {not_judged} cases not judged: budget reached" if not_judged else ""))
         if name == "themes":
             print("  Per theme (curated / predicted / false positives / false negatives):")
             for theme, row in theme_errors(report).items():
@@ -621,9 +710,12 @@ async def main() -> None:
                 means = ", ".join(f"{name} {value:.2f}" for name, value in stats.items() if name != "cases")
                 print(f"  answered by {answerer}: {int(stats['cases'])} cases; {means}")
 
-    print(f"New model spend this run (OpenAI and Jev): ${budget.spent:.3f}")
+    print(
+        f"New model spend this run: ${budget.total:.3f}"
+        f" (steps, OpenAI and Jev: ${budget.spent:.3f}; Jev as judge: ${budget.judge_spent:.3f})"
+    )
     if budget.unpriced_calls:
-        print(f"{budget.unpriced_calls} model calls had no price in genai-prices; their cost is missing above.")
+        print(f"{budget.unpriced_calls} model calls had no reported price; their cost is missing above.")
 
 
 if __name__ == "__main__":

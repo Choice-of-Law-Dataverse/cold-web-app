@@ -122,6 +122,34 @@ async def test_paragraphs_unanswered_by_the_timeout_are_none(monkeypatch: pytest
     assert await col_extractor.jev_paragraph_probabilities(["fast", "slow"], timeout=0.2) == [0.9, None]
 
 
+@pytest.mark.asyncio
+async def test_cancelling_the_caller_cancels_every_paragraph_request(monkeypatch: pytest.MonkeyPatch) -> None:
+    started = asyncio.Event()
+    in_flight: list[str] = []
+    cancelled: list[str] = []
+
+    async def blocked(step: str, state: str, questions: dict) -> SystemOneResponse:
+        in_flight.append(state)
+        if len(in_flight) == 3:
+            started.set()
+        try:
+            await asyncio.sleep(60)
+        except asyncio.CancelledError:
+            cancelled.append(state)
+            raise
+        return SystemOneResponse(model="jev-1", answers={})
+
+    monkeypatch.setattr(col_extractor, "ask_jev", blocked)
+    caller = asyncio.create_task(col_extractor.jev_paragraph_probabilities(["a", "b", "c"], timeout=30))
+    await asyncio.wait_for(started.wait(), timeout=1)
+    caller.cancel()
+    with pytest.raises(asyncio.CancelledError):
+        await caller
+    await asyncio.sleep(0)
+
+    assert sorted(cancelled) == ["a", "b", "c"]
+
+
 def _hybrid(doc: DocumentContext) -> tuple[list[CandidatePassage], dict[str, object]]:
     candidate = CandidatePassage(
         candidate_id="C001",

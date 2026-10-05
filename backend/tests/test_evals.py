@@ -8,7 +8,7 @@ from typing import Any
 
 import pytest
 
-from app.case_analyzer.jev import jev_reasoning
+from app.case_analyzer.jev import NoulAnswer, SystemOneResponse, Usage, jev_reasoning
 from app.case_analyzer.tools.models import StepResult, ThemeClassificationOutput
 from evals import budget, corpus, run, score
 
@@ -244,3 +244,154 @@ async def test_a_step_cannot_read_a_curated_value_it_does_not_declare(tmp_path: 
 
     assert not report.cases
     assert "KeyError" in report.failures[0].error_message
+
+
+def _agreeing_judge(calls: list[str]) -> Any:
+    async def ask(step: str, state: Any, questions: dict) -> SystemOneResponse:
+        calls.append(step)
+        return SystemOneResponse(model="jev-1", answers={"agrees": NoulAnswer(type="noul", noul=0.9)}, usage=Usage(cost=0.01))
+
+    return ask
+
+
+@pytest.mark.asyncio
+async def test_judge_cost_is_tracked_apart_and_the_budget_stops_judging_cached_cases(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(run, "CACHE_DIR", tmp_path)
+    judged: list[str] = []
+    monkeypatch.setattr(score, "ask_jev", _agreeing_judge(judged))
+
+    async def fake_issue(_doc: Any, _up: run.Upstream) -> dict[str, Any]:
+        return {"col_issue": "Which law governs the contract?"}
+
+    step = replace(run.STEPS["col_issue"], run=fake_issue)
+    entries = [{"id": "CD-CHE-1", "text": "Decision text", "gold": _gold(col_issue="Which law governs?")}]
+    spend = budget.Budget()
+    first = await run.build_dataset("col_issue", step, entries, spend).evaluate(
+        run.make_task("col_issue", step, spend), progress=False
+    )
+    assert first.cases[0].scores["agreement"].value == 0.9
+    assert (spend.spent, spend.judge_spent, spend.total) == (0.0, 0.01, 0.01)
+
+    capped = budget.Budget(max_cost=0.5, judge_spent=0.5)
+    second = await run.build_dataset("col_issue", step, entries, capped).evaluate(
+        run.make_task("col_issue", step, capped), progress=False
+    )
+
+    assert second.cases[0].attributes["cached"] is True
+    assert "agreement" not in second.cases[0].scores
+    assert run.budget_stopped(second) == (0, 1)
+    assert judged == ["eval_judge"]
+
+
+def test_budget_counts_the_judge_towards_the_limit() -> None:
+    spend = budget.Budget(max_cost=1.0, spent=0.6)
+    spend.add_judge_cost(0.3)
+    spend.check()
+    spend.add_judge_cost(None)
+    spend.add_judge_cost(0.1)
+    assert spend.unpriced_calls == 1
+    with pytest.raises(budget.BudgetExceeded):
+        spend.check()
+
+
+@pytest.mark.asyncio
+async def test_undecided_legal_family_is_detected_once_and_cached_with_the_output(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(run, "CACHE_DIR", tmp_path)
+    detections: list[tuple[str, str]] = []
+
+    async def fake_detect(jurisdiction: str, text: str, fallback: str | None = None) -> str:
+        detections.append((jurisdiction, text))
+        return "Common-law jurisdiction"
+
+    monkeypatch.setattr(run, "detect_legal_system_type", fake_detect)
+    systems: list[str] = []
+
+    async def fake_themes(_doc: Any, up: run.Upstream) -> StepResult[ThemeClassificationOutput]:
+        systems.append(up.legal_system)
+        return StepResult(ThemeClassificationOutput(themes=["Party autonomy"], confidence="high", reasoning="ok"))
+
+    step = replace(run.STEPS["themes"], run=fake_themes)
+    entries = [
+        {"id": "CD-ZAF-1", "text": "South African decision", "gold": _gold(jurisdiction="South Africa")},
+        {"id": "CD-CHE-1", "text": "Swiss decision", "gold": _gold()},
+    ]
+    spend = budget.Budget()
+    first = await run.build_dataset("themes", step, entries, spend).evaluate(
+        run.make_task("themes", step, spend), progress=False
+    )
+    second = await run.build_dataset("themes", step, entries, spend).evaluate(
+        run.make_task("themes", step, spend), progress=False
+    )
+
+    assert detections == [("South Africa", "South African decision")]
+    assert sorted(systems) == ["Civil-law jurisdiction", "Common-law jurisdiction"]
+    replayed = {case.name: case.attributes for case in second.cases}
+    assert replayed["CD-ZAF-1"]["cached"] is True
+    assert (replayed["CD-ZAF-1"]["legal_system"], replayed["CD-ZAF-1"]["legal_system_detected"]) == (
+        "Common-law jurisdiction",
+        True,
+    )
+    assert replayed["CD-CHE-1"]["legal_system_detected"] is False
+    assert {case.name: case.attributes["legal_system"] for case in first.cases}["CD-CHE-1"] == "Civil-law jurisdiction"
+
+
+def test_only_an_undecided_legal_family_keys_the_cache_on_the_detector() -> None:
+    step = run.STEPS["themes"]
+    swiss = run.case_inputs(step, {"text": "t", "gold": _gold()})
+    south_african = run.case_inputs(step, {"text": "t", "gold": _gold(jurisdiction="South Africa")})
+    assert run._legal_system_dependency(step, swiss) is None
+    assert run._legal_system_dependency(step, south_african) is not None
+    assert run._legal_system_dependency(run.STEPS["col_section"], south_african) is None
+
+
+def test_col_section_cache_covers_the_retrieval_planner_and_the_chunk_size() -> None:
+    assert "col_retrieval" in run.STEPS["col_section"].extra_tasks
+    assert "tools/semantic_index.py" in run.SHARED_SOURCES
+
+
+def test_short_extract_of_a_long_excerpt_cannot_get_full_recall() -> None:
+    excerpt = "The parties validly chose Swiss law, so Swiss law governs the whole of the sales contract."
+    assert score.excerpt_recall(["Swiss law"], excerpt) == pytest.approx(len("swiss law") / len(score.normalize(excerpt)))
+    assert score.excerpt_recall(["Background.", excerpt], excerpt) == pytest.approx(1.0)
+    assert score.excerpt_recall([], excerpt) == 0.0
+
+
+@pytest.mark.parametrize(
+    ("identifier", "reference", "expected"),
+    [
+        ("12", "312", 0.0),
+        ("1/23", "12/3", 0.0),
+        ("4A_123/2020", "BGer 4A_123/2020", 1.0),
+        ("2015 NSWSC 468", "[2015] NSWSC 468", 1.0),
+        ("", "BGer 4A_123/2020", 0.0),
+    ],
+)
+def test_identifier_match_compares_whole_numbers(identifier: str, reference: str, expected: float) -> None:
+    assert score.identifier_match(identifier, reference) == expected
+
+
+def test_text_is_paired_with_the_excerpt_in_its_language() -> None:
+    record = {"id": "CD-PER-1", "quote": "Se aplica la ley peruana.", "englishtranslation": "Peruvian law applies here."}
+    assert corpus.text_and_excerpt(record) == ("englishtranslation", "Peruvian law applies here.", "Se aplica la ley peruana.")
+    assert corpus.text_and_excerpt(record, pdf_text="Texto original") == (
+        "pdf",
+        "Texto original",
+        "Se aplica la ley peruana.",
+    )
+    translated = record | {"translatedexcerpt": "Peruvian law applies."}
+    assert corpus.text_and_excerpt(translated, pdf_text="Texto original") == (
+        "englishtranslation",
+        "Peruvian law applies here.",
+        "Peruvian law applies.",
+    )
+    original = translated | {"originaltext": "Texto completo"}
+    assert corpus.text_and_excerpt(original, pdf_text="Texto original") == (
+        "originaltext",
+        "Texto completo",
+        "Se aplica la ley peruana.",
+    )
+    assert corpus.text_and_excerpt({"id": "CD-X-1"}) == (None, "", "")

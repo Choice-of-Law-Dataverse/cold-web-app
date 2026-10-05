@@ -83,6 +83,9 @@ async def jev_paragraph_probabilities(paragraphs: Sequence[str], timeout: float 
     """Jev's probability that each paragraph belongs to the court's choice-of-law analysis.
 
     None where Jev gave no answer, including every paragraph still unanswered when the timeout passes.
+
+    Every request still in flight is cancelled on the way out, whether the timeout passed or the caller itself was
+    cancelled, as it is when a client disconnects mid-analysis: each one is a paid call nobody would read.
     """
     semaphore = asyncio.Semaphore(_JEV_PARAGRAPH_CONCURRENCY)
 
@@ -95,9 +98,11 @@ async def jev_paragraph_probabilities(paragraphs: Sequence[str], timeout: float 
     tasks = [asyncio.create_task(ask(paragraph)) for paragraph in paragraphs]
     if not tasks:
         return []
-    done, pending = await asyncio.wait(tasks, timeout=timeout)
-    for task in pending:
-        task.cancel()
+    try:
+        done, pending = await asyncio.wait(tasks, timeout=timeout)
+    finally:
+        for task in tasks:
+            task.cancel()
     if pending:
         logger.warning("Jev answered %d of %d paragraphs before the timeout", len(done), len(tasks))
     return [task.result() if task in done else None for task in tasks]

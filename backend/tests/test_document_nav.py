@@ -384,6 +384,28 @@ class TestOversizedParagraphs:
     def test_text_without_whitespace_is_cut_to_size(self) -> None:
         assert split_oversized_paragraph("x" * 1050, max_chars=500) == ["x" * 500, "x" * 500, "x" * 50]
 
+    def test_pieces_keep_the_original_whitespace_between_sentences(self) -> None:
+        text = "  ".join(f"Sentence {n} states\na rule." for n in range(200))
+        parts = split_oversized_paragraph(text, max_chars=500)
+        assert len(parts) > 1
+        assert all(len(p) <= 500 and p in text for p in parts)
+        assert any("rule.  Sentence" in p for p in parts)
+
+    def test_every_paragraph_is_verbatim_document_text(self) -> None:
+        wrapped = "  ".join(f"Sentence {n} of the reasons\nwraps onto a second line." for n in range(120))
+        facts = "The parties  signed a sales contract\nin 2019 and later disputed the price. " * 4
+        text = (
+            f"Judgment of 3 May 2020\n\nBefore the court.\n\n{facts}\n\n{wrapped}\n\n"
+            f"## Applicable law\n\n{wrapped}\n\nSigned.\n\nJudge X"
+        )
+        ctx = DocumentContext(draft_id=1, text=text)
+        assert len(ctx.paragraphs) > 4
+        assert all(len(p) <= MAX_PARAGRAPH_CHARS for p in ctx.paragraphs)
+        assert all(p in ctx.text for p in ctx.paragraphs)
+        assert ctx.paragraphs[0].startswith("Judgment of 3 May 2020\n\nBefore the court.\n\nThe parties  signed")
+        assert ctx.paragraphs[-1].endswith("wraps onto a second line.\n\nSigned.\n\nJudge X")
+        assert ("## Applicable law", next(i for i, p in enumerate(ctx.paragraphs) if p.startswith("##"))) in ctx.headings
+
 
 class TestFragmentMerging:
     body = "The court finds that the parties chose Swiss law for their contract. " * 4
@@ -442,6 +464,11 @@ class TestCleanDocumentText:
         assert text.count("$10 million") == 3
         assert text.count("Mercantile Mutual") == 5
         assert text.count(quote) == 3
+
+    def test_line_break_tags_become_spaces(self) -> None:
+        assert clean_document_text("applicable<br>law") == "applicable law"
+        assert clean_document_text("BANK OF INDIA<br/>and | Swiss <BR /> law") == "BANK OF INDIA and | Swiss law"
+        assert clean_document_text("the parties<br>, however") == "the parties, however"
 
     def test_inline_markup_is_removed_but_identifiers_keep_underscores(self) -> None:
         text = clean_document_text("**_1-_** _contrato internacional_ , em outro._<sup>6</sup> BGer 4A_543/2018")

@@ -193,54 +193,56 @@ async def analyze_case_streaming(
         jurisdiction_task = asyncio.create_task(detect_jurisdiction(text)) if jurisdiction_override is None else None
         col_task = asyncio.create_task(extract_col_section(doc_ctx)) if not col_cached else None
 
-        if jurisdiction_task is not None:
-            try:
-                jurisdiction_data = await jurisdiction_task
-                yield {
-                    "step": "jurisdiction_detection",
-                    "status": "completed",
-                    "data": jurisdiction_data.model_dump(),
-                }
-            except Exception as e:
-                logger.error("Jurisdiction detection failed: %s", str(e))
-                yield {"step": "jurisdiction_detection", "status": "error", "error": str(e)}
-                if col_task is not None:
-                    col_task.cancel()
-                return
-        else:
-            assert jurisdiction_override is not None
-            jurisdiction_data = jurisdiction_override
+        try:
+            if jurisdiction_task is not None:
+                try:
+                    jurisdiction_data = await jurisdiction_task
+                    yield {
+                        "step": "jurisdiction_detection",
+                        "status": "completed",
+                        "data": jurisdiction_data.model_dump(),
+                    }
+                except Exception as e:
+                    logger.error("Jurisdiction detection failed: %s", str(e))
+                    yield {"step": "jurisdiction_detection", "status": "error", "error": str(e)}
+                    return
+            else:
+                assert jurisdiction_override is not None
+                jurisdiction_data = jurisdiction_override
 
-        legal_system = jurisdiction_data.legal_system_type
-        jurisdiction = jurisdiction_data.precise_jurisdiction
-        run_common_law_branches = requires_common_law_steps(legal_system, jurisdiction)
+            legal_system = jurisdiction_data.legal_system_type
+            jurisdiction = jurisdiction_data.precise_jurisdiction
+            run_common_law_branches = requires_common_law_steps(legal_system, jurisdiction)
 
-        if col_task is not None:
-            try:
-                col_step = await col_task
-                col_result = col_step.output
-            except Exception as e:
-                logger.error("COL extraction failed: %s", str(e))
-                yield {"step": "col_extraction", "status": "error", "error": str(e)}
-                return
-            if not any(section.strip() for section in col_result.col_sections):
-                logger.error("COL extraction returned no sections for draft %d", draft_id)
+            if col_task is not None:
+                try:
+                    col_step = await col_task
+                    col_result = col_step.output
+                except Exception as e:
+                    logger.error("COL extraction failed: %s", str(e))
+                    yield {"step": "col_extraction", "status": "error", "error": str(e)}
+                    return
+                if not any(section.strip() for section in col_result.col_sections):
+                    logger.error("COL extraction returned no sections for draft %d", draft_id)
+                    yield {
+                        "step": "col_extraction",
+                        "status": "error",
+                        "error": "No choice-of-law sections could be extracted from this document.",
+                    }
+                    return
                 yield {
                     "step": "col_extraction",
-                    "status": "error",
-                    "error": "No choice-of-law sections could be extracted from this document.",
+                    "status": "completed",
+                    "data": _step_data(col_step),
                 }
-                return
-            yield {
-                "step": "col_extraction",
-                "status": "completed",
-                "data": _step_data(col_step),
-            }
-            col_section_text = str(col_result)
-        else:
-            col_result = _restore_from_cache(ColSectionOutput, cached["col_extraction"], "col_sections", [])
-            yield {"step": "col_extraction", "status": "completed", "data": cached["col_extraction"]}
-            col_section_text = str(col_result)
+                col_section_text = str(col_result)
+            else:
+                col_result = _restore_from_cache(ColSectionOutput, cached["col_extraction"], "col_sections", [])
+                yield {"step": "col_extraction", "status": "completed", "data": cached["col_extraction"]}
+                col_section_text = str(col_result)
+        finally:
+            if col_task is not None:
+                col_task.cancel()
 
         need_theme = not _cache_is_valid(
             cached,
