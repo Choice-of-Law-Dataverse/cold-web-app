@@ -13,7 +13,7 @@ title: Team — CoLD
     alt="external link"
     class="external-link-icon"
   /></a> builds collaborations and promotes CoLD through publications and events.
-  
+
 <img src="https://www.unilu.ch/fileadmin/_processed_/a/b/csm_Girsberger_Daniel_Q_d862e28b53.jpg" alt="Daniel Girsberger" style="width: 150px"/>
 
 **Daniel Girsberger** Senior Advisor
@@ -23,7 +23,7 @@ title: Team — CoLD
     alt="external link"
     class="external-link-icon"
   /></a> was the grant holder of the SNSF project and continues to lead the Scientific Board, composed of legal experts from every continent.
-  
+
 <img src="https://www.unilu.ch/fileadmin/_processed_/2/9/csm_Rodrigo_Rodriguez_Skype-4867_8d67f58b46.jpg" alt="Rodrigo Rodriguez" style="width: 150px"/>
 
 **Rodrigo Rodriguez** Institutional Lead
