@@ -6,7 +6,7 @@ Nuxt 4 frontend for the [Choice of Law Dataverse](https://cold.global), built wi
 
 ## Prerequisites
 
-- **Node.js v22.18** (pinned in `.nvmrc`)
+- **Node.js v24.21** (pinned in `.nvmrc`)
 - **pnpm 11.22.0** (pinned in `packageManager`)
 
 ## Setup
