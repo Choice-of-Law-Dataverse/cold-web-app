@@ -8,7 +8,7 @@ title: Team — CoLD
 
 **Agatha Brandão** Project Lead
 
-<a href="https://www.agathabrandao.com" target="_blank">Agatha<img
+<a href="https://agathabrandao.com" target="_blank">Agatha<img
     src="https://assets.cold.global/assets/external_link.svg"
     alt="external link"
     class="external-link-icon"
