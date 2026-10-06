@@ -1,0 +1,84 @@
+name: Jev Evaluation
+
+on:
+  workflow_dispatch:
+    inputs:
+      limit:
+        description: "Evaluate at most this many court decisions (empty = all)"
+        required: false
+        default: "200"
+      extract_pdfs:
+        description: "Download official PDFs and extract their text first"
+        type: boolean
+        default: false
+      experiments:
+        description: "Comma-separated: themes, paragraphs"
+        required: false
+        default: "themes,paragraphs"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  evaluate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - name: Check for OpenRouter API key
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_KEY }}
+        working-directory: .
+        run: |
+          if [ -z "$OPENROUTER_API_KEY" ]; then
+            echo "::error::Add the OPENROUTER_KEY repository secret (Settings → Secrets and variables → Actions)."
+            exit 1
+          fi
+
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v10.0.1
+        with:
+          enable-cache: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version-file: backend/.python-version
+
+      - name: Install dependencies
+        run: uv sync --all-extras --all-packages
+
+      - name: Extract text from official PDFs
+        if: ${{ inputs.extract_pdfs }}
+        env:
+          LOGFIRE_SEND_TO_LOGFIRE: "false"
+        run: |
+          uv run python scripts/extract_court_decision_texts.py --out jev-eval/texts.jsonl
+          cat jev-eval/extraction.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Run evaluation
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_KEY }}
+          LOGFIRE_SEND_TO_LOGFIRE: "false"
+          LIMIT: ${{ inputs.limit }}
+          EXPERIMENTS: ${{ inputs.experiments || 'themes,paragraphs' }}
+        run: |
+          uv run python scripts/jev_eval.py --out jev-eval $([ -f jev-eval/texts.jsonl ] && echo --texts jev-eval/texts.jsonl) --experiments "$EXPERIMENTS" ${LIMIT:+--limit "$LIMIT"}
+          cat jev-eval/report.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload corpus and predictions
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: jev-eval
+          path: backend/jev-eval/
+          if-no-files-found: ignore

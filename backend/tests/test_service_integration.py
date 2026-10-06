@@ -1,5 +1,6 @@
 """Integration tests for analyze_case_streaming event sequence and SSE contract."""
 
+import asyncio
 from unittest.mock import AsyncMock, patch
 
 import pytest
@@ -86,7 +87,7 @@ def _valid_cached_col() -> dict[str, object]:
         "reasoning": "Cached holding.",
         "_evidence": {
             "navigation_tools": [],
-            "policy_version": 9,
+            "policy_version": 10,
             "candidates": [{"candidate_id": "C001"}],
             "candidate_dispositions": [{"candidate_id": "C001", "disposition": "include", "reason": "Direct holding."}],
             "col_sections": [{"section_index": 0, "paragraphs": [1], "role": "court_holding"}],
@@ -283,7 +284,7 @@ class TestResumeFromCache:
                 "identifier_type": None,
                 "confidence": "low",
                 "reasoning": "Not found",
-                "_evidence": {"navigation_tools": ["search"], "policy_version": 9},
+                "_evidence": {"navigation_tools": ["search"], "policy_version": 10},
             },
         }
         citation_mock = AsyncMock(return_value=_step(CITATION))
@@ -344,7 +345,7 @@ class TestResumeFromCache:
         citation_event = next(event for event in events if event["step"] == "case_citation" and event["status"] == "completed")
         assert citation_event["data"]["_evidence"] == {
             "navigation_tools": ["read_head", "search"],
-            "policy_version": 9,
+            "policy_version": 10,
         }
         assert citation_event["data"]["case_citation"] == CITATION.case_citation
         assert citation_event["data"]["source_text"] == CITATION.source_text
@@ -441,3 +442,35 @@ class TestEmptyColSections:
         by_step = _by_step(events)
         assert "error" in by_step["col_extraction"]
         assert "analysis_complete" not in by_step
+
+
+class TestCancellation:
+    @pytest.mark.asyncio
+    async def test_cancelling_during_jurisdiction_detection_cancels_col_extraction(self) -> None:
+        col_started = asyncio.Event()
+        col_cancelled = asyncio.Event()
+
+        async def blocked_detection(_text: str) -> JurisdictionOutput:
+            await asyncio.sleep(60)
+            return _CIVIL_JURISDICTION
+
+        async def blocked_col(_doc: object) -> StepResult:
+            col_started.set()
+            try:
+                await asyncio.sleep(60)
+            except asyncio.CancelledError:
+                col_cancelled.set()
+                raise
+            return _step(COL)
+
+        async def consume() -> None:
+            async for _event in analyze_case_streaming("decision text " * 10, None, draft_id=1):
+                pass
+
+        with patch.multiple(_SERVICE, detect_jurisdiction=blocked_detection, extract_col_section=blocked_col):
+            stream = asyncio.create_task(consume())
+            await asyncio.wait_for(col_started.wait(), timeout=1)
+            stream.cancel()
+            with pytest.raises(asyncio.CancelledError):
+                await stream
+            await asyncio.wait_for(col_cancelled.wait(), timeout=1)
