@@ -35,6 +35,7 @@ function startedSession() {
 describe("useCaseAnalysisSession", () => {
   beforeEach(() => {
     script = [];
+    vi.restoreAllMocks();
   });
 
   it("fills the form as steps complete", async () => {
@@ -108,6 +109,7 @@ describe("useCaseAnalysisSession", () => {
   });
 
   it("reports a failed analysis and marks running steps as failed", async () => {
+    vi.spyOn(console, "error").mockImplementation(() => {});
     const session = startedSession();
     script = [
       { step: "col_issue", status: "in_progress" },
