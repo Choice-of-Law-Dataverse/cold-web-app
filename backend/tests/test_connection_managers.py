@@ -1,6 +1,7 @@
 """Tests for database and HTTP connection managers."""
 
 import pytest
+from requests.adapters import HTTPAdapter
 from sqlalchemy.pool import QueuePool
 
 from app.services.db_manager import DatabaseManager, SuggestionsDBManager
@@ -269,8 +270,6 @@ class TestHTTPSessionManager:
 
     def test_adapter_applies_default_timeout(self, monkeypatch):
         """Requests without an explicit timeout receive the configured default."""
-        from requests.adapters import HTTPAdapter
-
         captured: dict = {}
 
         def fake_send(self, request, **kwargs):
@@ -299,7 +298,9 @@ class TestHTTPSessionManager:
         manager._session = None
         manager.initialize()
 
-        retry = manager.get_session().get_adapter("https://example.invalid/").max_retries
+        adapter = manager.get_session().get_adapter("https://example.invalid/")
+        assert isinstance(adapter, HTTPAdapter)
+        retry = adapter.max_retries
         assert retry.is_retry("GET", 503)
         assert not retry.is_retry("POST", 503)
         assert not retry.is_retry("PATCH", 503)
