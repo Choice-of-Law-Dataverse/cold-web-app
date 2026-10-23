@@ -175,6 +175,57 @@ class TestCaseAnalyzerDecisions:
             _moderation(_service_with(table), FakeNocoDB()).reject("case-analyzer", 404, MODERATOR)
 
 
+class TestLockForModeration:
+    @pytest.fixture
+    def literature_table(self, monkeypatch: pytest.MonkeyPatch) -> Iterator[tuple[sa.Engine, sa.Table]]:
+        metadata = sa.MetaData()
+        table = sa.Table(
+            "suggestions_literature",
+            metadata,
+            sa.Column("id", sa.Integer, primary_key=True),
+            sa.Column("payload", sa.JSON, nullable=False),
+            sa.Column("moderation_status", sa.String(32)),
+        )
+        engine = sa.create_engine("sqlite://", poolclass=StaticPool, connect_args={"check_same_thread": False})
+        metadata.create_all(engine)
+        with engine.begin() as connection:
+            connection.execute(
+                table.insert(),
+                [
+                    {"id": 1, "payload": {"title": "Pending"}, "moderation_status": None},
+                    {"id": 2, "payload": {"title": "Decided", "moderation_status": "rejected"}, "moderation_status": None},
+                    {"id": 3, "payload": {"title": "Approved"}, "moderation_status": "approved"},
+                ],
+            )
+
+        @contextmanager
+        def get_session() -> Iterator[Session]:
+            with Session(engine) as session:
+                yield session
+
+        monkeypatch.setattr(suggestions_db_manager, "get_session", get_session)
+        yield engine, table
+        engine.dispose()
+
+    def _service(self, table: sa.Table) -> SuggestionService:
+        service = SuggestionService.__new__(SuggestionService)
+        service.tables = {"literature": table}
+        return service
+
+    def test_undecided_row_is_yielded(self, literature_table) -> None:
+        _, table = literature_table
+        with self._service(table).lock_for_moderation("literature", 1) as session:
+            assert isinstance(session, Session)
+
+    @pytest.mark.parametrize(("suggestion_id", "status"), [(2, "rejected"), (3, "approved")])
+    def test_decision_in_payload_or_column_is_refused(self, literature_table, suggestion_id: int, status: str) -> None:
+        _, table = literature_table
+        with pytest.raises(SuggestionAlreadyModeratedError) as exc:
+            with self._service(table).lock_for_moderation("literature", suggestion_id):
+                pytest.fail("a decided suggestion must not be locked for a new decision")
+        assert exc.value.status == status
+
+
 class FakeSuggestions:
     """Records the calls a default-category decision makes on the suggestion store."""
 
