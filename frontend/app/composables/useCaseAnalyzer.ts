@@ -9,7 +9,6 @@ import {
   buildCaseAnalyzerPayload,
   extractErrorMessage,
 } from "~/utils/analyzerPayloadParser";
-import { ANALYZER_STEP_LABELS } from "~/types/analyzer";
 import { useApiClient } from "@/composables/useApiClient";
 import { streamSSE, type SSEEvent } from "~/utils/sseStream";
 
@@ -54,7 +53,6 @@ export function useCaseAnalyzer(
         url: "/api/proxy/case-analyzer/analyze",
         method: "POST",
         body,
-        stepLabels: ANALYZER_STEP_LABELS,
         onEvent: (event: SSEEvent<AnalysisStepPayload>) => {
           if (
             event.step === "jurisdiction_detection" &&

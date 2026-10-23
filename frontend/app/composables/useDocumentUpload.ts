@@ -7,11 +7,6 @@ interface UploadStepData {
   draft_id?: number;
 }
 
-const stepLabels: Record<string, string> = {
-  extracting_text: "Extracted Text",
-  saving_draft: "Saved Draft",
-};
-
 export function useDocumentUpload() {
   const selectedFile = ref<File | null>(null);
   const isUploading = ref(false);
@@ -39,16 +34,12 @@ export function useDocumentUpload() {
         url: "/api/proxy/case-analyzer/upload",
         method: "POST",
         body: { file_name: selectedFile.value.name, blob_url: blobUrl },
-        stepLabels,
         onEvent: (event: SSEEvent<UploadStepData>) => {
           currentStep.value = event.step;
 
           if (event.step === "upload_complete" && event.data) {
             draftId.value = event.data.draft_id ?? null;
           }
-        },
-        onError: (error: string) => {
-          throw new Error(error);
         },
       });
 

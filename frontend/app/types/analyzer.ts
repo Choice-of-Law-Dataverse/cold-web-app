@@ -145,20 +145,6 @@ export const ANALYZER_FIELD_MAP: Record<
   },
 };
 
-export const ANALYZER_STEP_LABELS: Record<string, string> = {
-  jurisdiction_detection: "Jurisdiction Detection",
-  col_extraction: "Choice of Law Extraction",
-  theme_classification: "Theme Classification",
-  case_citation: "Case Citation",
-  relevant_facts: "Relevant Facts",
-  pil_provisions: "PIL Provisions",
-  col_issue: "Choice of Law Issue",
-  courts_position: "Court's Position",
-  obiter_dicta: "Obiter Dicta",
-  dissenting_opinions: "Dissenting Opinions",
-  abstract: "Abstract",
-};
-
 export const ANALYSIS_STEP_KEYS = [
   "col_extraction",
   "theme_classification",

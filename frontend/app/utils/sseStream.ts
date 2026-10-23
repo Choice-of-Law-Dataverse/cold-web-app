@@ -14,22 +14,10 @@ export interface SSEEvent<T = Record<string, unknown>> {
   error?: string;
 }
 
-export interface ToastHandle {
-  add: (opts: {
-    title: string;
-    description: string;
-    color: string;
-    icon: string;
-    duration: number;
-  }) => void;
-}
-
 export interface SSEStreamOptions<T> {
   url: string;
   method?: "GET" | "POST";
   body?: unknown;
-  toast?: ToastHandle;
-  stepLabels?: Record<string, string>;
   onEvent?: (event: SSEEvent<T>) => void;
   onStepComplete?: (step: string, data?: T) => void;
   onError?: (error: string) => void;
@@ -41,8 +29,8 @@ export interface SSEStreamResult<T> {
 }
 
 /**
- * Streams SSE events from an endpoint and handles common patterns like
- * toast notifications on step completion and error handling.
+ * Streams SSE events from an endpoint. An `error` event, or any error thrown
+ * by a handler, rejects the returned promise; malformed lines are skipped.
  */
 export async function streamSSE<T = Record<string, unknown>>(
   options: SSEStreamOptions<T>,
@@ -51,8 +39,6 @@ export async function streamSSE<T = Record<string, unknown>>(
     url,
     method = "POST",
     body,
-    toast,
-    stepLabels = {},
     onEvent,
     onStepComplete,
     onError,
@@ -97,17 +83,6 @@ export async function streamSSE<T = Record<string, unknown>>(
     if (event.status === "completed" && !completedSteps.has(event.step)) {
       completedSteps.add(event.step);
       onStepComplete?.(event.step, event.data);
-
-      const label = stepLabels[event.step];
-      if (label && toast) {
-        toast.add({
-          title: label,
-          description: "Completed",
-          color: "info",
-          icon: "i-heroicons-check-circle",
-          duration: 2000,
-        });
-      }
     }
   }
 
@@ -121,14 +96,14 @@ export async function streamSSE<T = Record<string, unknown>>(
     buffer = parts.pop() ?? "";
 
     for (const line of parts) {
-      if (line.startsWith("data: ")) {
-        try {
-          const event = JSON.parse(line.slice(6)) as SSEEvent<T>;
-          processEvent(event);
-        } catch (e) {
-          if (e instanceof SSEApplicationError) throw e;
-        }
+      if (!line.startsWith("data: ")) continue;
+      let event: SSEEvent<T>;
+      try {
+        event = JSON.parse(line.slice(6)) as SSEEvent<T>;
+      } catch {
+        continue;
       }
+      processEvent(event);
     }
   }
 
