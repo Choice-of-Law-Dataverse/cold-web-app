@@ -3,9 +3,11 @@ from decimal import Decimal
 from typing import Any
 
 import sqlalchemy as sa
+from sqlalchemy.engine import Engine
 from sqlalchemy.orm import sessionmaker
 
 from app.config import config
+from app.services.db_manager import db_manager
 
 
 class MainDBWriter:
@@ -16,11 +18,9 @@ class MainDBWriter:
         "last_modified_by",
     }
 
-    def __init__(self) -> None:
-        conn = config.SQL_CONN_STRING
-        if not conn:
-            raise RuntimeError("SQL_CONN_STRING not configured for main DB")
-        self.engine = sa.create_engine(conn)
+    def __init__(self, engine: Engine | None = None) -> None:
+        """Write to the main database through `engine`, defaulting to the lifespan-owned pool."""
+        self.engine = engine if engine is not None else db_manager.get_engine()
         # Target schema from env (NocoDB schema)
         self.schema = config.NOCODB_POSTGRES_SCHEMA
         self.metadata = sa.MetaData(schema=self.schema)

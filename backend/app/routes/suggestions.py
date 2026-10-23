@@ -15,14 +15,15 @@ from app.schemas.suggestions import (
     SuggestionResponse,
 )
 from app.services.email_notifications import send_new_suggestion_notification
-from app.services.moderation_writer import MainDBWriter
-from app.services.suggestion_approval import (
-    approve_case_analyzer,
-    get_target_table,
-    link_jurisdictions_for_default_categories,
-    normalize_domestic_instruments,
+from app.services.moderation import (
+    CASE_ANALYZER,
+    MODERATION_CATEGORIES,
+    ModerationCategory,
+    ModerationService,
+    UnknownCategoryError,
+    category_for_slug,
 )
-from app.services.suggestions import SuggestionService
+from app.services.suggestions import SuggestionAlreadyModeratedError, SuggestionNotFoundError, SuggestionService
 
 logger = logging.getLogger(__name__)
 
@@ -35,6 +36,12 @@ router = APIRouter(
 
 def get_suggestion_service() -> SuggestionService:
     return SuggestionService()
+
+
+def get_moderation_service(
+    suggestions: SuggestionService = Depends(get_suggestion_service),
+) -> ModerationService:
+    return ModerationService(suggestions)
 
 
 @router.post(
@@ -146,22 +153,11 @@ for _path, _label, _category, _table, _body_type in _TYPED_SUGGESTION_ROUTES:
 # Moderation endpoints
 
 
-_CATEGORIES: dict[str, tuple[str, str]] = {
-    "case_analyzer": ("case-analyzer", "Case Analyzer"),
-    "court_decisions": ("court-decisions", "Court Decisions"),
-    "domestic_instruments": ("domestic-instruments", "Domestic Instruments"),
-    "regional_instruments": ("regional-instruments", "Regional Instruments"),
-    "international_instruments": ("international-instruments", "International Instruments"),
-    "literature": ("literature", "Literature"),
-    "feedback": ("feedback", "Entity Feedback"),
-}
-
-_SLUG_TO_TABLE: dict[str, str] = {slug: table for table, (slug, _) in _CATEGORIES.items()}
-
-
-def _table_key(path_segment: str) -> str | None:
-    """Map category path segment to internal table name."""
-    return _SLUG_TO_TABLE.get(path_segment)
+def _category_or_404(slug: str) -> ModerationCategory:
+    try:
+        return category_for_slug(slug)
+    except UnknownCategoryError as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e)) from e
 
 
 @router.get(
@@ -181,12 +177,11 @@ async def moderation_summary(
         counts = service.count_pending_by_category()
         return [
             ModerationSummaryItem(
-                category=meta[0],
-                label=meta[1],
-                pending_count=counts.get(table, 0),
+                category=category.slug,
+                label=category.label,
+                pending_count=counts.get(category.table, 0),
             )
-            for table, meta in _CATEGORIES.items()
-            if table != "feedback"
+            for category in MODERATION_CATEGORIES
         ] + [
             ModerationSummaryItem(
                 category="feedback",
@@ -210,7 +205,8 @@ async def moderation_summary(
         "For `case-analyzer`, set `show_all=true` to include non-pending items. "
         "Requires editor or admin role.\n\n"
         "**Category slugs:** `case-analyzer`, `court-decisions`, `domestic-instruments`, "
-        "`regional-instruments`, `international-instruments`, `literature`, `feedback`."
+        "`regional-instruments`, `international-instruments`, `literature`. "
+        "Entity feedback has its own endpoints under `/feedback`."
     ),
 )
 async def list_pending_suggestions(
@@ -219,20 +215,15 @@ async def list_pending_suggestions(
     _: dict[str, Any] = Depends(require_editor_or_admin),
     service: SuggestionService = Depends(get_suggestion_service),
 ) -> list[PendingSuggestionItem]:
-    table = _table_key(category)
-    if not table:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Invalid category: {category}",
-        )
+    moderation_category = _category_or_404(category)
     try:
-        if category == "case-analyzer":
+        if moderation_category == CASE_ANALYZER:
             if show_all:
                 rows = service.list_all_case_analyzer()
             else:
                 rows = service.list_pending_case_analyzer()
         else:
-            rows = service.list_pending(table)
+            rows = service.list_pending(moderation_category.table)
         return [PendingSuggestionItem(**r) for r in rows]
     except Exception as e:
         logger.exception("Failed to fetch pending suggestions category=%s", category)
@@ -256,16 +247,11 @@ async def get_suggestion_detail(
     user: dict = Depends(require_user),
     service: SuggestionService = Depends(get_suggestion_service),
 ) -> SuggestionDetailItem:
-    table = _table_key(category)
-    if not table:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Invalid category: {category}",
-        )
+    table = _category_or_404(category).table
 
     is_moderator = has_editor_access(user)
 
-    if not is_moderator and table == "case_analyzer":
+    if not is_moderator and table == CASE_ANALYZER.table:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Insufficient permissions for this category",
@@ -305,137 +291,63 @@ async def get_suggestion_detail(
         "Mark a suggestion as approved and insert its data into the main CoLD database. "
         "For case-analyzer suggestions, this runs the full approval pipeline. "
         "For other categories, the payload is written directly to the target table. "
-        "Requires editor or admin role."
+        "Returns 404 when the suggestion does not exist and 409 when it was already approved or rejected; "
+        "a failed approval leaves the suggestion pending. Requires editor or admin role."
     ),
 )
-async def approve_suggestion(
+def approve_suggestion(
     category: str,
     suggestion_id: int,
-    request: Request,
     user: dict = Depends(require_editor_or_admin),
-    service: SuggestionService = Depends(get_suggestion_service),
+    moderation: ModerationService = Depends(get_moderation_service),
 ) -> StatusMessage:
-    table = _table_key(category)
-    if not table:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Invalid category: {category}",
-        )
-
+    _category_or_404(category)
+    moderator_email = extract_user_identity(user) or "unknown"
     try:
-        if category == "case-analyzer":
-            item = service.get_suggestion_by_id(table, suggestion_id)
-            if not item:
-                raise HTTPException(
-                    status_code=status.HTTP_404_NOT_FOUND,
-                    detail="Suggestion not found",
-                )
-            item_status = item.get("moderation_status")
-            if item_status in {"approved", "rejected"}:
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                    detail=f"Suggestion already {item_status}",
-                )
-        else:
-            item = service.get_suggestion_by_id(table, suggestion_id, pending_only=True)
-            if not item:
-                raise HTTPException(
-                    status_code=status.HTTP_404_NOT_FOUND,
-                    detail="Suggestion not found or not pending",
-                )
-
-        original_payload: dict[str, Any] = item.get("payload", {}) or {}
-
-        # Get user email from Auth0 token
-        moderator_email = extract_user_identity(user) or "unknown"
-
-        if category == "case-analyzer":
-            writer = MainDBWriter()
-            await approve_case_analyzer(service, writer, table, suggestion_id, original_payload, item, moderator_email)
-        else:
-            # Handle default categories - simplified without form editing
-            writer = MainDBWriter()
-            target_table = get_target_table(category)
-            if not target_table:
-                raise HTTPException(status_code=400, detail="Unsupported category")
-
-            if target_table == "Domestic_Instruments":
-                normalize_domestic_instruments(original_payload)
-
-            # Filter out reserved metadata fields
-            _reserved = {
-                "submitter_email",
-                "submitter_comments",
-                "official_source_pdf",
-                "source_pdf",
-                "attachment",
-                "category",
-                "edit_entity_id",
-            }
-            payload_for_writer = {k: v for k, v in original_payload.items() if k not in _reserved}
-
-            merged_id = writer.insert_record(target_table, payload_for_writer)
-            link_jurisdictions_for_default_categories(writer, target_table, merged_id, payload_for_writer)
-
-            service.mark_status(
-                table,
-                suggestion_id,
-                "approved",
-                moderator_email,
-                note="",
-                merged_id=merged_id,
-            )
-
-        return StatusMessage(status="success", message="Suggestion approved successfully")
-
-    except HTTPException:
-        raise
+        moderation.approve(category, suggestion_id, moderator_email)
+    except SuggestionNotFoundError as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Suggestion not found") from e
+    except SuggestionAlreadyModeratedError as e:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e)) from e
     except Exception as e:
         logger.exception("Failed to approve suggestion category=%s id=%d", category, suggestion_id)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to approve suggestion",
         ) from e
+    return StatusMessage(status="success", message="Suggestion approved successfully")
 
 
 @router.post(
     "/{category}/{suggestion_id}/reject",
     summary="Reject a suggestion",
-    description="Mark a suggestion as rejected. The record is preserved for audit but not inserted into CoLD. Requires editor or admin role.",
+    description=(
+        "Mark a pending suggestion as rejected. The record is preserved for audit but not inserted into CoLD. "
+        "Returns 404 when the suggestion does not exist and 409 when it was already approved or rejected. "
+        "Requires editor or admin role."
+    ),
 )
-async def reject_suggestion(
+def reject_suggestion(
     category: str,
     suggestion_id: int,
     user: dict = Depends(require_editor_or_admin),
-    service: SuggestionService = Depends(get_suggestion_service),
+    moderation: ModerationService = Depends(get_moderation_service),
 ) -> StatusMessage:
-    table = _table_key(category)
-    if not table:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Invalid category: {category}",
-        )
-
+    _category_or_404(category)
+    moderator_email = extract_user_identity(user) or "unknown"
     try:
-        # Get user email from Auth0 token
-        moderator_email = extract_user_identity(user) or "unknown"
-
-        service.mark_status(
-            table,
-            suggestion_id,
-            "rejected",
-            moderator_email,
-            note="",
-        )
-
-        return StatusMessage(status="success", message="Suggestion rejected successfully")
-
+        moderation.reject(category, suggestion_id, moderator_email)
+    except SuggestionNotFoundError as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Suggestion not found") from e
+    except SuggestionAlreadyModeratedError as e:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e)) from e
     except Exception as e:
         logger.exception("Failed to reject suggestion category=%s id=%d", category, suggestion_id)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to reject suggestion",
         ) from e
+    return StatusMessage(status="success", message="Suggestion rejected successfully")
 
 
 @router.delete(
@@ -449,7 +361,7 @@ async def delete_suggestion(
     _: dict[str, Any] = Depends(require_editor_or_admin),
     service: SuggestionService = Depends(get_suggestion_service),
 ) -> StatusMessage:
-    if category != "case-analyzer":
+    if category != CASE_ANALYZER.slug:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Delete is only supported for case-analyzer",

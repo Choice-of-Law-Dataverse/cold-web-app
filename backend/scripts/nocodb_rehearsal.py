@@ -255,7 +255,7 @@ def direct_write_smoke(engine: Engine, database_url: str, schema: str) -> dict[s
         jurisdiction_id, jurisdiction_code = first_jurisdiction(connection, schema)
 
     marker = f"NocoDB rehearsal direct write {uuid.uuid4()}"
-    writer = MainDBWriter()
+    writer = MainDBWriter(engine)
     record_id: int | None = None
     try:
         record_id = writer.insert_record("Court_Decisions", {"case_citation": marker})

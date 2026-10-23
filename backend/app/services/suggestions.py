@@ -1,14 +1,31 @@
 import json
+from collections.abc import Iterator
+from contextlib import contextmanager
 from datetime import date, datetime
 from decimal import Decimal
 from typing import Any
 
 import sqlalchemy as sa
+from sqlalchemy.orm import Session
 
 from app.auth import extract_user_identity
 from app.schemas.feedback import FeedbackModerationStatus
 from app.services.db_manager import suggestions_db_manager
 from app.services.suggestions_schema import SUGGESTION_TABLES, entity_feedback
+
+TERMINAL_STATUSES = frozenset({"approved", "rejected"})
+
+
+class SuggestionNotFoundError(LookupError):
+    """Raised when a moderation decision targets a suggestion that does not exist."""
+
+
+class SuggestionAlreadyModeratedError(Exception):
+    """Raised when a moderation decision targets a suggestion that already has one."""
+
+    def __init__(self, status: str) -> None:
+        super().__init__(f"Suggestion already {status}")
+        self.status = status
 
 
 class SuggestionService:
@@ -19,6 +36,57 @@ class SuggestionService:
 
     def __init__(self) -> None:
         self.tables = SUGGESTION_TABLES
+
+    @contextmanager
+    def _session_scope(self, session: Session | None) -> Iterator[Session]:
+        """Yield the caller's session unchanged, or a new one that commits when the block succeeds."""
+        if session is not None:
+            yield session
+            return
+        with suggestions_db_manager.get_session() as own_session:
+            yield own_session
+            own_session.commit()
+
+    @staticmethod
+    def _decided_status(table: str, column_status: str | None, payload: Any) -> str | None:
+        """Return the moderation decision already recorded on a suggestion row, if any."""
+        if table == "case_analyzer":
+            return column_status if column_status in TERMINAL_STATUSES else None
+        if column_status is not None:
+            return column_status
+        payload_status = payload.get("moderation_status") if isinstance(payload, dict) else None
+        return str(payload_status) if payload_status is not None else None
+
+    @contextmanager
+    def lock_for_moderation(self, table: str, suggestion_id: int) -> Iterator[Session]:
+        """Lock an undecided suggestion row for the duration of one moderation decision.
+
+        A concurrent decision on the same row waits for the lock, then sees the recorded
+        decision and raises `SuggestionAlreadyModeratedError`. Pass the yielded session to
+        the reads and writes of the decision: it commits when the block exits normally and
+        rolls back when it raises, so a failed approval leaves the suggestion undecided.
+
+        Raises:
+            ValueError: `table` is not a suggestions table.
+            SuggestionNotFoundError: no row has `suggestion_id`.
+            SuggestionAlreadyModeratedError: the row already carries a decision.
+        """
+        target = self.tables.get(table)
+        if target is None:
+            raise ValueError(f"Unknown suggestions table '{table}'")
+        payload_column = target.c.payload if "payload" in target.c else sa.null()
+        query = (
+            sa.select(target.c.moderation_status, payload_column).where(target.c.id == suggestion_id).with_for_update(of=target)
+        )
+        with suggestions_db_manager.get_session() as session:
+            row = session.execute(query).first()
+            if row is None:
+                raise SuggestionNotFoundError(f"Suggestion {suggestion_id} not found in {table}")
+            decided = self._decided_status(table, row[0], row[1])
+            if decided is not None:
+                raise SuggestionAlreadyModeratedError(decided)
+            yield session
+            session.commit()
 
     @staticmethod
     def _to_jsonable(obj: Any) -> Any:
@@ -180,7 +248,7 @@ class SuggestionService:
                         except Exception:
                             payload = {}
                     status = payload.get("moderation_status") if isinstance(payload, dict) else None
-                    if status in {"approved", "rejected"}:
+                    if status in TERMINAL_STATUSES:
                         continue
                     results.append(
                         {
@@ -235,12 +303,13 @@ class SuggestionService:
         *,
         token_sub: str | None = None,
         pending_only: bool = False,
+        session: Session | None = None,
     ) -> dict | None:
         target = self.tables.get(table)
         if target is None:
             raise ValueError(f"Unknown suggestions table '{table}'")
 
-        with suggestions_db_manager.get_session() as session:
+        with self._session_scope(session) as session:
             if table == "case_analyzer":
                 cols = [target.c.id]
                 created_col = getattr(target.c, "created_at", None)
@@ -340,7 +409,7 @@ class SuggestionService:
 
                 if pending_only:
                     status_val = result.get("moderation_status")
-                    if status_val in {"approved", "rejected"}:
+                    if status_val in TERMINAL_STATUSES:
                         return None
 
                 return result
@@ -395,13 +464,14 @@ class SuggestionService:
         moderator: str,
         note: str | None = None,
         merged_id: int | None = None,
+        session: Session | None = None,
     ) -> None:
-        if status not in {"approved", "rejected"}:
+        if status not in TERMINAL_STATUSES:
             raise ValueError("status must be 'approved' or 'rejected'")
         target = self.tables.get(table)
         if target is None:
             raise ValueError(f"Unknown suggestions table '{table}'")
-        with suggestions_db_manager.get_session() as session:
+        with self._session_scope(session) as session:
             if table == "case_analyzer":
                 sel = sa.select(target.c.data).where(target.c.id == suggestion_id).limit(1)
                 row = session.execute(sel).first()
@@ -421,7 +491,6 @@ class SuggestionService:
                 json_ready = self._to_jsonable(current)
                 upd = sa.update(target).where(target.c.id == suggestion_id).values(data=json_ready, moderation_status=status)
                 session.execute(upd)
-                session.commit()
                 return
 
             # Ensure concrete SQL types to avoid polymorphic unknown errors in to_jsonb
@@ -455,7 +524,6 @@ class SuggestionService:
                 )
             stmt = sa.update(target).where(target.c.id == suggestion_id).values(payload=update_expr, moderation_status=status)
             session.execute(stmt)
-            session.commit()
 
     def get_case_analyzer_draft(self, draft_id: int) -> dict[str, Any] | None:
         """Get a case analyzer draft by ID. Returns the data payload or None if not found."""
@@ -497,11 +565,17 @@ class SuggestionService:
             session.commit()
 
     # Generic update method for backward compatibility
-    def update_payload(self, table: str, suggestion_id: int, payload: dict[str, Any]) -> None:
+    def update_payload(
+        self,
+        table: str,
+        suggestion_id: int,
+        payload: dict[str, Any],
+        session: Session | None = None,
+    ) -> None:
         target = self.tables.get(table)
         if target is None:
             raise ValueError(f"Unknown suggestions table '{table}'")
-        with suggestions_db_manager.get_session() as session:
+        with self._session_scope(session) as session:
             if table == "case_analyzer":
                 sel = sa.select(target.c.data).where(target.c.id == suggestion_id).limit(1)
                 row = session.execute(sel).first()
@@ -522,7 +596,6 @@ class SuggestionService:
                     .values(data=json_ready, moderation_status=status_value)
                 )
                 session.execute(upd)
-                session.commit()
                 return
 
             status_value = self._extract_moderation_status(payload)
@@ -532,7 +605,6 @@ class SuggestionService:
                 .values(payload=self._to_jsonable(payload), moderation_status=status_value)
             )
             session.execute(stmt)
-            session.commit()
 
     # ========================================================================
     # New structured column methods for case_analyzer
