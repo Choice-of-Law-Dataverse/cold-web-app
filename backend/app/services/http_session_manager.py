@@ -3,12 +3,27 @@
 from __future__ import annotations
 
 import logging
+from typing import Any
 
 import requests
+from requests import PreparedRequest, Response
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
 logger = logging.getLogger(__name__)
+
+
+class _TimeoutHTTPAdapter(HTTPAdapter):
+    """HTTP adapter that applies a default timeout to requests that do not set one."""
+
+    def __init__(self, *args: Any, timeout: float, **kwargs: Any) -> None:
+        self._timeout = timeout
+        super().__init__(*args, **kwargs)
+
+    def send(self, request: PreparedRequest, *args: Any, **kwargs: Any) -> Response:  # type: ignore[override]
+        if kwargs.get("timeout") is None:
+            kwargs["timeout"] = self._timeout
+        return super().send(request, *args, **kwargs)
 
 
 class HTTPSessionManager:
@@ -37,7 +52,7 @@ class HTTPSessionManager:
         Parameters:
         - pool_connections: Number of connection pools to cache (default: 10)
         - pool_maxsize: Maximum number of connections to save in the pool (default: 20)
-        - max_retries: Maximum number of retries for failed requests (default: 3)
+        - max_retries: Maximum number of retries for failed idempotent requests (default: 3)
         - backoff_factor: Backoff factor for retries (default: 0.3)
         - timeout: Default timeout for requests in seconds (default: 30)
         """
@@ -51,30 +66,24 @@ class HTTPSessionManager:
             pool_maxsize,
         )
 
-        # Create session
         self._session = requests.Session()
 
-        # Configure retry strategy
         retry_strategy = Retry(
             total=max_retries,
             backoff_factor=backoff_factor,
             status_forcelist=[429, 500, 502, 503, 504],
-            allowed_methods=["HEAD", "GET", "OPTIONS", "POST", "PUT", "DELETE"],
+            allowed_methods=Retry.DEFAULT_ALLOWED_METHODS,
         )
 
-        # Create HTTP adapter with connection pooling
-        adapter = HTTPAdapter(
+        adapter = _TimeoutHTTPAdapter(
             pool_connections=pool_connections,
             pool_maxsize=pool_maxsize,
             max_retries=retry_strategy,
+            timeout=timeout,
         )
 
-        # Mount adapter for both http and https
         self._session.mount("http://", adapter)
         self._session.mount("https://", adapter)
-
-        # Set default timeout
-        self._session.timeout = timeout  # type: ignore[attr-defined]
 
         logger.info("HTTP session initialized successfully")
 
