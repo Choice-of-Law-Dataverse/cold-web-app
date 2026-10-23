@@ -1,8 +1,10 @@
 import { ref, computed } from "vue";
-import type {
-  AnalysisStep,
-  AnalysisStepPayload,
-  EditedAnalysisValues,
+import {
+  ANALYZER_FIELD_SOURCES,
+  type AnalysisStep,
+  type AnalysisStepPayload,
+  type AnalyzerResultField,
+  type EditedAnalysisValues,
 } from "~/types/analyzer";
 import type { SSEEventStatus } from "~/utils/sseStream";
 
@@ -117,19 +119,6 @@ export function useAnalysisSteps() {
     () => new Map(analysisSteps.value.map((s) => [s.name, s])),
   );
 
-  const formFieldAnalysisStepMap: Record<string, string> = {
-    caseCitation: "case_citation",
-    choiceOfLawSections: "col_extraction",
-    themes: "theme_classification",
-    caseAbstract: "abstract",
-    caseRelevantFacts: "relevant_facts",
-    casePILProvisions: "pil_provisions",
-    caseChoiceofLawIssue: "col_issue",
-    caseCourtsPosition: "courts_position",
-    caseObiterDicta: "obiter_dicta",
-    caseDissentingOpinions: "dissenting_opinions",
-  };
-
   function updateStepStatus(
     stepName: string,
     status: SSEEventStatus,
@@ -165,9 +154,9 @@ export function useAnalysisSteps() {
   }
 
   function getFieldStatus(fieldName: keyof EditedAnalysisValues) {
-    const stepName = formFieldAnalysisStepMap[fieldName];
-    if (!stepName) return null;
-    return stepsMap.value.get(stepName) || null;
+    if (!(fieldName in ANALYZER_FIELD_SOURCES)) return null;
+    const { step } = ANALYZER_FIELD_SOURCES[fieldName as AnalyzerResultField];
+    return stepsMap.value.get(step) || null;
   }
 
   function isFieldLoading(

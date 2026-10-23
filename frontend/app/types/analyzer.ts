@@ -145,15 +145,53 @@ export const ANALYZER_FIELD_MAP: Record<
   },
 };
 
-export const ANALYSIS_STEP_KEYS = [
-  "col_extraction",
-  "theme_classification",
-  "case_citation",
-  "abstract",
-  "relevant_facts",
-  "pil_provisions",
-  "col_issue",
-  "courts_position",
-  "obiter_dicta",
-  "dissenting_opinions",
-] as const;
+/**
+ * The analysis step that produces each form field, and the key holding the
+ * field's value in that step's result. The jurisdiction field comes from
+ * jurisdiction detection instead.
+ */
+export const ANALYZER_FIELD_SOURCES = {
+  caseCitation: { step: "case_citation", key: "case_citation" },
+  choiceOfLawSections: { step: "col_extraction", key: "col_sections" },
+  themes: { step: "theme_classification", key: "themes" },
+  caseAbstract: { step: "abstract", key: "abstract" },
+  caseRelevantFacts: { step: "relevant_facts", key: "relevant_facts" },
+  casePILProvisions: { step: "pil_provisions", key: "pil_provisions" },
+  caseChoiceofLawIssue: { step: "col_issue", key: "col_issue" },
+  caseCourtsPosition: { step: "courts_position", key: "courts_position" },
+  caseObiterDicta: { step: "obiter_dicta", key: "obiter_dicta" },
+  caseDissentingOpinions: {
+    step: "dissenting_opinions",
+    key: "dissenting_opinions",
+  },
+} as const satisfies Record<
+  Exclude<keyof EditedAnalysisValues, "jurisdiction">,
+  { step: string; key: string }
+>;
+
+export type AnalyzerResultField = keyof typeof ANALYZER_FIELD_SOURCES;
+
+export const ANALYZER_RESULT_FIELDS = Object.keys(
+  ANALYZER_FIELD_SOURCES,
+) as AnalyzerResultField[];
+
+/** Steps whose results feed the form, in no particular order. */
+export const ANALYSIS_STEP_KEYS = ANALYZER_RESULT_FIELDS.map(
+  (field) => ANALYZER_FIELD_SOURCES[field].step,
+);
+
+export function emptyAnalyzerValues(): EditedAnalysisValues {
+  return {
+    caseCitation: "",
+    jurisdiction: "",
+    choiceOfLawSections: "",
+    themes: "",
+    caseAbstract: "",
+    caseRelevantFacts: "",
+    casePILProvisions: "",
+    caseChoiceofLawIssue: "",
+    caseCourtsPosition: "",
+    caseObiterDicta: "",
+    caseDissentingOpinions: "",
+  };
+}

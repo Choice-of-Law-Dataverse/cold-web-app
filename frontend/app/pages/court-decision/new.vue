@@ -22,7 +22,7 @@
 
     <!-- Recovery Loading State -->
     <div
-      v-if="analysis.isRecovering.value"
+      v-if="isRecovering"
       class="mb-6 flex items-center justify-center py-12"
     >
       <div class="text-center">
@@ -35,13 +35,13 @@
     </div>
 
     <!-- Two column layout throughout -->
-    <div v-if="!analysis.isRecovering.value" class="grid gap-6 lg:grid-cols-3">
+    <div v-if="!isRecovering" class="grid gap-6 lg:grid-cols-3">
       <!-- Sidebar: Progress tracker (always visible) -->
       <div class="no-print lg:col-span-1">
         <AnalysisStepTracker
           :steps="analysisSteps"
           :is-common-law="isCommonLawJurisdiction"
-          :current-phase="currentStep"
+          :current-phase="stage"
           @retry="handleRetry"
         />
       </div>
@@ -49,7 +49,7 @@
       <!-- Main content area -->
       <div class="lg:col-span-2 print:col-span-3">
         <!-- Login Required Notice (shown when not authenticated) -->
-        <UCard v-if="!user && currentStep === 'upload'" class="mb-6">
+        <UCard v-if="!user && stage === 'upload'" class="mb-6">
           <div class="bg-cold-purple/5 rounded-lg p-6">
             <div class="flex items-start gap-4">
               <div
@@ -86,7 +86,7 @@
 
         <!-- Step 1: File Upload (shown when authenticated) -->
         <FileUploadCard
-          v-if="user && currentStep === 'upload'"
+          v-if="user && stage === 'upload'"
           v-model:selected-file="selectedFile"
           :is-uploading="isUploading"
           @upload="uploadDocument"
@@ -96,18 +96,18 @@
 
         <!-- Step 2: Review & Submit -->
         <AnalysisReviewForm
-          v-if="currentStep === 'analyzing'"
+          v-if="stage === 'analyzing'"
           :editable-form="editableForm"
           :document-name="selectedFile?.name || 'Unknown'"
           :selected-jurisdiction="selectedJurisdiction"
           :legal-system-type="jurisdictionInfo?.legal_system_type || ''"
           :is-common-law-jurisdiction="isCommonLawJurisdiction"
-          :is-analyzing="analysis.isAnalyzing.value"
-          :is-submitting="analysis.isSubmitting.value"
-          :is-submitted="analysis.isSubmitted.value"
+          :is-analyzing="isAnalyzing"
+          :is-submitting="isSubmitting"
+          :is-submitted="isSubmitted"
           :get-field-status="getFieldStatus"
           :is-field-loading="isFieldLoading"
-          @submit="submitAnalyzerSuggestion"
+          @submit="submit"
           @reset="resetAnalysis"
           @re-analyze="handleReAnalyze"
         />
@@ -118,16 +118,8 @@
 
 <script setup lang="ts">
 import { ref, watch, onMounted } from "vue";
-import type {
-  EditedAnalysisValues,
-  JurisdictionOption,
-  AnalysisStepPayload,
-  JurisdictionInfo,
-} from "~/types/analyzer";
-import { useAnalyzerForm } from "~/composables/useAnalyzerForm";
-import { useAnalysisSteps } from "~/composables/useAnalysisSteps";
-import { useDocumentUpload } from "~/composables/useDocumentUpload";
-import { useCaseAnalyzer } from "~/composables/useCaseAnalyzer";
+import type { JurisdictionOption } from "~/types/analyzer";
+import { useCaseAnalysisSession } from "~/composables/useCaseAnalysisSession";
 import { useJurisdictionLookup } from "@/composables/useJurisdictions";
 import FileUploadCard from "@/components/case-analyzer/FileUploadCard.vue";
 import AnalysisReviewForm from "@/components/case-analyzer/AnalysisReviewForm.vue";
@@ -160,57 +152,34 @@ const caseAnalyzerNotes: SubmissionNote[] = [
 const user = useUser();
 const route = useRoute();
 
-// State
-const currentStep = ref<"upload" | "analyzing">("upload");
-const error = ref<string | null>(null);
-const analysisResults = ref<Record<string, AnalysisStepPayload>>({});
-const selectedJurisdiction = ref<JurisdictionOption | undefined>(undefined);
+const {
+  stage,
+  error,
+  selectedFile,
+  isUploading,
+  draftId,
+  jurisdictionInfo,
+  analysisSteps,
+  getFieldStatus,
+  isFieldLoading,
+  editableForm,
+  isCommonLawJurisdiction,
+  isAnalyzing,
+  isSubmitting,
+  isSubmitted,
+  isRecovering,
+  analyze,
+  reAnalyze,
+  submit,
+  recover,
+  reset,
+  uploadDocument: uploadDraft,
+} = useCaseAnalysisSession();
 
-// Composables
+const selectedJurisdiction = ref<JurisdictionOption | undefined>(undefined);
 const { findJurisdictionByName, data: jurisdictionOptions } =
   useJurisdictionLookup();
 
-const {
-  selectedFile,
-  isUploading,
-  currentStep: uploadStep,
-  draftId,
-  jurisdictionInfo,
-  uploadDocument: performUpload,
-  reset: resetUpload,
-} = useDocumentUpload();
-
-const {
-  analysisSteps,
-  stepsMap,
-  getFieldStatus,
-  isFieldLoading: isAnalysisStepLoading,
-  updateStepStatus,
-  handleUploadStepChange,
-  hydrateAnalysisStepsFromResults,
-  resetAnalysisSteps,
-} = useAnalysisSteps();
-
-const analysis = useCaseAnalyzer(analysisSteps, stepsMap, analysisResults, () =>
-  populateEditableForm(),
-);
-
-const isFieldLoading = (fieldName: keyof EditedAnalysisValues) =>
-  isAnalysisStepLoading(fieldName, analysis.isAnalyzing.value);
-
-const {
-  editableForm,
-  isCommonLawJurisdiction,
-  populateEditableForm,
-  resetEditableForm,
-} = useAnalyzerForm(jurisdictionInfo, analysisResults);
-
-// Watch upload step to update step tracker
-watch(uploadStep, (step) => {
-  handleUploadStepChange(step);
-});
-
-// Initialize selectedJurisdiction when jurisdictionInfo changes
 watch(
   [() => jurisdictionInfo.value?.precise_jurisdiction, jurisdictionOptions],
   ([preciseJurisdiction]) => {
@@ -224,166 +193,39 @@ watch(
   { immediate: true },
 );
 
-// Populate form when analysis completes
-watch(
-  () => analysis.isAnalyzing.value,
-  (isAnalyzing, wasAnalyzing) => {
-    if (wasAnalyzing && !isAnalyzing && currentStep.value === "analyzing") {
-      populateEditableForm();
-    }
-  },
-);
-
 async function uploadDocument() {
-  error.value = null;
-  updateStepStatus("document_upload", "in_progress");
-
-  const result = await performUpload();
-
-  if (!result.success) {
-    error.value = result.error || "Upload failed";
-    updateStepStatus("document_upload", "error");
-    return;
-  }
-
+  if (!(await uploadDraft())) return;
   if (draftId.value) {
     await navigateTo({ query: { draft: draftId.value.toString() } });
   }
-  await confirmAndAnalyze(false);
-}
-
-async function confirmAndAnalyze(
-  resume = false,
-  jurisdictionConfirmed = false,
-) {
-  if (!draftId.value) return;
-
-  currentStep.value = "analyzing";
-  error.value = null;
-
-  if (!resume) {
-    resetAnalysisSteps(new Set(["document_upload"]));
-    analysisResults.value = {};
-  }
-
-  if (jurisdictionInfo.value) {
-    updateStepStatus("jurisdiction_detection", "completed", {
-      confidence: jurisdictionInfo.value.confidence,
-      reasoning: jurisdictionInfo.value.reasoning,
-    });
-  }
-
-  const result = await analysis.startAnalysis(
-    draftId.value,
-    jurisdictionInfo.value,
-    resume,
-    (jurisdiction) => {
-      jurisdictionInfo.value = jurisdiction;
-    },
-    jurisdictionConfirmed,
-  );
-
-  if (!result.success) {
-    error.value = result.error || "Analysis failed";
-  }
+  await analyze();
 }
 
 function handleRetry(_stepName: string) {
-  confirmAndAnalyze(true);
+  analyze({ resume: true });
 }
 
 function handleReAnalyze(
   legalSystemType: string,
   jurisdiction: JurisdictionOption | undefined,
 ) {
-  const info: JurisdictionInfo = jurisdictionInfo.value ?? {
-    legal_system_type: "",
-    precise_jurisdiction: "",
-    jurisdiction_code: "",
-    confidence: "high",
-    reasoning: "Jurisdiction set manually by the user during review.",
-  };
-  info.legal_system_type = legalSystemType;
   if (jurisdiction) {
-    info.precise_jurisdiction = jurisdiction.name || "";
-    info.jurisdiction_code = jurisdiction.coldId || info.jurisdiction_code;
     selectedJurisdiction.value = jurisdiction;
   }
-  jurisdictionInfo.value = info;
-  analysisResults.value = {};
-  resetEditableForm();
-  confirmAndAnalyze(false, true);
-}
-
-async function submitAnalyzerSuggestion() {
-  if (!draftId.value) {
-    error.value = "No analysis data available";
-    return;
-  }
-
-  const result = await analysis.submitSuggestion(
-    draftId.value,
-    jurisdictionInfo.value,
-    analysisResults.value,
-    editableForm,
-  );
-
-  if (!result.success) {
-    error.value = result.error || "Submission failed";
-  }
+  reAnalyze(legalSystemType, jurisdiction);
 }
 
 function resetAnalysis() {
-  currentStep.value = "upload";
   selectedJurisdiction.value = undefined;
-  analysisResults.value = {};
-  error.value = null;
-  resetUpload();
-  resetEditableForm();
-  analysis.reset();
-  resetAnalysisSteps();
+  reset();
   navigateTo("/court-decision/new", { replace: true });
 }
 
 onMounted(async () => {
   const draftParam = route.query.draft;
-  if (draftParam && typeof draftParam === "string") {
-    error.value = null;
-    const result = await analysis.recoverDraft(draftParam);
-
-    if (result.success && result.data) {
-      draftId.value = result.data.draftId;
-      if (result.data.fileName) {
-        selectedFile.value = new File([], result.data.fileName, {
-          type: "application/pdf",
-        });
-      }
-      if (result.data.jurisdictionInfo) {
-        jurisdictionInfo.value = result.data.jurisdictionInfo;
-      }
-
-      if (Object.keys(result.data.analyzerData).length > 0) {
-        hydrateAnalysisStepsFromResults(result.data.analyzerData);
-      }
-      updateStepStatus("document_upload", "completed");
-      if (result.data.jurisdictionInfo) {
-        updateStepStatus("jurisdiction_detection", "completed", {
-          confidence: result.data.jurisdictionInfo.confidence,
-          reasoning: result.data.jurisdictionInfo.reasoning,
-        });
-      }
-
-      if (result.data.status === "completed") {
-        currentStep.value = "analyzing";
-        populateEditableForm();
-      } else {
-        await confirmAndAnalyze(true);
-      }
-    } else {
-      error.value = result.error || "Failed to recover draft";
-      currentStep.value = "upload";
-      navigateTo("/court-decision/new", { replace: true });
-    }
+  if (!draftParam || typeof draftParam !== "string") return;
+  if (!(await recover(draftParam))) {
+    navigateTo("/court-decision/new", { replace: true });
   }
 });
 </script>
