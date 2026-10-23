@@ -6,6 +6,7 @@ from app.services.email_notifications import (
     _build_moderation_url,
     _extract_summary,
     _get_admin_emails,
+    send_feedback_notification,
     send_new_suggestion_notification,
 )
 
@@ -302,3 +303,52 @@ class TestSendNewSuggestionNotification:
                 )
                 call_args = mock_resend.Emails.send.call_args[0][0]
                 assert "form@example.com" in call_args["text"]
+
+
+class TestHtmlEscaping:
+    """User-supplied text is escaped in HTML bodies and left verbatim in text bodies."""
+
+    def test_suggestion_html_escapes_user_text(self):
+        with patch("app.services.email_notifications.config") as mock_config:
+            mock_config.RESEND_API_KEY = "re_test_key"
+            mock_config.ADMIN_NOTIFICATION_EMAILS = "admin@cold.global"
+            mock_config.NOTIFICATION_SENDER_EMAIL = "notifications@mail.cold.global"
+            with patch("app.services.email_notifications.resend") as mock_resend:
+                send_new_suggestion_notification(
+                    "court_decisions",
+                    9,
+                    {
+                        "case_citation": "<b>X v Y</b>",
+                        "submitter_comments": '<a href="https://evil.example">click</a>',
+                        "submitter_email": "<script>alert(1)</script>",
+                        "edit_entity_id": "CD-1<img>",
+                    },
+                )
+                call_args = mock_resend.Emails.send.call_args[0][0]
+                html = call_args["html"]
+                assert "<b>X v Y</b>" not in html
+                assert "&lt;b&gt;X v Y&lt;/b&gt;" in html
+                assert 'href="https://evil.example"' not in html
+                assert "<script>" not in html
+                assert "CD-1&lt;img&gt;" in html
+                assert "<b>X v Y</b>" in call_args["text"]
+
+    def test_feedback_html_escapes_user_text(self):
+        with patch("app.services.email_notifications.config") as mock_config:
+            mock_config.RESEND_API_KEY = "re_test_key"
+            mock_config.ADMIN_NOTIFICATION_EMAILS = "admin@cold.global"
+            mock_config.NOTIFICATION_SENDER_EMAIL = "notifications@mail.cold.global"
+            with patch("app.services.email_notifications.resend") as mock_resend:
+                send_feedback_notification(
+                    4,
+                    "court_decision",
+                    'CD-1"><script>',
+                    "<i>Title</i>",
+                    "other",
+                    "<script>alert(1)</script>",
+                    "a@b.c",
+                )
+                html = mock_resend.Emails.send.call_args[0][0]["html"]
+                assert "<script>" not in html
+                assert "&lt;i&gt;Title&lt;/i&gt;" in html
+                assert "CD-1&quot;&gt;&lt;script&gt;" in html
