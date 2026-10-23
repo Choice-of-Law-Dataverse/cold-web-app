@@ -102,20 +102,9 @@
     <ClientOnly>
       <CancelModal v-model="showCancelModal" @confirm-cancel="confirmCancel" />
       <SaveModal
-        v-model="showSaveModal"
-        :email="email"
-        :comments="comments"
-        :save-modal-errors="saveModalErrors"
-        :name="name"
-        :specialists="specialists"
-        :date="date"
-        :pdf-file="pdfFile"
-        :link="link"
-        :instrument-id="instrumentApiId"
-        @update:email="(val) => (email = val)"
-        @update:comments="(val) => (comments = val)"
-        @update:save-modal-errors="handleSaveModalErrorsUpdate"
-        @save="handleEditSave"
+        v-model:open="showSaveModal"
+        v-model:comments="comments"
+        @submit="handleEditSave"
       />
     </ClientOnly>
   </div>
@@ -166,10 +155,8 @@ const specialists = ref([""]);
 const pdfFile = ref<File | null>(null);
 const pdfFileName = ref("");
 const date = ref(new Date());
-const email = ref("");
 const comments = ref("");
 const errors = ref<Record<string, string>>({});
-const saveModalErrors = ref<Record<string, string>>({});
 const showSaveModal = ref(false);
 const showCancelModal = ref(false);
 const instrumentApiId = ref<string | null>(null);
@@ -232,10 +219,6 @@ function addSpecialist() {
 }
 function removeSpecialist(idx: number) {
   specialists.value.splice(idx, 1);
-}
-
-function handleSaveModalErrorsUpdate(val: Record<string, string>) {
-  saveModalErrors.value = val;
 }
 
 function confirmCancel() {

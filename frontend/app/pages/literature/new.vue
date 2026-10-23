@@ -127,19 +127,13 @@
     </BaseDetailLayout>
 
     <ClientOnly>
-      <CancelModal v-model="showCancelModal" @confirm-cancel="confirmCancel" />
+      <CancelModal v-model="showCancelModal" @confirm-cancel="cancel" />
       <SaveModal
-        v-model="showSaveModal"
-        :email="email"
-        :comments="comments"
-        :save-modal-errors="saveModalErrors"
-        :name="title"
-        @update:email="(val: string) => (email = val)"
-        @update:comments="(val: string) => (comments = val)"
-        @update:save-modal-errors="
-          (val: Record<string, string>) => (saveModalErrors = val)
-        "
-        @save="handleNewSave"
+        v-model:open="isSaveModalOpen"
+        v-model:comments="comments"
+        :submitting="isSubmitting"
+        :error="submitError"
+        @submit="submit"
       />
     </ClientOnly>
   </div>
@@ -147,7 +141,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { useHead, useRouter } from "#imports";
+import { useHead } from "#imports";
 import { z } from "zod";
 import BaseDetailLayout from "@/components/layout/BaseDetailLayout.vue";
 import DatePicker from "@/components/ui/DatePicker.vue";
@@ -157,6 +151,7 @@ import CancelModal from "@/components/ui/CancelModal.vue";
 import { format } from "date-fns";
 import { flagUrl } from "@/config/assets";
 import ColdDateTrigger from "@/components/ui/ColdDateTrigger.vue";
+import { useSuggestionForm } from "@/composables/useSuggestionForm";
 
 interface JurisdictionEntry {
   name: string;
@@ -190,9 +185,6 @@ const jurisdictionOptions = ref<JurisdictionOption[]>([
   { label: "All Jurisdictions" },
 ]);
 
-const email = ref("");
-const comments = ref("");
-
 const loadJurisdictions = async () => {
   try {
     const response = await fetch(
@@ -220,107 +212,55 @@ const loadJurisdictions = async () => {
 
 onMounted(loadJurisdictions);
 
-const formSchema = z.object({
-  author: z
-    .string()
-    .min(1, { error: "Author is required" })
-    .min(3, { error: "Author must be at least 3 characters long" }),
-  title: z
-    .string()
-    .min(1, { error: "Title is required" })
-    .min(3, { error: "Title must be at least 3 characters long" }),
-  publication_year: z
-    .string()
-    .regex(/^\d{4}$/u, { error: "Year must be 4 digits (e.g., 2024)" }),
-});
-
-const errors = ref<Record<string, string>>({});
-const saveModalErrors = ref<Record<string, string>>({});
-
-const router = useRouter();
-const showSaveModal = ref(false);
 const showCancelModal = ref(false);
 
 useHead({ title: "New Literature — CoLD" });
 
-function validateForm() {
-  try {
-    const formData = {
-      author: author.value,
-      title: title.value,
-      publication_year: publicationYear.value,
-    };
-    formSchema.parse(formData);
-    errors.value = {};
-    return true;
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      errors.value = {};
-      for (const err of error.issues) {
-        const field = String(err.path[0]);
-        errors.value[field] = err.message;
-      }
-    }
-    return false;
-  }
-}
-
-function openSaveModal() {
-  const isValid = validateForm();
-  if (isValid) {
-    showSaveModal.value = true;
-  }
-}
-
-function confirmCancel() {
-  router.push("/");
-}
-
-function handleNewSave() {
-  const payload = {
+const {
+  errors,
+  comments,
+  isSaveModalOpen,
+  isSubmitting,
+  submitError,
+  openSaveModal,
+  submit,
+  cancel,
+} = useSuggestionForm({
+  endpoint: "/suggestions/literature",
+  schema: z.object({
+    author: z
+      .string()
+      .min(1, { error: "Author is required" })
+      .min(3, { error: "Author must be at least 3 characters long" }),
+    title: z
+      .string()
+      .min(1, { error: "Title is required" })
+      .min(3, { error: "Title must be at least 3 characters long" }),
+    publication_year: z
+      .string()
+      .regex(/^\d{4}$/u, { error: "Year must be 4 digits (e.g., 2024)" }),
+  }),
+  values: () => ({
+    author: author.value,
+    title: title.value,
+    publication_year: publicationYear.value,
+  }),
+  payload: () => ({
     author: author.value,
     title: title.value,
     publication_title: publicationTitle.value || undefined,
     publication_year: Number(publicationYear.value),
     url: url.value || undefined,
     doi: doi.value || undefined,
-    publication_date:
-      publicationDate.value && publicationDate.value
-        ? format(publicationDate.value, "yyyy-MM-dd")
-        : undefined,
+    publication_date: publicationDate.value
+      ? format(publicationDate.value, "yyyy-MM-dd")
+      : undefined,
     isbn: isbn.value || undefined,
     issn: issn.value || undefined,
-    jurisdiction:
-      (Array.isArray(selectedJurisdiction.value) &&
-        selectedJurisdiction.value[0]?.label) ||
-      undefined,
+    jurisdiction: selectedJurisdiction.value[0]?.label || undefined,
     theme: theme.value || undefined,
-    submitter_comments: comments.value || undefined,
-  };
-
-  (async () => {
-    try {
-      await $fetch(`/api/proxy/suggestions/literature`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          source: "cold.global",
-        },
-        body: payload,
-      });
-      showSaveModal.value = false;
-      router.push({
-        path: "/confirmation",
-        query: { message: "Thanks, we have received your submission." },
-      });
-    } catch {
-      saveModalErrors.value = {
-        general:
-          "There was a problem submitting your suggestion. Please try again.",
-      };
-    }
-  })();
-}
+  }),
+});
 </script>
 
 <style scoped>
