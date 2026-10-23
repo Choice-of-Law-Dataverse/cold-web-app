@@ -5,22 +5,12 @@ from typing import Any
 
 from pydantic import ValidationError
 
+from .steps import CACHEABLE_STEPS
 from .tools.models import JurisdictionOutput
 
 logger = logging.getLogger(__name__)
 
-ANALYSIS_STEP_KEYS = [
-    "col_extraction",
-    "theme_classification",
-    "case_citation",
-    "relevant_facts",
-    "pil_provisions",
-    "col_issue",
-    "courts_position",
-    "obiter_dicta",
-    "dissenting_opinions",
-    "abstract",
-]
+ANALYSIS_STEP_KEYS: list[str] = list(CACHEABLE_STEPS)
 
 
 def load_cached_results(analyzer_data: dict[str, Any]) -> dict[str, Any] | None:
