@@ -1,15 +1,12 @@
 import logging
 
 import logfire
-from agents import Agent
-from agents.models.openai_responses import OpenAIResponsesModel
 
-from ..config import get_model, get_openai_client
 from ..prompts import get_prompt_module
-from ..runner import run_agent
+from ..runner import run_extractor
 from ..utils import generate_system_prompt
 from ..validation import validate_courts_position
-from .document_nav import NAV_TOOLS, DocumentContext
+from .document_nav import DocumentContext
 from .models import (
     ColIssueOutput,
     ColSectionOutput,
@@ -38,19 +35,12 @@ async def extract_courts_position(
         prompt = COURTS_POSITION_PROMPT.format(col_issue=col_issue, col_section=str(col_section_output), classification=themes)
         system_prompt = generate_system_prompt(legal_system, jurisdiction)
 
-        agent = Agent[DocumentContext](
+        return await run_extractor(
             name="CourtsPositionExtractor",
-            instructions=system_prompt,
+            task="courts_position",
             output_type=CourtsPositionOutput,
-            tools=NAV_TOOLS,
-            model=OpenAIResponsesModel(
-                model=get_model("courts_position"),
-                openai_client=get_openai_client(),
-            ),
-        )
-        return await run_agent(
-            agent,
-            input=prompt,
+            instructions=system_prompt,
+            prompt=prompt,
             context=doc_ctx,
             validate=validate_courts_position,
         )

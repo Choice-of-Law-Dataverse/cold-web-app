@@ -1,15 +1,12 @@
 import logging
 
 import logfire
-from agents import Agent
-from agents.models.openai_responses import OpenAIResponsesModel
 
-from ..config import get_model, get_openai_client
 from ..prompts import get_prompt_module
-from ..runner import run_agent
+from ..runner import run_extractor
 from ..utils import filter_themes_by_list, generate_system_prompt
 from ..validation import validate_col_issue
-from .document_nav import NAV_TOOLS, DocumentContext
+from .document_nav import DocumentContext
 from .models import ColIssueOutput, ColSectionOutput, StepResult, ThemeClassificationOutput
 
 logger = logging.getLogger(__name__)
@@ -31,19 +28,12 @@ async def extract_col_issue(
         prompt = COL_ISSUE_PROMPT.format(col_section=str(col_section_output), classification_definitions=themes_definitions)
         system_prompt = generate_system_prompt(legal_system, jurisdiction)
 
-        agent = Agent[DocumentContext](
+        return await run_extractor(
             name="ColIssueExtractor",
-            instructions=system_prompt,
+            task="col_issue",
             output_type=ColIssueOutput,
-            tools=NAV_TOOLS,
-            model=OpenAIResponsesModel(
-                model=get_model("col_issue"),
-                openai_client=get_openai_client(),
-            ),
-        )
-        return await run_agent(
-            agent,
-            input=prompt,
+            instructions=system_prompt,
+            prompt=prompt,
             context=doc_ctx,
             validate=validate_col_issue,
         )
