@@ -546,6 +546,7 @@ export const entityRegistry: Record<string, EntityConfig> = {
     process: processDomesticLegalProvision,
     excludeRelations: ["jurisdictions"],
     hasDetailPage: false,
+    hasIndexPage: false,
   },
   "/regional-legal-provision": {
     table: "Regional Legal Provisions",
@@ -558,6 +559,7 @@ export const entityRegistry: Record<string, EntityConfig> = {
     titleKey: "titleOfTheProvision",
     process: processRegionalLegalProvision,
     hasDetailPage: false,
+    hasIndexPage: false,
   },
   "/international-legal-provision": {
     table: "International Legal Provisions",
@@ -570,6 +572,7 @@ export const entityRegistry: Record<string, EntityConfig> = {
     titleKey: "titleOfTheProvision",
     process: processInternationalLegalProvision,
     hasDetailPage: false,
+    hasIndexPage: false,
   },
 };
 
