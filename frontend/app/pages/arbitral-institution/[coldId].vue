@@ -6,7 +6,6 @@
       :loading="isLoading"
       :error="error"
       :data="data"
-      :show-suggest-edit="true"
     >
       <EntityContent
         v-if="data"

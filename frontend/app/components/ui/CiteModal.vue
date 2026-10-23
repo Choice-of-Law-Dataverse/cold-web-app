@@ -33,6 +33,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 import { useRoute } from "vue-router";
+import { getEntityConfig } from "@/config/entityRegistry";
 
 const props = defineProps<{
   modelValue?: boolean;
@@ -84,34 +85,21 @@ onBeforeUnmount(() => {
   }
 });
 
+/**
+ * Page type named in a citation for the page's first path segment. Entity
+ * pages use their registry label; jurisdiction pages are cited as country
+ * reports; other pages fall back to the title-cased segment.
+ */
 function slugToPageType(slug: string): string {
-  switch (slug) {
-    case "jurisdiction":
-      return "Country Report";
-    case "court-decision":
-      return "Court Decision";
-    case "domestic-instrument":
-      return "Domestic Instrument";
-    case "regional-instrument":
-      return "Regional Instrument";
-    case "international-instrument":
-      return "International Instrument";
-    case "arbitral-rule":
-      return "Arbitral Rule";
-    case "arbitral-award":
-      return "Arbitral Award";
-    case "literature":
-      return "Literature";
-    case "question":
-      return "Question";
-    default: {
-      if (!slug) return "Page";
-      return slug
-        .split("-")
-        .map((s: string) => s.charAt(0).toUpperCase() + s.slice(1))
-        .join(" ");
-    }
-  }
+  if (!slug) return "Page";
+  if (slug === "jurisdiction") return "Country Report";
+  return (
+    getEntityConfig(`/${slug}`)?.singularLabel ??
+    slug
+      .split("-")
+      .map((s: string) => s.charAt(0).toUpperCase() + s.slice(1))
+      .join(" ")
+  );
 }
 
 const pageType = computed(() => {

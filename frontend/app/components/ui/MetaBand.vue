@@ -250,9 +250,9 @@ import {
   primaryJurisdictionAlpha3,
 } from "@/utils/jurisdictionParser";
 import {
-  getBasePathForCard,
   getIndexPathForCard,
   getLabelColorClass,
+  getNewEntityTypes,
   getNewPathForCard,
   getSingularLabel,
 } from "@/config/entityRegistry";
@@ -535,19 +535,16 @@ const hasActions = computed(() => {
   );
 });
 
-const typeOptions = [
-  { label: "Court Decision", value: "Court Decision" },
-  { label: "Domestic Instrument", value: "Domestic Instrument" },
-  { label: "Regional Instrument", value: "Regional Instrument" },
-  { label: "International Instrument", value: "International Instrument" },
-  { label: "Literature", value: "Literature" },
-];
+const typeOptions = getNewEntityTypes().map((label) => ({
+  label,
+  value: label,
+}));
 const selectedNewType = ref("");
 
 watch(selectedNewType, (val, old) => {
   if (props.headerMode === "new" && val && val !== old) {
-    const basePath = getBasePathForCard(val) ?? "/literature";
-    router.push(`${basePath}/new`);
+    const newPath = getNewPathForCard(val);
+    if (newPath) router.push(newPath);
   }
 });
 
