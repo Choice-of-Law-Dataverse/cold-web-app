@@ -5,7 +5,7 @@ from app.services.database import Database
 
 class StatisticsService:
     def __init__(self):
-        self.db = Database(config.SQL_CONN_STRING)
+        self.db = Database()
         self.schema = config.NOCODB_POSTGRES_SCHEMA
 
     def get_jurisdictions_with_answer_coverage(self) -> list[dict]:
@@ -35,12 +35,7 @@ class StatisticsService:
         GROUP BY j.id
         ORDER BY name
         """
-        results = self.db.execute_query(query)
-
-        if not results:
-            return []
-
-        return results
+        return self.db.execute_query(query)
 
     def count_by_jurisdiction(self, table_name: str, limit: int | None = None) -> list[JurisdictionCount]:
         """
@@ -88,4 +83,4 @@ class StatisticsService:
         {limit_clause}
         """
         results = self.db.execute_query(query)
-        return [JurisdictionCount(**row) for row in results] if results else []
+        return [JurisdictionCount(**row) for row in results]

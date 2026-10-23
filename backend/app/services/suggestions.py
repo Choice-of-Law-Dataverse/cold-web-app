@@ -6,27 +6,18 @@ from typing import Any
 import sqlalchemy as sa
 
 from app.auth import extract_user_identity
-from app.config import config
 from app.schemas.feedback import FeedbackModerationStatus
 from app.services.db_manager import suggestions_db_manager
-from app.services.suggestions_schema import SUGGESTION_TABLES, SUGGESTIONS_METADATA, entity_feedback
+from app.services.suggestions_schema import SUGGESTION_TABLES, entity_feedback
 
 
 class SuggestionService:
-    """Stores suggestions in per-type Postgres tables using the default schema from the DSN."""
+    """Stores suggestions in per-type Postgres tables using the default schema from the DSN.
+
+    Uses the suggestions pool that the application lifespan initializes.
+    """
 
     def __init__(self) -> None:
-        # Prefer dedicated connection string for suggestions DB
-        conn = config.SUGGESTIONS_SQL_CONN_STRING or config.SQL_CONN_STRING
-        if not conn:
-            raise RuntimeError("No SQL connection string configured for suggestions storage")
-
-        # Initialize the suggestions database manager if not already initialized
-        if not suggestions_db_manager.is_initialized:
-            suggestions_db_manager.initialize(conn)
-
-        self.engine = suggestions_db_manager.get_engine()
-        self.metadata = SUGGESTIONS_METADATA
         self.tables = SUGGESTION_TABLES
 
     @staticmethod

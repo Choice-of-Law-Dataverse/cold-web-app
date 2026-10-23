@@ -1,7 +1,8 @@
 import pytest
 from fastapi import HTTPException
+from sqlalchemy.exc import OperationalError, ProgrammingError
 
-from app.routes.search import _coerce_filter_value, _parse_full_table_filter
+from app.routes.search import _coerce_filter_value, _parse_full_table_filter, return_full_table
 from app.schemas.details import TABLE_DETAIL_MODELS
 from app.schemas.entities import EntityBase
 from app.schemas.records import TABLE_RECORD_MODELS
@@ -14,6 +15,7 @@ from app.schemas.search_result import (
     SearchResultBase,
     validate_search_result,
 )
+from app.services.search import SearchService
 
 
 class TestValidateSearchResult:
@@ -214,4 +216,55 @@ class TestParseFullTableFilter:
     def test_empty_column_raises(self):
         with pytest.raises(HTTPException) as exc:
             _parse_full_table_filter(":value")
+        assert exc.value.status_code == 400
+
+
+class _FakeDatabase:
+    def __init__(self, error: Exception | None = None, rows: list | None = None):
+        self.error = error
+        self.rows = rows or []
+
+    def execute_query(self, query, params=None):
+        if self.error is not None:
+            raise self.error
+        return self.rows
+
+
+class _PgError(Exception):
+    def __init__(self, pgcode: str):
+        super().__init__(pgcode)
+        self.pgcode = pgcode
+
+
+def _search_service(db: _FakeDatabase) -> SearchService:
+    service = SearchService.__new__(SearchService)
+    service.db = db  # type: ignore[assignment]
+    return service
+
+
+class TestFullTableErrors:
+    def test_unknown_column_becomes_value_error(self):
+        error = ProgrammingError("query", {}, _PgError("42703"))
+        service = _search_service(_FakeDatabase(error=error))
+
+        with pytest.raises(ValueError, match="Unknown column"):
+            service.full_table("Court Decisions", order_by="noSuchColumn")
+
+    def test_other_database_errors_propagate(self):
+        service = _search_service(_FakeDatabase(error=OperationalError("query", {}, Exception("down"))))
+
+        with pytest.raises(OperationalError):
+            service.full_table("Court Decisions")
+
+    def test_unsupported_table_raises(self):
+        service = _search_service(_FakeDatabase())
+
+        with pytest.raises(ValueError, match="Unsupported table"):
+            service.full_table("Not A Table")
+
+    def test_route_maps_value_error_to_400(self):
+        service = _search_service(_FakeDatabase())
+
+        with pytest.raises(HTTPException) as exc:
+            return_full_table(table="Not A Table", search_service=service)
         assert exc.value.status_code == 400

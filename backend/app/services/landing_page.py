@@ -6,7 +6,7 @@ from app.services.database import Database
 
 class LandingPageService:
     def __init__(self):
-        self.db = Database(config.SQL_CONN_STRING)
+        self.db = Database()
         self.schema = config.NOCODB_POSTGRES_SCHEMA
 
     def get_jurisdictions(self) -> list[dict[str, Any]]:
@@ -22,4 +22,4 @@ class LandingPageService:
         JOIN "Jurisdictions" j ON j.id = m."Jurisdictions_id"
         GROUP BY j."Alpha_3_Code"
         """
-        return self.db.execute_query(query) or []
+        return self.db.execute_query(query)
