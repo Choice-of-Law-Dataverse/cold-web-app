@@ -18,8 +18,39 @@ if grep -qE '(^|[^[:alnum:]_-])make([[:space:]].*)?[[:space:]](migrate-views|rev
   block "migration make targets are not allowed"
 fi
 
-if grep -qE '(python3?|ipython|uv[[:space:]]+run)' <<<"$command" &&
-  grep -qiE '(drop|truncate|alter)[[:space:]]+(table|view|materialized[[:space:]]+view|schema|database|function|index)|delete[[:space:]]+from|insert[[:space:]]+into|update[[:space:]]+[[:alnum:]_."]+[[:space:]]+set([^[:alnum:]_]|$)' <<<"$command"; then
+command_segments() {
+  awk '
+    heredoc != "" {
+      if ($0 ~ "^[[:space:]]*" heredoc "[[:space:]]*$") heredoc = ""
+      next
+    }
+    {
+      line = $0
+      if (match(line, /(^|[^<])<<-?[[:space:]]*["\x27]?[A-Za-z_][A-Za-z0-9_]*/)) {
+        heredoc = substr(line, RSTART, RLENGTH)
+        sub(/^[^<]?<<-?[[:space:]]*["\x27]?/, "", heredoc)
+      }
+      gsub(/\x27[^\x27]*\x27/, "Q", line)
+      gsub(/"[^"]*"/, "Q", line)
+      gsub(/&&|\|\||;|\|/, "\n", line)
+      print line
+    }
+  ' <<<"$command"
+}
+
+read_only_search() {
+  local segment first
+  while IFS= read -r segment; do
+    first=$(awk '{print $1}' <<<"$segment")
+    case "$first" in
+      "" | cd | git | grep | rg | head | tail | wc | sort | uniq | cut | echo | printf | cat | ls | sed) ;;
+      *) return 1 ;;
+    esac
+  done < <(command_segments)
+}
+
+if ! read_only_search &&
+  grep -qiE '(drop|alter)[[:space:]]+(table|view|materialized[[:space:]]+view|schema|database|function|index|type|sequence|extension|role)|truncate[[:space:]]+(table[[:space:]]+)?[[:alnum:]_."]+|delete[[:space:]]+from|insert[[:space:]]+into|update[[:space:]]+[[:alnum:]_."]+[[:space:]]+set([^[:alnum:]_]|$)' <<<"$command"; then
   block "SQL that writes to the database is not allowed"
 fi
 
