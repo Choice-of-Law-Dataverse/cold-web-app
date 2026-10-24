@@ -1,6 +1,6 @@
 # Backend — FastAPI Application
 
-FastAPI backend for the [Choice of Law Dataverse](https://cold.global), built with Python 3.12, SQLAlchemy, and Pydantic v2. Serves 17 datasets across 63+ jurisdictions via a public read-only REST API.
+FastAPI backend for the [Choice of Law Dataverse](https://cold.global), built with Python 3.14, SQLAlchemy, and Pydantic v2. Serves 17 datasets across 63+ jurisdictions via a public read-only REST API.
 
 > **For AI coding agents**: See [AGENTS.md](AGENTS.md) for agent-specific instructions.
 
@@ -10,7 +10,7 @@ FastAPI backend for the [Choice of Law Dataverse](https://cold.global), built wi
 
 uv is a fast Python package installer and resolver, written in Rust. It manages:
 
-- Python version (automatically installs Python 3.12)
+- Python version (automatically installs Python 3.14)
 - Virtual environment
 - Project dependencies
 - Script execution

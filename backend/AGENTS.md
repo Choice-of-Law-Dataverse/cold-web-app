@@ -1,4 +1,4 @@
-FastAPI backend (Python 3.12, SQLAlchemy, Pydantic v2). Uses `uv` for package management.
+FastAPI backend (Python 3.14, SQLAlchemy, Pydantic v2). Uses `uv` for package management.
 
 ## Setup
 

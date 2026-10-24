@@ -3,7 +3,7 @@ The Choice of Law Dataverse (CoLD) is a monorepo with a Nuxt 4 frontend and Fast
 ## Architecture
 
 - `frontend/` — Nuxt 4 app (Vue, TypeScript, Nuxt UI 4)
-- `backend/` — FastAPI service (Python 3.12, SQLAlchemy, Pydantic v2)
+- `backend/` — FastAPI service (Python 3.14, SQLAlchemy, Pydantic v2)
 - `.claude/rules/` — shared agent rules (commits, validation, no barrel files)
 - `frontend/.claude/rules/` — frontend-specific rules (Vue, TypeScript, data fetching, entities, generated types)
 - `backend/.claude/rules/` — backend-specific rules (Python style, schemas, migrations)
