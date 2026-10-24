@@ -84,8 +84,13 @@ class ModerationService:
     """Records one moderation decision per suggestion.
 
     Each decision holds a lock on the suggestion row from the undecided check until the
-    status is written, so concurrent decisions cannot both succeed, and a failed approval
-    leaves the suggestion undecided for a retry.
+    status is written, so concurrent decisions cannot both succeed, and a failure before
+    the CoLD write leaves the suggestion undecided for a retry.
+
+    The CoLD record is written to the main database (or NocoDB) and committed there
+    before the suggestions database commits the status; the two cannot share a
+    transaction. If that final status commit fails, the CoLD record remains while the
+    suggestion stays undecided, and approving it again inserts a second record.
     """
 
     def __init__(
