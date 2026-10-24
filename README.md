@@ -154,7 +154,7 @@ Try it at [cold.global/court-decision/new](https://cold.global/court-decision/ne
 
 - **Node.js v24.22.1** with pnpm 12.15.0 (pinned in `frontend/.nvmrc` and `packageManager`)
 - **Python 3.12** (managed by uv)
-- **uv** (Python package manager): `brew install uv` (macOS) or see [uv docs](https://docs.astral.sh/uv/)
+- **uv 0.13.5** (Python package manager): `brew install uv` (macOS) or see [uv docs](https://docs.astral.sh/uv/)
 
 ### Running Locally
 
