@@ -13,7 +13,7 @@ WORKDIR /app
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 
 # Activate the pnpm version pinned in package.json's packageManager field
-RUN npm install -g corepack@latest && corepack enable pnpm && corepack install
+RUN npm install -g corepack@0.36.0 && corepack enable pnpm && corepack install
 
 # Install dependencies
 RUN pnpm install --frozen-lockfile
