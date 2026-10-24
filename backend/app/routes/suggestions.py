@@ -301,10 +301,10 @@ def approve_suggestion(
     user: dict = Depends(require_editor_or_admin),
     moderation: ModerationService = Depends(get_moderation_service),
 ) -> StatusMessage:
-    _category_or_404(category)
+    moderation_category = _category_or_404(category)
     moderator_email = extract_user_identity(user) or "unknown"
     try:
-        moderation.approve(category, suggestion_id, moderator_email)
+        moderation.approve(moderation_category, suggestion_id, moderator_email)
     except SuggestionNotFoundError as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Suggestion not found") from e
     except SuggestionAlreadyModeratedError as e:
@@ -333,10 +333,10 @@ def reject_suggestion(
     user: dict = Depends(require_editor_or_admin),
     moderation: ModerationService = Depends(get_moderation_service),
 ) -> StatusMessage:
-    _category_or_404(category)
+    moderation_category = _category_or_404(category)
     moderator_email = extract_user_identity(user) or "unknown"
     try:
-        moderation.reject(category, suggestion_id, moderator_email)
+        moderation.reject(moderation_category, suggestion_id, moderator_email)
     except SuggestionNotFoundError as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Suggestion not found") from e
     except SuggestionAlreadyModeratedError as e:

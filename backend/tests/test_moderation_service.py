@@ -11,7 +11,13 @@ from sqlalchemy.orm import Session
 from sqlalchemy.pool import StaticPool
 
 from app.routes.suggestions import approve_suggestion, reject_suggestion
-from app.services.moderation import CASE_ANALYZER_APPROVAL_NOTE, ModerationService, UnknownCategoryError
+from app.services.moderation import (
+    CASE_ANALYZER,
+    CASE_ANALYZER_APPROVAL_NOTE,
+    ModerationService,
+    UnknownCategoryError,
+    category_for_slug,
+)
 from app.services.moderation_writer import MainDBWriter
 from app.services.suggestions import (
     SuggestionAlreadyModeratedError,
@@ -21,6 +27,7 @@ from app.services.suggestions import (
 )
 
 MODERATOR = "editor@cold.global"
+LITERATURE = category_for_slug("literature")
 
 
 class FakeNocoDB:
@@ -117,7 +124,7 @@ class TestCaseAnalyzerDecisions:
         _insert_analysis(engine, table)
         nocodb = FakeNocoDB()
 
-        merged_id = _moderation(_service_with(table), nocodb).approve("case-analyzer", 1, MODERATOR)
+        merged_id = _moderation(_service_with(table), nocodb).approve(CASE_ANALYZER, 1, MODERATOR)
 
         assert merged_id == 77
         assert nocodb.created[0]["Abstract"] == "Abstract text."
@@ -137,7 +144,7 @@ class TestCaseAnalyzerDecisions:
             data={"abstract": "Legacy abstract.", "precise_jurisdiction": "Switzerland"},
         )
 
-        _moderation(_service_with(table), FakeNocoDB()).approve("case-analyzer", 1, MODERATOR)
+        _moderation(_service_with(table), FakeNocoDB()).approve(CASE_ANALYZER, 1, MODERATOR)
 
         row = _row(engine, table)
         assert row["moderation_status"] == "approved"
@@ -148,7 +155,7 @@ class TestCaseAnalyzerDecisions:
         _insert_analysis(engine, table, submitted_data=None, data={"abstract": "Legacy abstract."})
 
         with pytest.raises(RuntimeError, match="NocoDB unavailable"):
-            _moderation(_service_with(table), FakeNocoDB(fail_create=True)).approve("case-analyzer", 1, MODERATOR)
+            _moderation(_service_with(table), FakeNocoDB(fail_create=True)).approve(CASE_ANALYZER, 1, MODERATOR)
 
         row = _row(engine, table)
         assert row["moderation_status"] == "pending"
@@ -158,12 +165,12 @@ class TestCaseAnalyzerDecisions:
         engine, table = case_analyzer_table
         _insert_analysis(engine, table)
         moderation = _moderation(_service_with(table), FakeNocoDB())
-        moderation.reject("case-analyzer", 1, MODERATOR)
+        moderation.reject(CASE_ANALYZER, 1, MODERATOR)
 
         with pytest.raises(SuggestionAlreadyModeratedError) as approve_error:
-            moderation.approve("case-analyzer", 1, MODERATOR)
+            moderation.approve(CASE_ANALYZER, 1, MODERATOR)
         with pytest.raises(SuggestionAlreadyModeratedError):
-            moderation.reject("case-analyzer", 1, MODERATOR)
+            moderation.reject(CASE_ANALYZER, 1, MODERATOR)
 
         assert approve_error.value.status == "rejected"
         assert _row(engine, table)["moderation_status"] == "rejected"
@@ -172,7 +179,7 @@ class TestCaseAnalyzerDecisions:
         _, table = case_analyzer_table
 
         with pytest.raises(SuggestionNotFoundError):
-            _moderation(_service_with(table), FakeNocoDB()).reject("case-analyzer", 404, MODERATOR)
+            _moderation(_service_with(table), FakeNocoDB()).reject(CASE_ANALYZER, 404, MODERATOR)
 
 
 class TestLockForModeration:
@@ -286,7 +293,7 @@ class TestDefaultCategoryDecisions:
         )
         writer = FakeWriter()
 
-        merged_id = _default_moderation(suggestions, writer).approve("domestic-instruments", 3, MODERATOR)
+        merged_id = _default_moderation(suggestions, writer).approve(category_for_slug("domestic-instruments"), 3, MODERATOR)
 
         assert merged_id == 42
         table_name, record = writer.inserted[0]
@@ -308,7 +315,7 @@ class TestDefaultCategoryDecisions:
         suggestions = FakeSuggestions({"title": "A book"})
 
         with pytest.raises(RuntimeError, match="insert failed"):
-            _default_moderation(suggestions, FakeWriter(fail_insert=True)).approve("literature", 3, MODERATOR)
+            _default_moderation(suggestions, FakeWriter(fail_insert=True)).approve(LITERATURE, 3, MODERATOR)
 
         assert suggestions.calls == [("lock", "literature")]
 
@@ -317,7 +324,7 @@ class TestDefaultCategoryDecisions:
 
         with pytest.raises(SuggestionAlreadyModeratedError):
             _default_moderation(FakeSuggestions({"title": "A book"}, decided="approved"), writer).approve(
-                "literature", 3, MODERATOR
+                LITERATURE, 3, MODERATOR
             )
 
         assert writer.inserted == []
@@ -325,19 +332,26 @@ class TestDefaultCategoryDecisions:
     @pytest.mark.parametrize("slug", ["feedback", "generic", "nonsense"])
     def test_unknown_category(self, slug: str) -> None:
         with pytest.raises(UnknownCategoryError):
-            _default_moderation(FakeSuggestions({}), FakeWriter()).reject(slug, 1, MODERATOR)
+            category_for_slug(slug)
+
+    def test_categories_without_a_normalizer_keep_the_record(self) -> None:
+        writer = FakeWriter()
+
+        _default_moderation(FakeSuggestions({"entry_into_force": "2019-01-01"}), writer).approve(LITERATURE, 3, MODERATOR)
+
+        assert writer.inserted == [("Literature", {"entry_into_force": "2019-01-01"})]
 
 
 class FakeModeration:
     def __init__(self, error: Exception | None = None) -> None:
         self.error = error
 
-    def approve(self, slug: str, suggestion_id: int, moderator: str) -> int:
+    def approve(self, category: Any, suggestion_id: int, moderator: str) -> int:
         if self.error:
             raise self.error
         return 1
 
-    def reject(self, slug: str, suggestion_id: int, moderator: str) -> None:
+    def reject(self, category: Any, suggestion_id: int, moderator: str) -> None:
         if self.error:
             raise self.error
 

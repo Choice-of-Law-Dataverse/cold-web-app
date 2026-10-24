@@ -2,7 +2,7 @@
 
 import logging
 from collections.abc import Callable
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any
 
 from app.config import config
@@ -14,14 +14,22 @@ from app.services.suggestions import SuggestionService
 logger = logging.getLogger(__name__)
 
 
+def _keep_record(record: dict[str, Any]) -> None:
+    """Leave an approved record as submitted."""
+
+
 @dataclass(frozen=True)
 class ModerationCategory:
-    """A moderation queue: its URL slug, suggestions table, display label and CoLD target table."""
+    """A moderation queue: its URL slug, suggestions table, display label and CoLD target table.
+
+    `normalize_record` adjusts an approved record in place before it is written to `target_table`.
+    """
 
     slug: str
     table: str
     label: str
     target_table: str | None
+    normalize_record: Callable[[dict[str, Any]], None] = field(default=_keep_record, compare=False)
 
 
 CASE_ANALYZER = ModerationCategory("case-analyzer", "case_analyzer", "Case Analyzer", None)
@@ -29,7 +37,13 @@ CASE_ANALYZER = ModerationCategory("case-analyzer", "case_analyzer", "Case Analy
 MODERATION_CATEGORIES: tuple[ModerationCategory, ...] = (
     CASE_ANALYZER,
     ModerationCategory("court-decisions", "court_decisions", "Court Decisions", "Court_Decisions"),
-    ModerationCategory("domestic-instruments", "domestic_instruments", "Domestic Instruments", "Domestic_Instruments"),
+    ModerationCategory(
+        "domestic-instruments",
+        "domestic_instruments",
+        "Domestic Instruments",
+        "Domestic_Instruments",
+        normalize_record=normalize_domestic_instruments,
+    ),
     ModerationCategory("regional-instruments", "regional_instruments", "Regional Instruments", "Regional_Instruments"),
     ModerationCategory(
         "international-instruments",
@@ -103,15 +117,13 @@ class ModerationService:
         self._writer_factory = writer_factory
         self._nocodb_factory = nocodb_factory
 
-    def approve(self, slug: str, suggestion_id: int, moderator: str) -> int:
+    def approve(self, category: ModerationCategory, suggestion_id: int, moderator: str) -> int:
         """Insert an undecided suggestion into CoLD, mark it approved and return the new record id.
 
         Raises:
-            UnknownCategoryError: the slug names no moderation category.
             SuggestionNotFoundError: the suggestion does not exist.
             SuggestionAlreadyModeratedError: the suggestion already has a decision.
         """
-        category = category_for_slug(slug)
         with self._suggestions.lock_for_moderation(category.table, suggestion_id) as session:
             item = self._suggestions.get_suggestion_by_id(category.table, suggestion_id, session=session)
             if item is None:
@@ -126,7 +138,7 @@ class ModerationService:
                 )
                 note = CASE_ANALYZER_APPROVAL_NOTE
             else:
-                merged_id = self._insert_into_target(category.target_table, item.get("payload") or {})
+                merged_id = self._insert_into_target(category, category.target_table, item.get("payload") or {})
                 note = ""
             self._suggestions.mark_status(
                 category.table,
@@ -139,22 +151,19 @@ class ModerationService:
             )
         return merged_id
 
-    def reject(self, slug: str, suggestion_id: int, moderator: str) -> None:
+    def reject(self, category: ModerationCategory, suggestion_id: int, moderator: str) -> None:
         """Mark an undecided suggestion as rejected.
 
         Raises:
-            UnknownCategoryError: the slug names no moderation category.
             SuggestionNotFoundError: the suggestion does not exist.
             SuggestionAlreadyModeratedError: the suggestion already has a decision.
         """
-        category = category_for_slug(slug)
         with self._suggestions.lock_for_moderation(category.table, suggestion_id) as session:
             self._suggestions.mark_status(category.table, suggestion_id, "rejected", moderator, note="", session=session)
 
-    def _insert_into_target(self, target_table: str, payload: dict[str, Any]) -> int:
+    def _insert_into_target(self, category: ModerationCategory, target_table: str, payload: dict[str, Any]) -> int:
         record = {key: value for key, value in payload.items() if key not in RESERVED_PAYLOAD_FIELDS}
-        if target_table == "Domestic_Instruments":
-            normalize_domestic_instruments(record)
+        category.normalize_record(record)
         writer = self._writer_factory()
         merged_id = writer.insert_record(target_table, record)
         for key in ("jurisdiction", "jurisdiction_link"):
