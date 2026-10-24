@@ -18,6 +18,12 @@ vi.mock("~/utils/sseStream", () => ({
 
 vi.stubGlobal("useToast", () => ({ add: vi.fn() }));
 
+const getDraft = vi.fn();
+
+vi.mock("@/composables/useApiClient", () => ({
+  useApiClient: () => ({ client: { GET: getDraft, POST: vi.fn() } }),
+}));
+
 const { useCaseAnalysisSession } = await import("./useCaseAnalysisSession");
 
 const completed = (step: string, data: Record<string, unknown>): SSEEvent => ({
@@ -131,6 +137,72 @@ describe("useCaseAnalysisSession", () => {
     await session.analyze();
 
     expect(session.stage.value).toBe("upload");
+  });
+
+  it("opens a completed draft for review without re-running it", async () => {
+    getDraft.mockResolvedValue({
+      data: {
+        draftId: 12,
+        status: "completed",
+        fileName: "judgment.pdf",
+        jurisdictionInfo: {
+          preciseJurisdiction: "Switzerland",
+          jurisdictionCode: "CHE",
+          legalSystemType: "Civil-law jurisdiction",
+          confidence: "high",
+          reasoning: "Swiss court",
+        },
+        analyzerData: {
+          case_citation: { case_citation: "BGE 1" },
+          abstract: { abstract: "Summary." },
+        },
+      },
+    });
+    script = [new Error("must not stream")];
+    const session = useCaseAnalysisSession();
+
+    const recovered = await session.recover("12");
+
+    expect(recovered).toBe(true);
+    expect(session.stage.value).toBe("analyzing");
+    expect(session.draftId.value).toBe(12);
+    expect(session.selectedFile.value?.name).toBe("judgment.pdf");
+    expect(session.editableForm.caseCitation).toBe("BGE 1");
+    expect(session.editableForm.caseAbstract).toBe("Summary.");
+    expect(session.editableForm.jurisdiction).toBe("Switzerland");
+    expect(session.getFieldStatus("caseCitation")?.status).toBe("completed");
+    expect(session.error.value).toBeNull();
+  });
+
+  it("resumes an unfinished draft and keeps its earlier results", async () => {
+    getDraft.mockResolvedValue({
+      data: {
+        draftId: 13,
+        status: "analyzing",
+        fileName: "judgment.pdf",
+        jurisdictionInfo: null,
+        analyzerData: { case_citation: { case_citation: "BGE 2" } },
+      },
+    });
+    script = [completed("abstract", { abstract: "Later summary." })];
+    const session = useCaseAnalysisSession();
+
+    await session.recover("13");
+
+    expect(session.stage.value).toBe("analyzing");
+    expect(session.editableForm.caseCitation).toBe("BGE 2");
+    expect(session.editableForm.caseAbstract).toBe("Later summary.");
+  });
+
+  it("returns to upload with an error when a draft cannot be loaded", async () => {
+    getDraft.mockResolvedValue({ error: { detail: "nope" } });
+    const session = useCaseAnalysisSession();
+
+    const recovered = await session.recover("99");
+
+    expect(recovered).toBe(false);
+    expect(session.stage.value).toBe("upload");
+    expect(session.error.value).toBeTruthy();
   });
 
   it("returns every part of the run to the upload stage on reset", async () => {
