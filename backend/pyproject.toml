@@ -10,7 +10,7 @@ dependencies = [
     "azure-storage-blob>=12.31.0",
     "email-validator==2.3.0",
     "fastapi==0.161.1",
-    "griffe>=1.15.0,<2",
+    "griffe>=2.4.1",
     "logfire[fastapi,httpx,psycopg2,requests,sqlalchemy]>=5.2.0",
     "openai>=3.37.0",
     "openai-agents>=0.24.0",
