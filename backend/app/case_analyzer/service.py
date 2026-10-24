@@ -152,7 +152,7 @@ async def analyze_case_streaming(
     draft_id: int = 0,
     jurisdiction_override: JurisdictionOutput | None = None,
     file_name: str | None = None,
-) -> AsyncGenerator[dict[str, Any], None]:
+) -> AsyncGenerator[dict[str, Any]]:
     """
     Execute complete case analysis workflow with streaming updates.
 
