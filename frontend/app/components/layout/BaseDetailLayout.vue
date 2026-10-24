@@ -17,7 +17,7 @@
       :show-notification-banner="props.showNotificationBanner"
       :notification-banner-message="props.notificationBannerMessage"
       :icon="props.icon"
-      :entity-type="props.entityType"
+      :entity-type="entityType"
       :entity-id="props.entityId"
       :entity-title="props.entityTitle"
       @save="emit('save')"
@@ -35,8 +35,10 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import DetailDisplay from "@/components/ui/DetailDisplay.vue";
+import { useRoute } from "vue-router";
 import {
   getBasePathForTable,
+  getFeedbackTypeForPath,
   type ProcessedEntity,
 } from "@/config/entityRegistry";
 
@@ -52,11 +54,9 @@ const props = withDefaults(
     showNotificationBanner?: boolean;
     notificationBannerMessage?: string;
     icon?: string;
-    showSuggestEdit?: boolean;
     showCite?: boolean;
     showJson?: boolean;
     showPrint?: boolean;
-    entityType?: string;
     entityId?: string;
     entityTitle?: string;
     pageHeading?: string;
@@ -70,11 +70,9 @@ const props = withDefaults(
     showNotificationBanner: false,
     notificationBannerMessage: "",
     icon: "",
-    showSuggestEdit: false,
     showCite: true,
     showJson: true,
     showPrint: true,
-    entityType: "",
     entityId: "",
     entityTitle: "",
     pageHeading: "",
@@ -88,4 +86,7 @@ const resultDataForDisplay = computed(
 );
 
 const basePath = computed(() => getBasePathForTable(props.table) ?? "");
+
+const route = useRoute();
+const entityType = computed(() => getFeedbackTypeForPath(route.path));
 </script>

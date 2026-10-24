@@ -1,4 +1,6 @@
-const ENTITY_TYPE_LABELS: Record<string, string> = {
+import type { EntityType } from "@/types/api";
+
+export const ENTITY_TYPE_LABELS: Record<EntityType, string> = {
   court_decision: "Court Decision",
   domestic_instrument: "Domestic Instrument",
   regional_instrument: "Regional Instrument",
@@ -19,7 +21,7 @@ const FEEDBACK_TYPE_LABELS: Record<string, string> = {
 };
 
 export function entityTypeLabel(type: string): string {
-  return ENTITY_TYPE_LABELS[type] || type;
+  return ENTITY_TYPE_LABELS[type as EntityType] || type;
 }
 
 export function feedbackTypeLabel(type: string): string {

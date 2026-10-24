@@ -145,29 +145,53 @@ export const ANALYZER_FIELD_MAP: Record<
   },
 };
 
-export const ANALYZER_STEP_LABELS: Record<string, string> = {
-  jurisdiction_detection: "Jurisdiction Detection",
-  col_extraction: "Choice of Law Extraction",
-  theme_classification: "Theme Classification",
-  case_citation: "Case Citation",
-  relevant_facts: "Relevant Facts",
-  pil_provisions: "PIL Provisions",
-  col_issue: "Choice of Law Issue",
-  courts_position: "Court's Position",
-  obiter_dicta: "Obiter Dicta",
-  dissenting_opinions: "Dissenting Opinions",
-  abstract: "Abstract",
-};
+/**
+ * The analysis step that produces each form field, and the key holding the
+ * field's value in that step's result. The jurisdiction field comes from
+ * jurisdiction detection instead.
+ */
+export const ANALYZER_FIELD_SOURCES = {
+  caseCitation: { step: "case_citation", key: "case_citation" },
+  choiceOfLawSections: { step: "col_extraction", key: "col_sections" },
+  themes: { step: "theme_classification", key: "themes" },
+  caseAbstract: { step: "abstract", key: "abstract" },
+  caseRelevantFacts: { step: "relevant_facts", key: "relevant_facts" },
+  casePILProvisions: { step: "pil_provisions", key: "pil_provisions" },
+  caseChoiceofLawIssue: { step: "col_issue", key: "col_issue" },
+  caseCourtsPosition: { step: "courts_position", key: "courts_position" },
+  caseObiterDicta: { step: "obiter_dicta", key: "obiter_dicta" },
+  caseDissentingOpinions: {
+    step: "dissenting_opinions",
+    key: "dissenting_opinions",
+  },
+} as const satisfies Record<
+  Exclude<keyof EditedAnalysisValues, "jurisdiction">,
+  { step: string; key: string }
+>;
 
-export const ANALYSIS_STEP_KEYS = [
-  "col_extraction",
-  "theme_classification",
-  "case_citation",
-  "abstract",
-  "relevant_facts",
-  "pil_provisions",
-  "col_issue",
-  "courts_position",
-  "obiter_dicta",
-  "dissenting_opinions",
-] as const;
+export type AnalyzerResultField = keyof typeof ANALYZER_FIELD_SOURCES;
+
+export const ANALYZER_RESULT_FIELDS = Object.keys(
+  ANALYZER_FIELD_SOURCES,
+) as AnalyzerResultField[];
+
+/** Steps whose results feed the form, in no particular order. */
+export const ANALYSIS_STEP_KEYS = ANALYZER_RESULT_FIELDS.map(
+  (field) => ANALYZER_FIELD_SOURCES[field].step,
+);
+
+export function emptyAnalyzerValues(): EditedAnalysisValues {
+  return {
+    caseCitation: "",
+    jurisdiction: "",
+    choiceOfLawSections: "",
+    themes: "",
+    caseAbstract: "",
+    caseRelevantFacts: "",
+    casePILProvisions: "",
+    caseChoiceofLawIssue: "",
+    caseCourtsPosition: "",
+    caseObiterDicta: "",
+    caseDissentingOpinions: "",
+  };
+}

@@ -5,7 +5,11 @@ import type {
   StoredAnalyzerSnapshot,
   JurisdictionInfo,
 } from "~/types/analyzer";
-import { ANALYZER_FIELD_MAP, ANALYSIS_STEP_KEYS } from "~/types/analyzer";
+import {
+  ANALYZER_FIELD_MAP,
+  ANALYSIS_STEP_KEYS,
+  emptyAnalyzerValues,
+} from "~/types/analyzer";
 
 export function extractStringFromPayload(
   payload: Record<string, unknown>,
@@ -142,19 +146,7 @@ export function extractEditedFieldsFromPayload(
   payload: Record<string, unknown>,
 ): EditedAnalysisValues | null {
   let found = false;
-  const values: EditedAnalysisValues = {
-    caseCitation: "",
-    jurisdiction: "",
-    choiceOfLawSections: "",
-    themes: "",
-    caseAbstract: "",
-    caseRelevantFacts: "",
-    casePILProvisions: "",
-    caseChoiceofLawIssue: "",
-    caseCourtsPosition: "",
-    caseObiterDicta: "",
-    caseDissentingOpinions: "",
-  };
+  const values = emptyAnalyzerValues();
 
   for (const field of Object.keys(ANALYZER_FIELD_MAP) as Array<
     keyof EditedAnalysisValues
