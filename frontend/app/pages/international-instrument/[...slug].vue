@@ -26,7 +26,12 @@
           </template>
           <UInput v-model="link" class="mt-2" placeholder="Link" />
         </UFormField>
-        <UFormField size="lg" class="mt-8">
+        <UFormField
+          size="lg"
+          class="mt-8"
+          hint="Required"
+          :error="errors.instrument_date"
+        >
           <template #label>
             <span class="label">Date</span>
             <InfoPopover :text="tooltipInternationalInstrumentDate" />
@@ -34,7 +39,7 @@
           <UPopover :popper="{ placement: 'bottom-start' }">
             <UButton
               icon="i-heroicons-calendar-days-20-solid"
-              :label="format(date, 'dd MMMM yyyy')"
+              :label="date ? format(date, 'dd MMMM yyyy') : 'Add date'"
               class="mt-2"
             />
             <template #content="{ close }">
@@ -98,7 +103,7 @@ const instrumentId = computed(() => {
 const loading = ref(true);
 const name = ref("");
 const link = ref("");
-const date = ref(new Date());
+const date = ref<Date | undefined>(undefined);
 const showCancelModal = ref(false);
 
 const {
@@ -120,13 +125,18 @@ const {
     link: z
       .url({ error: 'Link must be a valid URL. It must start with "https://"' })
       .or(z.literal("")),
+    instrument_date: z.date({ error: "Date is required" }),
   }),
-  values: () => ({ name: name.value, link: link.value }),
+  values: () => ({
+    name: name.value,
+    link: link.value,
+    instrument_date: date.value,
+  }),
   payload: () => ({
     edit_entity_id: instrumentId.value ?? undefined,
     name: name.value,
     url: link.value,
-    instrument_date: format(date.value, "yyyy-MM-dd"),
+    instrument_date: date.value ? format(date.value, "yyyy-MM-dd") : "",
   }),
   successMessage: "Thanks, we have received your edit suggestions.",
   cancelTo: () =>
@@ -152,7 +162,7 @@ async function fetchInstrument() {
     if (!response.ok) throw new Error("Failed to fetch instrument");
     const data = JSON.parse(responseText);
     name.value = data.name || data.titleInEnglish || "";
-    date.value = data.date ? parseISO(data.date) : new Date();
+    date.value = data.date ? parseISO(data.date) : undefined;
     link.value = data.url || "";
   } catch {
     // noop
