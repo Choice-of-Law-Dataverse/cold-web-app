@@ -145,6 +145,9 @@ export interface SearchResponse {
   totalMatches: number;
 }
 
+/** Entity type the backend accepts for reader feedback. */
+export type EntityType = components["schemas"]["EntityType"];
+
 export type JurisdictionWithAnswerCoverage =
   components["schemas"]["JurisdictionCoverage"];
 

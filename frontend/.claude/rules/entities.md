@@ -11,4 +11,5 @@ Each entity file exports three things:
 New entities must also be registered in:
 
 - `types/api.ts` type maps (`TableResponseMap`, `TableDetailMap`, `TableProcessedMap`)
-- `config/entityRegistry.ts`
+- `config/entityRegistry.ts` (with `collection`, `feedbackType` and page flags; the consistency
+  test checks them against pages, sitemap, moderation and feedback labels)

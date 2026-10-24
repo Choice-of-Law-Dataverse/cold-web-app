@@ -6,8 +6,6 @@
       :loading="isLoading"
       :error="error"
       :data="data"
-      :show-suggest-edit="true"
-      entity-type="question"
       :entity-id="coldId"
       :entity-title="data?.question ?? undefined"
     >

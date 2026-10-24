@@ -2,8 +2,8 @@
 import { ref, computed, watchEffect } from "vue";
 import { useFeedback } from "@/composables/useFeedback";
 import type { components } from "@/types/api-schema";
+import type { EntityType } from "@/types/api";
 
-type EntityType = components["schemas"]["EntityType"];
 type FeedbackType = components["schemas"]["FeedbackType"];
 
 const props = defineProps<{
