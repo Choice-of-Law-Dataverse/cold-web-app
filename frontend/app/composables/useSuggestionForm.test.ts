@@ -137,4 +137,33 @@ describe("useSuggestionForm", () => {
     await form.cancel();
     expect(push).toHaveBeenCalledWith("/");
   });
+
+  it("sends an edit with its own confirmation message and cancel target", async () => {
+    post.mockResolvedValue({ data: {}, error: undefined });
+    const form = useSuggestionForm({
+      endpoint: "/suggestions/international-instruments",
+      schema: z.object({}),
+      values: () => ({}),
+      payload: () => ({
+        edit_entity_id: "II-1",
+        name: "HCCH Principles",
+        url: "https://hcch.net",
+        instrument_date: "2015-03-19",
+      }),
+      successMessage: "Thanks for the edit.",
+      cancelTo: () => "/international-instrument/II-1",
+    });
+
+    await form.submit();
+    await form.cancel();
+
+    expect(post.mock.calls[0]?.[1].body).toMatchObject({
+      edit_entity_id: "II-1",
+    });
+    expect(push).toHaveBeenNthCalledWith(1, {
+      path: "/confirmation",
+      query: { message: "Thanks for the edit." },
+    });
+    expect(push).toHaveBeenNthCalledWith(2, "/international-instrument/II-1");
+  });
 });

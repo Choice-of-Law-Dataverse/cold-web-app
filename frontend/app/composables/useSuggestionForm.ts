@@ -32,6 +32,10 @@ interface SuggestionFormOptions<E extends SuggestionEndpoint> {
   schema: z.ZodType;
   values: () => unknown;
   payload: () => SuggestionPayload<E>;
+  /** Shown on the confirmation page after a successful submission. */
+  successMessage?: string;
+  /** Where cancelling leads; the home page by default. */
+  cancelTo?: () => string;
 }
 
 /**
@@ -99,12 +103,12 @@ export function useSuggestionForm<E extends SuggestionEndpoint>(
     isSubmitting.value = false;
     await router.push({
       path: "/confirmation",
-      query: { message: SUBMISSION_RECEIVED_MESSAGE },
+      query: { message: options.successMessage ?? SUBMISSION_RECEIVED_MESSAGE },
     });
   }
 
   function cancel() {
-    return router.push("/");
+    return router.push(options.cancelTo?.() ?? "/");
   }
 
   return {
