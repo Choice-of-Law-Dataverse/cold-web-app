@@ -10,3 +10,4 @@ allowBuilds:
 
 overrides:
   serialize-javascript@<=7.0.2: ">=7.0.3"
+  esbuild@<0.28.1: "^0.28.1"
