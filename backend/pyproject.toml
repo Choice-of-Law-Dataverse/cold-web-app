@@ -43,7 +43,7 @@ dev = [
     "pytest-asyncio>=1.4.0",
     "pytest-mock>=3.17.0",
     "pytest>=9.1.1",
-    "ruff>=0.16.7,<0.17",
+    "ruff>=0.17.2",
     "pyright>=1.1.414",
     "vulture>=2.16",
 ]
