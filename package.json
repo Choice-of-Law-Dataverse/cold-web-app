@@ -30,8 +30,8 @@
   },
   "devDependencies": {
     "husky": "^9.1.7",
-    "lint-staged": "^17.3.0",
-    "prettier": "^3.9.5"
+    "lint-staged": "^17.6.0",
+    "prettier": "^3.9.10"
   },
   "lint-staged": {
     "frontend/**/*.{js,mjs,cjs,ts,vue}": [
