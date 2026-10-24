@@ -217,7 +217,7 @@ def return_full_table(
     ] = None,
     order_by: Annotated[
         str | None,
-        Query(description="Column name to sort by (camelCase or snake_case). Unknown columns are ignored."),
+        Query(description="Column name to sort by (camelCase or snake_case). Unknown columns return 400."),
     ] = None,
     order_dir: Annotated[
         Literal["asc", "desc"] | None,
@@ -246,6 +246,9 @@ def return_full_table(
                 order_dir=order_dir,
                 limit=limit,
             )
+    except ValueError as e:
+        logger.warning("Invalid full_table request table=%s: %s", table, e)
+        raise HTTPException(status_code=400, detail=str(e)) from e
     except Exception as e:
         logger.exception("Failed to query table=%s filters=%d", table, len(filters))
         raise HTTPException(status_code=500, detail="Failed to query table") from e

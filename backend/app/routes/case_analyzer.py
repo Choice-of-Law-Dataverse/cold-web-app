@@ -16,6 +16,7 @@ from app.case_analyzer import (
     extract_text_from_pdf,
 )
 from app.case_analyzer.resume import ANALYSIS_STEP_KEYS, jurisdiction_from_analyzer_data, load_cached_results
+from app.case_analyzer.steps import AnalysisStep, persisted_key
 from app.schemas.case_analyzer import (
     ConfirmAnalysisRequest,
     DraftRecoveryResponse,
@@ -368,15 +369,12 @@ async def analyze_document(
                                 next_task = None
                                 step_name = result.get("step")
 
-                                if step_name == "analysis_complete":
+                                if step_name == AnalysisStep.ANALYSIS_COMPLETE:
                                     analysis_completed = True
 
                                 if result.get("status") == "completed" and result.get("data"):
                                     if step_name:
-                                        # The recovery path reads the auto-detected jurisdiction
-                                        # from analyzer_data["jurisdiction"], so map the SSE
-                                        # step name jurisdiction_detection to the persisted key.
-                                        persist_key = "jurisdiction" if step_name == "jurisdiction_detection" else step_name
+                                        persist_key = persisted_key(step_name)
                                         try:
                                             step_payload = result.get("data")
                                             if step_payload and isinstance(step_payload, dict):
@@ -404,7 +402,7 @@ async def analyze_document(
                             logger.error("Failed to mark draft as completed: %s", str(e))
 
                         done_payload = {
-                            "step": "analysis_complete",
+                            "step": AnalysisStep.ANALYSIS_COMPLETE,
                             "status": "completed",
                             "data": {"done": True},
                         }

@@ -8,7 +8,6 @@ from typing import Any, Literal
 from pydantic import BaseModel
 from pydantic.alias_generators import to_camel, to_snake
 
-from app.config import config
 from app.schemas.relations import (
     ArbitralAwardRelation,
     ArbitralInstitutionRelation,
@@ -193,7 +192,7 @@ def _to_camel_dict(row: dict[str, Any], cfg: EntityListConfig) -> dict[str, Any]
 
 class EntityListService:
     def __init__(self) -> None:
-        self.db = Database(config.SQL_CONN_STRING)
+        self.db = Database()
 
     def list_entity(
         self,
@@ -252,8 +251,8 @@ class EntityListService:
         count_sql = f"SELECT COUNT(*) AS n FROM {cfg.view} b{where_sql}"
 
         try:
-            rows = self.db.execute_query(list_sql, params) or []
-            count_rows = self.db.execute_query(count_sql, params) or []
+            rows = self.db.execute_query(list_sql, params)
+            count_rows = self.db.execute_query(count_sql, params)
             total = int(count_rows[0].get("n", 0)) if count_rows else 0
         except Exception:
             logger.exception("Failed to list entity slug=%s", cfg.slug)
@@ -278,7 +277,7 @@ class EntityListService:
 
         sql = " UNION ALL ".join(unions)
         try:
-            rows = self.db.execute_query(sql, params) or []
+            rows = self.db.execute_query(sql, params)
         except Exception:
             logger.exception("Failed to compute entity counts")
             raise

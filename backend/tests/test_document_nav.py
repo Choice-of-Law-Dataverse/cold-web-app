@@ -358,5 +358,6 @@ class TestNavToolsRoster:
         ]
         for path in extractor_files:
             source = path.read_text()
-            assert "tools=NAV_TOOLS" in source, f"{path.name} does not use NAV_TOOLS"
-            assert "tools=[" not in source, f"{path.name} still hardcodes a tool list"
+            assert "run_extractor(" in source, f"{path.name} does not build its agent through run_extractor"
+            assert "Agent[DocumentContext]" not in source, f"{path.name} constructs an agent inline"
+            assert not re.search(r"tools=\[(?!\])", source), f"{path.name} hardcodes a tool list"

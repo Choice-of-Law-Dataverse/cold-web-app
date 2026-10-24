@@ -6,10 +6,10 @@ from agents.models.openai_responses import OpenAIResponsesModel
 
 from ..config import get_model, get_openai_client
 from ..prompts.col_section import COL_CANDIDATE_AUDIT_PROMPT, COL_RETRIEVAL_QUERY_PROMPT
-from ..runner import run_agent
+from ..runner import run_extractor
 from ..utils import generate_system_prompt
 from ..validation import validate_col_candidate_audit
-from .document_nav import NAV_TOOLS, DocumentContext
+from .document_nav import DocumentContext
 from .hybrid_retrieval import CandidatePassage, RetrievalResult, retrieve_choice_of_law_candidates
 from .models import ColCandidateAuditOutput, ColRetrievalQueryPlan, ColSectionOutput, StepResult
 
@@ -121,18 +121,13 @@ async def extract_col_section(
         if not retrieval.candidates:
             raise ValueError("No choice-of-law retrieval candidates were found")
 
-        agent = Agent[DocumentContext](
-            name="ColSectionExtractor",
-            instructions=generate_system_prompt(),
-            output_type=ColCandidateAuditOutput,
-            tools=NAV_TOOLS,
-            model=_responses_model("col_section"),
-        )
-
         try:
-            audit_step = await run_agent(
-                agent,
-                input=f"{COL_CANDIDATE_AUDIT_PROMPT}\n\nCANDIDATES:\n{_format_candidates(retrieval.candidates, doc_ctx)}",
+            audit_step = await run_extractor(
+                name="ColSectionExtractor",
+                task="col_section",
+                output_type=ColCandidateAuditOutput,
+                instructions=generate_system_prompt(),
+                prompt=f"{COL_CANDIDATE_AUDIT_PROMPT}\n\nCANDIDATES:\n{_format_candidates(retrieval.candidates, doc_ctx)}",
                 context=doc_ctx,
                 validate=lambda output, _tools: validate_col_candidate_audit(output, retrieval.candidates),
             )

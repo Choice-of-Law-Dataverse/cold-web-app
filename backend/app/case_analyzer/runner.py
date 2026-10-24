@@ -3,10 +3,12 @@
 import logging
 from typing import Any
 
-from agents import Agent, Runner
+from agents import Agent, Runner, Tool
 from agents.items import ToolCallItem
+from agents.models.openai_responses import OpenAIResponsesModel
 
-from .tools.document_nav import DocumentContext
+from .config import get_model, get_openai_client
+from .tools.document_nav import NAV_TOOLS, DocumentContext
 from .tools.models import StepResult
 from .validation import ValidatorFn
 
@@ -73,3 +75,25 @@ async def run_agent(
         raise OutputValidationError(f"{agent.name} failed output validation: {validation_error}")
 
     raise AssertionError("validation attempt loop exited unexpectedly")
+
+
+async def run_extractor(
+    *,
+    name: str,
+    task: str,
+    output_type: type[Any],
+    instructions: str,
+    prompt: str | list[Any],
+    context: DocumentContext,
+    validate: ValidatorFn | None = None,
+    tools: list[Tool] = NAV_TOOLS,
+) -> StepResult[Any]:
+    """Build the standard extractor agent for a task and run it with evidence-aware validation."""
+    agent = Agent[DocumentContext](
+        name=name,
+        instructions=instructions,
+        output_type=output_type,
+        tools=tools,
+        model=OpenAIResponsesModel(model=get_model(task), openai_client=get_openai_client()),
+    )
+    return await run_agent(agent, input=prompt, context=context, validate=validate)

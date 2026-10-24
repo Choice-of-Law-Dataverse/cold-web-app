@@ -1,6 +1,6 @@
 """Tests for case-citation extraction prompt construction."""
 
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, patch
 
 import pytest
 
@@ -39,19 +39,16 @@ async def test_extractor_receives_document_head_and_tail() -> None:
         ),
         response_id="response-1",
     )
-    run_agent = AsyncMock(return_value=expected)
+    run_extractor = AsyncMock(return_value=expected)
 
     with (
-        patch("app.case_analyzer.tools.case_citation_extractor.Agent", MagicMock()),
-        patch("app.case_analyzer.tools.case_citation_extractor.OpenAIResponsesModel", MagicMock()),
-        patch("app.case_analyzer.tools.case_citation_extractor.get_openai_client", MagicMock()),
-        patch("app.case_analyzer.tools.case_citation_extractor.run_agent", run_agent),
+        patch("app.case_analyzer.tools.case_citation_extractor.run_extractor", run_extractor),
     ):
         result = await extract_case_citation(doc_ctx, "Civil law", "Switzerland")
 
-    run_call = run_agent.await_args
+    run_call = run_extractor.await_args
     assert run_call is not None
-    prompt = run_call.kwargs["input"]
+    prompt = run_call.kwargs["prompt"]
     prompt_text = prompt[0]["content"]
     assert head_citation in prompt_text
     assert tail_citation in prompt_text
@@ -80,23 +77,22 @@ async def test_missing_citation_uses_navigation_model_fallback() -> None:
         response_id="response-1",
     )
     expected = StepResult(output=initial.output, response_id="response-2", tool_names=("search",))
-    run_agent = AsyncMock(side_effect=[initial, expected])
+    run_extractor = AsyncMock(side_effect=[initial, expected])
 
     with (
-        patch("app.case_analyzer.tools.case_citation_extractor.Agent", MagicMock()),
-        patch("app.case_analyzer.tools.case_citation_extractor.OpenAIResponsesModel", MagicMock()),
-        patch("app.case_analyzer.tools.case_citation_extractor.get_openai_client", MagicMock()),
-        patch("app.case_analyzer.tools.case_citation_extractor.run_agent", run_agent),
+        patch("app.case_analyzer.tools.case_citation_extractor.run_extractor", run_extractor),
     ):
         result = await extract_case_citation(doc_ctx, "Civil-law jurisdiction", "Switzerland")
 
     assert result == expected
-    assert run_agent.await_count == 2
-    first_call, second_call = run_agent.await_args_list
+    assert run_extractor.await_count == 2
+    first_call, second_call = run_extractor.await_args_list
     assert "validate" not in first_call.kwargs
     assert "validate" in second_call.kwargs
-    assert "navigation fallback" not in first_call.kwargs["input"][0]["content"]
-    assert "Use the navigation tools" in second_call.kwargs["input"][0]["content"]
+    assert first_call.kwargs["tools"] == []
+    assert "tools" not in second_call.kwargs
+    assert "navigation fallback" not in first_call.kwargs["prompt"][0]["content"]
+    assert "Use the navigation tools" in second_call.kwargs["prompt"][0]["content"]
 
 
 @pytest.mark.asyncio
@@ -115,19 +111,16 @@ async def test_filename_and_excerpts_are_supplied_to_one_model_pass() -> None:
         ),
         response_id="response-3",
     )
-    run_agent = AsyncMock(return_value=expected)
+    run_extractor = AsyncMock(return_value=expected)
 
     with (
-        patch("app.case_analyzer.tools.case_citation_extractor.Agent", MagicMock()),
-        patch("app.case_analyzer.tools.case_citation_extractor.OpenAIResponsesModel", MagicMock()),
-        patch("app.case_analyzer.tools.case_citation_extractor.get_openai_client", MagicMock()),
-        patch("app.case_analyzer.tools.case_citation_extractor.run_agent", run_agent),
+        patch("app.case_analyzer.tools.case_citation_extractor.run_extractor", run_extractor),
     ):
         result = await extract_case_citation(doc_ctx, "Civil-law jurisdiction", "Switzerland")
 
-    run_call = run_agent.await_args
+    run_call = run_extractor.await_args
     assert run_call is not None
-    prompt = run_call.kwargs["input"]
+    prompt = run_call.kwargs["prompt"]
     prompt_text = prompt[0]["content"]
     assert file_name in prompt_text
     assert "Identifier-like filename segments: 4A_305_2025" in prompt_text
@@ -167,21 +160,18 @@ async def test_descriptive_legifrance_title_falls_back_to_ecli() -> None:
         response_id="response-ecli",
         tool_names=("search",),
     )
-    run_agent = AsyncMock(side_effect=[initial, expected])
+    run_extractor = AsyncMock(side_effect=[initial, expected])
 
     with (
-        patch("app.case_analyzer.tools.case_citation_extractor.Agent", MagicMock()),
-        patch("app.case_analyzer.tools.case_citation_extractor.OpenAIResponsesModel", MagicMock()),
-        patch("app.case_analyzer.tools.case_citation_extractor.get_openai_client", MagicMock()),
-        patch("app.case_analyzer.tools.case_citation_extractor.run_agent", run_agent),
+        patch("app.case_analyzer.tools.case_citation_extractor.run_extractor", run_extractor),
     ):
         result = await extract_case_citation(doc_ctx, "Civil-law jurisdiction", "France")
 
     assert result == expected
-    assert run_agent.await_count == 2
-    first_call, second_call = run_agent.await_args_list
+    assert run_extractor.await_count == 2
+    first_call, second_call = run_extractor.await_args_list
     assert "validate" not in first_call.kwargs
-    fallback_prompt = second_call.kwargs["input"][0]["content"]
+    fallback_prompt = second_call.kwargs["prompt"][0]["content"]
     assert "descriptive filename or page title" in fallback_prompt
     assert "ECLI" in fallback_prompt
     assert second_call.kwargs["validate"](expected.output, frozenset({"search"})) is None
