@@ -84,7 +84,7 @@
     "@tailwindcss/vite": "^4.3.3",
     "@tanstack/vue-query-devtools": "^6.1.48",
     "@types/geojson": "^7946.0.16",
-    "@types/node": "24.13.4",
+    "@types/node": "24.19.2",
     "@vitejs/plugin-vue": "^6.0.9",
     "@vitest/coverage-v8": "^5.0.1",
     "@vitest/ui": "^5.0.1",
