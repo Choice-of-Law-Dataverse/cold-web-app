@@ -1,57 +1,38 @@
-FastAPI backend (Python 3.12, SQLAlchemy, Pydantic v2). Uses `uv` for package management.
-
-## Setup
-
-```bash
-cd backend
-uv sync --all-extras --all-packages --group dev  # or: make setup
-make dev  # http://localhost:8000
-```
-
-`make dev` and `make serve` accept `PORT=n` and `HOST=x` (defaults `8000` / `0.0.0.0`),
-either as make variables or environment variables.
-
-From the repo root, `pnpm run setup:api` / `pnpm run dev:api` / `pnpm run check:api`
-delegate to the same targets.
+FastAPI backend (Python 3.12, SQLAlchemy, Pydantic v2), managed with `uv`. Run Python through
+`uv run` or `make`; add dependencies with `uv add`, never `pip install`. `make dev` also accepts
+`HOST`.
 
 ## API Auth
 
-- Read-only data endpoints: publicly accessible (no auth required)
-- Frontend requests: `X-API-Key` header
-- User endpoints (suggestions): Auth0 JWT
-- Admin endpoints: Auth0 JWT with roles
+- Read-only data endpoints: public.
+- Frontend requests: `X-API-Key` header.
+- User endpoints (suggestions): Auth0 JWT.
+- Admin endpoints: Auth0 JWT with roles.
 
 ## Common Tasks
 
-- **Add a route**: Create in `app/routes/` and register in `app/main.py`
-- **Add a schema**: Create Pydantic model in `app/schemas/`
-- **Add dependencies**: `uv add <package>` (not pip install)
-- **Migrations**: Never run or create migrations. Leave these to the developer.
+- **Add a route**: create it in `app/routes/` and register it in `app/main.py`.
+- **Add a schema**: create a Pydantic model in `app/schemas/`.
 
-## SQL Views Architecture
+## SQL Views
 
-Data is served through SQL views managed in `alembic_views/`:
+Data is served through SQL views managed by Alembic in `alembic_views/`:
 
-- **Base views** (`vw_*`): flatten NocoDB tables into query-friendly columns
-- **Relation views** (`vw_*_relations`): pre-compute entity relationships as JSONB arrays
-- **Search function** (`search_all_v2`): full-text search across all base views
-- **Detail function** (`get_entity_detail`): single-entity lookup returning base + relation data
+- **Base views** (`vw_*`): flatten NocoDB tables into query-friendly columns.
+- **Relation views** (`vw_*_relations`): pre-compute entity relationships as JSONB arrays.
+- **`search_all_v2`**: full-text search across all base views.
+- **`get_entity_detail`**: single-entity lookup returning base and relation data.
 
-Relation sort order belongs in `data_views.get_entity_detail` (jsonb_agg ORDER BY), not in Python services or frontend comparators.
-
-## Validation
-
-- `make check` — ruff format, pyright, pytest. **Rewrites files** (`ruff format`, `ruff check --fix`).
-- `make check-ci` — same checks read-only (`ruff format --check`, `ruff check`). Matches CI.
+Relation sort order belongs in `data_views.get_entity_detail` (`jsonb_agg ... ORDER BY`), not in
+Python services or frontend comparators.
 
 ## Configuration
 
-`app/config.py` loads `.env` via pydantic-settings' `env_file`. This populates the `Config`
-object only — it does **not** put anything into `os.environ`. Any library that reads its own
-environment variables directly (as Logfire does with `LOGFIRE_TOKEN`) must be passed the value
-explicitly from `config`, or it will not see it.
+`app/config.py` loads `.env` through pydantic-settings' `env_file`. This fills the `Config` object
+only; it does **not** set `os.environ`. A library that reads its own environment variables (as
+Logfire does with `LOGFIRE_TOKEN`) must be passed the value from `config` explicitly.
 
 ## Common Issues
 
-- **Import errors**: Run `uv sync` to rebuild environment
-- **Command not found**: Use `uv run <command>` or `make <target>`
+- **Import errors**: run `uv sync`.
+- **Command not found**: use `uv run <command>` or a `make` target.
