@@ -1,6 +1,4 @@
-import type { components } from "@/types/api-schema";
-
-type EntityType = components["schemas"]["EntityType"];
+import type { EntityType } from "@/types/api";
 
 export const ENTITY_TYPE_LABELS: Record<EntityType, string> = {
   court_decision: "Court Decision",

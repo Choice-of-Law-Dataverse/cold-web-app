@@ -40,7 +40,7 @@ Each entity file in `types/entities/` exports three things:
 
 New entities must also be registered in `types/api.ts` type maps and `config/entityRegistry.ts`.
 The registry entry is the source for the entity's backend `collection` slug, its `feedbackType`,
-and the `hasDetailPage` / `hasIndexPage` / `hasNewPage` flags. `config/entityRegistry.consistency.test.ts`
+and the `hasDetailPage` / `hasIndexPage` / `hasNewPage` / `hasEditPage` flags. `config/entityRegistry.consistency.test.ts`
 fails when those disagree with the page files, the sitemap, moderation categories or feedback labels.
 
 ## Generated Types

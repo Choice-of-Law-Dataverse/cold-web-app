@@ -1,5 +1,4 @@
-import type { TableName } from "@/types/api";
-import type { components } from "@/types/api-schema";
+import type { EntityType, TableName } from "@/types/api";
 import type { AnySearchResult, AnySearchResultKey } from "@/types/search";
 import type { RelatedItem } from "@/types/ui";
 import type { Specialist } from "@/types/entities/specialist";
@@ -57,8 +56,6 @@ export interface ProcessedEntityMap {
 
 export type EntityBasePath = keyof ProcessedEntityMap;
 export type ProcessedEntity = ProcessedEntityMap[EntityBasePath];
-
-type EntityType = components["schemas"]["EntityType"];
 
 export interface RelationRendererConfig {
   label: string;

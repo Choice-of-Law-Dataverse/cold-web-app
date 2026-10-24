@@ -242,7 +242,7 @@ import EntityFeedback from "@/components/ui/EntityFeedback.vue";
 import SchipType from "@/components/ui/SchipType.vue";
 import SchipTheme from "@/components/ui/SchipTheme.vue";
 import SchipJurisdiction from "@/components/ui/SchipJurisdiction.vue";
-import type { components } from "@/types/api-schema";
+import type { EntityType } from "@/types/api";
 import {
   useJurisdictionLookup,
   useJurisdictions,
@@ -259,8 +259,6 @@ import {
   getNewPathForCard,
   getSingularLabel,
 } from "@/config/entityRegistry";
-
-type EntityType = components["schemas"]["EntityType"];
 
 const LazyCiteModal = defineAsyncComponent(
   () => import("@/components/ui/CiteModal.vue"),
@@ -328,23 +326,23 @@ onMounted(() => {
 
 const isLoggedIn = computed(() => isMounted.value && !!user.value);
 
+const resolvedCardType = computed(
+  () => props.cardType || String(props.resultData?.sourceTable ?? ""),
+);
+
 const newEntityHref = computed(() => {
-  if (props.headerMode === "new") return undefined;
-  const cardType =
-    props.cardType || String(props.resultData?.sourceTable ?? "");
-  if (!cardType) return undefined;
-  const indexPath = getIndexPathForCard(cardType);
-  const newPath = getNewPathForCard(cardType);
+  if (isNewMode.value || !resolvedCardType.value) return undefined;
+  const indexPath = getIndexPathForCard(resolvedCardType.value);
+  const newPath = getNewPathForCard(resolvedCardType.value);
   if (!indexPath || !newPath) return undefined;
   if (route.path.replace(/\/$/, "") !== indexPath) return undefined;
   return newPath;
 });
 
 const editEntityHref = computed(() => {
-  if (props.headerMode === "new" || !props.entityId) return undefined;
-  const cardType =
-    props.cardType || String(props.resultData?.sourceTable ?? "");
-  return cardType ? getEditPathForCard(cardType, props.entityId) : undefined;
+  if (isNewMode.value || !props.entityId || !resolvedCardType.value)
+    return undefined;
+  return getEditPathForCard(resolvedCardType.value, props.entityId);
 });
 
 interface GatedAction {
@@ -470,17 +468,15 @@ const resolvedTheme = computed<string[]>(() => {
 });
 
 const typeChip = computed(() => {
-  const cardType =
-    props.cardType || String(props.resultData?.sourceTable ?? "");
-  if (!cardType) return null;
-  const colorClass = getLabelColorClass(cardType);
+  if (!resolvedCardType.value) return null;
+  const colorClass = getLabelColorClass(resolvedCardType.value);
   if (colorClass === "hidden") return null;
-  const label = getSingularLabel(cardType);
+  const label = getSingularLabel(resolvedCardType.value);
   if (!label) return null;
   return {
     label,
     colorClass,
-    to: getIndexPathForCard(cardType) ?? "",
+    to: getIndexPathForCard(resolvedCardType.value) ?? "",
   };
 });
 
