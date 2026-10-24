@@ -84,54 +84,56 @@
         </UButton>
       </template>
       <template v-else>
-        <UButton
-          v-if="showNew && newEntityHref && isLoggedIn"
-          :to="newEntityHref"
-          variant="ghost"
-          color="neutral"
-          size="xs"
-          leading-icon="i-material-symbols:add"
-          trailing-icon="i-material-symbols:add"
-          class="meta-btn"
-        >
-          New
-        </UButton>
-        <UPopover
-          v-else-if="showNew && newEntityHref"
-          :content="{ side: 'bottom', align: 'end', sideOffset: 8 }"
-        >
+        <template v-for="action in gatedActions" :key="action.href">
           <UButton
+            v-if="isLoggedIn"
+            :to="action.href"
             variant="ghost"
             color="neutral"
             size="xs"
-            leading-icon="i-material-symbols:lock-outline"
-            trailing-icon="i-material-symbols:lock-outline"
+            :leading-icon="action.icon"
+            :trailing-icon="action.icon"
             class="meta-btn"
-            aria-label="Sign in to add new entry"
           >
-            Submit data
+            {{ action.label }}
           </UButton>
-          <template #content>
-            <div class="login-popover">
-              <p class="login-popover__text">
-                A free CoLD account is required to keep the dataverse
-                trustworthy &mdash; we use it to prevent automated spam and
-                preserve the integrity of every record. Sign-up takes under a
-                minute.
-              </p>
-              <UButton
-                :to="loginRedirectHref"
-                external
-                block
-                color="primary"
-                size="sm"
-                leading-icon="i-material-symbols:login"
-              >
-                Sign in to continue
-              </UButton>
-            </div>
-          </template>
-        </UPopover>
+          <UPopover
+            v-else
+            :content="{ side: 'bottom', align: 'end', sideOffset: 8 }"
+          >
+            <UButton
+              variant="ghost"
+              color="neutral"
+              size="xs"
+              leading-icon="i-material-symbols:lock-outline"
+              trailing-icon="i-material-symbols:lock-outline"
+              class="meta-btn"
+              :aria-label="action.signInLabel"
+            >
+              {{ action.signedOutLabel }}
+            </UButton>
+            <template #content>
+              <div class="login-popover">
+                <p class="login-popover__text">
+                  A free CoLD account is required to keep the dataverse
+                  trustworthy &mdash; we use it to prevent automated spam and
+                  preserve the integrity of every record. Sign-up takes under a
+                  minute.
+                </p>
+                <UButton
+                  :to="`/auth/login?returnTo=${encodeURIComponent(action.href)}`"
+                  external
+                  block
+                  color="primary"
+                  size="sm"
+                  leading-icon="i-material-symbols:login"
+                >
+                  Sign in to continue
+                </UButton>
+              </div>
+            </template>
+          </UPopover>
+        </template>
         <UButton
           v-if="showCite"
           variant="ghost"
@@ -240,7 +242,7 @@ import EntityFeedback from "@/components/ui/EntityFeedback.vue";
 import SchipType from "@/components/ui/SchipType.vue";
 import SchipTheme from "@/components/ui/SchipTheme.vue";
 import SchipJurisdiction from "@/components/ui/SchipJurisdiction.vue";
-import type { components } from "@/types/api-schema";
+import type { EntityType } from "@/types/api";
 import {
   useJurisdictionLookup,
   useJurisdictions,
@@ -250,14 +252,13 @@ import {
   primaryJurisdictionAlpha3,
 } from "@/utils/jurisdictionParser";
 import {
-  getBasePathForCard,
+  getEditPathForCard,
   getIndexPathForCard,
   getLabelColorClass,
+  getNewEntityTypes,
   getNewPathForCard,
   getSingularLabel,
 } from "@/config/entityRegistry";
-
-type EntityType = components["schemas"]["EntityType"];
 
 const LazyCiteModal = defineAsyncComponent(
   () => import("@/components/ui/CiteModal.vue"),
@@ -325,23 +326,56 @@ onMounted(() => {
 
 const isLoggedIn = computed(() => isMounted.value && !!user.value);
 
+const resolvedCardType = computed(
+  () => props.cardType || String(props.resultData?.sourceTable ?? ""),
+);
+
 const newEntityHref = computed(() => {
-  if (props.headerMode === "new") return undefined;
-  const cardType =
-    props.cardType || String(props.resultData?.sourceTable ?? "");
-  if (!cardType) return undefined;
-  const indexPath = getIndexPathForCard(cardType);
-  const newPath = getNewPathForCard(cardType);
+  if (isNewMode.value || !resolvedCardType.value) return undefined;
+  const indexPath = getIndexPathForCard(resolvedCardType.value);
+  const newPath = getNewPathForCard(resolvedCardType.value);
   if (!indexPath || !newPath) return undefined;
   if (route.path.replace(/\/$/, "") !== indexPath) return undefined;
   return newPath;
 });
 
-const loginRedirectHref = computed(() =>
-  newEntityHref.value
-    ? `/auth/login?returnTo=${encodeURIComponent(newEntityHref.value)}`
-    : undefined,
-);
+const editEntityHref = computed(() => {
+  if (isNewMode.value || !props.entityId || !resolvedCardType.value)
+    return undefined;
+  return getEditPathForCard(resolvedCardType.value, props.entityId);
+});
+
+interface GatedAction {
+  href: string;
+  label: string;
+  icon: string;
+  signedOutLabel: string;
+  signInLabel: string;
+}
+
+/** Links that need a signed-in reader; signed-out readers get a sign-in prompt. */
+const gatedActions = computed<GatedAction[]>(() => {
+  const actions: GatedAction[] = [];
+  if (props.showNew && newEntityHref.value) {
+    actions.push({
+      href: newEntityHref.value,
+      label: "New",
+      icon: "i-material-symbols:add",
+      signedOutLabel: "Submit data",
+      signInLabel: "Sign in to add new entry",
+    });
+  }
+  if (editEntityHref.value) {
+    actions.push({
+      href: editEntityHref.value,
+      label: "Edit",
+      icon: "i-material-symbols:edit-outline",
+      signedOutLabel: "Edit",
+      signInLabel: "Sign in to suggest an edit",
+    });
+  }
+  return actions;
+});
 
 const searchParam = (value: string) =>
   encodeURIComponent(value).replace(/%20/g, "+");
@@ -434,17 +468,15 @@ const resolvedTheme = computed<string[]>(() => {
 });
 
 const typeChip = computed(() => {
-  const cardType =
-    props.cardType || String(props.resultData?.sourceTable ?? "");
-  if (!cardType) return null;
-  const colorClass = getLabelColorClass(cardType);
+  if (!resolvedCardType.value) return null;
+  const colorClass = getLabelColorClass(resolvedCardType.value);
   if (colorClass === "hidden") return null;
-  const label = getSingularLabel(cardType);
+  const label = getSingularLabel(resolvedCardType.value);
   if (!label) return null;
   return {
     label,
     colorClass,
-    to: getIndexPathForCard(cardType) ?? "",
+    to: getIndexPathForCard(resolvedCardType.value) ?? "",
   };
 });
 
@@ -527,7 +559,7 @@ const isVisible = computed(() => {
 const hasActions = computed(() => {
   if (props.headerMode === "new") return true;
   return (
-    (props.showNew && !!newEntityHref.value) ||
+    gatedActions.value.length > 0 ||
     props.showCite ||
     props.showJson ||
     props.showPrint ||
@@ -535,19 +567,16 @@ const hasActions = computed(() => {
   );
 });
 
-const typeOptions = [
-  { label: "Court Decision", value: "Court Decision" },
-  { label: "Domestic Instrument", value: "Domestic Instrument" },
-  { label: "Regional Instrument", value: "Regional Instrument" },
-  { label: "International Instrument", value: "International Instrument" },
-  { label: "Literature", value: "Literature" },
-];
+const typeOptions = getNewEntityTypes().map((label) => ({
+  label,
+  value: label,
+}));
 const selectedNewType = ref("");
 
 watch(selectedNewType, (val, old) => {
   if (props.headerMode === "new" && val && val !== old) {
-    const basePath = getBasePathForCard(val) ?? "/literature";
-    router.push(`${basePath}/new`);
+    const newPath = getNewPathForCard(val);
+    if (newPath) router.push(newPath);
   }
 });
 

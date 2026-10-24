@@ -10,8 +10,6 @@
       :data="data"
       :formatted-jurisdiction="jurisdictionNames"
       :formatted-theme="themeNames"
-      :show-suggest-edit="true"
-      entity-type="arbitral_award"
       :entity-id="coldId"
       :entity-title="caseNumberTitle ?? undefined"
     >

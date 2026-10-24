@@ -15,7 +15,8 @@ styles.
 
 - **New detail page**: add `pages/[entity]/[coldId].vue` (detail routes read `route.params.coldId`),
   add the entity type in `types/entities/`, and register it in `types/api.ts` and
-  `config/entityRegistry.ts`.
+  `config/entityRegistry.ts`. The registry's `collection`, `feedbackType` and page flags must match
+  the page files; `config/entityRegistry.consistency.test.ts` fails when they disagree.
 - **New composable**: `composables/useFeatureName.ts`.
 - **New component**: under `components/`, grouped by feature.
 

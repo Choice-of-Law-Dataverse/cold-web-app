@@ -3,6 +3,7 @@ import re
 from typing import Any
 
 from pydantic.alias_generators import to_snake
+from sqlalchemy.exc import ProgrammingError
 
 from app.config import config
 from app.services.database import Database
@@ -10,13 +11,14 @@ from app.services.filter_builder import build_filter_clause
 
 _SAFE_IDENTIFIER = re.compile(r"^[a-z_][a-z0-9_.]*$")
 _SAFE_COLUMN = re.compile(r"^[a-zA-Z_][a-zA-Z0-9_]*$")
+_UNDEFINED_COLUMN_SQLSTATE = "42703"
 
 logger = logging.getLogger(__name__)
 
 
 class SearchService:
     def __init__(self) -> None:
-        self.db = Database(config.SQL_CONN_STRING)
+        self.db = Database()
 
     _TABLE_TO_VIEW: dict[str, str] = {
         "answers": "data_views.base_answers",
@@ -204,6 +206,15 @@ class SearchService:
                 results.append(flat)
         return results
 
+    def _execute_table_query(self, sql: str, params: dict[str, Any]) -> list[dict[str, Any]]:
+        """Run a table query, reporting a column the view lacks as a `ValueError`."""
+        try:
+            return self.db.execute_query(sql, params)
+        except ProgrammingError as e:
+            if getattr(e.orig, "pgcode", None) == _UNDEFINED_COLUMN_SQLSTATE:
+                raise ValueError("Unknown column in order_by or filter") from e
+            raise
+
     def full_table(
         self,
         table: str,
@@ -212,18 +223,14 @@ class SearchService:
         order_dir: str | None = None,
         limit: int | None = None,
     ) -> list[dict[str, Any]]:
-        try:
-            sql = self._build_select_sql(
-                table,
-                order_by=order_by,
-                order_dir=order_dir,
-                limit=limit,
-            )
-            rows = self.db.execute_query(sql, {}) or []
-            return self._flatten_rows(rows, table, response_type)
-        except Exception as e:
-            logger.error("Error querying full table %s: %s", table, e)
-            return []
+        sql = self._build_select_sql(
+            table,
+            order_by=order_by,
+            order_dir=order_dir,
+            limit=limit,
+        )
+        rows = self._execute_table_query(sql, {})
+        return self._flatten_rows(rows, table, response_type)
 
     def filtered_table(
         self,
@@ -234,27 +241,18 @@ class SearchService:
         order_dir: str | None = None,
         limit: int | None = None,
     ) -> list[dict[str, Any]]:
-        try:
-            alias = "c"
-            where_sql, params = build_filter_clause(alias, filters)
-            sql = self._build_select_sql(
-                table,
-                alias=alias,
-                where_sql=where_sql,
-                order_by=order_by,
-                order_dir=order_dir,
-                limit=limit,
-            )
-            rows = self.db.execute_query(sql, params) or []
-            return self._flatten_rows(rows, table, response_type)
-        except Exception as e:
-            logger.error(
-                "Error querying filtered table %s with filters %s: %s",
-                table,
-                filters,
-                e,
-            )
-            return []
+        alias = "c"
+        where_sql, params = build_filter_clause(alias, filters)
+        sql = self._build_select_sql(
+            table,
+            alias=alias,
+            where_sql=where_sql,
+            order_by=order_by,
+            order_dir=order_dir,
+            limit=limit,
+        )
+        rows = self._execute_table_query(sql, params)
+        return self._flatten_rows(rows, table, response_type)
 
     def _extract_filters(self, filters: list[Any]) -> tuple[list[str], list[str], list[str]]:
         tables = []
@@ -325,7 +323,7 @@ class SearchService:
             "sort_by_date := CAST(:sort_by_date AS boolean)"
             ")"
         )
-        rows = self.db.execute_query(sql, params) or []
+        rows = self.db.execute_query(sql, params)
         logger.debug("search_all_v2 returned %d rows (total_matches=%d)", len(rows), total_matches)
         if not rows and total_matches > 0:
             logger.warning("search SQL:\n%s\nparams: %s", sql, params)
@@ -403,9 +401,4 @@ class SearchService:
             ORDER BY s."Specialist"
         """
 
-        try:
-            results = self.db.execute_query(query, {"jurisdiction_alpha_code": jurisdiction_alpha_code})
-            return results or []
-        except Exception as e:
-            logger.error(f"Error querying specialists for jurisdiction {jurisdiction_alpha_code}: {e}")
-            raise
+        return self.db.execute_query(query, {"jurisdiction_alpha_code": jurisdiction_alpha_code})

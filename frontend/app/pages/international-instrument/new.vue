@@ -56,23 +56,13 @@
     </BaseDetailLayout>
 
     <ClientOnly>
-      <CancelModal v-model="showCancelModal" @confirm-cancel="confirmCancel" />
+      <CancelModal v-model="showCancelModal" @confirm-cancel="cancel" />
       <SaveModal
-        v-model="showSaveModal"
-        :email="email"
-        :comments="comments"
-        :save-modal-errors="saveModalErrors"
-        :name="name"
-        :specialists="specialists"
-        :date="date"
-        :pdf-file="pdfFile"
-        :link="link"
-        @update:email="(val: string) => (email = val)"
-        @update:comments="(val: string) => (comments = val)"
-        @update:save-modal-errors="
-          (val: Record<string, string>) => (saveModalErrors = val)
-        "
-        @save="handleNewSave"
+        v-model:open="isSaveModalOpen"
+        v-model:comments="comments"
+        :submitting="isSubmitting"
+        :error="submitError"
+        @submit="submit"
       />
     </ClientOnly>
   </div>
@@ -80,7 +70,7 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import { useHead, useRouter } from "#imports";
+import { useHead } from "#imports";
 import { z } from "zod";
 import BaseDetailLayout from "@/components/layout/BaseDetailLayout.vue";
 import InfoPopover from "@/components/ui/InfoPopover.vue";
@@ -90,6 +80,7 @@ import CancelModal from "@/components/ui/CancelModal.vue";
 import { format } from "date-fns";
 import { tooltips } from "@/config/tooltips";
 import ColdDateTrigger from "@/components/ui/ColdDateTrigger.vue";
+import { useSuggestionForm } from "@/composables/useSuggestionForm";
 
 const tooltipInternationalInstrumentDate = tooltips.date ?? "";
 const tooltipInternationalInstrumentLink =
@@ -99,99 +90,43 @@ definePageMeta({
   middleware: ["auth"],
 });
 
-const date = ref(new Date());
-
-const name = ref("");
-const link = ref("");
-const specialists = ref([""]);
-const pdfFile = ref<File | null>(null);
-const email = ref("");
-const comments = ref("");
-
-const formSchema = z.object({
-  name: z
-    .string()
-    .min(1, { error: "Title is required" })
-    .min(3, { error: "Title must be at least 3 characters long" }),
-  link: z.url({ error: 'URL must be valid and start with "https://"' }),
-  instrument_date: z.date({ error: "Date is required" }),
-});
-
-const errors = ref<Record<string, string>>({});
-const saveModalErrors = ref<Record<string, string>>({});
-
-const router = useRouter();
-const showSaveModal = ref(false);
-const showCancelModal = ref(false);
-
 useHead({ title: "New International Instrument — CoLD" });
 
-function validateForm() {
-  try {
-    const formData = {
-      name: name.value,
-      link: link.value,
-      instrument_date: date.value,
-    };
+const date = ref(new Date());
+const name = ref("");
+const link = ref("");
+const showCancelModal = ref(false);
 
-    formSchema.parse(formData);
-    errors.value = {};
-    return true;
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      errors.value = {};
-      for (const err of error.issues) {
-        const field = String(err.path[0]);
-        errors.value[field] = err.message;
-      }
-    }
-    return false;
-  }
-}
-
-function openSaveModal() {
-  const isValid = validateForm();
-
-  if (isValid) {
-    showSaveModal.value = true;
-  }
-}
-
-function confirmCancel() {
-  router.push("/");
-}
-
-function handleNewSave() {
-  const payload = {
+const {
+  errors,
+  comments,
+  isSaveModalOpen,
+  isSubmitting,
+  submitError,
+  openSaveModal,
+  submit,
+  cancel,
+} = useSuggestionForm({
+  endpoint: "/suggestions/international-instruments",
+  schema: z.object({
+    name: z
+      .string()
+      .min(1, { error: "Title is required" })
+      .min(3, { error: "Title must be at least 3 characters long" }),
+    link: z.url({ error: 'URL must be valid and start with "https://"' }),
+    instrument_date: z.date({ error: "Date is required" }),
+  }),
+  values: () => ({
+    name: name.value,
+    link: link.value,
+    instrument_date: date.value,
+  }),
+  payload: () => ({
     name: name.value,
     url: link.value,
     instrument_date: date.value ? format(date.value, "yyyy-MM-dd") : "",
-    submitter_comments: comments.value || undefined,
-  };
-
-  (async () => {
-    try {
-      const { useApiClient } = await import("@/composables/useApiClient");
-      const { client } = useApiClient();
-      const { error } = await client.POST(
-        "/suggestions/international-instruments",
-        { body: payload },
-      );
-      if (error) throw error;
-
-      showSaveModal.value = false;
-      router.push({
-        path: "/confirmation",
-        query: { message: "Thanks, we have received your submission." },
-      });
-    } catch {
-      saveModalErrors.value = {
-        general:
-          "There was a problem submitting your suggestion. Please try again.",
-      };
-    }
-  })();
-}
+  }),
+});
 </script>
 
 <style scoped>

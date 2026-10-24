@@ -1,4 +1,5 @@
 import logging
+from html import escape
 from typing import Any
 
 import resend
@@ -123,15 +124,15 @@ def send_new_suggestion_notification(
     ]
     text_body = "\n".join(text_lines)
 
-    comments_html = f"<p><strong>Comments:</strong> {submitter_comments}</p>" if submitter_comments else ""
-    edit_html = f"<p><strong>Editing entity:</strong> {payload['edit_entity_id']}</p>" if is_edit else ""
+    comments_html = f"<p><strong>Comments:</strong> {escape(str(submitter_comments))}</p>" if submitter_comments else ""
+    edit_html = f"<p><strong>Editing entity:</strong> {escape(str(payload['edit_entity_id']))}</p>" if is_edit else ""
     html_body = f"""\
-<h2>{action}: {label}</h2>
-<p><strong>Summary:</strong> {summary}</p>
-<p><strong>Submitter:</strong> {submitter_email}</p>
+<h2>{action}: {escape(label)}</h2>
+<p><strong>Summary:</strong> {escape(str(summary))}</p>
+<p><strong>Submitter:</strong> {escape(str(submitter_email))}</p>
 {comments_html}
 {edit_html}
-<p><a href="{moderation_url}">Review this suggestion</a></p>"""
+<p><a href="{escape(moderation_url)}">Review this suggestion</a></p>"""
 
     try:
         resend.Emails.send(
@@ -191,12 +192,12 @@ def send_feedback_notification(
     )
 
     html_body = f"""\
-<h2>Entity Feedback: {entity_label}</h2>
-<p><strong>Entity:</strong> <a href="{entity_url}">{title_display}</a></p>
-<p><strong>Feedback type:</strong> {feedback_label}</p>
-<p><strong>Message:</strong> {message}</p>
-<p><strong>Submitter:</strong> {submitter_email}</p>
-<p><a href="{moderation_url}">Review this feedback</a></p>"""
+<h2>Entity Feedback: {escape(entity_label)}</h2>
+<p><strong>Entity:</strong> <a href="{escape(entity_url)}">{escape(title_display)}</a></p>
+<p><strong>Feedback type:</strong> {escape(feedback_label)}</p>
+<p><strong>Message:</strong> {escape(message)}</p>
+<p><strong>Submitter:</strong> {escape(submitter_email)}</p>
+<p><a href="{escape(moderation_url)}">Review this feedback</a></p>"""
 
     try:
         resend.Emails.send(

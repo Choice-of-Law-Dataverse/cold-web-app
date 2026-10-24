@@ -294,7 +294,10 @@ import { formatDateLong } from "@/utils/format";
 import DetailRow from "@/components/ui/DetailRow.vue";
 import { ANALYZER_FIELD_MAP } from "@/types/analyzer";
 import { extractStringFromPayload } from "@/utils/analyzerPayloadParser";
-import { getEntityConfig } from "@/config/entityRegistry";
+import {
+  getBasePathForCollection,
+  getEntityConfig,
+} from "@/config/entityRegistry";
 import { useEntityDrawer } from "@/composables/useEntityDrawer";
 import GradientTopBorder from "@/components/ui/GradientTopBorder.vue";
 import ResultValue from "@/components/ui/ResultValue.vue";
@@ -321,9 +324,9 @@ const { openDrawer } = useEntityDrawer();
 const openOriginalEntity = () => {
   const editId = suggestion.value?.payload?.edit_entity_id;
   if (!editId) return;
-  const basePath = `/${getCategoryEntityRoute(category.value)}`;
-  const config = getEntityConfig(basePath);
-  if (!config) return;
+  const basePath = getBasePathForCollection(category.value);
+  const config = basePath ? getEntityConfig(basePath) : undefined;
+  if (!basePath || !config) return;
   openDrawer(String(editId), config.table, basePath, true);
 };
 
@@ -359,17 +362,6 @@ const isActionable = computed(() => {
 const isEditSuggestion = computed(
   () => !!suggestion.value?.payload?.edit_entity_id,
 );
-
-const getCategoryEntityRoute = (cat: string): string => {
-  const mapping: Record<string, string> = {
-    "court-decisions": "court-decision",
-    "domestic-instruments": "domestic-instrument",
-    "regional-instruments": "regional-instrument",
-    "international-instruments": "international-instrument",
-    literature: "literature",
-  };
-  return mapping[cat] ?? cat;
-};
 
 const filteredPayload = computed(() => {
   if (!suggestion.value?.payload) return {};

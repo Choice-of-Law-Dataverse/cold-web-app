@@ -135,14 +135,14 @@
             label="Compatible with the HCCH Principles"
           >
             <ColdToggleButton
-              :pressed="compatibleHcchPrinciples === 'No'"
-              @click="compatibleHcchPrinciples = 'No'"
+              :pressed="compatibleHcchPrinciples === false"
+              @click="compatibleHcchPrinciples = false"
             >
               No
             </ColdToggleButton>
             <ColdToggleButton
-              :pressed="compatibleHcchPrinciples === 'Yes'"
-              @click="compatibleHcchPrinciples = 'Yes'"
+              :pressed="compatibleHcchPrinciples === true"
+              @click="compatibleHcchPrinciples = true"
             >
               Yes
             </ColdToggleButton>
@@ -161,14 +161,14 @@
             label="Compatible with the UNCITRAL Model Law"
           >
             <ColdToggleButton
-              :pressed="compatibleUncitralModelLaw === 'No'"
-              @click="compatibleUncitralModelLaw = 'No'"
+              :pressed="compatibleUncitralModelLaw === false"
+              @click="compatibleUncitralModelLaw = false"
             >
               No
             </ColdToggleButton>
             <ColdToggleButton
-              :pressed="compatibleUncitralModelLaw === 'Yes'"
-              @click="compatibleUncitralModelLaw = 'Yes'"
+              :pressed="compatibleUncitralModelLaw === true"
+              @click="compatibleUncitralModelLaw = true"
             >
               Yes
             </ColdToggleButton>
@@ -187,23 +187,13 @@
     </BaseDetailLayout>
 
     <ClientOnly>
-      <CancelModal v-model="showCancelModal" @confirm-cancel="confirmCancel" />
+      <CancelModal v-model="showCancelModal" @confirm-cancel="cancel" />
       <SaveModal
-        v-model="showSaveModal"
-        :email="email"
-        :comments="comments"
-        :save-modal-errors="saveModalErrors"
-        :name="titleEn"
-        :specialists="specialists"
-        :date="entryIntoForce"
-        :pdf-file="pdfFile"
-        :link="sourceUrl"
-        @update:email="(val: string) => (email = val)"
-        @update:comments="(val: string) => (comments = val)"
-        @update:save-modal-errors="
-          (val: Record<string, string>) => (saveModalErrors = val)
-        "
-        @save="handleNewSave"
+        v-model:open="isSaveModalOpen"
+        v-model:comments="comments"
+        :submitting="isSubmitting"
+        :error="submitError"
+        @submit="submit"
       />
     </ClientOnly>
   </div>
@@ -211,7 +201,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { useHead, useRouter } from "#imports";
+import { useHead } from "#imports";
 import { z } from "zod";
 import BaseDetailLayout from "@/components/layout/BaseDetailLayout.vue";
 import DatePicker from "@/components/ui/DatePicker.vue";
@@ -225,6 +215,7 @@ import { flagUrl } from "@/config/assets";
 import ColdDateTrigger from "@/components/ui/ColdDateTrigger.vue";
 import ColdToggleButton from "@/components/ui/ColdToggleButton.vue";
 import ColdToggleGroup from "@/components/ui/ColdToggleGroup.vue";
+import { useSuggestionForm } from "@/composables/useSuggestionForm";
 
 interface JurisdictionEntry {
   name: string;
@@ -262,13 +253,8 @@ const themes = ref("");
 const status = ref("");
 const publicationDate = ref<Date | undefined>(undefined);
 const abbreviation = ref("");
-const compatibleHcchPrinciples = ref<string | undefined>(undefined);
-const compatibleUncitralModelLaw = ref<string | undefined>(undefined);
-
-const specialists = ref([""]);
-const pdfFile = ref<File | null>(null);
-const email = ref("");
-const comments = ref("");
+const compatibleHcchPrinciples = ref<boolean | undefined>(undefined);
+const compatibleUncitralModelLaw = ref<boolean | undefined>(undefined);
 
 const loadJurisdictions = async () => {
   try {
@@ -297,77 +283,51 @@ const loadJurisdictions = async () => {
 
 onMounted(loadJurisdictions);
 
-const formSchema = z.object({
-  jurisdiction_link: z
-    .string()
-    .min(1, { error: "Selected jurisdiction is required" }),
-  official_title: z
-    .string()
-    .min(1, { error: "Official title is required" })
-    .min(3, { error: "Official title must be at least 3 characters long" }),
-  title_en: z
-    .string()
-    .min(1, { error: "English title is required" })
-    .min(3, { error: "English title must be at least 3 characters long" }),
-  entry_into_force: z.date({ error: "Entry into force is required" }),
-  source_url: z.url({
-    error: 'Source link must be a valid URL starting with "https://"',
-  }),
-});
-
-const errors = ref<Record<string, string>>({});
-const saveModalErrors = ref<Record<string, string>>({});
-
-const router = useRouter();
-const showSaveModal = ref(false);
 const showCancelModal = ref(false);
 
 useHead({ title: "New Domestic Instrument — CoLD" });
 
-function validateForm() {
-  try {
-    const formData = {
-      jurisdiction_link:
-        (Array.isArray(selectedJurisdiction.value) &&
-          selectedJurisdiction.value[0]?.label) ||
-        "",
-      official_title: officialTitle.value,
-      title_en: titleEn.value,
-      entry_into_force: entryIntoForce.value,
-      source_url: sourceUrl.value,
-    };
-    formSchema.parse(formData);
-    errors.value = {};
-    return true;
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      errors.value = {};
-      for (const err of error.issues) {
-        const field = String(err.path[0]);
-        errors.value[field] = err.message;
-      }
-    }
-    return false;
-  }
+function selectedJurisdictionLabel(): string | undefined {
+  return selectedJurisdiction.value[0]?.label || undefined;
 }
 
-function openSaveModal() {
-  const isValid = validateForm();
-  if (isValid) {
-    showSaveModal.value = true;
-  }
-}
-
-function confirmCancel() {
-  router.push("/");
-}
-
-function handleNewSave() {
-  const payload = {
-    jurisdiction_link:
-      (Array.isArray(selectedJurisdiction.value) &&
-        selectedJurisdiction.value[0]?.label) ||
-      undefined,
+const {
+  errors,
+  comments,
+  isSaveModalOpen,
+  isSubmitting,
+  submitError,
+  openSaveModal,
+  submit,
+  cancel,
+} = useSuggestionForm({
+  endpoint: "/suggestions/domestic-instruments",
+  schema: z.object({
+    jurisdiction_link: z
+      .string()
+      .min(1, { error: "Selected jurisdiction is required" }),
+    official_title: z
+      .string()
+      .min(1, { error: "Official title is required" })
+      .min(3, { error: "Official title must be at least 3 characters long" }),
+    title_en: z
+      .string()
+      .min(1, { error: "English title is required" })
+      .min(3, { error: "English title must be at least 3 characters long" }),
+    entry_into_force: z.date({ error: "Entry into force is required" }),
+    source_url: z.url({
+      error: 'Source link must be a valid URL starting with "https://"',
+    }),
+  }),
+  values: () => ({
+    jurisdiction_link: selectedJurisdictionLabel() ?? "",
+    official_title: officialTitle.value,
+    title_en: titleEn.value,
+    entry_into_force: entryIntoForce.value,
+    source_url: sourceUrl.value,
+  }),
+  payload: () => ({
+    jurisdiction_link: selectedJurisdictionLabel() ?? "",
     official_title: officialTitle.value,
     title_en: titleEn.value,
     entry_into_force: format(entryIntoForce.value, "yyyy-MM-dd"),
@@ -383,40 +343,10 @@ function handleNewSave() {
       ? format(publicationDate.value, "yyyy-MM-dd")
       : undefined,
     abbreviation: abbreviation.value || undefined,
-    compatible_hcch_principles:
-      compatibleHcchPrinciples.value !== undefined
-        ? compatibleHcchPrinciples.value
-        : undefined,
-    compatible_uncitral_model_law:
-      compatibleUncitralModelLaw.value !== undefined
-        ? compatibleUncitralModelLaw.value
-        : undefined,
-    submitter_comments: comments.value || undefined,
-  };
-
-  (async () => {
-    try {
-      await $fetch(`/api/proxy/suggestions/domestic-instruments`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          source: "cold.global",
-        },
-        body: payload,
-      });
-      showSaveModal.value = false;
-      router.push({
-        path: "/confirmation",
-        query: { message: "Thanks, we have received your submission." },
-      });
-    } catch {
-      saveModalErrors.value = {
-        general:
-          "There was a problem submitting your suggestion. Please try again.",
-      };
-    }
-  })();
-}
+    compatible_hcch_principles: compatibleHcchPrinciples.value,
+    compatible_uncitral_model_law: compatibleUncitralModelLaw.value,
+  }),
+});
 </script>
 
 <style scoped>
