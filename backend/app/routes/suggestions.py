@@ -1,4 +1,6 @@
 import logging
+from collections.abc import Iterator
+from contextlib import contextmanager
 from typing import Any
 
 from fastapi import APIRouter, BackgroundTasks, Depends, Header, HTTPException, Request, status
@@ -160,6 +162,23 @@ def _category_or_404(slug: str) -> ModerationCategory:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e)) from e
 
 
+@contextmanager
+def _decision_errors(action: str, slug: str, suggestion_id: int) -> Iterator[None]:
+    """Map a moderation decision's failures to 404 (missing), 409 (already decided) or 500."""
+    try:
+        yield
+    except SuggestionNotFoundError as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Suggestion not found") from e
+    except SuggestionAlreadyModeratedError as e:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e)) from e
+    except Exception as e:
+        logger.exception("Failed to %s suggestion category=%s id=%d", action, slug, suggestion_id)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to {action} suggestion",
+        ) from e
+
+
 @router.get(
     "/moderation/summary",
     summary="Moderation queue summary",
@@ -303,18 +322,8 @@ def approve_suggestion(
 ) -> StatusMessage:
     moderation_category = _category_or_404(category)
     moderator_email = extract_user_identity(user) or "unknown"
-    try:
+    with _decision_errors("approve", category, suggestion_id):
         moderation.approve(moderation_category, suggestion_id, moderator_email)
-    except SuggestionNotFoundError as e:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Suggestion not found") from e
-    except SuggestionAlreadyModeratedError as e:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e)) from e
-    except Exception as e:
-        logger.exception("Failed to approve suggestion category=%s id=%d", category, suggestion_id)
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to approve suggestion",
-        ) from e
     return StatusMessage(status="success", message="Suggestion approved successfully")
 
 
@@ -335,18 +344,8 @@ def reject_suggestion(
 ) -> StatusMessage:
     moderation_category = _category_or_404(category)
     moderator_email = extract_user_identity(user) or "unknown"
-    try:
+    with _decision_errors("reject", category, suggestion_id):
         moderation.reject(moderation_category, suggestion_id, moderator_email)
-    except SuggestionNotFoundError as e:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Suggestion not found") from e
-    except SuggestionAlreadyModeratedError as e:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e)) from e
-    except Exception as e:
-        logger.exception("Failed to reject suggestion category=%s id=%d", category, suggestion_id)
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to reject suggestion",
-        ) from e
     return StatusMessage(status="success", message="Suggestion rejected successfully")
 
 
