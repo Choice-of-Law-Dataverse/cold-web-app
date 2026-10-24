@@ -3,9 +3,10 @@ from collections.abc import Iterator
 from contextlib import contextmanager
 from datetime import date, datetime
 from decimal import Decimal
-from typing import Any
+from typing import Any, cast
 
 import sqlalchemy as sa
+from sqlalchemy.engine import CursorResult
 from sqlalchemy.orm import Session
 
 from app.auth import extract_user_identity
@@ -1061,7 +1062,7 @@ class SuggestionService:
         """
         target = self.tables["case_analyzer"]
         with suggestions_db_manager.get_session() as session:
-            result = session.execute(sa.delete(target).where(target.c.id == draft_id))
+            result = cast(CursorResult[Any], session.execute(sa.delete(target).where(target.c.id == draft_id)))
             session.commit()
             return result.rowcount > 0
 
@@ -1186,8 +1187,11 @@ class SuggestionService:
         if status not in valid:
             raise ValueError(f"Invalid feedback status '{status}'. Must be one of: {valid}")
         with suggestions_db_manager.get_session() as session:
-            result = session.execute(
-                sa.update(entity_feedback).where(entity_feedback.c.id == feedback_id).values(moderation_status=status)
+            result = cast(
+                CursorResult[Any],
+                session.execute(
+                    sa.update(entity_feedback).where(entity_feedback.c.id == feedback_id).values(moderation_status=status)
+                ),
             )
             session.commit()
             return result.rowcount > 0
