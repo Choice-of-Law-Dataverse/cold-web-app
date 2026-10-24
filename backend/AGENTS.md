@@ -1,4 +1,4 @@
-FastAPI backend (Python 3.12, SQLAlchemy, Pydantic v2), managed with `uv`. Run Python through
+FastAPI backend (Python 3.14, SQLAlchemy, Pydantic v2), managed with `uv`. Run Python through
 `uv run` or `make`; add dependencies with `uv add`, never `pip install`. `make dev` also accepts
 `HOST`.
 

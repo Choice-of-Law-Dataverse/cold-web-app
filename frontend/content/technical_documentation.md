@@ -20,7 +20,7 @@ CoLD uses a multi-tier architecture in which editorial data management is separa
 | Data management | NocoDB provides the research team with an administrative interface for editing the relational source data.                                |
 | Data storage    | PostgreSQL stores the structured records and relationships. Uploaded case-analysis documents are stored separately in Azure Blob Storage. |
 | Query layer     | Versioned PostgreSQL views and functions flatten the NocoDB tables, build relationship data, and support full-text search.                |
-| API             | A Python 3.12 FastAPI service validates requests and responses with Pydantic models and accesses PostgreSQL through SQLAlchemy.           |
+| API             | A Python 3.14 FastAPI service validates requests and responses with Pydantic models and accesses PostgreSQL through SQLAlchemy.           |
 | Website         | A Nuxt 4 application built with Vue and TypeScript renders the public interface and consumes the typed API.                               |
 
 For public browsing, the data flow is:
@@ -37,7 +37,7 @@ Browser requests from the website pass through a same-origin server proxy. This 
 | Area                             | Technologies                                                                     |
 | -------------------------------- | -------------------------------------------------------------------------------- |
 | Public website                   | Nuxt 4, Vue, TypeScript, Nuxt UI, Tailwind CSS, Nuxt Content, and TanStack Query |
-| API                              | FastAPI, Python 3.12, Pydantic, and SQLAlchemy                                   |
+| API                              | FastAPI, Python 3.14, Pydantic, and SQLAlchemy                                   |
 | Database and editorial interface | PostgreSQL and NocoDB                                                            |
 | Authentication                   | Auth0                                                                            |
 | File storage                     | Azure Blob Storage                                                               |
