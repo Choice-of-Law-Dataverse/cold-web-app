@@ -93,13 +93,15 @@ View types:
 
 ## Before Committing
 
-**Always run the validation checks:**
+The root `pre-commit` hook runs `ruff format` and `ruff check --fix` on your staged files, so you
+do not need to. Type check and test before every commit:
 
 ```bash
-make check
+make type-check test   # pyright, then pytest
 ```
 
-This runs formatting (ruff), type checking (pyright), and tests (pytest).
+Before pushing, run `make check-ci`, the read-only suite CI enforces. `make check` runs the same
+checks but rewrites every file with ruff; use it when you mean to reformat.
 
 ## Code Style
 

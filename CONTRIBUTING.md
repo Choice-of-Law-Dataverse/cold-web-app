@@ -106,7 +106,9 @@ with no autofix — aborts the commit with the error. Unstaged changes in a part
 are stashed and restored untouched, so the hook never commits work you did not stage.
 
 The hook deliberately does **not** run type-checking or tests: they are too slow for every
-commit, and CI covers them. Run `pnpm run check` yourself before pushing.
+commit, and CI covers them. Run them for each package you touched before committing:
+`pnpm --dir frontend run typecheck && pnpm --dir frontend run test:run`, or
+`make -C backend type-check test`.
 
 Two things worth knowing:
 
@@ -120,17 +122,16 @@ Two things worth knowing:
 
 ## Before You Push
 
-Run validation from the repository root:
+Run the read-only suite CI enforces from the repository root, and do not push if it fails:
 
 ```bash
-pnpm run check       # both packages — rewrites files (prettier, eslint --fix, ruff format)
-
-pnpm run check:web   # or: cd frontend && pnpm run check
-pnpm run check:api   # or: cd backend && make check
+pnpm run check:ci       # both packages
+pnpm run check:ci:web   # or: cd frontend && pnpm run check:ci
+pnpm run check:ci:api   # or: cd backend && make check-ci
 ```
 
-`pnpm run check:ci` runs the same checks read-only — formatting and lint are verified instead of
-applied, so your working tree is left untouched. This is what CI enforces. Do not push if it fails.
+`pnpm run check` (and `check:web` / `check:api`) runs the same checks but rewrites every file with
+Prettier, `eslint --fix` and ruff. Use it when you mean to reformat, not as a pre-push gate.
 
 If you changed backend Pydantic schemas, regenerate the frontend API types:
 
@@ -208,7 +209,7 @@ the release PR. Do not edit them in a feature branch.
 - **TypeScript only** on the frontend — all code is `.ts` or `.vue`, never `.js`.
 - **Follow the local conventions** in `.claude/rules/`, `frontend/.claude/rules/`, and
   `backend/.claude/rules/`. They cover Vue and TypeScript patterns, data fetching, entity
-  handling, Python style, and Pydantic schemas, and they apply to human contributors just as
+  handling, and Pydantic schemas, and they apply to human contributors just as
   much as to agents.
 - **User-facing copy** follows the [Language Style Guide](README.md#language-style-guide):
   `en-US`, Oxford comma, Bluebook title case for titles.

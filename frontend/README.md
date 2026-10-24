@@ -30,21 +30,22 @@ pnpm run preview  # Preview production build
 
 ## Before Committing
 
-**Always run the validation checks:**
+The root `pre-commit` hook formats and lints your staged files, so you do not need to. Type check
+and test before every commit:
 
 ```bash
-pnpm run check
+pnpm run typecheck     # vue-tsc
+pnpm run test:run      # Vitest
 ```
 
-This runs (in order): Prettier format, ESLint fix, vue-tsc type check, Vitest tests.
+Before pushing, run `pnpm run check:ci`, the read-only suite CI enforces.
 
-Individual commands:
+Other commands:
 
 ```bash
+pnpm run check         # Prettier, ESLint --fix, vue-tsc, Vitest — rewrites every file
 pnpm run format        # Fix formatting
 pnpm run lint:fix      # Fix lint issues
-pnpm run typecheck     # Type check only
-pnpm run test:run      # Run tests only
 pnpm run build         # Verify build works
 ```
 

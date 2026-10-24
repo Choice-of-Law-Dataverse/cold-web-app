@@ -8,7 +8,3 @@ diff is misleading. Use the domain instead (`case-analyzer`, `search`, `auth`, `
 `ui`), or omit the scope for repo-wide changes.
 
 Breaking changes take `!` before the colon (`feat(entities)!: ...`), which bumps the major version.
-
-Never hand-edit a version or a `CHANGELOG.md`. Versions in `frontend/package.json`,
-`backend/pyproject.toml`, and `.release-please-manifest.json` are written by the release pull
-request.
