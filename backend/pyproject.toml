@@ -24,7 +24,7 @@ dependencies = [
     "rapidfuzz>=3.14.6",
     "requests==2.34.2",
     "resend>=2.50.0",
-    "sqlalchemy==2.0.31",
+    "sqlalchemy==2.0.55",
     "urllib3==2.8.0",
     "uvicorn==0.54.0",
 ]
