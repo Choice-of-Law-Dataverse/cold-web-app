@@ -186,18 +186,17 @@ for the frontend, ruff for the backend, Prettier for root and `.github/` files. 
 `pnpm install` to be active, in every clone and every worktree. See
 [CONTRIBUTING.md](CONTRIBUTING.md#commit-hooks).
 
-Type-checking and tests are not in the hook. Run validation yourself before committing:
+Type-checking and tests are not in the hook. Run them for each package you touched before
+committing:
 
 ```bash
-pnpm run check       # both packages (rewrites files: prettier, eslint --fix, ruff format)
-
-pnpm run check:web   # or: cd frontend && pnpm run check
-pnpm run check:api   # or: cd backend && make check
+pnpm --dir frontend run typecheck && pnpm --dir frontend run test:run
+make -C backend type-check test
 ```
 
-`pnpm run check:ci` (and `check:ci:web` / `check:ci:api`) runs the same checks read-only —
-formatting and lint are verified instead of applied. This is what CI enforces, so use it
-when you want a pass/fail answer without touching the working tree.
+Before pushing, run `pnpm run check:ci` (or `check:ci:web` / `check:ci:api`), the read-only suite
+CI enforces. `pnpm run check` runs the same checks but rewrites every file with Prettier,
+`eslint --fix` and ruff; use it when you mean to reformat.
 
 ### Code Standards
 
