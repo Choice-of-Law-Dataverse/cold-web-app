@@ -208,7 +208,7 @@ the release PR. Do not edit them in a feature branch.
 - **TypeScript only** on the frontend — all code is `.ts` or `.vue`, never `.js`.
 - **Follow the local conventions** in `.claude/rules/`, `frontend/.claude/rules/`, and
   `backend/.claude/rules/`. They cover Vue and TypeScript patterns, data fetching, entity
-  handling, Python style, and Pydantic schemas, and they apply to human contributors just as
+  handling, and Pydantic schemas, and they apply to human contributors just as
   much as to agents.
 - **User-facing copy** follows the [Language Style Guide](README.md#language-style-guide):
   `en-US`, Oxford comma, Bluebook title case for titles.
