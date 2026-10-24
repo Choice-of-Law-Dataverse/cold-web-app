@@ -4,6 +4,7 @@ import { describe, it, expect } from "vitest";
 import {
   entityRegistry,
   getBasePathForCollection,
+  getEditPathForCard,
   getFeedbackTypeForPath,
   getNewEntityTypes,
   RELATION_RENDERERS,
@@ -25,6 +26,9 @@ describe("entity registry consistency", () => {
     );
     expect(hasPage(basePath, "index.vue")).toBe(config.hasIndexPage !== false);
     expect(hasPage(basePath, "new.vue")).toBe(config.hasNewPage === true);
+    expect(hasPage(basePath, "[...slug].vue")).toBe(
+      config.hasEditPage === true,
+    );
   });
 
   it("uses each collection slug once", () => {
@@ -73,6 +77,13 @@ describe("entity registry consistency", () => {
     expect(getFeedbackTypeForPath("/question/Q1")).toBe("question");
     expect(getFeedbackTypeForPath("/specialist/S1")).toBe("");
     expect(getFeedbackTypeForPath("/learn/faq")).toBe("");
+  });
+
+  it("builds the edit path only for entities with an edit page", () => {
+    expect(getEditPathForCard("International Instruments", "II-1")).toBe(
+      "/international-instrument/II-1/edit",
+    );
+    expect(getEditPathForCard("Court Decisions", "CD-1")).toBeUndefined();
   });
 
   it("offers a new-record option for each entity with a new page", () => {

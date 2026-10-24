@@ -84,54 +84,56 @@
         </UButton>
       </template>
       <template v-else>
-        <UButton
-          v-if="showNew && newEntityHref && isLoggedIn"
-          :to="newEntityHref"
-          variant="ghost"
-          color="neutral"
-          size="xs"
-          leading-icon="i-material-symbols:add"
-          trailing-icon="i-material-symbols:add"
-          class="meta-btn"
-        >
-          New
-        </UButton>
-        <UPopover
-          v-else-if="showNew && newEntityHref"
-          :content="{ side: 'bottom', align: 'end', sideOffset: 8 }"
-        >
+        <template v-for="action in gatedActions" :key="action.href">
           <UButton
+            v-if="isLoggedIn"
+            :to="action.href"
             variant="ghost"
             color="neutral"
             size="xs"
-            leading-icon="i-material-symbols:lock-outline"
-            trailing-icon="i-material-symbols:lock-outline"
+            :leading-icon="action.icon"
+            :trailing-icon="action.icon"
             class="meta-btn"
-            aria-label="Sign in to add new entry"
           >
-            Submit data
+            {{ action.label }}
           </UButton>
-          <template #content>
-            <div class="login-popover">
-              <p class="login-popover__text">
-                A free CoLD account is required to keep the dataverse
-                trustworthy &mdash; we use it to prevent automated spam and
-                preserve the integrity of every record. Sign-up takes under a
-                minute.
-              </p>
-              <UButton
-                :to="loginRedirectHref"
-                external
-                block
-                color="primary"
-                size="sm"
-                leading-icon="i-material-symbols:login"
-              >
-                Sign in to continue
-              </UButton>
-            </div>
-          </template>
-        </UPopover>
+          <UPopover
+            v-else
+            :content="{ side: 'bottom', align: 'end', sideOffset: 8 }"
+          >
+            <UButton
+              variant="ghost"
+              color="neutral"
+              size="xs"
+              leading-icon="i-material-symbols:lock-outline"
+              trailing-icon="i-material-symbols:lock-outline"
+              class="meta-btn"
+              :aria-label="action.signInLabel"
+            >
+              {{ action.signedOutLabel }}
+            </UButton>
+            <template #content>
+              <div class="login-popover">
+                <p class="login-popover__text">
+                  A free CoLD account is required to keep the dataverse
+                  trustworthy &mdash; we use it to prevent automated spam and
+                  preserve the integrity of every record. Sign-up takes under a
+                  minute.
+                </p>
+                <UButton
+                  :to="`/auth/login?returnTo=${encodeURIComponent(action.href)}`"
+                  external
+                  block
+                  color="primary"
+                  size="sm"
+                  leading-icon="i-material-symbols:login"
+                >
+                  Sign in to continue
+                </UButton>
+              </div>
+            </template>
+          </UPopover>
+        </template>
         <UButton
           v-if="showCite"
           variant="ghost"
@@ -250,6 +252,7 @@ import {
   primaryJurisdictionAlpha3,
 } from "@/utils/jurisdictionParser";
 import {
+  getEditPathForCard,
   getIndexPathForCard,
   getLabelColorClass,
   getNewEntityTypes,
@@ -337,11 +340,44 @@ const newEntityHref = computed(() => {
   return newPath;
 });
 
-const loginRedirectHref = computed(() =>
-  newEntityHref.value
-    ? `/auth/login?returnTo=${encodeURIComponent(newEntityHref.value)}`
-    : undefined,
-);
+const editEntityHref = computed(() => {
+  if (props.headerMode === "new" || !props.entityId) return undefined;
+  const cardType =
+    props.cardType || String(props.resultData?.sourceTable ?? "");
+  return cardType ? getEditPathForCard(cardType, props.entityId) : undefined;
+});
+
+interface GatedAction {
+  href: string;
+  label: string;
+  icon: string;
+  signedOutLabel: string;
+  signInLabel: string;
+}
+
+/** Links that need a signed-in reader; signed-out readers get a sign-in prompt. */
+const gatedActions = computed<GatedAction[]>(() => {
+  const actions: GatedAction[] = [];
+  if (props.showNew && newEntityHref.value) {
+    actions.push({
+      href: newEntityHref.value,
+      label: "New",
+      icon: "i-material-symbols:add",
+      signedOutLabel: "Submit data",
+      signInLabel: "Sign in to add new entry",
+    });
+  }
+  if (editEntityHref.value) {
+    actions.push({
+      href: editEntityHref.value,
+      label: "Edit",
+      icon: "i-material-symbols:edit-outline",
+      signedOutLabel: "Edit",
+      signInLabel: "Sign in to suggest an edit",
+    });
+  }
+  return actions;
+});
 
 const searchParam = (value: string) =>
   encodeURIComponent(value).replace(/%20/g, "+");
@@ -527,7 +563,7 @@ const isVisible = computed(() => {
 const hasActions = computed(() => {
   if (props.headerMode === "new") return true;
   return (
-    (props.showNew && !!newEntityHref.value) ||
+    gatedActions.value.length > 0 ||
     props.showCite ||
     props.showJson ||
     props.showPrint ||

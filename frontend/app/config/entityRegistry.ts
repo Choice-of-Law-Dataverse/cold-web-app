@@ -182,6 +182,8 @@ export interface EntityConfig {
   hasDetailPage?: boolean;
   hasIndexPage?: boolean;
   hasNewPage?: boolean;
+  /** Whether `{basePath}/{coldId}/edit` lets readers suggest an edit. */
+  hasEditPage?: boolean;
   variant?: string;
   searchCard?: SearchCardConfig;
 }
@@ -400,6 +402,7 @@ export const entityRegistry: Record<string, EntityConfig> = {
     process: processInternationalInstrument,
     contentComponentId: "InternationalInstrumentContent",
     hasNewPage: true,
+    hasEditPage: true,
     variant: "instrument",
     searchCard: {
       fields: [
@@ -634,6 +637,15 @@ export function getBasePathForCollection(
   collection: string,
 ): string | undefined {
   return collectionToBasePath.get(collection);
+}
+
+export function getEditPathForCard(
+  cardType: string,
+  coldId: string,
+): string | undefined {
+  const basePath = getBasePathForCard(cardType);
+  if (!basePath || !entityRegistry[basePath]?.hasEditPage) return undefined;
+  return `${basePath}/${encodeURIComponent(coldId)}/edit`;
 }
 
 /**
