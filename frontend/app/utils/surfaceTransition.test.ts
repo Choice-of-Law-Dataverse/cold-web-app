@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { transitionSurface } from "./useSurfaceTransition";
+import { transitionSurface } from "./surfaceTransition";
 
 const originalTransition = Object.getOwnPropertyDescriptor(
   document,

@@ -1,6 +1,6 @@
 import { ref, computed, inject, type InjectionKey } from "vue";
 import type { TableName } from "@/types/api";
-import { transitionSurface } from "@/composables/useSurfaceTransition";
+import { transitionSurface } from "@/utils/surfaceTransition";
 import { SURFACE_DESTINATIONS } from "@/config/surfaceSelectors";
 
 export const IN_ENTITY_DRAWER_KEY: InjectionKey<boolean> =

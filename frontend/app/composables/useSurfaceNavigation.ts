@@ -1,10 +1,21 @@
 import { useRouter } from "vue-router";
 import { getEntityConfig } from "@/config/entityRegistry";
-import { transitionSurface } from "@/composables/useSurfaceTransition";
-import { SURFACE_DESTINATIONS } from "@/config/surfaceSelectors";
+import { transitionSurface } from "@/utils/surfaceTransition";
+import {
+  QUESTIONS_HASH,
+  SURFACE_DESTINATIONS,
+} from "@/config/surfaceSelectors";
 
 function pathSegments(pathname: string): string[] {
   return pathname.split("/").filter(Boolean);
+}
+
+function destinationFor(url: URL): string {
+  if (url.pathname === "/search") return SURFACE_DESTINATIONS.search;
+  if (url.hash === QUESTIONS_HASH) return SURFACE_DESTINATIONS.questions;
+  return pathSegments(url.pathname).length === 1
+    ? SURFACE_DESTINATIONS.list
+    : SURFACE_DESTINATIONS.detail;
 }
 
 export function useSurfaceNavigation() {
@@ -16,15 +27,7 @@ export function useSurfaceNavigation() {
     beforeNavigate?: () => void,
   ) {
     const url = new URL(href, window.location.href);
-    const segments = pathSegments(url.pathname);
-    const destination =
-      url.pathname === "/search"
-        ? SURFACE_DESTINATIONS.search
-        : url.hash === SURFACE_DESTINATIONS.questions
-          ? SURFACE_DESTINATIONS.questions
-          : segments.length === 1
-            ? SURFACE_DESTINATIONS.list
-            : SURFACE_DESTINATIONS.detail;
+    const destination = destinationFor(url);
 
     return transitionSurface(
       source,
