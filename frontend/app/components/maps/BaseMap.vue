@@ -110,7 +110,6 @@
 
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import { navigateTo } from "#app";
 import type {
   LatLngBoundsExpression,
   Layer,
@@ -121,6 +120,9 @@ import type {
 
 import { useGeoJsonData } from "@/composables/useGeoJsonData";
 import { useJurisdictions } from "@/composables/useJurisdictions";
+import { useSurfaceNavigation } from "@/composables/useSurfaceNavigation";
+
+const { navigateFromElement } = useSurfaceNavigation();
 
 interface GeoJsonFeature {
   properties: {
@@ -294,7 +296,11 @@ const onEachFeature = (feature: GeoJsonFeature, layer: Layer) => {
   });
 
   layer.on("click", () => {
-    navigateTo(`/jurisdiction/${isoCode.toUpperCase()}`);
+    const source = (layer as Path).getElement()?.closest(".leaflet-container");
+    void navigateFromElement(
+      source ?? null,
+      `/jurisdiction/${isoCode.toUpperCase()}`,
+    );
   });
 };
 

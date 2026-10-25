@@ -112,6 +112,24 @@ describe("surface transitions", () => {
     expect(start).not.toHaveBeenCalled();
   });
 
+  it("restores the destination's scrolling and height after a viewport-sized capture", async () => {
+    mockTransitions();
+    const target = document.createElement("section");
+    target.id = "results";
+    target.style.maxHeight = "900px";
+    target.style.overflow = "auto";
+    await transitionSurface(
+      createSource(),
+      () => document.body.append(target),
+      "#results",
+    );
+    expect(target.style.maxHeight).toBe("900px");
+    expect(target.style.overflow).toBe("auto");
+    expect(
+      document.documentElement.style.getPropertyValue("--surface-width"),
+    ).toBe("");
+  });
+
   it("cleans up if the update fails", async () => {
     mockTransitions();
     const source = createSource();

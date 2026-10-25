@@ -5,6 +5,7 @@ import EntityDrawer from "./EntityDrawer.vue";
 import * as entityDrawerModule from "@/composables/useEntityDrawer";
 import * as entityDataModule from "@/composables/useEntityData";
 import { IN_ENTITY_DRAWER_KEY } from "@/composables/useEntityDrawer";
+import { getEntityConfig, type ProcessedEntity } from "@/config/entityRegistry";
 
 vi.stubGlobal(
   "useRoute",
@@ -119,6 +120,67 @@ describe("EntityDrawer", () => {
       { isLoading: ref(true) },
     );
     expect(wrapper.findComponent({ name: "LoadingBar" }).exists()).toBe(true);
+  });
+
+  it("keeps the current preview and its links until the next record is ready", async () => {
+    const entity = ref({
+      coldId: "CD-1",
+      table: "Court Decisions" as const,
+      basePath: "/court-decision",
+    });
+    const data = ref<ProcessedEntity | null>({
+      coldId: "CD-1",
+      caseTitle: "First",
+    } as ProcessedEntity);
+    const pending = ref(false);
+    const wrapper = mountComponent(
+      { isOpen: ref(true), entity },
+      {
+        data: computed(() => data.value),
+        config: computed(() => getEntityConfig("/court-decision")),
+        isLoading: pending,
+      },
+    );
+    const firstContent = wrapper.findComponent({
+      name: "CourtDecisionContent",
+    }).element;
+
+    pending.value = true;
+    data.value = null;
+    entity.value = { ...entity.value, coldId: "CD-2" };
+    await wrapper.vm.$nextTick();
+
+    expect(
+      wrapper.findComponent({ name: "CourtDecisionContent" }).element,
+    ).toBe(firstContent);
+    expect(
+      wrapper.findComponent({ name: "MetaBand" }).props("resultData"),
+    ).toMatchObject({ coldId: "CD-1" });
+    expect(
+      wrapper
+        .findComponent('[leading-icon="i-lucide-maximize"]')
+        .attributes("to"),
+    ).toBe("/court-decision/CD-1");
+    expect(wrapper.findComponent({ name: "LoadingBar" }).exists()).toBe(false);
+    expect(wrapper.find('[role="status"]').text()).toBe("Loading preview…");
+
+    data.value = { coldId: "CD-2", caseTitle: "Second" } as ProcessedEntity;
+    pending.value = false;
+    await wrapper.vm.$nextTick();
+    await wrapper.vm.$nextTick();
+
+    expect(
+      wrapper.findComponent({ name: "CourtDecisionContent" }).props("data"),
+    ).toMatchObject({ coldId: "CD-2" });
+    expect(
+      wrapper.findComponent({ name: "MetaBand" }).props("resultData"),
+    ).toMatchObject({ coldId: "CD-2" });
+    expect(
+      wrapper
+        .findComponent('[leading-icon="i-lucide-maximize"]')
+        .attributes("to"),
+    ).toBe("/court-decision/CD-2");
+    expect(wrapper.find('[role="status"]').exists()).toBe(false);
   });
 
   it("keeps the entity during exit and clears it after the drawer leaves", async () => {

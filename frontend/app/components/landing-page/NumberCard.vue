@@ -1,10 +1,5 @@
 <template>
-  <NuxtLink
-    ref="cardRef"
-    :to="buttonLink"
-    class="stat-card"
-    @click.capture="handleClick"
-  >
+  <NuxtLink ref="cardRef" :to="buttonLink" class="stat-card">
     <span v-if="!loading && !error" class="stat-number">
       {{ formatted }}
     </span>
@@ -35,7 +30,6 @@
 
 <script setup lang="ts">
 import { computed, ref, watch, onMounted, onUnmounted } from "vue";
-import { useSurfaceTransition } from "@/composables/useSurfaceTransition";
 
 const props = defineProps<{
   title: string;
@@ -43,19 +37,6 @@ const props = defineProps<{
   buttonLink: string;
   overrideNumber?: number | string | null;
 }>();
-
-const { transitionSurface } = useSurfaceTransition();
-
-function handleClick(event: MouseEvent) {
-  if (event.defaultPrevented || event.button !== 0) return;
-  if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
-  event.preventDefault();
-  return transitionSurface(
-    event.currentTarget,
-    () => navigateTo(props.buttonLink),
-    '.entity-list-table:not([aria-busy="true"])',
-  );
-}
 
 const loading = computed(() => props.overrideNumber == null);
 const error = computed(() => false);

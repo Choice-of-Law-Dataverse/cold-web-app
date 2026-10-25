@@ -17,7 +17,12 @@
 }
 
 :root.surface-transition {
-  view-transition-name: none;
+  view-transition-name: root;
+  overflow-anchor: none;
+}
+
+.surface-transition .main-content {
+  transition: none;
 }
 
 .surface-transition .entity-drawer-panel[data-state="open"],
@@ -30,12 +35,16 @@
 }
 
 ::view-transition-group(selected-surface) {
-  animation-duration: 420ms;
-  animation-timing-function: var(--motion-ease);
-  overflow: clip;
-  border-radius: 12px;
+  animation: surface-morph 380ms var(--motion-ease) both;
+  width: var(--surface-width);
+  height: var(--surface-height);
+  will-change: transform, clip-path;
   background: white;
-  box-shadow: 0 12px 40px rgb(15 0 53 / 10%);
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 180ms;
 }
 
 ::view-transition-old(selected-surface),
@@ -48,11 +57,26 @@
 }
 
 ::view-transition-old(selected-surface) {
-  animation: surface-out 120ms ease-out both;
+  animation: surface-out 160ms ease-out both;
 }
 
 ::view-transition-new(selected-surface) {
-  animation: surface-in 240ms 60ms ease-out both;
+  animation: surface-in 180ms 30ms ease-out both;
+}
+
+@keyframes surface-morph {
+  from {
+    transform: translate(var(--surface-from-x), var(--surface-from-y));
+    clip-path: inset(
+      0 var(--surface-from-right) var(--surface-from-bottom) 0 round 12px
+    );
+  }
+  to {
+    transform: translate(var(--surface-to-x), var(--surface-to-y));
+    clip-path: inset(
+      0 var(--surface-to-right) var(--surface-to-bottom) 0 round 12px
+    );
+  }
 }
 
 @keyframes surface-out {

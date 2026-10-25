@@ -14,7 +14,8 @@
     <template #content>
       <div
         data-testid="entity-drawer"
-        :data-drawer-ready="!isLoading || undefined"
+        :data-drawer-ready="!isPending || undefined"
+        :aria-busy="isPending || undefined"
         class="flex h-full flex-col overflow-hidden"
       >
         <header class="drawer-header">
@@ -29,6 +30,13 @@
               @click="goBack"
             />
             <span v-else class="drawer-header__spacer" aria-hidden="true" />
+            <span
+              v-if="isUpdating"
+              role="status"
+              class="text-cold-slate text-xs"
+            >
+              Loading preview…
+            </span>
             <div class="drawer-header__actions">
               <UButton
                 v-if="hasDetailPage"
@@ -150,14 +158,17 @@ const {
   closeDrawer,
   goBack,
 } = useEntityDrawer();
-const entity = shallowRef(selectedEntity.value);
+const requestedEntity = shallowRef(selectedEntity.value);
 
 watch(selectedEntity, (selected) => {
-  if (selected) entity.value = selected;
+  if (selected) requestedEntity.value = selected;
 });
 
 function clearClosedEntity() {
-  if (!isOpen.value) entity.value = null;
+  if (!isOpen.value) {
+    requestedEntity.value = null;
+    displayed.value = null;
+  }
 }
 
 provide(IN_ENTITY_DRAWER_KEY, true);
@@ -167,15 +178,47 @@ watch(
   () => closeDrawer(),
 );
 
-const basePath = computed(() => entity.value?.basePath);
-const coldId = computed(() => entity.value?.coldId ?? "");
-
 const {
-  data: entityData,
-  isLoading,
-  error,
-  config,
-} = useEntityData(basePath, coldId);
+  data: requestedData,
+  isLoading: isPending,
+  error: requestedError,
+  config: requestedConfig,
+} = useEntityData(
+  computed(() => requestedEntity.value?.basePath),
+  computed(() => requestedEntity.value?.coldId ?? ""),
+);
+
+const displayed = shallowRef<{
+  entity: NonNullable<typeof selectedEntity.value>;
+  data: typeof requestedData.value;
+  error: typeof requestedError.value;
+  config: typeof requestedConfig.value;
+} | null>(null);
+
+watch(
+  [requestedEntity, requestedData, requestedError, requestedConfig, isPending],
+  () => {
+    if (!requestedEntity.value || isPending.value) return;
+    if (!requestedData.value && !requestedError.value) return;
+    displayed.value = {
+      entity: requestedEntity.value,
+      data: requestedData.value,
+      error: requestedError.value,
+      config: requestedConfig.value,
+    };
+  },
+  { immediate: true, flush: "post" },
+);
+
+const entity = computed(() => displayed.value?.entity ?? requestedEntity.value);
+const entityData = computed(() => displayed.value?.data ?? null);
+const config = computed(() => displayed.value?.config ?? requestedConfig.value);
+const error = computed(() =>
+  displayed.value ? displayed.value.error : requestedError.value,
+);
+const basePath = computed(() => entity.value?.basePath);
+const isLoading = computed(() => !displayed.value && isPending.value);
+const isUpdating = computed(() => !!displayed.value && isPending.value);
 
 const customContentComponent = computed(() => {
   const id = config.value?.contentComponentId;

@@ -3,7 +3,11 @@ export default {
     if (to.hash) {
       return {
         el: to.hash,
-        behavior: "smooth",
+        behavior:
+          typeof document !== "undefined" &&
+          document.documentElement.classList.contains("surface-transition")
+            ? "instant"
+            : "smooth",
         // Offset to account for sticky header height
         top: getNavOffset(),
       };

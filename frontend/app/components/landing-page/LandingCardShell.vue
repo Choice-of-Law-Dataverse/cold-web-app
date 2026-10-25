@@ -5,7 +5,7 @@
       <component
         :is="headerLink ? NuxtLink : 'div'"
         :to="headerLink || undefined"
-        :class="headerLink ? 'w-full no-underline' : undefined"
+        :class="headerLink ? 'block w-full no-underline' : undefined"
       >
         <h2 :class="['card-title', headerClass]">{{ title }}</h2>
         <p class="card-subtitle">{{ subtitle }}</p>
