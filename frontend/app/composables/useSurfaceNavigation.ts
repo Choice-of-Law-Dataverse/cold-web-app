@@ -1,11 +1,14 @@
 import { useRouter } from "vue-router";
 import { getEntityConfig } from "@/config/entityRegistry";
-import { useSurfaceTransition } from "@/composables/useSurfaceTransition";
+import { transitionSurface } from "@/composables/useSurfaceTransition";
 import { SURFACE_DESTINATIONS } from "@/config/surfaceSelectors";
+
+function pathSegments(pathname: string): string[] {
+  return pathname.split("/").filter(Boolean);
+}
 
 export function useSurfaceNavigation() {
   const router = useRouter();
-  const { transitionSurface } = useSurfaceTransition();
 
   function navigateFromElement(
     source: EventTarget | null,
@@ -13,12 +16,13 @@ export function useSurfaceNavigation() {
     beforeNavigate?: () => void,
   ) {
     const url = new URL(href, window.location.href);
+    const segments = pathSegments(url.pathname);
     const destination =
       url.pathname === "/search"
         ? SURFACE_DESTINATIONS.search
         : url.hash === SURFACE_DESTINATIONS.questions
           ? SURFACE_DESTINATIONS.questions
-          : url.pathname.split("/").filter(Boolean).length === 1
+          : segments.length === 1
             ? SURFACE_DESTINATIONS.list
             : SURFACE_DESTINATIONS.detail;
 
@@ -49,9 +53,10 @@ export function useSurfaceNavigation() {
       return;
     const url = new URL(link.href);
     if (url.origin !== window.location.origin) return;
+    const [firstSegment] = pathSegments(url.pathname);
     if (
       url.pathname !== "/search" &&
-      !getEntityConfig(`/${url.pathname.split("/")[1]}`)
+      !(firstSegment && getEntityConfig(`/${firstSegment}`))
     )
       return;
     event.preventDefault();

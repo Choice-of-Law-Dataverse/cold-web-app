@@ -1,7 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { useSurfaceTransition } from "./useSurfaceTransition";
+import { transitionSurface } from "./useSurfaceTransition";
 
-const { transitionSurface } = useSurfaceTransition();
 const originalTransition = Object.getOwnPropertyDescriptor(
   document,
   "startViewTransition",

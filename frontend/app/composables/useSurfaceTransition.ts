@@ -1,8 +1,5 @@
 import { nextTick } from "vue";
-import {
-  DRAWER_PANEL_CLASS,
-  SURFACE_TRANSITION_CLASS,
-} from "@/config/surfaceSelectors";
+import { SURFACE_TRANSITION_CLASS } from "@/config/surfaceSelectors";
 
 let activeTransition: ViewTransition | undefined;
 let latestRequest = 0;
@@ -30,11 +27,46 @@ function waitForSurface(selector: string): Promise<HTMLElement | null> {
   });
 }
 
-async function transitionSurface(
+function scrollBelowNav(target: HTMLElement) {
+  const navBottom =
+    document.querySelector("nav")?.getBoundingClientRect().bottom ?? 0;
+  window.scrollTo({
+    top: window.scrollY + target.getBoundingClientRect().top - navBottom - 16,
+    behavior: "instant",
+  });
+}
+
+function computeGeometry(
+  sourceRect: DOMRect,
+  targetRect: DOMRect,
+  targetHeight: number,
+): Record<string, string> {
+  const width = Math.max(sourceRect.width, targetRect.width);
+  const height = Math.max(sourceRect.height, targetHeight);
+  return {
+    "--surface-width": `${width}px`,
+    "--surface-height": `${height}px`,
+    "--surface-from-x": `${sourceRect.left}px`,
+    "--surface-from-y": `${sourceRect.top}px`,
+    "--surface-to-x": `${targetRect.left}px`,
+    "--surface-to-y": `${targetRect.top}px`,
+    "--surface-from-right": `${width - sourceRect.width}px`,
+    "--surface-from-bottom": `${height - sourceRect.height}px`,
+    "--surface-to-right": `${width - targetRect.width}px`,
+    "--surface-to-bottom": `${height - targetHeight}px`,
+  };
+}
+
+interface TransitionOptions {
+  scrollToDestination?: boolean;
+  fixedHeight?: boolean;
+}
+
+export async function transitionSurface(
   source: EventTarget | null | undefined,
   update: () => unknown | Promise<unknown>,
   destination: string,
-  options: { scrollToDestination?: boolean } = {},
+  options: TransitionOptions = {},
 ) {
   const request = ++latestRequest;
   if (activeTransition) {
@@ -83,37 +115,18 @@ async function transitionSurface(
       restoreTarget = () => {
         target.style.viewTransitionName = targetName;
       };
-      if (options.scrollToDestination) {
-        const navBottom =
-          document.querySelector("nav")?.getBoundingClientRect().bottom ?? 0;
-        window.scrollTo({
-          top:
-            window.scrollY +
-            target.getBoundingClientRect().top -
-            navBottom -
-            16,
-          behavior: "instant",
-        });
-      }
+      if (options.scrollToDestination) scrollBelowNav(target);
       const targetRect = target.getBoundingClientRect();
-      const targetHeight = target.classList.contains(DRAWER_PANEL_CLASS)
+      const targetHeight = options.fixedHeight
         ? targetRect.height
         : Math.min(
             targetRect.height,
             Math.max(200, window.innerHeight - Math.max(0, targetRect.top)),
           );
-      const width = Math.max(sourceRect.width, targetRect.width);
-      const height = Math.max(sourceRect.height, targetHeight);
-      setGeometry("--surface-width", `${width}px`);
-      setGeometry("--surface-height", `${height}px`);
-      setGeometry("--surface-from-x", `${sourceRect.left}px`);
-      setGeometry("--surface-from-y", `${sourceRect.top}px`);
-      setGeometry("--surface-to-x", `${targetRect.left}px`);
-      setGeometry("--surface-to-y", `${targetRect.top}px`);
-      setGeometry("--surface-from-right", `${width - sourceRect.width}px`);
-      setGeometry("--surface-from-bottom", `${height - sourceRect.height}px`);
-      setGeometry("--surface-to-right", `${width - targetRect.width}px`);
-      setGeometry("--surface-to-bottom", `${height - targetHeight}px`);
+      const geometry = computeGeometry(sourceRect, targetRect, targetHeight);
+      for (const [name, value] of Object.entries(geometry)) {
+        setGeometry(name, value);
+      }
       target.dataset.surfaceEntered = "true";
       target.style.viewTransitionName = "selected-surface";
     });
@@ -130,8 +143,4 @@ async function transitionSurface(
     document.documentElement.classList.remove(SURFACE_TRANSITION_CLASS);
     activeTransition = undefined;
   }
-}
-
-export function useSurfaceTransition() {
-  return { transitionSurface };
 }

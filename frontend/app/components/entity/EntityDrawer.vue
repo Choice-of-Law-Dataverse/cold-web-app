@@ -157,13 +157,6 @@ watch(selectedEntity, (selected) => {
   if (selected) requestedEntity.value = selected;
 });
 
-function clearClosedEntity() {
-  if (!isOpen.value) {
-    requestedEntity.value = null;
-    displayed.value = null;
-  }
-}
-
 provide(IN_ENTITY_DRAWER_KEY, true);
 
 watch(
@@ -187,6 +180,13 @@ const displayed = shallowRef<{
   error: typeof requestedError.value;
   config: typeof requestedConfig.value;
 } | null>(null);
+
+function clearClosedEntity() {
+  if (!isOpen.value) {
+    requestedEntity.value = null;
+    displayed.value = null;
+  }
+}
 
 watch(
   [requestedEntity, requestedData, requestedError, requestedConfig, isPending],

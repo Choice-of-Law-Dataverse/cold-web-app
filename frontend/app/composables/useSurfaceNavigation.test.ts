@@ -10,7 +10,7 @@ const { push, transitionSurface } = vi.hoisted(() => ({
 
 vi.mock("vue-router", () => ({ useRouter: () => ({ push }) }));
 vi.mock("./useSurfaceTransition", () => ({
-  useSurfaceTransition: () => ({ transitionSurface }),
+  transitionSurface,
 }));
 
 beforeEach(() => vi.clearAllMocks());
