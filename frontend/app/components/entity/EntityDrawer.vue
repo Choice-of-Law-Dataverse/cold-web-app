@@ -7,12 +7,15 @@
     :dismissible="false"
     :ui="{
       content:
-        'sm:max-w-sm max-w-full shadow-2xl ring-0 !top-[calc(var(--nav-height)+3rem)] !h-auto !bottom-0 rounded-tl-xl',
+        'entity-drawer-panel sm:max-w-sm max-w-full shadow-2xl ring-0 !top-[calc(var(--nav-height)+3rem)] !h-auto !bottom-0 rounded-tl-xl',
     }"
+    @after:leave="clearClosedEntity"
   >
     <template #content>
       <div
         data-testid="entity-drawer"
+        :data-drawer-ready="!isPending || undefined"
+        :aria-busy="isPending || undefined"
         class="flex h-full flex-col overflow-hidden"
       >
         <header class="drawer-header">
@@ -67,7 +70,10 @@
         </header>
         <GradientTopBorder />
 
-        <div class="flex-1 overflow-x-hidden overflow-y-auto">
+        <div
+          :key="`${entity?.table}:${entity?.coldId}`"
+          class="flex-1 overflow-x-hidden overflow-y-auto"
+        >
           <div v-if="isLoading" class="p-6">
             <LoadingBar />
           </div>
@@ -102,7 +108,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, watch, provide, type Component } from "vue";
+import { computed, watch, provide, shallowRef, type Component } from "vue";
 import {
   useEntityDrawer,
   IN_ENTITY_DRAWER_KEY,
@@ -138,7 +144,18 @@ const contentComponents: Record<string, Component> = {
 };
 
 const route = useRoute();
-const { isOpen, entity, canGoBack, closeDrawer, goBack } = useEntityDrawer();
+const {
+  isOpen,
+  entity: selectedEntity,
+  canGoBack,
+  closeDrawer,
+  goBack,
+} = useEntityDrawer();
+const requestedEntity = shallowRef(selectedEntity.value);
+
+watch(selectedEntity, (selected) => {
+  if (selected) requestedEntity.value = selected;
+});
 
 provide(IN_ENTITY_DRAWER_KEY, true);
 
@@ -147,15 +164,53 @@ watch(
   () => closeDrawer(),
 );
 
-const basePath = computed(() => entity.value?.basePath);
-const coldId = computed(() => entity.value?.coldId ?? "");
-
 const {
-  data: entityData,
-  isLoading,
-  error,
-  config,
-} = useEntityData(basePath, coldId);
+  data: requestedData,
+  isLoading: isPending,
+  error: requestedError,
+  config: requestedConfig,
+} = useEntityData(
+  computed(() => requestedEntity.value?.basePath),
+  computed(() => requestedEntity.value?.coldId ?? ""),
+);
+
+const displayed = shallowRef<{
+  entity: NonNullable<typeof selectedEntity.value>;
+  data: typeof requestedData.value;
+  error: typeof requestedError.value;
+  config: typeof requestedConfig.value;
+} | null>(null);
+
+function clearClosedEntity() {
+  if (!isOpen.value) {
+    requestedEntity.value = null;
+    displayed.value = null;
+  }
+}
+
+watch(
+  [requestedEntity, requestedData, requestedError, requestedConfig, isPending],
+  () => {
+    if (!requestedEntity.value || isPending.value) return;
+    if (!requestedData.value && !requestedError.value) return;
+    displayed.value = {
+      entity: requestedEntity.value,
+      data: requestedData.value,
+      error: requestedError.value,
+      config: requestedConfig.value,
+    };
+  },
+  { immediate: true, flush: "post" },
+);
+
+const entity = computed(() => displayed.value?.entity ?? requestedEntity.value);
+const entityData = computed(() => displayed.value?.data ?? null);
+const config = computed(() => displayed.value?.config ?? requestedConfig.value);
+const error = computed(() =>
+  displayed.value ? displayed.value.error : requestedError.value,
+);
+const basePath = computed(() => entity.value?.basePath);
+const isLoading = computed(() => !displayed.value && isPending.value);
 
 const customContentComponent = computed(() => {
   const id = config.value?.contentComponentId;

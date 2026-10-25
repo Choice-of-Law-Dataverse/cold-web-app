@@ -5,13 +5,12 @@
 
     <main
       id="main-content"
-      class="main-content isolate flex-1 px-3 py-6 transition-[margin] duration-200 ease-in-out sm:px-6 sm:py-12"
+      class="main-content isolate flex-1 px-3 py-6 sm:px-6 sm:py-12"
       :class="{ 'sm:mr-[24rem]': isDrawerOpen }"
     >
       <div class="max-w-container mx-auto w-full">
         <div class="flex flex-col gap-4 sm:gap-6">
           <ErrorBoundary>
-            <!-- <NuxtPage :transition="pageTransition" /> -->
             <NuxtPage />
           </ErrorBoundary>
         </div>
@@ -59,30 +58,6 @@ onMounted(() => {
     hasOpenedDrawer.value = true;
   });
 });
-// import { useNavigationDirection } from "@/composables/useNavigationDirection";
-
-// const { direction } = useNavigationDirection();
-
-// const pageTransition = computed(() => {
-//   // Use direction-aware transitions for better back/forward UX
-//   if (direction.value === "back") {
-//     return {
-//       name: "page-back",
-//       mode: "out-in" as const,
-//     };
-//   }
-//   if (direction.value === "forward") {
-//     return {
-//       name: "page-forward",
-//       mode: "out-in" as const,
-//     };
-//   }
-//   // Default transition for initial load or unknown direction
-//   return {
-//     name: "page",
-//     mode: "out-in" as const,
-//   };
-// });
 </script>
 
 <style scoped>
@@ -109,61 +84,5 @@ onMounted(() => {
 .skip-link:focus-visible {
   @apply fixed top-0 left-0 h-auto w-auto outline-2 outline-offset-2;
   outline-color: var(--color-cold-purple);
-}
-
-.page-enter-active,
-.page-leave-active {
-  @apply transition-[opacity,transform] duration-200 ease-in-out;
-}
-
-.page-enter-from {
-  @apply translate-y-2 opacity-0;
-}
-
-.page-leave-to {
-  @apply -translate-y-1 opacity-0;
-}
-
-.page-forward-enter-active,
-.page-forward-leave-active,
-.page-back-enter-active,
-.page-back-leave-active {
-  @apply transition-[opacity,transform] duration-[220ms] ease-out;
-}
-
-.page-forward-enter-from {
-  @apply translate-x-[60px] opacity-0;
-}
-
-.page-forward-leave-to {
-  @apply -translate-x-[30px] opacity-0;
-}
-
-.page-back-enter-from {
-  @apply -translate-x-[60px] opacity-0;
-}
-
-.page-back-leave-to {
-  @apply translate-x-[30px] opacity-0;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .page-enter-active,
-  .page-leave-active,
-  .page-forward-enter-active,
-  .page-forward-leave-active,
-  .page-back-enter-active,
-  .page-back-leave-active {
-    @apply transition-opacity duration-150 ease-in-out;
-  }
-
-  .page-enter-from,
-  .page-leave-to,
-  .page-forward-enter-from,
-  .page-forward-leave-to,
-  .page-back-enter-from,
-  .page-back-leave-to {
-    @apply transform-none;
-  }
 }
 </style>
