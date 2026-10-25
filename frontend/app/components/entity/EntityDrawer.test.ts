@@ -162,7 +162,10 @@ describe("EntityDrawer", () => {
         .attributes("to"),
     ).toBe("/court-decision/CD-1");
     expect(wrapper.findComponent({ name: "LoadingBar" }).exists()).toBe(false);
-    expect(wrapper.find('[role="status"]').text()).toBe("Loading preview…");
+    expect(wrapper.find('[role="status"]').exists()).toBe(false);
+    expect(
+      wrapper.find('[data-testid="entity-drawer"]').attributes("aria-busy"),
+    ).toBe("true");
 
     data.value = { coldId: "CD-2", caseTitle: "Second" } as ProcessedEntity;
     pending.value = false;

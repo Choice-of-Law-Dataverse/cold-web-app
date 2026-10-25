@@ -30,13 +30,6 @@
               @click="goBack"
             />
             <span v-else class="drawer-header__spacer" aria-hidden="true" />
-            <span
-              v-if="isUpdating"
-              role="status"
-              class="text-cold-slate text-xs"
-            >
-              Loading preview…
-            </span>
             <div class="drawer-header__actions">
               <UButton
                 v-if="hasDetailPage"
@@ -218,7 +211,6 @@ const error = computed(() =>
 );
 const basePath = computed(() => entity.value?.basePath);
 const isLoading = computed(() => !displayed.value && isPending.value);
-const isUpdating = computed(() => !!displayed.value && isPending.value);
 
 const customContentComponent = computed(() => {
   const id = config.value?.contentComponentId;
