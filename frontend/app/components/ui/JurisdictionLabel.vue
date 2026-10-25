@@ -28,13 +28,10 @@ function handleClick(event: MouseEvent) {
 
   event.preventDefault();
   const forceDrawer = config.hasDetailPage === false;
-  return openDrawer(
-    props.id,
-    config.table,
-    props.basePath,
+  return openDrawer(props.id, config.table, props.basePath, {
     forceDrawer,
-    event.currentTarget,
-  );
+    source: event.currentTarget,
+  });
 }
 </script>
 

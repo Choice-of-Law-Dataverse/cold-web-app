@@ -145,7 +145,7 @@ const handleRowClick = (event: MouseEvent, coldId: string) => {
     event.currentTarget instanceof Element
       ? event.currentTarget.closest("tr")
       : null;
-  return openDrawer(coldId, config.table, props.linkBase, false, source);
+  return openDrawer(coldId, config.table, props.linkBase, { source });
 };
 
 const orderField = (col: EntityListColumn) =>

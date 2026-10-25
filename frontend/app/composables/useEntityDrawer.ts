@@ -9,6 +9,11 @@ export const IN_ENTITY_DRAWER_KEY: InjectionKey<boolean> =
 const MOBILE_BREAKPOINT = 640;
 const MAX_HISTORY = 3;
 
+interface OpenDrawerOptions {
+  forceDrawer?: boolean;
+  source?: EventTarget | null;
+}
+
 interface DrawerEntity {
   coldId: string;
   table: TableName;
@@ -24,24 +29,24 @@ export function useEntityDrawer() {
   const inDrawer = inject(IN_ENTITY_DRAWER_KEY, false);
   const canGoBack = computed(() => history.value.length > 0);
 
-  function openDrawer(
+  async function openDrawer(
     coldId: string,
     table: TableName,
     basePath: string,
-    forceDrawer = false,
-    source?: EventTarget | null,
-  ) {
+    { forceDrawer = false, source }: OpenDrawerOptions = {},
+  ): Promise<void> {
     if (!forceDrawer && window.innerWidth < MOBILE_BREAKPOINT) {
       const path = coldId.startsWith("/") ? coldId : `${basePath}/${coldId}`;
-      navigateTo(path);
+      await navigateTo(path);
       return;
     }
     if (!isOpen.value && source) {
-      return transitionSurface(
+      await transitionSurface(
         source,
         () => setEntity(coldId, table, basePath),
         SURFACE_DESTINATIONS.drawer,
       );
+      return;
     }
     setEntity(coldId, table, basePath);
   }

@@ -949,25 +949,17 @@ function handleAnswerClick(
 ) {
   if (event.metaKey || event.ctrlKey) return;
   event.preventDefault();
-  return openDrawer(
-    `${coldId}_${questionId}`,
-    "Answers",
-    "/question",
-    false,
-    event.currentTarget,
-  );
+  return openDrawer(`${coldId}_${questionId}`, "Answers", "/question", {
+    source: event.currentTarget,
+  });
 }
 
 function handleHcchClick(event: MouseEvent, hcchColdId: string) {
   if (event.metaKey || event.ctrlKey) return;
   event.preventDefault();
-  return openDrawer(
-    hcchColdId,
-    "HCCH Answers",
-    "/hcch-answer",
-    false,
-    event.currentTarget,
-  );
+  return openDrawer(hcchColdId, "HCCH Answers", "/hcch-answer", {
+    source: event.currentTarget,
+  });
 }
 </script>
 

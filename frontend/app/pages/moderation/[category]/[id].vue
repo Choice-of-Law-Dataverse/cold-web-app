@@ -327,13 +327,10 @@ const openOriginalEntity = (event: MouseEvent) => {
   const basePath = getBasePathForCollection(category.value);
   const config = basePath ? getEntityConfig(basePath) : undefined;
   if (!basePath || !config) return;
-  return openDrawer(
-    String(editId),
-    config.table,
-    basePath,
-    true,
-    event.currentTarget,
-  );
+  return openDrawer(String(editId), config.table, basePath, {
+    forceDrawer: true,
+    source: event.currentTarget,
+  });
 };
 
 const {
