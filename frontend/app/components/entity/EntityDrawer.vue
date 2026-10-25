@@ -7,8 +7,9 @@
     :dismissible="false"
     :ui="{
       content:
-        'sm:max-w-sm max-w-full shadow-2xl ring-0 !top-[calc(var(--nav-height)+3rem)] !h-auto !bottom-0 rounded-tl-xl',
+        'entity-drawer-panel sm:max-w-sm max-w-full shadow-2xl ring-0 !top-[calc(var(--nav-height)+3rem)] !h-auto !bottom-0 rounded-tl-xl',
     }"
+    @after:leave="clearClosedEntity"
   >
     <template #content>
       <div
@@ -67,14 +68,17 @@
         </header>
         <GradientTopBorder />
 
-        <div class="flex-1 overflow-x-hidden overflow-y-auto">
+        <div
+          :key="`${entity?.table}:${entity?.coldId}`"
+          class="flex-1 overflow-x-hidden overflow-y-auto"
+        >
           <div v-if="isLoading" class="p-6">
             <LoadingBar />
           </div>
           <InlineError v-else-if="error" :error="error" class="p-6" />
           <div
             v-else-if="entityData && config"
-            class="flex flex-col gap-4 px-5 py-5"
+            class="drawer-content-reveal flex flex-col gap-4 px-5 py-5"
           >
             <component
               v-if="customContentComponent"
@@ -102,7 +106,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, watch, provide, type Component } from "vue";
+import { computed, watch, provide, shallowRef, type Component } from "vue";
 import {
   useEntityDrawer,
   IN_ENTITY_DRAWER_KEY,
@@ -138,7 +142,22 @@ const contentComponents: Record<string, Component> = {
 };
 
 const route = useRoute();
-const { isOpen, entity, canGoBack, closeDrawer, goBack } = useEntityDrawer();
+const {
+  isOpen,
+  entity: selectedEntity,
+  canGoBack,
+  closeDrawer,
+  goBack,
+} = useEntityDrawer();
+const entity = shallowRef(selectedEntity.value);
+
+watch(selectedEntity, (selected) => {
+  if (selected) entity.value = selected;
+});
+
+function clearClosedEntity() {
+  if (!isOpen.value) entity.value = null;
+}
 
 provide(IN_ENTITY_DRAWER_KEY, true);
 

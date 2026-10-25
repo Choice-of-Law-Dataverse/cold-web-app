@@ -1,0 +1,87 @@
+:root {
+  --motion-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --motion-drawer-duration: 320ms;
+}
+
+.page-enter-active {
+  transition:
+    opacity 220ms var(--motion-ease),
+    transform 220ms var(--motion-ease);
+}
+
+.page-leave-active {
+  transition: opacity 100ms ease-out;
+  pointer-events: none;
+}
+
+.page-enter-from {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.page-leave-to {
+  opacity: 0;
+}
+
+.main-content {
+  transition: margin-right var(--motion-drawer-duration) var(--motion-ease);
+}
+
+.entity-drawer-panel[data-state="open"] {
+  animation: entity-drawer-in var(--motion-drawer-duration) var(--motion-ease);
+}
+
+.entity-drawer-panel[data-state="closed"] {
+  animation: entity-drawer-out var(--motion-drawer-duration) var(--motion-ease);
+  pointer-events: none;
+}
+
+.drawer-content-reveal {
+  animation: drawer-content-in 200ms var(--motion-ease);
+}
+
+@keyframes entity-drawer-in {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes entity-drawer-out {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes drawer-content-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-enter-active,
+  .page-leave-active,
+  .main-content {
+    transition: none;
+  }
+
+  .page-enter-from {
+    transform: none;
+  }
+
+  .entity-drawer-panel[data-state],
+  .drawer-content-reveal {
+    animation: none;
+  }
+}

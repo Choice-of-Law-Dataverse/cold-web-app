@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { mount } from "@vue/test-utils";
-import { ref, inject, computed } from "vue";
+import { ref, inject, computed, toValue } from "vue";
 import EntityDrawer from "./EntityDrawer.vue";
 import * as entityDrawerModule from "@/composables/useEntityDrawer";
 import * as entityDataModule from "@/composables/useEntityData";
@@ -58,6 +58,7 @@ describe("EntityDrawer", () => {
       global: {
         stubs: {
           USlideover: {
+            name: "USlideover",
             template:
               '<div class="u-slideover" v-if="open"><slot name="content" /></div>',
             props: ["open"],
@@ -118,6 +119,64 @@ describe("EntityDrawer", () => {
       { isLoading: ref(true) },
     );
     expect(wrapper.findComponent({ name: "LoadingBar" }).exists()).toBe(true);
+  });
+
+  it("keeps the entity during exit and clears it after the drawer leaves", async () => {
+    const isOpen = ref(true);
+    const entity = ref({
+      coldId: "CD-1",
+      table: "Court Decisions" as const,
+      basePath: "/court-decision",
+    } as ReturnType<
+      typeof entityDrawerModule.useEntityDrawer
+    >["entity"]["value"]);
+    const wrapper = mountComponent({ isOpen, entity });
+    const slideover = wrapper.findComponent({ name: "USlideover" });
+    const [basePath, coldId] = vi
+      .mocked(entityDataModule.useEntityData)
+      .mock.calls.at(-1)!;
+
+    isOpen.value = false;
+    entity.value = null;
+    await wrapper.vm.$nextTick();
+
+    expect(toValue(basePath)).toBe("/court-decision");
+    expect(toValue(coldId)).toBe("CD-1");
+
+    slideover.vm.$emit("after:leave");
+    await wrapper.vm.$nextTick();
+
+    expect(toValue(coldId)).toBe("");
+  });
+
+  it("does not clear a reopened drawer when an earlier exit finishes", async () => {
+    const isOpen = ref(true);
+    const entity = ref({
+      coldId: "CD-1",
+      table: "Court Decisions" as const,
+      basePath: "/court-decision",
+    } as ReturnType<
+      typeof entityDrawerModule.useEntityDrawer
+    >["entity"]["value"]);
+    const wrapper = mountComponent({ isOpen, entity });
+    const [, coldId] = vi
+      .mocked(entityDataModule.useEntityData)
+      .mock.calls.at(-1)!;
+
+    isOpen.value = false;
+    entity.value = null;
+    await wrapper.vm.$nextTick();
+    entity.value = {
+      coldId: "CD-2",
+      table: "Court Decisions",
+      basePath: "/court-decision",
+    };
+    isOpen.value = true;
+    await wrapper.vm.$nextTick();
+    wrapper.findComponent({ name: "USlideover" }).vm.$emit("after:leave");
+    await wrapper.vm.$nextTick();
+
+    expect(toValue(coldId)).toBe("CD-2");
   });
 
   it("shows InlineError when error is present", () => {
