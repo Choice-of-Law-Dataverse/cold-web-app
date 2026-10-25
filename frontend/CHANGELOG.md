@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.0](https://github.com/Choice-of-Law-Dataverse/cold-web-app/compare/frontend-v1.6.1...frontend-v1.7.0) (2026-10-25)
+
+
+### Features
+
+* **ui:** morph clicked cards and rows into their destinations ([#582](https://github.com/Choice-of-Law-Dataverse/cold-web-app/issues/582)) ([f650496](https://github.com/Choice-of-Law-Dataverse/cold-web-app/commit/f65049664bb3263053bc5807d7afb96decde101d))
+
 ## [1.6.1](https://github.com/Choice-of-Law-Dataverse/cold-web-app/compare/frontend-v1.6.0...frontend-v1.6.1) (2026-10-25)
 
 
