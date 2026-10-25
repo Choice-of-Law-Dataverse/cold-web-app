@@ -1,0 +1,11 @@
+"$schema" = "https://conductor.build/schemas/settings.repo.schema.json"
+
+[scripts]
+run_mode = "nonconcurrent"
+setup = "cp \"$CONDUCTOR_ROOT_PATH/frontend/.env\" frontend/.env && cp \"$CONDUCTOR_ROOT_PATH/backend/.env\" backend/.env && pnpm run setup"
+
+[scripts.run.run]
+available_in = "local"
+command = "(NUXT_API_BASE_URL=http://localhost:$((CONDUCTOR_PORT + 1))/api/v1 PORT=$CONDUCTOR_PORT pnpm run dev:web) & (PORT=$((CONDUCTOR_PORT + 1)) pnpm run dev:api) & wait"
+default = true
+icon = "play"
