@@ -5,6 +5,7 @@
       :loading="props.loading"
       :error="props.error ?? undefined"
       :result-data="resultDataForDisplay"
+      :export-data="props.exportData"
       :base-path="basePath"
       :formatted-source-table="props.table"
       :formatted-jurisdiction="props.formattedJurisdiction"
@@ -47,7 +48,8 @@ const props = withDefaults(
     table: string;
     loading: boolean;
     error?: Error | null;
-    data: ProcessedEntity | null;
+    data?: ProcessedEntity | null;
+    exportData?: unknown;
     formattedJurisdiction?: string[];
     formattedTheme?: string[];
     headerMode?: string;
@@ -64,6 +66,7 @@ const props = withDefaults(
   {
     error: undefined,
     data: null,
+    exportData: undefined,
     formattedJurisdiction: () => [],
     formattedTheme: () => [],
     headerMode: "default",
