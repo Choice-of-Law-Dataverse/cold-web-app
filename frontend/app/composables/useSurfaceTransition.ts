@@ -1,4 +1,8 @@
 import { nextTick } from "vue";
+import {
+  DRAWER_PANEL_CLASS,
+  SURFACE_TRANSITION_CLASS,
+} from "@/config/surfaceSelectors";
 
 let activeTransition: ViewTransition | undefined;
 let latestRequest = 0;
@@ -60,7 +64,7 @@ async function transitionSurface(
     );
     document.documentElement.style.setProperty(name, value);
   };
-  document.documentElement.classList.add("surface-transition");
+  document.documentElement.classList.add(SURFACE_TRANSITION_CLASS);
   source.style.viewTransitionName = "selected-surface";
 
   try {
@@ -92,7 +96,7 @@ async function transitionSurface(
         });
       }
       const targetRect = target.getBoundingClientRect();
-      const targetHeight = target.classList.contains("entity-drawer-panel")
+      const targetHeight = target.classList.contains(DRAWER_PANEL_CLASS)
         ? targetRect.height
         : Math.min(
             targetRect.height,
@@ -123,7 +127,7 @@ async function transitionSurface(
       if (value) document.documentElement.style.setProperty(name, value);
       else document.documentElement.style.removeProperty(name);
     }
-    document.documentElement.classList.remove("surface-transition");
+    document.documentElement.classList.remove(SURFACE_TRANSITION_CLASS);
     activeTransition = undefined;
   }
 }

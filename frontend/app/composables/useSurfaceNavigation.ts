@@ -1,6 +1,7 @@
 import { useRouter } from "vue-router";
 import { getEntityConfig } from "@/config/entityRegistry";
 import { useSurfaceTransition } from "@/composables/useSurfaceTransition";
+import { SURFACE_DESTINATIONS } from "@/config/surfaceSelectors";
 
 export function useSurfaceNavigation() {
   const router = useRouter();
@@ -14,12 +15,12 @@ export function useSurfaceNavigation() {
     const url = new URL(href, window.location.href);
     const destination =
       url.pathname === "/search"
-        ? "[data-search-surface][data-surface-ready]"
-        : url.hash === "#questions-and-answers"
-          ? "#questions-and-answers"
+        ? SURFACE_DESTINATIONS.search
+        : url.hash === SURFACE_DESTINATIONS.questions
+          ? SURFACE_DESTINATIONS.questions
           : url.pathname.split("/").filter(Boolean).length === 1
-            ? '.entity-list-table:not([aria-busy="true"])'
-            : "[data-detail-surface][data-surface-ready]";
+            ? SURFACE_DESTINATIONS.list
+            : SURFACE_DESTINATIONS.detail;
 
     return transitionSurface(
       source,

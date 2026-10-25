@@ -1,3 +1,5 @@
+import { SURFACE_TRANSITION_CLASS } from "@/config/surfaceSelectors";
+
 export default {
   scrollBehavior(to: URL) {
     if (to.hash) {
@@ -5,7 +7,7 @@ export default {
         el: to.hash,
         behavior:
           typeof document !== "undefined" &&
-          document.documentElement.classList.contains("surface-transition")
+          document.documentElement.classList.contains(SURFACE_TRANSITION_CLASS)
             ? "instant"
             : "smooth",
         // Offset to account for sticky header height

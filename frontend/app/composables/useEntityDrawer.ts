@@ -1,6 +1,7 @@
 import { ref, computed, inject, type InjectionKey } from "vue";
 import type { TableName } from "@/types/api";
 import { useSurfaceTransition } from "@/composables/useSurfaceTransition";
+import { SURFACE_DESTINATIONS } from "@/config/surfaceSelectors";
 
 export const IN_ENTITY_DRAWER_KEY: InjectionKey<boolean> =
   Symbol("in-entity-drawer");
@@ -39,7 +40,7 @@ export function useEntityDrawer() {
       return transitionSurface(
         source,
         () => setEntity(coldId, table, basePath),
-        '.entity-drawer-panel[data-state="open"]:has([data-drawer-ready])',
+        SURFACE_DESTINATIONS.drawer,
       );
     }
     setEntity(coldId, table, basePath);
