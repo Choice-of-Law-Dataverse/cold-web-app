@@ -3,7 +3,7 @@
     table="Domestic Instruments"
     page-heading="Domestic Instruments"
     :loading="isLoading"
-    :data="resultData"
+    :export-data="data"
   >
     <template #full-width>
       <GradientTopBorder />
@@ -52,7 +52,6 @@ useSeoMeta({
 });
 
 const page = ref(1);
-const resultData = null;
 
 const selectedJurisdiction = ref<JurisdictionOption | undefined>(undefined);
 const orderBy = ref<string | undefined>(undefined);

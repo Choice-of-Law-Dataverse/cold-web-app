@@ -3,7 +3,7 @@
     table="Regional Instruments"
     page-heading="Regional Instruments"
     :loading="isLoading"
-    :data="resultData"
+    :export-data="data"
   >
     <template #full-width>
       <GradientTopBorder />
@@ -43,7 +43,6 @@ useSeoMeta({
 });
 
 const page = ref(1);
-const resultData = null;
 const orderBy = ref<string | undefined>(undefined);
 const orderDir = ref<"asc" | "desc" | undefined>(undefined);
 
