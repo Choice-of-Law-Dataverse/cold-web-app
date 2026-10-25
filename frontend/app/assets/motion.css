@@ -36,10 +36,6 @@
   pointer-events: none;
 }
 
-.drawer-content-reveal {
-  animation: drawer-content-in 200ms var(--motion-ease);
-}
-
 @keyframes entity-drawer-in {
   from {
     transform: translateX(100%);
@@ -58,17 +54,6 @@
   }
 }
 
-@keyframes drawer-content-in {
-  from {
-    opacity: 0;
-    transform: translateY(6px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
   .page-enter-active,
   .page-leave-active,
@@ -80,8 +65,7 @@
     transform: none;
   }
 
-  .entity-drawer-panel[data-state],
-  .drawer-content-reveal {
+  .entity-drawer-panel[data-state] {
     animation: none;
   }
 }

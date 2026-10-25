@@ -78,7 +78,7 @@
           <InlineError v-else-if="error" :error="error" class="p-6" />
           <div
             v-else-if="entityData && config"
-            class="drawer-content-reveal flex flex-col gap-4 px-5 py-5"
+            class="flex flex-col gap-4 px-5 py-5"
           >
             <component
               v-if="customContentComponent"
