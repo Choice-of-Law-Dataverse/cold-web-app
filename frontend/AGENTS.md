@@ -1,51 +1,26 @@
-Nuxt 4 frontend (Vue.js, TypeScript, TailwindCSS, Nuxt UI 4). Light mode only — no dark mode.
+Nuxt 4 frontend (Vue, TypeScript, TailwindCSS, Nuxt UI 4). Light mode only — never add dark-mode
+styles.
 
-## Key Configuration
+## Gotchas
 
-- **Auto-imports**: Vue/Nuxt built-ins (`ref`, `computed`, `useRoute`, etc.) are auto-imported. Custom composables, utils, and third-party libraries require explicit imports.
-- **Color mode**: Light only (no dark mode)
-- **Type checking**: Run `pnpm run check` (type checking is disabled in nuxt.config — run it manually)
-- **Validation**: `pnpm run check` **rewrites files** (Prettier, `eslint --fix`). Use `pnpm run check:ci` for a read-only pass/fail — that is what CI runs.
-
-## Setup
-
-```bash
-cd frontend && pnpm install
-pnpm run dev      # http://localhost:3000
-```
-
-`nuxt dev` reads `PORT` (also `NUXT_PORT` / `NITRO_PORT`) from the environment.
-
-From the repo root, `pnpm run setup:web` / `pnpm run dev:web` / `pnpm run check:web`
-delegate to the same scripts.
-
-## Route Params
-
-All detail pages use `[coldId]` as the route parameter. Access via `route.params.coldId`.
+- Only Vue/Nuxt built-ins (`ref`, `computed`, `useRoute`, …) are auto-imported. Import custom
+  composables, utils and third-party libraries explicitly.
+- Type checking is disabled in `nuxt.config`, so the dev server and build do not catch type errors.
+  Run `pnpm run typecheck`.
+- `app/types/api-schema.d.ts` and `app/types/openapi.json` are generated. Never edit them; run
+  `pnpm run generate:api` instead.
+- No `console.log` in production code.
 
 ## Common Tasks
 
-- **New detail page**: Add `pages/[entity]/[coldId].vue`, create entity type in `types/entities/`, register in `config/entityRegistry.ts`
-- **New composable**: Add to `composables/` as `useFeatureName.ts`
-- **New component**: Add to `components/` organized by feature — never create barrel files
-- **Backend schema changed**: Run `pnpm run generate:api`
-
-## Entity Type Pattern
-
-Each entity file in `types/entities/` exports three things:
-
-1. **Response type** — list/table row shape from `api-schema.d.ts`
-2. **Detail response type** — full detail shape
-3. **Processor function** — transforms raw API response into display-ready form
-
-New entities must also be registered in `types/api.ts` type maps and `config/entityRegistry.ts`.
-
-## Generated Types
-
-`app/types/api-schema.d.ts` and `app/types/openapi.json` are auto-generated. Never edit manually. Regenerate with `pnpm run generate:api` after backend schema changes.
+- **New detail page**: add `pages/[entity]/[coldId].vue` (detail routes read `route.params.coldId`),
+  add the entity type in `types/entities/`, and register it in `types/api.ts` and
+  `config/entityRegistry.ts`. The registry's `collection`, `feedbackType` and page flags must match
+  the page files; `config/entityRegistry.consistency.test.ts` fails when they disagree.
+- **New composable**: `composables/useFeatureName.ts`.
+- **New component**: under `components/`, grouped by feature.
 
 ## Common Issues
 
-- **Import errors after pull**: Run `pnpm install` then `pnpm run postinstall`
-- **Type errors in api-schema.d.ts**: Regenerate with `pnpm run generate:api`
-- **Build failures**: Check `pnpm run typecheck` output first
+- **Import errors after a pull**: run `pnpm install`, which also runs `nuxt prepare`.
+- **Type errors in `api-schema.d.ts`**: run `pnpm run generate:api`.

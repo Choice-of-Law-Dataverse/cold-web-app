@@ -3,14 +3,12 @@ import unicodedata
 from pathlib import PurePath
 
 import logfire
-from agents import Agent, TResponseInputItem
-from agents.models.openai_responses import OpenAIResponsesModel
+from agents import TResponseInputItem
 
-from ..config import get_model, get_openai_client
-from ..runner import run_agent
+from ..runner import run_extractor
 from ..utils.legal_system import requires_common_law_steps
 from ..validation import has_navigation_evidence, is_placeholder_text, validate_case_citation
-from .document_nav import NAV_TOOLS, DocumentContext
+from .document_nav import DocumentContext
 from .models import CaseCitationEvidence, CaseCitationOutput, StepResult
 
 logger = logging.getLogger(__name__)
@@ -237,20 +235,14 @@ async def extract_case_citation(
             "the full caption; whenever the decision names parties, return them. Return null for any the decision does "
             "not state."
         )
-        initial_agent = Agent[DocumentContext](
+        initial_step = await run_extractor(
             name="CaseCitationExtractor",
-            instructions=instructions,
+            task="case_citation",
             output_type=CaseCitationEvidence,
-            tools=NAV_TOOLS[:0],
-            model=OpenAIResponsesModel(
-                model=get_model("case_citation"),
-                openai_client=get_openai_client(),
-            ),
-        )
-        initial_step = await run_agent(
-            initial_agent,
-            input=_citation_prompt(doc_ctx, legal_system, jurisdiction),
+            instructions=instructions,
+            prompt=_citation_prompt(doc_ctx, legal_system, jurisdiction),
             context=doc_ctx,
+            tools=[],
         )
         initial_error = _validate_citation_against_document(doc_ctx, initial_step.output, frozenset())
         if initial_error is None and not is_placeholder_text(initial_step.output.case_citation):
@@ -258,19 +250,12 @@ async def extract_case_citation(
 
         fallback_reason = initial_error or "No citation was identified from the filename and supplied excerpts."
         logger.info("Citation evidence pass requires navigation fallback: %s", fallback_reason)
-        navigation_agent = Agent[DocumentContext](
+        navigation_step = await run_extractor(
             name="CaseCitationNavigationExtractor",
-            instructions=instructions,
+            task="case_citation",
             output_type=CaseCitationEvidence,
-            tools=NAV_TOOLS,
-            model=OpenAIResponsesModel(
-                model=get_model("case_citation"),
-                openai_client=get_openai_client(),
-            ),
-        )
-        navigation_step = await run_agent(
-            navigation_agent,
-            input=_citation_prompt(doc_ctx, legal_system, jurisdiction, fallback_reason),
+            instructions=instructions,
+            prompt=_citation_prompt(doc_ctx, legal_system, jurisdiction, fallback_reason),
             context=doc_ctx,
             validate=lambda output, tool_names: _validate_citation_against_document(doc_ctx, output, tool_names),
         )

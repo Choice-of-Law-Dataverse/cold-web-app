@@ -1,4 +1,4 @@
-import type { TableName } from "@/types/api";
+import type { EntityType, TableName } from "@/types/api";
 import type { AnySearchResult, AnySearchResultKey } from "@/types/search";
 import type { RelatedItem } from "@/types/ui";
 import type { Specialist } from "@/types/entities/specialist";
@@ -165,6 +165,10 @@ export interface SearchCardConfig {
 export interface EntityConfig {
   table: TableName;
   singularLabel: string;
+  /** Backend collection slug, as in `/entities/{slug}` and `/suggestions/{slug}`. */
+  collection?: string;
+  /** Entity type the backend accepts for reader feedback on this record. */
+  feedbackType?: EntityType;
   fieldOrder: string[];
   labelOverrides?: Record<string, string>;
   titleKey: string;
@@ -175,6 +179,8 @@ export interface EntityConfig {
   hasDetailPage?: boolean;
   hasIndexPage?: boolean;
   hasNewPage?: boolean;
+  /** Whether `{basePath}/{coldId}/edit` lets readers suggest an edit. */
+  hasEditPage?: boolean;
   variant?: string;
   searchCard?: SearchCardConfig;
 }
@@ -213,6 +219,7 @@ export const entityRegistry: Record<string, EntityConfig> = {
   "/specialist": {
     table: "Specialists",
     singularLabel: "Specialist",
+    collection: "specialists",
     fieldOrder: ["specialist", "affiliation", "contact", "bio", "website"],
     labelOverrides: { specialist: "Name", bio: "Biography" },
     titleKey: "specialist",
@@ -223,6 +230,8 @@ export const entityRegistry: Record<string, EntityConfig> = {
   "/court-decision": {
     table: "Court Decisions",
     singularLabel: "Court Decision",
+    collection: "court-decisions",
+    feedbackType: "court_decision",
     fieldOrder: [
       "caseTitle",
       "caseCitation",
@@ -277,6 +286,8 @@ export const entityRegistry: Record<string, EntityConfig> = {
   "/question": {
     table: "Answers",
     singularLabel: "Question",
+    collection: "questions",
+    feedbackType: "question",
     fieldOrder: [
       "question",
       "answer",
@@ -302,58 +313,11 @@ export const entityRegistry: Record<string, EntityConfig> = {
       ],
     },
   },
-  "/literature": {
-    table: "Literature",
-    singularLabel: "Literature",
-    fieldOrder: [
-      "title",
-      "itemType",
-      "author",
-      "editor",
-      "contributor",
-      "publicationYear",
-      "publicationTitle",
-      "publisher",
-      "place",
-      "doi",
-      "abstractNote",
-    ],
-    labelOverrides: {
-      author: "Author(s)",
-      editor: "Editor(s)",
-      contributor: "Contributor(s)",
-      publicationYear: "Year",
-      publicationTitle: "Publication",
-      abstractNote: "Abstract",
-      itemType: "Type",
-      doi: "DOI",
-    },
-    titleKey: "title",
-    process: processLiterature,
-    contentComponentId: "LiteratureContent",
-    hasNewPage: true,
-    variant: "literature",
-    searchCard: {
-      fields: [
-        {
-          key: "title",
-          inlineImage: {
-            dataKey: "openAccess",
-            src: "https://assets.cold.global/assets/Open_Access_logo_PLoS_transparent.svg",
-            alt: "Open Access Logo",
-            class: "ml-1 inline-flex w-3",
-          },
-        },
-        { key: "author" },
-        { key: "publicationYear", label: "Date" },
-        { key: "publicationTitle" },
-        { key: "publisher" },
-      ],
-    },
-  },
   "/domestic-instrument": {
     table: "Domestic Instruments",
     singularLabel: "Domestic Instrument",
+    collection: "domestic-instruments",
+    feedbackType: "domestic_instrument",
     fieldOrder: [
       "titleInEnglish",
       "compatibility",
@@ -401,6 +365,8 @@ export const entityRegistry: Record<string, EntityConfig> = {
   "/regional-instrument": {
     table: "Regional Instruments",
     singularLabel: "Regional Instrument",
+    collection: "regional-instruments",
+    feedbackType: "regional_instrument",
     fieldOrder: ["abbreviation", "title", "date", "regionalLegalProvisions"],
     labelOverrides: {
       regionalLegalProvisions: "Selected Provisions",
@@ -425,12 +391,15 @@ export const entityRegistry: Record<string, EntityConfig> = {
   "/international-instrument": {
     table: "International Instruments",
     singularLabel: "International Instrument",
+    collection: "international-instruments",
+    feedbackType: "international_instrument",
     fieldOrder: ["name", "date", "selectedProvisions"],
     labelOverrides: { name: "Title" },
     titleKey: "name",
     process: processInternationalInstrument,
     contentComponentId: "InternationalInstrumentContent",
     hasNewPage: true,
+    hasEditPage: true,
     variant: "instrument",
     searchCard: {
       fields: [
@@ -443,9 +412,62 @@ export const entityRegistry: Record<string, EntityConfig> = {
       },
     },
   },
+  "/literature": {
+    table: "Literature",
+    singularLabel: "Literature",
+    collection: "literature",
+    feedbackType: "literature",
+    fieldOrder: [
+      "title",
+      "itemType",
+      "author",
+      "editor",
+      "contributor",
+      "publicationYear",
+      "publicationTitle",
+      "publisher",
+      "place",
+      "doi",
+      "abstractNote",
+    ],
+    labelOverrides: {
+      author: "Author(s)",
+      editor: "Editor(s)",
+      contributor: "Contributor(s)",
+      publicationYear: "Year",
+      publicationTitle: "Publication",
+      abstractNote: "Abstract",
+      itemType: "Type",
+      doi: "DOI",
+    },
+    titleKey: "title",
+    process: processLiterature,
+    contentComponentId: "LiteratureContent",
+    hasNewPage: true,
+    variant: "literature",
+    searchCard: {
+      fields: [
+        {
+          key: "title",
+          inlineImage: {
+            dataKey: "openAccess",
+            src: "https://assets.cold.global/assets/Open_Access_logo_PLoS_transparent.svg",
+            alt: "Open Access Logo",
+            class: "ml-1 inline-flex w-3",
+          },
+        },
+        { key: "author" },
+        { key: "publicationYear", label: "Date" },
+        { key: "publicationTitle" },
+        { key: "publisher" },
+      ],
+    },
+  },
   "/arbitral-rule": {
     table: "Arbitral Rules",
     singularLabel: "Arbitral Rule",
+    collection: "arbitral-rules",
+    feedbackType: "arbitral_rule",
     fieldOrder: ["setOfRules", "arbitralInstitution", "inForceFrom"],
     labelOverrides: {
       setOfRules: "Set of Rules",
@@ -465,6 +487,7 @@ export const entityRegistry: Record<string, EntityConfig> = {
   "/arbitral-institution": {
     table: "Arbitral Institutions",
     singularLabel: "Arbitral Institution",
+    collection: "arbitral-institutions",
     fieldOrder: ["institution", "abbreviation"],
     titleKey: "institution",
     process: processArbitralInstitution,
@@ -474,6 +497,8 @@ export const entityRegistry: Record<string, EntityConfig> = {
   "/arbitral-award": {
     table: "Arbitral Awards",
     singularLabel: "Arbitral Award",
+    collection: "arbitral-awards",
+    feedbackType: "arbitral_award",
     fieldOrder: [
       "caseNumber",
       "arbitralInstitution",
@@ -521,6 +546,8 @@ export const entityRegistry: Record<string, EntityConfig> = {
   "/jurisdiction": {
     table: "Jurisdictions",
     singularLabel: "Report",
+    collection: "jurisdictions",
+    feedbackType: "jurisdiction",
     fieldOrder: ["name", "jurisdictionSummary", "jurisdictionalDifferentiator"],
     labelOverrides: { jurisdictionSummary: "Summary" },
     titleKey: "name",
@@ -546,6 +573,7 @@ export const entityRegistry: Record<string, EntityConfig> = {
     process: processDomesticLegalProvision,
     excludeRelations: ["jurisdictions"],
     hasDetailPage: false,
+    hasIndexPage: false,
   },
   "/regional-legal-provision": {
     table: "Regional Legal Provisions",
@@ -558,6 +586,7 @@ export const entityRegistry: Record<string, EntityConfig> = {
     titleKey: "titleOfTheProvision",
     process: processRegionalLegalProvision,
     hasDetailPage: false,
+    hasIndexPage: false,
   },
   "/international-legal-provision": {
     table: "International Legal Provisions",
@@ -570,8 +599,9 @@ export const entityRegistry: Record<string, EntityConfig> = {
     titleKey: "titleOfTheProvision",
     process: processInternationalLegalProvision,
     hasDetailPage: false,
+    hasIndexPage: false,
   },
-};
+} satisfies Record<EntityBasePath, EntityConfig>;
 
 export function getEntityConfig(basePath: string): EntityConfig | undefined {
   return entityRegistry[basePath];
@@ -580,9 +610,12 @@ export function getEntityConfig(basePath: string): EntityConfig | undefined {
 const tableToBasePath = new Map<string, string>();
 const labelToBasePath = new Map<string, string>();
 
+const collectionToBasePath = new Map<string, string>();
+
 for (const [basePath, config] of Object.entries(entityRegistry)) {
   tableToBasePath.set(config.table, basePath);
   labelToBasePath.set(config.singularLabel, basePath);
+  if (config.collection) collectionToBasePath.set(config.collection, basePath);
 }
 
 export function getEntityConfigByTable(
@@ -594,6 +627,39 @@ export function getEntityConfigByTable(
 
 export function getBasePathForTable(table: string): string | undefined {
   return tableToBasePath.get(table);
+}
+
+/** Base path for a backend collection slug such as `court-decisions`. */
+export function getBasePathForCollection(
+  collection: string,
+): string | undefined {
+  return collectionToBasePath.get(collection);
+}
+
+export function getEditPathForCard(
+  cardType: string,
+  coldId: string,
+): string | undefined {
+  const basePath = getBasePathForCard(cardType);
+  if (!basePath || !entityRegistry[basePath]?.hasEditPage) return undefined;
+  return `${basePath}/${encodeURIComponent(coldId)}/edit`;
+}
+
+/**
+ * Feedback entity type for a page path such as `/court-decision/CD-1`, from
+ * the entity whose base path is the first segment. Empty when the entity does
+ * not accept feedback.
+ */
+export function getFeedbackTypeForPath(path: string): EntityType | "" {
+  const segment = path.split("/")[1] ?? "";
+  return getEntityConfig(`/${segment}`)?.feedbackType ?? "";
+}
+
+/** Entity types a reader can suggest a new record for, in registry order. */
+export function getNewEntityTypes(): string[] {
+  return Object.values(entityRegistry)
+    .filter((config) => config.hasNewPage)
+    .map((config) => config.singularLabel);
 }
 
 export function getBasePathForCard(cardType: string): string | undefined {

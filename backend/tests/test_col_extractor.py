@@ -2,7 +2,7 @@
 
 import asyncio
 from typing import Any
-from unittest.mock import AsyncMock, MagicMock
+from unittest.mock import AsyncMock
 
 import pytest
 
@@ -231,18 +231,17 @@ async def test_hybrid_retrieval_candidates_are_audited_by_the_stronger_model(mon
         overlap_count=0,
     )
     monkeypatch.setattr(col_extractor, "retrieve_choice_of_law_candidates", AsyncMock(return_value=retrieval))
-    models: list[str] = []
+    tasks: list[str] = []
     decision = ColCandidateDecision(
         candidate_id="C001", disposition="include", reason="Holding.", role="court_holding", selected_paragraphs=[2]
     )
 
-    async def fake_run_agent(agent: Any, **_kwargs: Any) -> StepResult[ColCandidateAuditOutput]:
-        models.append(agent.model.model)
+    async def fake_run_extractor(**kwargs: Any) -> StepResult[ColCandidateAuditOutput]:
+        tasks.append(kwargs["task"])
         return StepResult(ColCandidateAuditOutput(decisions=[decision], confidence="high", reasoning="ok"))
 
-    monkeypatch.setattr(col_extractor, "run_agent", fake_run_agent)
-    monkeypatch.setattr(col_extractor, "get_openai_client", MagicMock())
+    monkeypatch.setattr(col_extractor, "run_extractor", fake_run_extractor)
     step = await col_extractor.extract_col_section(doc)
 
-    assert models == [get_model("col_section_fallback")]
+    assert tasks == ["col_section_fallback"]
     assert step.evidence["retrieval"]["method"] == "hybrid"

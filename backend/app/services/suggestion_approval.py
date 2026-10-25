@@ -1,7 +1,4 @@
-"""
-Shared functions for case analyzer approval workflow.
-Used by both routes/moderation.py and any API-based approval endpoints.
-"""
+"""Normalization and CoLD insertion steps for approving suggestions, used by the moderation service."""
 
 import json
 import logging
@@ -9,7 +6,8 @@ from pathlib import PurePosixPath
 from typing import Any
 from urllib.parse import urlparse
 
-from app.config import config
+from sqlalchemy.orm import Session
+
 from app.services.azure_storage import download_blob_with_managed_identity
 from app.services.moderation_writer import MainDBWriter
 from app.services.nocodb import (
@@ -461,18 +459,6 @@ def handle_pdf_upload(
         # Continue - record is already created
 
 
-def get_target_table(category: str) -> str | None:
-    """Map category to target database table name."""
-    table_map = {
-        "court-decisions": "Court_Decisions",
-        "domestic-instruments": "Domestic_Instruments",
-        "regional-instruments": "Regional_Instruments",
-        "international-instruments": "International_Instruments",
-        "literature": "Literature",
-    }
-    return table_map.get(category)
-
-
 def normalize_domestic_instruments(updated_fields: dict[str, Any]) -> None:
     """Auto-derive year text for Domestic Instruments if missing."""
     if (not updated_fields.get("date_year_of_entry_into_force")) and updated_fields.get("entry_into_force"):
@@ -484,56 +470,30 @@ def normalize_domestic_instruments(updated_fields: dict[str, Any]) -> None:
             pass
 
 
-def link_jurisdictions_for_default_categories(
-    writer: MainDBWriter,
-    target_table: str,
-    merged_id: int,
-    payload_for_writer: dict[str, Any],
-) -> None:
-    """Link jurisdictions for default categories."""
-    for key in ("jurisdiction", "jurisdiction_link"):
-        if key in payload_for_writer and payload_for_writer.get(key):
-            try:
-                writer.link_jurisdictions(target_table, merged_id, payload_for_writer.get(key))
-            except Exception as e:
-                logger.warning(
-                    "Failed to link jurisdiction '%s' for %s record %s: %s",
-                    payload_for_writer.get(key),
-                    target_table,
-                    merged_id,
-                    str(e),
-                )
-
-
-async def approve_case_analyzer(
+def approve_case_analyzer(
     suggestion_service: SuggestionService,
     writer: MainDBWriter,
-    table: str,
-    suggestion_id: int,
-    original_payload: dict[str, Any],
+    nocodb_service: NocoDBService,
     item: dict[str, Any],
-    moderator_email: str,
-) -> None:
-    """Handle approval of case analyzer submissions via NocoDB API.
+    *,
+    session: Session,
+) -> int:
+    """Insert a case analysis into Court_Decisions via the NocoDB API and return the new record id.
 
     Uses submitted_data column if available (new records), otherwise falls back
-    to normalizing from the legacy data column (backwards compatibility).
+    to normalizing from the legacy data column (backwards compatibility). The
+    normalized legacy payload is stored back through `session`, which must be the
+    session holding the moderation lock on the suggestion row.
     """
+    original_payload: dict[str, Any] = item.get("payload") or {}
     submitted_data = item.get("submitted_data")
     if submitted_data and is_new_submitted_data_format(submitted_data):
         normalized = normalize_submitted_data(submitted_data, item)
     else:
         normalized = normalize_case_analyzer_payload(original_payload, item)
-        suggestion_service.update_payload(table, suggestion_id, {"normalized": normalized})
+        suggestion_service.update_payload("case_analyzer", item["id"], {"normalized": normalized}, session=session)
 
     court_decision_data = writer.prepare_case_analyzer_for_court_decisions(normalized)
-
-    if not config.NOCODB_BASE_URL or not config.NOCODB_API_TOKEN:
-        raise ValueError("NocoDB API credentials not configured")
-    nocodb_service = NocoDBService(
-        base_url=config.NOCODB_BASE_URL,
-        api_token=config.NOCODB_API_TOKEN,
-    )
 
     jurisdiction_ids = resolve_jurisdiction_ids(nocodb_service, court_decision_data)
     nocodb_data = prepare_nocodb_data(writer, court_decision_data)
@@ -561,11 +521,4 @@ async def approve_case_analyzer(
 
     handle_pdf_upload(nocodb_service, pdf_url, file_name, merged_id)
 
-    suggestion_service.mark_status(
-        table,
-        suggestion_id,
-        "approved",
-        moderator_email,
-        note="Automatically inserted into Court_Decisions table via NocoDB API",
-        merged_id=int(merged_id),
-    )
+    return int(merged_id)

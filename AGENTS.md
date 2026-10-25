@@ -1,95 +1,53 @@
-The Choice of Law Dataverse (CoLD) is a monorepo with a Nuxt 4 frontend and FastAPI backend.
-
-## Architecture
-
-- `frontend/` — Nuxt 4 app (Vue, TypeScript, Nuxt UI 4)
-- `backend/` — FastAPI service (Python 3.12, SQLAlchemy, Pydantic v2)
-- `.claude/rules/` — shared agent rules (commits, validation, no barrel files)
-- `frontend/.claude/rules/` — frontend-specific rules (Vue, TypeScript, data fetching, entities, generated types)
-- `backend/.claude/rules/` — backend-specific rules (Python style, schemas, migrations)
-
-## Scoped Rules
-
-Before editing or reviewing a file, inspect `.claude/rules/` and the relevant package-specific
-`.claude/rules/` directory. Apply rules without `paths` frontmatter globally. Only apply a rule
-with `paths` frontmatter when one of its globs matches the repository-relative path of the file
-being worked on.
-
-## Root Scripts
-
-The root `package.json` delegates to each package (`pnpm --dir frontend`, `make -C backend`).
-It is a task runner only — not a pnpm workspace. pnpm does not manage the backend's Python
-dependencies, and `frontend/pnpm-lock.yaml` stays in `frontend/`.
-
-Every root script has a direct per-package equivalent; use whichever fits what you are doing.
-
-## Setup
-
-- **Both**: `pnpm run setup`
-- **Frontend**: `cd frontend && pnpm install`
-- **Backend**: `cd backend && uv sync --all-extras --all-packages --group dev` (or `make setup`)
-
-## Dev
-
-- **Frontend**: `pnpm run dev:web` (or `cd frontend && pnpm run dev`) — port 3000
-- **Backend**: `pnpm run dev:api` (or `cd backend && make dev`) — port 8000
-
-Both servers read `PORT` from the environment, so `PORT=4000 pnpm run dev:api` works.
-
-## Validation
-
-- **Both**: `pnpm run check` — or `check:web` / `check:api` for one side
-- **Frontend**: `cd frontend && pnpm run check` (Prettier, ESLint, vue-tsc, Vitest)
-- **Backend**: `cd backend && make check` (ruff, pyright, pytest)
-
-These **rewrite files** — Prettier, `eslint --fix`, and `ruff format` all write in place.
-
-For a read-only pass/fail answer that leaves the working tree untouched, use
-`pnpm run check:ci` (or `check:ci:web` / `check:ci:api`, `cd backend && make check-ci`).
-This is what CI enforces.
-
-Always run validation before committing. Do not commit if checks fail.
-
-## Commit Hooks
-
-`pnpm install` at the repository root installs `pre-commit` and `pre-merge-commit` hooks that run
-lint-staged over **staged files only**:
-
-- `frontend/**/*.{js,mjs,cjs,ts,vue}` — Prettier, then `eslint --fix`
-- `frontend/**/*.{json,jsonc,css,md,yml,yaml}` — Prettier
-- `backend/**/*.py` — `ruff format`, then `ruff check --fix`
-- Root files plus `.github/`, `.claude/`, `.gemini/` — Prettier
-
-Whatever the tools fix is re-staged for you; anything they cannot fix aborts the commit.
-
-**Do not run Prettier, ESLint, or ruff by hand before committing** — the hook does it on the
-staged files, so running it yourself is redundant and reformats files you did not touch. Verify
-with typecheck, tests, or the build instead, then commit and let the hook format.
-
-Type-checking and tests are deliberately **not** in the hook: they are too slow for every commit
-and CI covers them. Run `pnpm run check` yourself before pushing.
-
-`.husky/_/` is generated and untracked, so every clone and every `git worktree` needs its own
-root `pnpm install` before hooks fire. Without it the hook is silently absent.
-
-## Cross-Package Workflows
-
-- **Regenerate API types after backend schema changes**: `pnpm run generate:api` (or `cd frontend && pnpm run generate:api`)
-
-## Releases
-
-Releases are automated by Release Please (`release-please-config.json`). A push to `main` updates
-an open release pull request; merging it tags `frontend-v*` / `backend-v*`, and each tag triggers
-`.github/workflows/deploy.yml` for that package alone.
-
-- Never hand-edit `frontend/package.json` version, `backend/pyproject.toml` version,
-  `.release-please-manifest.json`, or any `CHANGELOG.md` — the release PR owns them.
-- Commits are assigned to a package by **file path**, not by commit scope. Do not use `frontend`
-  or `backend` as a commit scope.
-- Deployment follows from a release; there is no deploy-from-branch path.
+The Choice of Law Dataverse (CoLD) is a monorepo: a Nuxt 4 frontend in `frontend/` and a FastAPI
+backend in `backend/`. Each package has its own `AGENTS.md` with package-specific setup, tasks and
+gotchas.
 
 ## Database Constraints
 
-- Only a production database exists — there is no dev or staging environment.
-- Never run or create database migrations. Leave these to the developer.
+IMPORTANT: Only a production database exists — there is no dev or staging environment.
+
+- Never run or create database migrations; leave them to the developer.
 - Never perform destructive database operations.
+
+## Scoped Rules
+
+Conventions live in `.claude/rules/`, `frontend/.claude/rules/` and `backend/.claude/rules/`. Claude
+Code loads them automatically; other agents must read them before editing or reviewing a file.
+Apply a rule without `paths` frontmatter everywhere. Apply a rule with `paths` only when one of its
+globs matches the file's path relative to the directory that contains that rule's `.claude` folder.
+
+## Commands
+
+The root `package.json` is a task runner, not a pnpm workspace: it delegates to `pnpm --dir frontend`
+and `make -C backend`. Every root script has a per-package equivalent.
+
+- **Setup**: `pnpm run setup` — also run `pnpm install` at the root in every clone and `git worktree`,
+  or the commit hooks are silently absent.
+- **Dev**: `pnpm run dev:web` (port 3000) and `pnpm run dev:api` (port 8000). Both read `PORT`.
+- **API types**: run `pnpm run generate:api` after any backend route or schema change.
+
+## Verification
+
+Prove each change with a check you ran, and report the command and its result rather than asserting
+success. Fix root causes; do not silence a failing check.
+
+- **While working**: run the narrowest check that covers the change, such as one test file or the
+  package's typecheck.
+- **Before committing**: run typecheck and tests for each package you touched —
+  `pnpm --dir frontend run typecheck && pnpm --dir frontend run test:run`, or
+  `make -C backend type-check test`. Do not commit if they fail.
+- **Before pushing**: run `pnpm run check:ci`, the read-only suite CI enforces.
+- **UI changes**: run the dev servers and check the affected page in a browser.
+
+Do not format or lint by hand before committing. The pre-commit hook runs Prettier, `eslint --fix`
+and `ruff` over staged files only and re-stages their fixes. `pnpm run check` and `make check`
+rewrite every file in the package, so use them only when you intend to reformat.
+
+## Commits and Releases
+
+Commits follow `type(scope): description` (see `.claude/rules/commits.md`). Release Please assigns a
+commit to `frontend` or `backend` by the paths it touches, then tags and deploys each package from
+its release pull request. There is no deploy-from-branch path.
+
+Never hand-edit `frontend/package.json` or `backend/pyproject.toml` versions,
+`.release-please-manifest.json`, or any `CHANGELOG.md`; the release pull request owns them.

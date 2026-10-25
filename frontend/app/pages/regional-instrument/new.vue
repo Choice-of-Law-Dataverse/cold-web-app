@@ -62,23 +62,13 @@
     </BaseDetailLayout>
 
     <ClientOnly>
-      <CancelModal v-model="showCancelModal" @confirm-cancel="confirmCancel" />
+      <CancelModal v-model="showCancelModal" @confirm-cancel="cancel" />
       <SaveModal
-        v-model="showSaveModal"
-        :email="email"
-        :comments="comments"
-        :save-modal-errors="saveModalErrors"
-        :name="title"
-        :specialists="specialists"
-        :date="date || null"
-        :pdf-file="pdfFile"
-        :link="url"
-        @update:email="(val: string) => (email = val)"
-        @update:comments="(val: string) => (comments = val)"
-        @update:save-modal-errors="
-          (val: Record<string, string>) => (saveModalErrors = val)
-        "
-        @save="handleNewSave"
+        v-model:open="isSaveModalOpen"
+        v-model:comments="comments"
+        :submitting="isSubmitting"
+        :error="submitError"
+        @submit="submit"
       />
     </ClientOnly>
   </div>
@@ -86,7 +76,7 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import { useHead, useRouter } from "#imports";
+import { useHead } from "#imports";
 import { z } from "zod";
 import BaseDetailLayout from "@/components/layout/BaseDetailLayout.vue";
 import InfoPopover from "@/components/ui/InfoPopover.vue";
@@ -96,6 +86,7 @@ import CancelModal from "@/components/ui/CancelModal.vue";
 import { format } from "date-fns";
 import { tooltips } from "@/config/tooltips";
 import ColdDateTrigger from "@/components/ui/ColdDateTrigger.vue";
+import { useSuggestionForm } from "@/composables/useSuggestionForm";
 
 const tooltipRegionalInstrumentDate = tooltips.date ?? "";
 
@@ -103,97 +94,39 @@ definePageMeta({
   middleware: ["auth"],
 });
 
-const date = ref<Date | undefined>(undefined);
+useHead({ title: "New Regional Instrument — CoLD" });
 
+const date = ref<Date | undefined>(undefined);
 const abbreviation = ref("");
 const title = ref("");
 const url = ref("");
-const specialists = ref([""]);
-const pdfFile = ref<File | null>(null);
-const email = ref("");
-const comments = ref("");
-
-const formSchema = z.object({
-  abbreviation: z
-    .string()
-    .min(1, { error: "Abbreviation is required" })
-    .min(3, { error: "Abbreviation must be at least 3 characters long" }),
-});
-
-const errors = ref<Record<string, string>>({});
-const saveModalErrors = ref<Record<string, string>>({});
-
-const router = useRouter();
-defineEmits(["close-cancel-modal", "close-save-modal"]);
-const showSaveModal = ref(false);
 const showCancelModal = ref(false);
 
-useHead({ title: "New Regional Instrument — CoLD" });
-
-function validateForm() {
-  try {
-    const formData = {
-      abbreviation: abbreviation.value,
-    };
-
-    formSchema.parse(formData);
-    errors.value = {};
-    return true;
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      errors.value = {};
-      for (const err of error.issues) {
-        const field = String(err.path[0]);
-        errors.value[field] = err.message;
-      }
-    }
-    return false;
-  }
-}
-
-function openSaveModal() {
-  const isValid = validateForm();
-
-  if (isValid) {
-    showSaveModal.value = true;
-  }
-}
-
-function confirmCancel() {
-  router.push("/");
-}
-
-function handleNewSave() {
-  const payload = {
+const {
+  errors,
+  comments,
+  isSaveModalOpen,
+  isSubmitting,
+  submitError,
+  openSaveModal,
+  submit,
+  cancel,
+} = useSuggestionForm({
+  endpoint: "/suggestions/regional-instruments",
+  schema: z.object({
+    abbreviation: z
+      .string()
+      .min(1, { error: "Abbreviation is required" })
+      .min(3, { error: "Abbreviation must be at least 3 characters long" }),
+  }),
+  values: () => ({ abbreviation: abbreviation.value }),
+  payload: () => ({
     abbreviation: abbreviation.value,
     title: title.value || undefined,
     url: url.value || undefined,
     instrument_date: date.value ? format(date.value, "yyyy-MM-dd") : undefined,
-    submitter_comments: comments.value || undefined,
-  };
-
-  (async () => {
-    try {
-      const { useApiClient } = await import("@/composables/useApiClient");
-      const { client } = useApiClient();
-      const { error } = await client.POST("/suggestions/regional-instruments", {
-        body: payload,
-      });
-      if (error) throw error;
-
-      showSaveModal.value = false;
-      router.push({
-        path: "/confirmation",
-        query: { message: "Thanks, we have received your submission." },
-      });
-    } catch {
-      saveModalErrors.value = {
-        general:
-          "There was a problem submitting your suggestion. Please try again.",
-      };
-    }
-  })();
-}
+  }),
+});
 </script>
 
 <style scoped>

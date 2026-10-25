@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.4.1](https://github.com/Choice-of-Law-Dataverse/cold-web-app/compare/backend-v1.4.0...backend-v1.4.1) (2026-10-24)
+
+
+### Bug Fixes
+
+* guard moderation decisions and stop masking database errors ([#573](https://github.com/Choice-of-Law-Dataverse/cold-web-app/issues/573)) ([46ed3fa](https://github.com/Choice-of-Law-Dataverse/cold-web-app/commit/46ed3faa6cc94f2b7e7fe7608c24b661e5f92c83))
+
+
+### Documentation
+
+* align agent instructions with Claude Code best practices and fix hooks ([#576](https://github.com/Choice-of-Law-Dataverse/cold-web-app/issues/576)) ([10903db](https://github.com/Choice-of-Law-Dataverse/cold-web-app/commit/10903dbe0110990985716927f545520cf6a59ba1))
+
 ## [1.4.0](https://github.com/Choice-of-Law-Dataverse/cold-web-app/compare/backend-v1.3.0...backend-v1.4.0) (2026-09-10)
 
 

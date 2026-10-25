@@ -490,7 +490,7 @@ export interface paths {
      * List pending suggestions in a category
      * @description Returns all pending suggestions for the specified category slug. For `case-analyzer`, set `show_all=true` to include non-pending items. Requires editor or admin role.
      *
-     *     **Category slugs:** `case-analyzer`, `court-decisions`, `domestic-instruments`, `regional-instruments`, `international-instruments`, `literature`, `feedback`.
+     *     **Category slugs:** `case-analyzer`, `court-decisions`, `domestic-instruments`, `regional-instruments`, `international-instruments`, `literature`. Entity feedback has its own endpoints under `/feedback`.
      */
     get: operations["list_pending_suggestions_api_v1_suggestions_pending__category__get"];
     put?: never;
@@ -536,7 +536,7 @@ export interface paths {
     put?: never;
     /**
      * Approve a suggestion
-     * @description Mark a suggestion as approved and insert its data into the main CoLD database. For case-analyzer suggestions, this runs the full approval pipeline. For other categories, the payload is written directly to the target table. Requires editor or admin role.
+     * @description Mark a suggestion as approved and insert its data into the main CoLD database. For case-analyzer suggestions, this runs the full approval pipeline. For other categories, the payload is written directly to the target table. Returns 404 when the suggestion does not exist and 409 when it was already approved or rejected; a failed approval leaves the suggestion pending. Requires editor or admin role.
      */
     post: operations["approve_suggestion_api_v1_suggestions__category___suggestion_id__approve_post"];
     delete?: never;
@@ -556,7 +556,7 @@ export interface paths {
     put?: never;
     /**
      * Reject a suggestion
-     * @description Mark a suggestion as rejected. The record is preserved for audit but not inserted into CoLD. Requires editor or admin role.
+     * @description Mark a pending suggestion as rejected. The record is preserved for audit but not inserted into CoLD. Returns 404 when the suggestion does not exist and 409 when it was already approved or rejected. Requires editor or admin role.
      */
     post: operations["reject_suggestion_api_v1_suggestions__category___suggestion_id__reject_post"];
     delete?: never;
@@ -3363,7 +3363,7 @@ export interface operations {
         filter?: string[] | null;
         /** @description Maximum number of rows to return. Omit for no limit. */
         limit?: number | null;
-        /** @description Column name to sort by (camelCase or snake_case). Unknown columns are ignored. */
+        /** @description Column name to sort by (camelCase or snake_case). Unknown columns return 400. */
         order_by?: string | null;
         /** @description Sort direction when order_by is provided. */
         order_dir?: ("asc" | "desc") | null;

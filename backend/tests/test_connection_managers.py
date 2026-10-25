@@ -1,6 +1,7 @@
 """Tests for database and HTTP connection managers."""
 
 import pytest
+from requests.adapters import HTTPAdapter
 from sqlalchemy.pool import QueuePool
 
 from app.services.db_manager import DatabaseManager, SuggestionsDBManager
@@ -265,4 +266,43 @@ class TestHTTPSessionManager:
         assert "https://" in session.adapters
 
         # Cleanup
+        manager.close()
+
+    def test_adapter_applies_default_timeout(self, monkeypatch):
+        """Requests without an explicit timeout receive the configured default."""
+        captured: dict = {}
+
+        def fake_send(self, request, **kwargs):
+            captured.update(kwargs)
+            raise RuntimeError("stop")
+
+        monkeypatch.setattr(HTTPAdapter, "send", fake_send)
+        manager = HTTPSessionManager()
+        manager._session = None
+        manager.initialize(timeout=7)
+
+        with pytest.raises(RuntimeError):
+            manager.get_session().get("https://example.invalid/")
+        assert captured["timeout"] == 7
+
+        captured.clear()
+        with pytest.raises(RuntimeError):
+            manager.get_session().get("https://example.invalid/", timeout=2)
+        assert captured["timeout"] == 2
+
+        manager.close()
+
+    def test_retries_skip_non_idempotent_methods(self):
+        """POST and PATCH are not retried, so a 5xx after a write cannot duplicate it."""
+        manager = HTTPSessionManager()
+        manager._session = None
+        manager.initialize()
+
+        adapter = manager.get_session().get_adapter("https://example.invalid/")
+        assert isinstance(adapter, HTTPAdapter)
+        retry = adapter.max_retries
+        assert retry.is_retry("GET", 503)
+        assert not retry.is_retry("POST", 503)
+        assert not retry.is_retry("PATCH", 503)
+
         manager.close()

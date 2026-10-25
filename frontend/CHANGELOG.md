@@ -1,5 +1,30 @@
 # Changelog
 
+## [1.6.0](https://github.com/Choice-of-Law-Dataverse/cold-web-app/compare/frontend-v1.5.0...frontend-v1.6.0) (2026-10-24)
+
+
+### Features
+
+* **suggestions:** send instrument edits, show submit errors, keep analyzer edits ([#574](https://github.com/Choice-of-Law-Dataverse/cold-web-app/issues/574)) ([c4ed3a2](https://github.com/Choice-of-Law-Dataverse/cold-web-app/commit/c4ed3a2ade72cd81423c8bfcc1614464a80ae561))
+
+
+### Bug Fixes
+
+* guard moderation decisions and stop masking database errors ([#573](https://github.com/Choice-of-Law-Dataverse/cold-web-app/issues/573)) ([46ed3fa](https://github.com/Choice-of-Law-Dataverse/cold-web-app/commit/46ed3faa6cc94f2b7e7fe7608c24b661e5f92c83))
+
+## [1.5.0](https://github.com/Choice-of-Law-Dataverse/cold-web-app/compare/frontend-v1.4.1...frontend-v1.5.0) (2026-10-06)
+
+
+### Features
+
+* add section on Large Language Models in legal analysis ([#570](https://github.com/Choice-of-Law-Dataverse/cold-web-app/issues/570)) ([42ab7b0](https://github.com/Choice-of-Law-Dataverse/cold-web-app/commit/42ab7b03974f9cbb6580dc5d1f256de9fa516727))
+* revise team member details and external links ([#571](https://github.com/Choice-of-Law-Dataverse/cold-web-app/issues/571)) ([c2f88dc](https://github.com/Choice-of-Law-Dataverse/cold-web-app/commit/c2f88dce27a8f985df2735204125a70690f2baab))
+
+
+### Bug Fixes
+
+* **seo:** tighten indexability rules ([#553](https://github.com/Choice-of-Law-Dataverse/cold-web-app/issues/553)) ([96e61e9](https://github.com/Choice-of-Law-Dataverse/cold-web-app/commit/96e61e97a3956cf12e2ccdc357c8275f8ff11efd))
+
 ## [1.4.1](https://github.com/Choice-of-Law-Dataverse/cold-web-app/compare/frontend-v1.4.0...frontend-v1.4.1) (2026-09-11)
 
 

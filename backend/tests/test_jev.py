@@ -169,7 +169,7 @@ def _theme_answers(probabilities: dict[str, float]) -> dict[str, Any]:
 async def test_themes_selects_decisive_jev_answers(use_jev) -> None:
     use_jev(_respond(_theme_answers({"Tacit choice": 0.91})))
 
-    with patch("app.case_analyzer.tools.theme_classifier.run_agent", new=AsyncMock()) as agent:
+    with patch("app.case_analyzer.tools.theme_classifier.run_extractor", new=AsyncMock()) as agent:
         step = await classify_themes(
             DocumentContext(draft_id=1, text=DECISION_TEXT), "Art. 116 PILA", "Civil-law jurisdiction", "Switzerland"
         )
@@ -211,8 +211,7 @@ async def test_themes_fall_back_to_agent(use_jev, probabilities: dict[str, float
     fallback = StepResult(output=ThemeClassificationOutput(themes=["NA"], confidence="high", reasoning="ok"))
 
     with (
-        patch("app.case_analyzer.tools.theme_classifier.get_openai_client"),
-        patch("app.case_analyzer.tools.theme_classifier.run_agent", new=AsyncMock(return_value=fallback)) as agent,
+        patch("app.case_analyzer.tools.theme_classifier.run_extractor", new=AsyncMock(return_value=fallback)) as agent,
     ):
         step = await classify_themes(
             DocumentContext(draft_id=1, text=DECISION_TEXT), "Art. 116 PILA", "Civil-law jurisdiction", "Switzerland"

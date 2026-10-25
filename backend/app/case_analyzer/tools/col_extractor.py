@@ -9,10 +9,10 @@ from agents.models.openai_responses import OpenAIResponsesModel
 from ..config import get_model, get_openai_client
 from ..jev import JEV_STATE_MAX_CHARS, NoulAnswer, ask_jev, noul_question
 from ..prompts.col_section import COL_CANDIDATE_AUDIT_PROMPT, COL_RETRIEVAL_QUERY_PROMPT
-from ..runner import run_agent
+from ..runner import run_extractor
 from ..utils import generate_system_prompt
 from ..validation import validate_col_candidate_audit
-from .document_nav import NAV_TOOLS, DocumentContext
+from .document_nav import DocumentContext
 from .hybrid_retrieval import (
     DEFAULT_MAX_CANDIDATE_CHARS,
     DEFAULT_MAX_CANDIDATES,
@@ -173,16 +173,12 @@ async def _hybrid_candidates(doc_ctx: DocumentContext) -> tuple[list[CandidatePa
 async def _audit(
     doc_ctx: DocumentContext, candidates: list[CandidatePassage], task: str
 ) -> StepResult[ColCandidateAuditOutput]:
-    agent = Agent[DocumentContext](
+    return await run_extractor(
         name="ColSectionExtractor",
-        instructions=generate_system_prompt(),
+        task=task,
         output_type=ColCandidateAuditOutput,
-        tools=NAV_TOOLS,
-        model=_responses_model(task),
-    )
-    return await run_agent(
-        agent,
-        input=f"{COL_CANDIDATE_AUDIT_PROMPT}\n\nCANDIDATES:\n{_format_candidates(candidates, doc_ctx)}",
+        instructions=generate_system_prompt(),
+        prompt=f"{COL_CANDIDATE_AUDIT_PROMPT}\n\nCANDIDATES:\n{_format_candidates(candidates, doc_ctx)}",
         context=doc_ctx,
         validate=lambda output, _tools: validate_col_candidate_audit(output, candidates),
     )
