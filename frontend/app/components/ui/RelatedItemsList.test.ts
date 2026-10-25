@@ -150,21 +150,18 @@ describe("RelatedItemsList", () => {
     expect(wrapper.html()).toContain("link-chip--neutral");
   });
 
-  it("renders jurisdictions as flagged jurisdiction links", () => {
+  it("renders items through the item slot when provided", () => {
     const wrapper = mount(RelatedItemsList, {
       props: {
-        items: [{ id: "FRA", title: "France" }],
-        basePath: "/jurisdiction",
+        items: mockItems,
+        basePath: "/test",
+      },
+      slots: {
+        item: `<template #item="{ item }"><b class="custom">{{ item.title }}</b></template>`,
       },
     });
 
-    const link = wrapper.find("a.entity-link--jurisdiction");
-    expect(link.exists()).toBe(true);
-    expect(link.attributes("href")).toBe("/jurisdiction/FRA");
-    expect(link.find(".flag-wrapper img").attributes("src")).toMatch(
-      /fra\.svg$/,
-    );
-    expect(link.text()).toContain("France");
+    expect(wrapper.findAll("b.custom")).toHaveLength(3);
     expect(wrapper.html()).not.toContain("link-chip--neutral");
   });
 
