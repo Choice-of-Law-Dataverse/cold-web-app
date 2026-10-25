@@ -5,7 +5,30 @@
     </div>
     <InlineError v-else-if="error" :error="error" />
     <div v-else-if="items.length" class="result-value-small">
-      <div class="mb-2 flex flex-row flex-wrap gap-x-6 gap-y-2">
+      <div
+        v-if="isJurisdictionList"
+        class="mb-2 flex flex-row flex-wrap items-center gap-x-6 gap-y-2"
+      >
+        <EntityLink
+          v-for="item in visibleItems"
+          :key="item.id"
+          :id="item.id"
+          :title="item.title"
+          :base-path="basePath"
+          variant="jurisdiction"
+          class="-ml-2"
+        >
+          <div class="flag-wrapper">
+            <JurisdictionFlag
+              :iso3="item.id"
+              class="item-flag"
+              :alt="`${item.title} flag`"
+            />
+          </div>
+          {{ item.title }}
+        </EntityLink>
+      </div>
+      <div v-else class="mb-2 flex flex-row flex-wrap gap-x-6 gap-y-2">
         <EntityLink
           v-for="item in visibleItems"
           :key="item.id"
@@ -34,6 +57,7 @@ import { computed, ref } from "vue";
 import LoadingBar from "@/components/layout/LoadingBar.vue";
 import InlineError from "@/components/ui/InlineError.vue";
 import EntityLink from "@/components/ui/EntityLink.vue";
+import JurisdictionFlag from "@/components/ui/JurisdictionFlag.vue";
 import ShowMoreLess from "@/components/ui/ShowMoreLess.vue";
 import type { RelatedItem, EmptyValueBehavior } from "@/types/ui";
 
@@ -60,6 +84,8 @@ const props = withDefaults(
 const isExpanded = ref(false);
 
 const hasItems = computed(() => props.items.length > 0);
+
+const isJurisdictionList = computed(() => props.basePath === "/jurisdiction");
 
 const visibleItems = computed(() =>
   isExpanded.value || props.items.length <= SHOW_MORE_THRESHOLD
