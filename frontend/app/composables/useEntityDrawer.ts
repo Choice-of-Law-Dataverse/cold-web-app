@@ -1,5 +1,6 @@
 import { ref, computed, inject, type InjectionKey } from "vue";
 import type { TableName } from "@/types/api";
+import { useSurfaceTransition } from "@/composables/useSurfaceTransition";
 
 export const IN_ENTITY_DRAWER_KEY: InjectionKey<boolean> =
   Symbol("in-entity-drawer");
@@ -18,6 +19,7 @@ const entity = ref<DrawerEntity | null>(null);
 const history = ref<DrawerEntity[]>([]);
 
 export function useEntityDrawer() {
+  const { transitionSurface } = useSurfaceTransition();
   const inDrawer = inject(IN_ENTITY_DRAWER_KEY, false);
   const canGoBack = computed(() => history.value.length > 0);
 
@@ -26,12 +28,24 @@ export function useEntityDrawer() {
     table: TableName,
     basePath: string,
     forceDrawer = false,
+    source?: EventTarget | null,
   ) {
     if (!forceDrawer && window.innerWidth < MOBILE_BREAKPOINT) {
       const path = coldId.startsWith("/") ? coldId : `${basePath}/${coldId}`;
       navigateTo(path);
       return;
     }
+    if (!isOpen.value && source) {
+      return transitionSurface(
+        source,
+        () => setEntity(coldId, table, basePath),
+        '.entity-drawer-panel[data-state="open"]:has([data-drawer-ready])',
+      );
+    }
+    setEntity(coldId, table, basePath);
+  }
+
+  function setEntity(coldId: string, table: TableName, basePath: string) {
     if (entity.value) {
       if (entity.value.coldId === coldId && entity.value.table === table) {
         return;

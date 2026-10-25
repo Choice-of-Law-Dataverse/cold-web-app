@@ -583,7 +583,13 @@ function handleAnswerClick(
 ) {
   if (event.metaKey || event.ctrlKey) return;
   event.preventDefault();
-  openDrawer(`${coldId}_${questionId}`, "Answers", "/question");
+  return openDrawer(
+    `${coldId}_${questionId}`,
+    "Answers",
+    "/question",
+    false,
+    event.currentTarget,
+  );
 }
 
 // Props - now only needs the primary jurisdiction

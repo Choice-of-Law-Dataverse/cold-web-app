@@ -11,7 +11,7 @@
       <div class="max-w-container mx-auto w-full">
         <div class="flex flex-col gap-4 sm:gap-6">
           <ErrorBoundary>
-            <NuxtPage :transition="{ name: 'page', mode: 'out-in' }" />
+            <NuxtPage />
           </ErrorBoundary>
         </div>
       </div>

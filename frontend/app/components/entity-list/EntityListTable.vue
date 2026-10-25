@@ -141,7 +141,11 @@ const handleRowClick = (event: MouseEvent, coldId: string) => {
   const config = getEntityConfig(props.linkBase);
   if (!config) return;
   event.preventDefault();
-  openDrawer(coldId, config.table, props.linkBase);
+  const source =
+    event.currentTarget instanceof Element
+      ? event.currentTarget.closest("tr")
+      : null;
+  return openDrawer(coldId, config.table, props.linkBase, false, source);
 };
 
 const orderField = (col: EntityListColumn) =>

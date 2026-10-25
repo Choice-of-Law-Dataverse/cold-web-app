@@ -14,6 +14,7 @@
     <template #content>
       <div
         data-testid="entity-drawer"
+        :data-drawer-ready="!isLoading || undefined"
         class="flex h-full flex-col overflow-hidden"
       >
         <header class="drawer-header">

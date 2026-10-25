@@ -3,26 +3,6 @@
   --motion-drawer-duration: 320ms;
 }
 
-.page-enter-active {
-  transition:
-    opacity 220ms var(--motion-ease),
-    transform 220ms var(--motion-ease);
-}
-
-.page-leave-active {
-  transition: opacity 100ms ease-out;
-  pointer-events: none;
-}
-
-.page-enter-from {
-  opacity: 0;
-  transform: translateY(10px);
-}
-
-.page-leave-to {
-  opacity: 0;
-}
-
 .main-content {
   transition: margin-right var(--motion-drawer-duration) var(--motion-ease);
 }
@@ -34,6 +14,60 @@
 .entity-drawer-panel[data-state="closed"] {
   animation: entity-drawer-out var(--motion-drawer-duration) var(--motion-ease);
   pointer-events: none;
+}
+
+:root.surface-transition {
+  view-transition-name: none;
+}
+
+.surface-transition .entity-drawer-panel[data-state="open"],
+.entity-drawer-panel[data-surface-entered][data-state="open"] {
+  animation: none;
+}
+
+::view-transition {
+  pointer-events: none;
+}
+
+::view-transition-group(selected-surface) {
+  animation-duration: 420ms;
+  animation-timing-function: var(--motion-ease);
+  overflow: clip;
+  border-radius: 12px;
+  background: white;
+  box-shadow: 0 12px 40px rgb(15 0 53 / 10%);
+}
+
+::view-transition-old(selected-surface),
+::view-transition-new(selected-surface) {
+  width: 100%;
+  height: 100%;
+  object-fit: none;
+  object-position: top left;
+  mix-blend-mode: normal;
+}
+
+::view-transition-old(selected-surface) {
+  animation: surface-out 120ms ease-out both;
+}
+
+::view-transition-new(selected-surface) {
+  animation: surface-in 240ms 60ms ease-out both;
+}
+
+@keyframes surface-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes surface-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes entity-drawer-in {
@@ -55,14 +89,14 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .page-enter-active,
-  .page-leave-active,
-  .main-content {
-    transition: none;
+  ::view-transition-group(selected-surface),
+  ::view-transition-old(selected-surface),
+  ::view-transition-new(selected-surface) {
+    animation: none;
   }
 
-  .page-enter-from {
-    transform: none;
+  .main-content {
+    transition: none;
   }
 
   .entity-drawer-panel[data-state] {
