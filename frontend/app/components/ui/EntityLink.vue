@@ -96,7 +96,10 @@ function handleClick(event: MouseEvent) {
 
   event.preventDefault();
   const forceDrawer = config.hasDetailPage === false;
-  openDrawer(props.id, config.table, props.basePath, forceDrawer);
+  return openDrawer(props.id, config.table, props.basePath, {
+    forceDrawer,
+    source: event.currentTarget,
+  });
 }
 </script>
 

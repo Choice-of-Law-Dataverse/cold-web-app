@@ -110,7 +110,9 @@ function handleClick(event: MouseEvent, questionId: string) {
   if (event.metaKey || event.ctrlKey) return;
   event.preventDefault();
   const iso3 = props.jurisdictionCode.toUpperCase();
-  openDrawer(`${iso3}_${questionId}`, "Answers", "/question");
+  return openDrawer(`${iso3}_${questionId}`, "Answers", "/question", {
+    source: event.currentTarget,
+  });
 }
 </script>
 

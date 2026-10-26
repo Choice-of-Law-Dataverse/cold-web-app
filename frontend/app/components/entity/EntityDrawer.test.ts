@@ -1,10 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { mount } from "@vue/test-utils";
-import { ref, inject, computed } from "vue";
+import { ref, inject, computed, toValue } from "vue";
 import EntityDrawer from "./EntityDrawer.vue";
 import * as entityDrawerModule from "@/composables/useEntityDrawer";
 import * as entityDataModule from "@/composables/useEntityData";
 import { IN_ENTITY_DRAWER_KEY } from "@/composables/useEntityDrawer";
+import { getEntityConfig, type ProcessedEntity } from "@/config/entityRegistry";
 
 vi.stubGlobal(
   "useRoute",
@@ -58,6 +59,7 @@ describe("EntityDrawer", () => {
       global: {
         stubs: {
           USlideover: {
+            name: "USlideover",
             template:
               '<div class="u-slideover" v-if="open"><slot name="content" /></div>',
             props: ["open"],
@@ -118,6 +120,128 @@ describe("EntityDrawer", () => {
       { isLoading: ref(true) },
     );
     expect(wrapper.findComponent({ name: "LoadingBar" }).exists()).toBe(true);
+  });
+
+  it("keeps the current preview and its links until the next record is ready", async () => {
+    const entity = ref({
+      coldId: "CD-1",
+      table: "Court Decisions" as const,
+      basePath: "/court-decision",
+    });
+    const data = ref<ProcessedEntity | null>({
+      coldId: "CD-1",
+      caseTitle: "First",
+    } as ProcessedEntity);
+    const pending = ref(false);
+    const wrapper = mountComponent(
+      { isOpen: ref(true), entity },
+      {
+        data: computed(() => data.value),
+        config: computed(() => getEntityConfig("/court-decision")),
+        isLoading: pending,
+      },
+    );
+    const firstContent = wrapper.findComponent({
+      name: "CourtDecisionContent",
+    }).element;
+
+    pending.value = true;
+    data.value = null;
+    entity.value = { ...entity.value, coldId: "CD-2" };
+    await wrapper.vm.$nextTick();
+
+    expect(
+      wrapper.findComponent({ name: "CourtDecisionContent" }).element,
+    ).toBe(firstContent);
+    expect(
+      wrapper.findComponent({ name: "MetaBand" }).props("resultData"),
+    ).toMatchObject({ coldId: "CD-1" });
+    expect(
+      wrapper
+        .findComponent('[leading-icon="i-lucide-maximize"]')
+        .attributes("to"),
+    ).toBe("/court-decision/CD-1");
+    expect(wrapper.findComponent({ name: "LoadingBar" }).exists()).toBe(false);
+    expect(wrapper.find('[role="status"]').exists()).toBe(false);
+    expect(
+      wrapper.find('[data-testid="entity-drawer"]').attributes("aria-busy"),
+    ).toBe("true");
+
+    data.value = { coldId: "CD-2", caseTitle: "Second" } as ProcessedEntity;
+    pending.value = false;
+    await wrapper.vm.$nextTick();
+    await wrapper.vm.$nextTick();
+
+    expect(
+      wrapper.findComponent({ name: "CourtDecisionContent" }).props("data"),
+    ).toMatchObject({ coldId: "CD-2" });
+    expect(
+      wrapper.findComponent({ name: "MetaBand" }).props("resultData"),
+    ).toMatchObject({ coldId: "CD-2" });
+    expect(
+      wrapper
+        .findComponent('[leading-icon="i-lucide-maximize"]')
+        .attributes("to"),
+    ).toBe("/court-decision/CD-2");
+    expect(wrapper.find('[role="status"]').exists()).toBe(false);
+  });
+
+  it("keeps the entity during exit and clears it after the drawer leaves", async () => {
+    const isOpen = ref(true);
+    const entity = ref({
+      coldId: "CD-1",
+      table: "Court Decisions" as const,
+      basePath: "/court-decision",
+    } as ReturnType<
+      typeof entityDrawerModule.useEntityDrawer
+    >["entity"]["value"]);
+    const wrapper = mountComponent({ isOpen, entity });
+    const slideover = wrapper.findComponent({ name: "USlideover" });
+    const [basePath, coldId] = vi
+      .mocked(entityDataModule.useEntityData)
+      .mock.calls.at(-1)!;
+
+    isOpen.value = false;
+    entity.value = null;
+    await wrapper.vm.$nextTick();
+
+    expect(toValue(basePath)).toBe("/court-decision");
+    expect(toValue(coldId)).toBe("CD-1");
+
+    slideover.vm.$emit("after:leave");
+    await wrapper.vm.$nextTick();
+
+    expect(toValue(coldId)).toBe("");
+  });
+
+  it("does not clear a reopened drawer when an earlier exit finishes", async () => {
+    const isOpen = ref(true);
+    const entity = ref({
+      coldId: "CD-1",
+      table: "Court Decisions" as const,
+      basePath: "/court-decision",
+    } as ReturnType<
+      typeof entityDrawerModule.useEntityDrawer
+    >["entity"]["value"]);
+    const wrapper = mountComponent({ isOpen, entity });
+    const [, coldId] = vi
+      .mocked(entityDataModule.useEntityData)
+      .mock.calls.at(-1)!;
+
+    isOpen.value = false;
+    entity.value = null;
+    await wrapper.vm.$nextTick();
+    entity.value = {
+      coldId: "CD-2",
+      table: "Court Decisions",
+      basePath: "/court-decision",
+    };
+    isOpen.value = true;
+    await wrapper.vm.$nextTick();
+    wrapper.findComponent({ name: "USlideover" }).vm.$emit("after:leave");
+    await wrapper.vm.$nextTick();
+
+    expect(toValue(coldId)).toBe("CD-2");
   });
 
   it("shows InlineError when error is present", () => {

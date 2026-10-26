@@ -321,13 +321,16 @@ const {
 
 const { openDrawer } = useEntityDrawer();
 
-const openOriginalEntity = () => {
+const openOriginalEntity = (event: MouseEvent) => {
   const editId = suggestion.value?.payload?.edit_entity_id;
   if (!editId) return;
   const basePath = getBasePathForCollection(category.value);
   const config = basePath ? getEntityConfig(basePath) : undefined;
   if (!basePath || !config) return;
-  openDrawer(String(editId), config.table, basePath, true);
+  return openDrawer(String(editId), config.table, basePath, {
+    forceDrawer: true,
+    source: event.currentTarget,
+  });
 };
 
 const {

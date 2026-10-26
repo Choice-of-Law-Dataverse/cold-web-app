@@ -1,5 +1,8 @@
 <template>
-  <div>
+  <div
+    data-search-surface
+    :data-surface-ready="(isInitialized && !loading) || undefined"
+  >
     <h1 class="sr-only">Search Results</h1>
     <div v-if="apiError" role="alert" class="error-message">
       <p>

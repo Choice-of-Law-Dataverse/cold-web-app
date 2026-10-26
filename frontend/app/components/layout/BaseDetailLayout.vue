@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div data-detail-surface :data-surface-ready="!props.loading || undefined">
     <h1 v-if="props.pageHeading" class="sr-only">{{ props.pageHeading }}</h1>
     <DetailDisplay
       :loading="props.loading"
