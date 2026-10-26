@@ -104,7 +104,7 @@ function handleClick(event: MouseEvent) {
 </script>
 
 <style scoped>
-.entity-link:not(.entity-link--jurisdiction)::after {
+.entity-link::after {
   display: none;
 }
 
@@ -226,31 +226,6 @@ function handleClick(event: MouseEvent) {
   width: 0;
   opacity: 0;
   overflow: hidden;
-}
-
-.entity-link--jurisdiction::after {
-  content: "";
-  display: inline-block;
-  width: 0;
-  height: 1rem;
-  background-color: currentColor;
-  mask-image: var(--icon-arrow-right);
-  mask-size: contain;
-  mask-repeat: no-repeat;
-  mask-position: center;
-  -webkit-mask-image: var(--icon-arrow-right);
-  -webkit-mask-size: contain;
-  -webkit-mask-repeat: no-repeat;
-  -webkit-mask-position: center;
-  opacity: 0;
-  transition:
-    width 0.2s ease,
-    opacity 0.15s ease;
-}
-
-.entity-link--jurisdiction:hover::after {
-  width: 1rem;
-  opacity: 1;
 }
 
 .entity-link--jurisdiction :deep(.item-flag) {

@@ -31,7 +31,18 @@
           <RelatedItemsList
             :items="section.items"
             :base-path="section.basePath"
-          />
+          >
+            <template
+              v-if="section.variant === 'jurisdiction'"
+              #item="{ item }"
+            >
+              <JurisdictionLink
+                :iso3="item.id"
+                :label="item.title"
+                class="-ml-2"
+              />
+            </template>
+          </RelatedItemsList>
         </DetailRow>
       </section>
     </template>
@@ -55,6 +66,7 @@ import ResultValue from "@/components/ui/ResultValue.vue";
 import type { RelatedItem } from "@/types/ui";
 import DetailRow from "@/components/ui/DetailRow.vue";
 import RelatedItemsList from "@/components/ui/RelatedItemsList.vue";
+import JurisdictionLink from "@/components/ui/JurisdictionLink.vue";
 
 interface ResolvedField {
   key: string;

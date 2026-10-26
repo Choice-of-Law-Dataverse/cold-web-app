@@ -6,14 +6,16 @@
     <InlineError v-else-if="error" :error="error" />
     <div v-else-if="items.length" class="result-value-small">
       <div class="mb-2 flex flex-row flex-wrap gap-x-6 gap-y-2">
-        <EntityLink
-          v-for="item in visibleItems"
-          :key="item.id"
-          :id="item.id"
-          :title="item.title"
-          :base-path="basePath"
-          :badge="item.badge"
-        />
+        <template v-for="item in visibleItems" :key="item.id">
+          <slot name="item" :item="item">
+            <EntityLink
+              :id="item.id"
+              :title="item.title"
+              :base-path="basePath"
+              :badge="item.badge"
+            />
+          </slot>
+        </template>
       </div>
       <ShowMoreLess
         v-if="items.length > SHOW_MORE_THRESHOLD"

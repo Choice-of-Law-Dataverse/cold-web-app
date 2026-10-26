@@ -150,6 +150,21 @@ describe("RelatedItemsList", () => {
     expect(wrapper.html()).toContain("link-chip--neutral");
   });
 
+  it("renders items through the item slot when provided", () => {
+    const wrapper = mount(RelatedItemsList, {
+      props: {
+        items: mockItems,
+        basePath: "/test",
+      },
+      slots: {
+        item: `<template #item="{ item }"><b class="custom">{{ item.title }}</b></template>`,
+      },
+    });
+
+    expect(wrapper.findAll("b.custom")).toHaveLength(3);
+    expect(wrapper.html()).not.toContain("link-chip--neutral");
+  });
+
   it("applies link-chip--neutral regardless of entity type", () => {
     const wrapper = mount(RelatedItemsList, {
       props: {
