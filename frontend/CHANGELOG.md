@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.1](https://github.com/Choice-of-Law-Dataverse/cold-web-app/compare/frontend-v1.7.0...frontend-v1.7.1) (2026-10-26)
+
+
+### Bug Fixes
+
+* **ui:** show flags on related jurisdiction links ([#584](https://github.com/Choice-of-Law-Dataverse/cold-web-app/issues/584)) ([85a8efb](https://github.com/Choice-of-Law-Dataverse/cold-web-app/commit/85a8efba2f574e175ab4e701b9bf8105ff17badc))
+
 ## [1.7.0](https://github.com/Choice-of-Law-Dataverse/cold-web-app/compare/frontend-v1.6.1...frontend-v1.7.0) (2026-10-25)
 
 
