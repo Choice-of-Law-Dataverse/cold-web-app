@@ -32,7 +32,10 @@
             :items="section.items"
             :base-path="section.basePath"
           >
-            <template v-if="section.key === 'jurisdictions'" #item="{ item }">
+            <template
+              v-if="section.variant === 'jurisdiction'"
+              #item="{ item }"
+            >
               <JurisdictionLink
                 :iso3="item.id"
                 :label="item.title"
