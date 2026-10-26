@@ -90,7 +90,9 @@ class ColCandidateAuditOutput(ConfidenceReasoningModel):
     decisions: list[ColCandidateDecision] = Field(description="Exactly one disposition for every supplied retrieval candidate")
 
 
-class CaseCitationOutput(ConfidenceReasoningModel):
+class CaseCitationEvidence(ConfidenceReasoningModel):
+    """What the citation agent returns: the identifier with its evidence, and the citation's other parts as written."""
+
     case_citation: str = Field(
         description=(
             "Highest-priority canonical identifier exactly as it appears in the decision: prefer an official neutral "
@@ -119,6 +121,26 @@ class CaseCitationOutput(ConfidenceReasoningModel):
             "or ECLI. Return null when case_citation is 'NA'."
         )
     )
+    court: str | None = Field(
+        description=(
+            "Name of the court that gave this decision, exactly as written in the decision, in its language and "
+            "spelling; never translated or expanded, without 'IN THE', place of sitting, division or list. Return null "
+            "when the decision does not state it."
+        )
+    )
+    case_name: str | None = Field(
+        description=(
+            "The parties as this decision names them, exactly as written, joined as the decision does (for example "
+            "'Foster v Driscoll'); prefer a short title the decision gives itself (such as after 'CASE MAY BE CITED AS') "
+            "over the full caption, without procedural roles. Return null only when the decision names no parties."
+        )
+    )
+    decision_date: str | None = Field(
+        description=(
+            "Date this decision was given, exactly as written in the decision, without labels such as 'DATE OF "
+            "JUDGMENT:'. Return null when not stated."
+        )
+    )
 
     @model_validator(mode="after")
     def _normalize_negative_evidence(self) -> Self:
@@ -135,6 +157,23 @@ class CaseCitationOutput(ConfidenceReasoningModel):
             if is_placeholder(self.identifier_type):
                 self.identifier_type = None
         return self
+
+
+class CaseCitationOutput(CaseCitationEvidence):
+    """The citation in CoLD's house style, built from the evidence by compose_case_citation."""
+
+    case_citation: str = Field(
+        description=(
+            "Common law: the parties followed by the neutral or report citation. Civil law: the court, the case "
+            "identifier and the decision date. Every part as written in the decision; 'NA' when none is found."
+        )
+    )
+    identifier: str | None = Field(
+        default=None, description="The verbatim identifier within case_citation; null for results stored before it."
+    )
+    court: str | None = None
+    case_name: str | None = None
+    decision_date: str | None = None
 
 
 class RelevantFactsOutput(ConfidenceReasoningModel):

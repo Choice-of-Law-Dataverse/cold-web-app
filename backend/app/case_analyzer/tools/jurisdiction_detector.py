@@ -3,189 +3,68 @@
 Detects the jurisdiction type of a court decision: Civil-law, Common-law, or No court decision using an LLM.
 """
 
+import csv
 import logging
+from functools import cache
+from pathlib import Path
 
 import logfire
 from agents import Agent, Runner
 from agents.models.openai_responses import OpenAIResponsesModel
 
 from ..config import get_model, get_openai_client
+from ..jev import JEV_STATE_MAX_CHARS, ask_jev, choice_question, confident_choice
 from ..prompts import LEGAL_SYSTEM_TYPE_DETECTION_PROMPT
 
 logger = logging.getLogger(__name__)
 
-_CIVIL_LAW_JURISDICTIONS = {
-    "Switzerland",
-    "Germany",
-    "France",
-    "Italy",
-    "Spain",
-    "Austria",
-    "Netherlands",
-    "Belgium",
-    "Luxembourg",
-    "Portugal",
-    "Greece",
-    "Finland",
-    "Sweden",
-    "Denmark",
-    "Norway",
-    "Poland",
-    "Czech Republic",
-    "Slovakia",
-    "Hungary",
-    "Romania",
-    "Bulgaria",
-    "Croatia",
-    "Slovenia",
-    "Estonia",
-    "Latvia",
-    "Lithuania",
-    "Malta",
-    "Cyprus",
-    "Japan",
-    "South Korea",
-    "China (Mainland)",
-    "Taiwan",
-    "Brazil",
-    "Argentina",
-    "Mexico",
-    "Chile",
-    "Colombia",
-    "Peru",
-    "Ecuador",
-    "Bolivia",
-    "Paraguay",
-    "Uruguay",
-    "Venezuela",
-    "Russia",
-    "Ukraine",
-    "Turkey",
-    "Egypt",
-    "Morocco",
-    "Tunisia",
-    "Algeria",
-    "Iran",
-    "Lebanon",
-    "Jordan",
-    "Qatar",
-    "Kuwait",
-    "Bahrain",
-    "UAE",
-    "Saudi Arabia",
-    "Israel",
-    "Indonesia",
-    "Thailand",
-    "Vietnam",
-    "Cambodia",
-    "Laos",
-    "Ethiopia",
-    "Angola",
-    "Mozambique",
-    "Kazakhstan",
-    "Uzbekistan",
-    "Tajikistan",
-    "Kyrgyzstan",
-    "Belarus",
-    "Moldova",
-    "Georgia",
-    "Armenia",
-    "Azerbaijan",
-    "Albania",
-    "Bosnia and Herzegovina",
-    "North Macedonia",
-    "Montenegro",
-    "Serbia",
-    "Kosovo",
-    "Iceland",
-    "Liechtenstein",
-    "Monaco",
-    "San Marino",
-    "Andorra",
-    "European Union",
-    "OHADA",
-}
+_JURISDICTIONS_CSV = Path(__file__).parent.parent / "data" / "jurisdictions.csv"
+_FAMILY_LEGAL_SYSTEMS = {"Civil Law": "Civil-law jurisdiction", "Common Law": "Common-law jurisdiction"}
 
-_COMMON_LAW_JURISDICTIONS = {
-    "United States",
-    "United States of America",
-    "USA",
-    "United Kingdom",
-    "England",
-    "Scotland",
-    "Wales",
-    "Northern Ireland",
-    "Ireland",
-    "Canada",
-    "Australia",
-    "New Zealand",
-    "India",
-    "Pakistan",
-    "Bangladesh",
-    "Sri Lanka",
-    "Malaysia",
-    "Singapore",
-    "Hong Kong",
-    "South Africa",
-    "Nigeria",
-    "Ghana",
-    "Kenya",
-    "Uganda",
-    "Tanzania",
-    "Zambia",
-    "Zimbabwe",
-    "Botswana",
-    "Malawi",
-    "Sierra Leone",
-    "Gambia",
-    "Jamaica",
-    "Barbados",
-    "Trinidad and Tobago",
-    "Bahamas",
-    "Belize",
-    "Guyana",
-    "Cyprus (Common Law aspects)",
-    "Malta (Common Law aspects)",
-    "Israel (Common Law aspects)",
-    "Philippines",
-    "Myanmar",
-}
-
-_JURISDICTION_LEGAL_SYSTEM_MAP: dict[str, str] = {j.lower(): "Civil-law jurisdiction" for j in _CIVIL_LAW_JURISDICTIONS} | {
-    j.lower(): "Common-law jurisdiction" for j in _COMMON_LAW_JURISDICTIONS
+LEGAL_SYSTEM_CRITERIA: dict[str, str] = {
+    "Civil-law jurisdiction": (
+        "Legal systems based on comprehensive written codes (Romano-Germanic tradition): "
+        "the court applies codified statutes and articles rather than binding precedent."
+    ),
+    "Common-law jurisdiction": (
+        "Legal systems based on judicial precedent and case law (Anglo-American tradition): "
+        "the court reasons from prior decisions under stare decisis."
+    ),
+    "No court decision": "The text is not a judicial decision or cannot be classified.",
 }
 
 
-def get_jurisdiction_legal_system_mapping() -> dict[str, str]:
-    """Return the pre-computed jurisdiction-to-legal-system mapping."""
-    return _JURISDICTION_LEGAL_SYSTEM_MAP
+@cache
+def _legal_families() -> dict[str, str]:
+    """CoLD's curated legal family by jurisdiction name (casefolded), from jurisdictions.csv."""
+    with open(_JURISDICTIONS_CSV, encoding="utf-8") as f:
+        return {row["Name"].strip().casefold(): row["Legal Family"].strip() for row in csv.DictReader(f) if row["Name"].strip()}
+
+
+def legal_system_from_family(family: str) -> str | None:
+    """The legal system a curated family names, or None when it names both traditions or neither.
+
+    Roman-Dutch, religious, supranational and mixed civil/common-law families are left to the text:
+    South Africa and Indonesia are both Roman-Dutch, yet one decides like a common-law court and the other does not.
+    """
+    traditions = {part.strip() for part in family.split(",")} & set(_FAMILY_LEGAL_SYSTEMS)
+    return _FAMILY_LEGAL_SYSTEMS[traditions.pop()] if len(traditions) == 1 else None
 
 
 def detect_legal_system_by_jurisdiction(jurisdiction_name: str) -> str | None:
     """
-    Detect legal system type based on jurisdiction name alone.
-    Returns 'Civil-law jurisdiction', 'Common-law jurisdiction', or None if unknown.
+    Legal system from the jurisdiction's curated legal family alone.
+    Returns 'Civil-law jurisdiction', 'Common-law jurisdiction', or None when the family does not decide it.
     """
-    if not jurisdiction_name or jurisdiction_name.lower() in ["unknown", "n/a", "none"]:
+    if not jurisdiction_name:
         return None
-
-    mapping = get_jurisdiction_legal_system_mapping()
-
-    # Direct lookup
-    if jurisdiction_name.lower() in mapping:
-        return mapping[jurisdiction_name.lower()]
-
-    # Partial match lookup for compound names
-    for mapped_jurisdiction, legal_system in mapping.items():
-        if mapped_jurisdiction in jurisdiction_name.lower() or jurisdiction_name.lower() in mapped_jurisdiction:
-            return legal_system
-
-    return None
+    return legal_system_from_family(_legal_families().get(jurisdiction_name.strip().casefold(), ""))
 
 
-async def detect_legal_system_type(jurisdiction_name: str, text: str) -> str:
+async def detect_legal_system_type(jurisdiction_name: str, text: str, fallback: str | None = None) -> str:
     """
-    Uses jurisdiction mapping first, then LLM analysis to classify the input text as:
+    Uses the jurisdiction's curated legal family first, then Jev, then the fallback (the jurisdiction step's own
+    answer, when it gave one), then LLM analysis on the start of the text, to classify the input text as:
     - 'Civil-law jurisdiction'
     - 'Common-law jurisdiction'
     - 'No court decision'
@@ -200,7 +79,26 @@ async def detect_legal_system_type(jurisdiction_name: str, text: str) -> str:
             logfire.info("Legal system detected from mapping", jurisdiction=jurisdiction_name, result=jurisdiction_based_result)
             return jurisdiction_based_result
 
-        prompt = LEGAL_SYSTEM_TYPE_DETECTION_PROMPT.format(jurisdiction_name=jurisdiction_name, text=text)
+        response = await ask_jev(
+            "legal_system",
+            {"jurisdiction": jurisdiction_name, "text": text[:JEV_STATE_MAX_CHARS]},
+            {
+                "legal_system": choice_question(
+                    "Which legal tradition does this court decision come from? The stated jurisdiction is highly reliable.",
+                    LEGAL_SYSTEM_CRITERIA,
+                )
+            },
+        )
+        answer = confident_choice(response, "legal_system") if response else None
+        if answer:
+            logfire.info("Legal system detected from Jev", jurisdiction=jurisdiction_name, result=answer.choice)
+            return answer.choice
+
+        if fallback in LEGAL_SYSTEM_CRITERIA and fallback != "No court decision":
+            logfire.info("Legal system taken from jurisdiction detection", jurisdiction=jurisdiction_name, result=fallback)
+            return fallback
+
+        prompt = LEGAL_SYSTEM_TYPE_DETECTION_PROMPT.format(jurisdiction_name=jurisdiction_name, text=text[:JEV_STATE_MAX_CHARS])
         logger.debug("Using LLM analysis for jurisdiction: %s", jurisdiction_name)
         logger.debug("Prompting LLM with: %s", prompt)
 
