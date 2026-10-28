@@ -1,0 +1,129 @@
+:root {
+  --motion-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --motion-drawer-duration: 320ms;
+}
+
+.main-content {
+  transition: margin-right var(--motion-drawer-duration) var(--motion-ease);
+}
+
+.entity-drawer-panel[data-state="open"] {
+  animation: entity-drawer-in var(--motion-drawer-duration) var(--motion-ease);
+}
+
+.entity-drawer-panel[data-state="closed"] {
+  animation: entity-drawer-out var(--motion-drawer-duration) var(--motion-ease);
+  pointer-events: none;
+}
+
+:root.surface-transition {
+  view-transition-name: root;
+  overflow-anchor: none;
+}
+
+.surface-transition .main-content {
+  transition: none;
+}
+
+.surface-transition .entity-drawer-panel[data-state="open"],
+.entity-drawer-panel[data-surface-entered][data-state="open"] {
+  animation: none;
+}
+
+::view-transition {
+  pointer-events: none;
+}
+
+::view-transition-group(selected-surface) {
+  animation: surface-morph 380ms var(--motion-ease) both;
+  width: var(--surface-width);
+  height: var(--surface-height);
+  will-change: transform, clip-path;
+  background: white;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 180ms;
+}
+
+::view-transition-old(selected-surface),
+::view-transition-new(selected-surface) {
+  width: 100%;
+  height: 100%;
+  object-fit: none;
+  object-position: top left;
+  mix-blend-mode: normal;
+}
+
+::view-transition-old(selected-surface) {
+  animation: surface-out 160ms ease-out both;
+}
+
+::view-transition-new(selected-surface) {
+  animation: surface-in 180ms 30ms ease-out both;
+}
+
+@keyframes surface-morph {
+  from {
+    transform: translate(var(--surface-from-x), var(--surface-from-y));
+    clip-path: inset(
+      0 var(--surface-from-right) var(--surface-from-bottom) 0 round 12px
+    );
+  }
+  to {
+    transform: translate(var(--surface-to-x), var(--surface-to-y));
+    clip-path: inset(
+      0 var(--surface-to-right) var(--surface-to-bottom) 0 round 12px
+    );
+  }
+}
+
+@keyframes surface-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes surface-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes entity-drawer-in {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes entity-drawer-out {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(selected-surface),
+  ::view-transition-old(selected-surface),
+  ::view-transition-new(selected-surface) {
+    animation: none;
+  }
+
+  .main-content {
+    transition: none;
+  }
+
+  .entity-drawer-panel[data-state] {
+    animation: none;
+  }
+}

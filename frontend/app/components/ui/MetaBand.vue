@@ -267,6 +267,7 @@ const LazyCiteModal = defineAsyncComponent(
 const props = withDefaults(
   defineProps<{
     resultData?: Record<string, unknown>;
+    exportData?: unknown;
     cardType?: string;
     formattedJurisdiction?: string[];
     formattedTheme?: string[];
@@ -282,6 +283,7 @@ const props = withDefaults(
   }>(),
   {
     resultData: () => ({}),
+    exportData: undefined,
     cardType: "",
     formattedJurisdiction: () => [],
     formattedTheme: () => [],
@@ -604,12 +606,13 @@ function downloadFile(
 }
 
 function exportJSON() {
-  const json = JSON.stringify(props.resultData, null, 2);
+  const json = JSON.stringify(props.exportData ?? props.resultData, null, 2);
   const title = String(
     props.resultData.title ||
       props.resultData.caseTitle ||
       props.resultData.name ||
       props.resultData.caseCitation ||
+      resolvedCardType.value ||
       "export",
   );
   const filename = `${sanitizeFilename(title)}.json`;

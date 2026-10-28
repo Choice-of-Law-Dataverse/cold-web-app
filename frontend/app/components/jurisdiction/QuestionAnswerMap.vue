@@ -52,23 +52,14 @@
           :label="answer"
         >
           <div class="flex flex-wrap items-center gap-4">
-            <EntityLink
+            <JurisdictionLink
               v-for="jurisdiction in filteredAnswerGroups.get(answer)"
               :key="jurisdiction.code"
               :id="`${jurisdiction.code}${questionSuffix}`"
-              :title="jurisdiction.code"
+              :iso3="jurisdiction.code"
+              :label="jurisdiction.code"
               base-path="/question"
-              variant="jurisdiction"
-            >
-              <div class="flag-wrapper">
-                <JurisdictionFlag
-                  :iso3="jurisdiction.code"
-                  class="item-flag"
-                  :alt="jurisdiction.code + ' flag'"
-                />
-              </div>
-              {{ jurisdiction.code }}
-            </EntityLink>
+            />
           </div>
         </DetailRow>
       </div>
@@ -81,8 +72,7 @@ import { ref, computed } from "vue";
 import type { Jurisdiction } from "@/composables/useQuestionJurisdictions";
 import { useQuestionJurisdictions } from "@/composables/useQuestionJurisdictions";
 import DetailRow from "@/components/ui/DetailRow.vue";
-import EntityLink from "@/components/ui/EntityLink.vue";
-import JurisdictionFlag from "@/components/ui/JurisdictionFlag.vue";
+import JurisdictionLink from "@/components/ui/JurisdictionLink.vue";
 import GradientTopBorder from "@/components/ui/GradientTopBorder.vue";
 
 const regions = [

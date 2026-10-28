@@ -88,7 +88,9 @@ function handleCardClick(event: MouseEvent) {
   const config = getEntityConfig(basePath);
   if (!config) return;
 
-  openDrawer(String(props.resultData.id), config.table, basePath);
+  return openDrawer(String(props.resultData.id), config.table, basePath, {
+    source: event.currentTarget,
+  });
 }
 </script>
 

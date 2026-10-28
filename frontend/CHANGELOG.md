@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.7.0](https://github.com/Choice-of-Law-Dataverse/cold-web-app/compare/frontend-v1.6.1...frontend-v1.7.0) (2026-10-25)
+
+
+### Features
+
+* **ui:** morph clicked cards and rows into their destinations ([#582](https://github.com/Choice-of-Law-Dataverse/cold-web-app/issues/582)) ([f650496](https://github.com/Choice-of-Law-Dataverse/cold-web-app/commit/f65049664bb3263053bc5807d7afb96decde101d))
+
+## [1.6.1](https://github.com/Choice-of-Law-Dataverse/cold-web-app/compare/frontend-v1.6.0...frontend-v1.6.1) (2026-10-25)
+
+
+### Bug Fixes
+
+* **entities:** export the listed rows as JSON on entity list pages ([#580](https://github.com/Choice-of-Law-Dataverse/cold-web-app/issues/580)) ([1d5e358](https://github.com/Choice-of-Law-Dataverse/cold-web-app/commit/1d5e358b945fe47d847283d2a2a7502b73a1b63a))
+
 ## [1.6.0](https://github.com/Choice-of-Law-Dataverse/cold-web-app/compare/frontend-v1.5.0...frontend-v1.6.0) (2026-10-24)
 
 

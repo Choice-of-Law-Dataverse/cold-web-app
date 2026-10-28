@@ -20,6 +20,7 @@
         <template v-if="showHeader" #header>
           <MetaBand
             :result-data="resultData"
+            :export-data="exportData"
             :card-type="formattedSourceTable"
             :formatted-jurisdiction="formattedJurisdiction"
             :formatted-theme="formattedTheme"
@@ -76,6 +77,7 @@ interface Props {
   loading: boolean;
   error?: Error | Record<string, unknown> | null;
   resultData: Record<string, unknown>;
+  exportData?: unknown;
   formattedSourceTable: string;
   showHeader: boolean;
   showCite?: boolean;
@@ -96,6 +98,7 @@ const props = withDefaults(defineProps<Props>(), {
   loading: false,
   error: null,
   resultData: () => ({}),
+  exportData: undefined,
   formattedSourceTable: "",
   showHeader: true,
   showCite: true,

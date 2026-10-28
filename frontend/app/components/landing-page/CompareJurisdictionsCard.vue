@@ -12,7 +12,7 @@
       <div v-for="(comparison, index) in comparisons" :key="index">
         <NuxtLink
           :to="`/jurisdiction/${comparison.left}?compare=${comparison.right}#questions-and-answers`"
-          class="no-underline"
+          class="block no-underline"
         >
           <div class="comparison-row">
             <div class="comparison-side">

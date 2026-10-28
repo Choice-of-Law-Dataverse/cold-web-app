@@ -14,23 +14,14 @@
         {{ answer }}
       </p>
       <div class="flex flex-wrap items-center gap-4">
-        <EntityLink
+        <JurisdictionLink
           v-for="jurisdiction in answerGroups.get(answer)"
           :key="jurisdiction.code"
           :id="`${jurisdiction.code}${questionSuffix}`"
-          :title="jurisdiction.code"
+          :iso3="jurisdiction.code"
+          :label="jurisdiction.code"
           base-path="/question"
-          variant="jurisdiction"
-        >
-          <div class="flag-wrapper">
-            <JurisdictionFlag
-              :iso3="jurisdiction.code"
-              class="item-flag"
-              :alt="jurisdiction.code + ' flag'"
-            />
-          </div>
-          {{ jurisdiction.code }}
-        </EntityLink>
+        />
       </div>
     </div>
   </div>
@@ -39,8 +30,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { useQuestionJurisdictions } from "@/composables/useQuestionJurisdictions";
-import EntityLink from "@/components/ui/EntityLink.vue";
-import JurisdictionFlag from "@/components/ui/JurisdictionFlag.vue";
+import JurisdictionLink from "@/components/ui/JurisdictionLink.vue";
 import LoadingBar from "@/components/layout/LoadingBar.vue";
 import InlineError from "@/components/ui/InlineError.vue";
 

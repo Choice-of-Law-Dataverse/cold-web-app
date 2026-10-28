@@ -3,7 +3,7 @@
     table="Arbitral Awards"
     page-heading="Arbitral Awards"
     :loading="isLoading"
-    :data="resultData"
+    :export-data="data"
   >
     <template #full-width>
       <GradientTopBorder />
@@ -53,7 +53,6 @@ useSeoMeta({
 });
 
 const page = ref(1);
-const resultData = null;
 
 const selectedJurisdiction = ref<JurisdictionOption | undefined>(undefined);
 const selectedTheme = ref<string | undefined>(undefined);

@@ -1,6 +1,7 @@
 <template>
   <div
     class="grid grid-cols-1 gap-x-4 gap-y-12 md:grid-cols-12 md:gap-x-6 md:gap-y-16"
+    @click.capture="handleLinkClick"
   >
     <div class="animate-fade-scale-in col-span-12">
       <div
@@ -312,6 +313,9 @@ import LaunchRecordingsBanner from "@/components/landing-page/LaunchRecordingsBa
 import { useHead, useRuntimeConfig, useSeoMeta } from "#imports";
 import { buildDataset, buildJsonLdGraph } from "@/utils/structuredData";
 import { useEntityCounts } from "@/composables/useEntityCounts";
+import { useSurfaceNavigation } from "@/composables/useSurfaceNavigation";
+
+const { handleLinkClick } = useSurfaceNavigation();
 
 const JurisdictionMap = defineAsyncComponent(
   () => import("@/components/landing-page/JurisdictionMap.vue"),

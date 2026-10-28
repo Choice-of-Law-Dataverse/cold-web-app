@@ -9,7 +9,7 @@
       :key="index"
       variant="soft"
       color="neutral"
-      @click="handleSuggestionClick(item.query)"
+      @click="handleSuggestionClick($event, item.query)"
     >
       <Icon name="i-material-symbols:search" class="item-icon" />
       <span class="flex-1 text-left break-words">{{ item.query }}</span>
@@ -19,12 +19,12 @@
 </template>
 
 <script setup lang="ts">
-import { useRouter } from "vue-router";
 import { ref } from "vue";
 import LandingCardShell from "@/components/landing-page/LandingCardShell.vue";
 import eventBus from "@/eventBus";
+import { useSurfaceNavigation } from "@/composables/useSurfaceNavigation";
 
-const router = useRouter();
+const { navigateFromElement } = useSurfaceNavigation();
 
 const searchSuggestions = ref([
   { query: "Tacit Choice in Argentina", count: 15 },
@@ -32,13 +32,12 @@ const searchSuggestions = ref([
   { query: "Public Policy in India", count: 28 },
 ]);
 
-function handleSuggestionClick(suggestion: string) {
-  eventBus.emit("update-search", suggestion);
-
-  router.push({
-    name: "search",
-    query: { q: suggestion },
-  });
+function handleSuggestionClick(event: MouseEvent, suggestion: string) {
+  return navigateFromElement(
+    event.currentTarget,
+    `/search?q=${encodeURIComponent(suggestion)}`,
+    () => eventBus.emit("update-search", suggestion),
+  );
 }
 </script>
 

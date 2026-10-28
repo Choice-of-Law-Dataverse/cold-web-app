@@ -3,7 +3,7 @@
     table="Court Decisions"
     page-heading="Court Decisions"
     :loading="isLoading"
-    :data="resultData"
+    :export-data="data"
   >
     <template #full-width>
       <GradientTopBorder />
@@ -56,7 +56,6 @@ useSeoMeta({
 const route = useRoute();
 
 const page = ref(1);
-const resultData = null;
 
 const selectedJurisdiction = ref<JurisdictionOption | undefined>(undefined);
 const selectedTheme = ref<string | undefined>(undefined);

@@ -35,7 +35,7 @@
               type="button"
               role="option"
               :disabled="!hasCoverage(item.answerCoverage)"
-              @click="selectItem(item)"
+              @click="selectItem($event, item)"
             >
               <JurisdictionFlag
                 v-if="item.coldId"
@@ -64,14 +64,14 @@
 
 <script setup lang="ts">
 import { computed, ref, watch, nextTick } from "vue";
-import { useRouter } from "#imports";
 import {
   useJurisdictions,
   type ProcessedJurisdiction,
 } from "@/composables/useJurisdictions";
 import JurisdictionFlag from "@/components/ui/JurisdictionFlag.vue";
+import { useSurfaceNavigation } from "@/composables/useSurfaceNavigation";
 
-const router = useRouter();
+const { navigateFromElement } = useSurfaceNavigation();
 const { data: jurisdictions } = useJurisdictions();
 
 const isOpen = ref(false);
@@ -113,10 +113,15 @@ function positionPanel() {
   };
 }
 
-async function selectItem(item: ProcessedJurisdiction) {
+async function selectItem(event: MouseEvent, item: ProcessedJurisdiction) {
   if (!hasCoverage(item.answerCoverage) || !item.coldId) return;
-  isOpen.value = false;
-  await router.push(`/jurisdiction/${item.coldId.toUpperCase()}`);
+  await navigateFromElement(
+    event.currentTarget,
+    `/jurisdiction/${item.coldId.toUpperCase()}`,
+    () => {
+      isOpen.value = false;
+    },
+  );
 }
 </script>
 

@@ -80,7 +80,9 @@ describe("useEntityDrawer", () => {
     window.innerWidth = 500;
     const { isOpen, openDrawer } = setupDrawer(false);
 
-    openDrawer("123", "Court Decisions", "/court-decision", true);
+    openDrawer("123", "Court Decisions", "/court-decision", {
+      forceDrawer: true,
+    });
 
     expect(isOpen.value).toBe(true);
     expect(mockNavigateTo).not.toHaveBeenCalled();
