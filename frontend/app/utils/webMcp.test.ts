@@ -153,6 +153,24 @@ describe("WebMCP", () => {
     expect(push).not.toHaveBeenCalled();
   });
 
+  it("distinguishes comparative questions from jurisdiction answers", async () => {
+    const { tool, get } = setup();
+    await tool("get_cold_record").execute({
+      entityPath: "/question",
+      coldId: "30.2-AoC",
+    });
+    expect(get).toHaveBeenLastCalledWith("/search/details", {
+      params: { query: { table: "Questions", id: "30.2-AoC" } },
+    });
+    await tool("get_cold_record").execute({
+      entityPath: "/question",
+      coldId: "CHE_30.2-AoC",
+    });
+    expect(get).toHaveBeenLastCalledWith("/search/details", {
+      params: { query: { table: "Answers", id: "CHE_30.2-AoC" } },
+    });
+  });
+
   it("propagates API errors to the calling agent", async () => {
     const { tool, get } = setup();
     get.mockResolvedValue({ error: new Error("Unavailable") });

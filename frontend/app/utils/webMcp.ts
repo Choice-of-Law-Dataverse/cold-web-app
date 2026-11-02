@@ -129,9 +129,14 @@ export function createWebMcpTools(
       annotations: { readOnlyHint: true },
       async execute(input) {
         const { entityPath, coldId } = recordSchema.parse(input);
+        const configuredTable = entityRegistry[entityPath]!.table;
+        const table =
+          configuredTable === "Answers" && !coldId.includes("_")
+            ? "Questions"
+            : configuredTable;
         const { data, error } = await client.GET("/search/details", {
           params: {
-            query: { table: entityRegistry[entityPath]!.table, id: coldId },
+            query: { table, id: coldId },
           },
         });
         if (error) throw error;
