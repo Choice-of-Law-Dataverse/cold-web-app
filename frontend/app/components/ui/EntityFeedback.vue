@@ -101,17 +101,35 @@ async function handleSubmit() {
     </UButton>
 
     <template #content>
-      <form class="feedback-popover" @submit.prevent="handleSubmit">
-        <USelect
+      <form
+        class="feedback-popover"
+        :toolname="`feedback_${entityType}_${entityId}`"
+        :tooldescription="`Prepare feedback about ${entityTitle || entityId} for the user to review and submit.`"
+        @submit.prevent="handleSubmit"
+      >
+        <select
           v-model="feedbackType"
-          :items="feedbackTypeOptions"
-          placeholder="What kind of feedback?"
+          name="feedbackType"
+          toolparamdescription="Kind of feedback: improve, missing_data, wrong_info, outdated or other"
+          required
           aria-label="Feedback type"
-          class="w-full"
-        />
+          class="w-full rounded-md border border-black/6 bg-white px-2.5 py-1.5 text-base"
+        >
+          <option value="" disabled>What kind of feedback?</option>
+          <option
+            v-for="option in feedbackTypeOptions"
+            :key="option.value"
+            :value="option.value"
+          >
+            {{ option.label }}
+          </option>
+        </select>
 
         <UTextarea
           v-model="message"
+          name="message"
+          toolparamdescription="Describe the correction or improvement, including sources when available"
+          required
           :placeholder="messagePlaceholder"
           aria-label="Feedback message"
           :rows="4"
@@ -121,6 +139,9 @@ async function handleSubmit() {
 
         <UInput
           v-model="email"
+          name="email"
+          toolparamdescription="Email address for a reply about this feedback"
+          required
           type="email"
           placeholder="your@email.com"
           aria-label="Reply email"
