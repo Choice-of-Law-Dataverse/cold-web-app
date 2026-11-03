@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.8.0](https://github.com/Choice-of-Law-Dataverse/cold-web-app/compare/frontend-v1.7.0...frontend-v1.8.0) (2026-11-03)
+
+
+### Features
+
+* **agents:** expose CoLD actions through WebMCP ([#586](https://github.com/Choice-of-Law-Dataverse/cold-web-app/issues/586)) ([8d41bca](https://github.com/Choice-of-Law-Dataverse/cold-web-app/commit/8d41bca9fcb9a869d11b800e53aa20b2665ad1f9))
+
+
+### Bug Fixes
+
+* **ui:** show flags on related jurisdiction links ([#584](https://github.com/Choice-of-Law-Dataverse/cold-web-app/issues/584)) ([85a8efb](https://github.com/Choice-of-Law-Dataverse/cold-web-app/commit/85a8efba2f574e175ab4e701b9bf8105ff17badc))
+
 ## [1.7.0](https://github.com/Choice-of-Law-Dataverse/cold-web-app/compare/frontend-v1.6.1...frontend-v1.7.0) (2026-10-25)
 
 
