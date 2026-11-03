@@ -13,7 +13,6 @@ from .jurisdiction_classifier import (
 )
 from .jurisdiction_detector import (
     detect_legal_system_by_jurisdiction,
-    get_jurisdiction_legal_system_mapping,
 )
 from .models import (
     AbstractOutput,
@@ -53,7 +52,6 @@ __all__ = [
     # Jurisdiction utilities
     "load_jurisdictions",
     "create_jurisdiction_list",
-    "get_jurisdiction_legal_system_mapping",
     # Output models
     "AbstractOutput",
     "CaseCitationOutput",
