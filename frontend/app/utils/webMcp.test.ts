@@ -1,5 +1,10 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
+  createMemoryHistory,
+  createRouter,
+  NavigationFailureType,
+} from "vue-router";
+import {
   createWebMcpTools,
   getWebMcpContext,
   registerWebMcpTools,
@@ -23,7 +28,19 @@ function setup() {
   >["client"];
   const tools = createWebMcpTools(client, { push });
   const tool = (name: string) => tools.find((entry) => entry.name === name)!;
-  return { get, push, tools, tool };
+  return { client, get, push, tools, tool };
+}
+
+function setupNavigation() {
+  const { client } = setup();
+  const router = createRouter({
+    history: createMemoryHistory(),
+    routes: [{ path: "/court-decision/:coldId", component: {} }],
+  });
+  const tool = createWebMcpTools(client, router).find(
+    ({ name }) => name === "open_cold_record",
+  )!;
+  return { router, tool };
 }
 
 describe("WebMCP", () => {
@@ -136,6 +153,47 @@ describe("WebMCP", () => {
     });
   });
 
+  it.each([
+    [
+      "/domestic-legal-provision",
+      "Domestic Legal Provisions",
+      "DI-CHE-1 Art. 116(2)",
+    ],
+    [
+      "/regional-legal-provision",
+      "Regional Legal Provisions",
+      "RI-EU-1 Article 3(1)",
+    ],
+    [
+      "/international-legal-provision",
+      "International Legal Provisions",
+      "II-HCC-1 Art. 2/3",
+    ],
+  ])(
+    "retrieves %s using its complete provision identifier",
+    async (entityPath, table, coldId) => {
+      const { tool, get } = setup();
+      await tool("get_cold_record").execute({ entityPath, coldId });
+      expect(get).toHaveBeenCalledWith("/search/details", {
+        params: { query: { table, id: coldId } },
+      });
+    },
+  );
+
+  it.each(["", " ", "x".repeat(129)])(
+    "rejects an invalid retrieval identifier %j",
+    async (coldId) => {
+      const { tool, get } = setup();
+      await expect(
+        tool("get_cold_record").execute({
+          entityPath: "/court-decision",
+          coldId,
+        }),
+      ).rejects.toThrow();
+      expect(get).not.toHaveBeenCalled();
+    },
+  );
+
   it("accepts dotted question identifiers and blocks entities without detail pages", async () => {
     const { tool, push } = setup();
     await tool("open_cold_record").execute({
@@ -203,5 +261,53 @@ describe("WebMCP", () => {
       await expect(tool("open_cold_record").execute(input)).rejects.toThrow();
     }
     expect(push).not.toHaveBeenCalled();
+  });
+
+  it("succeeds when asked to open the current record again", async () => {
+    const { router, tool } = setupNavigation();
+    const input = { entityPath: "/court-decision", coldId: "CD-CHE-42" };
+    await expect(tool.execute(input)).resolves.toEqual({
+      path: "/court-decision/CD-CHE-42",
+    });
+    await expect(tool.execute(input)).resolves.toEqual({
+      path: "/court-decision/CD-CHE-42",
+    });
+    expect(router.currentRoute.value.path).toBe("/court-decision/CD-CHE-42");
+  });
+
+  it("still rejects navigation aborted by a guard", async () => {
+    const { router, tool } = setupNavigation();
+    router.beforeEach(() => false);
+    await expect(
+      tool.execute({ entityPath: "/court-decision", coldId: "CD-CHE-42" }),
+    ).rejects.toMatchObject({ type: NavigationFailureType.aborted });
+  });
+
+  it("still rejects navigation cancelled by a newer request", async () => {
+    const { router, tool } = setupNavigation();
+    let releaseGuard!: () => void;
+    let guardStarted!: () => void;
+    const started = new Promise<void>((resolve) => {
+      guardStarted = resolve;
+    });
+    router.beforeEach((to) => {
+      if (to.params.coldId !== "CD-CHE-42") return;
+      guardStarted();
+      return new Promise<void>((resolve) => {
+        releaseGuard = resolve;
+      });
+    });
+    const navigation = tool.execute({
+      entityPath: "/court-decision",
+      coldId: "CD-CHE-42",
+    });
+    const rejected = expect(navigation).rejects.toMatchObject({
+      type: NavigationFailureType.cancelled,
+    });
+    await started;
+    await tool.execute({ entityPath: "/court-decision", coldId: "CD-CHE-43" });
+    releaseGuard();
+    await rejected;
+    expect(router.currentRoute.value.path).toBe("/court-decision/CD-CHE-43");
   });
 });

@@ -1,5 +1,9 @@
 import { z } from "zod";
-import type { Router } from "vue-router";
+import {
+  isNavigationFailure,
+  NavigationFailureType,
+  type Router,
+} from "vue-router";
 import type { useApiClient } from "@/composables/useApiClient";
 import { entityRegistry } from "@/config/entityRegistry";
 
@@ -90,9 +94,15 @@ export function createWebMcpTools(
       .trim()
       .min(1)
       .max(128)
+      .describe(
+        "Complete CoLD identifier, such as CD-CHE-42, 30.2-AoC or DI-CHE-1 Art. 116(2)",
+      ),
+  });
+  const navigationSchema = recordSchema.extend({
+    coldId: recordSchema.shape.coldId
       .regex(/^[A-Za-z0-9][A-Za-z0-9_.-]*$/)
       .describe(
-        "CoLD identifier from search results, such as CD-CHE-42 or 30.2-AoC",
+        "CoLD identifier for a record page, such as CD-CHE-42 or 30.2-AoC",
       ),
   });
 
@@ -147,10 +157,10 @@ export function createWebMcpTools(
       name: "open_cold_record",
       description:
         "Navigate the browser to a CoLD record so the user can read it. Use an entity section and a CoLD identifier found in search results.",
-      inputSchema: z.toJSONSchema(recordSchema),
+      inputSchema: z.toJSONSchema(navigationSchema),
       annotations: { readOnlyHint: true },
       async execute(input) {
-        const { entityPath, coldId } = recordSchema.parse(input);
+        const { entityPath, coldId } = navigationSchema.parse(input);
         if (entityRegistry[entityPath]!.hasDetailPage === false) {
           throw new Error(
             "This entity has no detail page. Use get_cold_record instead.",
@@ -158,7 +168,12 @@ export function createWebMcpTools(
         }
         const path = `${entityPath}/${encodeURIComponent(coldId)}`;
         const failure = await router.push(path);
-        if (failure) throw failure;
+        if (
+          failure &&
+          !isNavigationFailure(failure, NavigationFailureType.duplicated)
+        ) {
+          throw failure;
+        }
         return { path };
       },
     },
